@@ -10,176 +10,177 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.3.3/cytoscape.min.js"></script>
-    <style>
-        .max-width {
-            max-width: 1024px;
-        }
+    <script src="https://unpkg.com/webcola/WebCola/cola.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/gnosis_theme.css" %}">
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <script src="{% static "js/cytoscape-cola.js" %}"></script>
 
-        /*
-            !* Remove the navbar's default margin-bottom and rounded borders *!
-            .navbar {
-              margin-bottom: 0;
-              border-radius: 0;
-            }
-
-            !* Set height of the grid so .sidenav can be 100% (adjust as needed) *!
-            .row.content {height: 450px}
-
-            !* Set gray background color and 100% height  #f1f1f1*!
-            .sidenav {
-              padding-top: 20px;
-              background-color: #ffffff;
-              height: 100%;
-            }
-
-            !* Set black background color, white text and some padding *!
-            footer {
-              background-color: #ffffff;
-              color: white;
-              padding: 15px;
-            }
-
-            !* Adds a small buffer between the two rows in the middle column. *!
-            .top-buffer { margin-top:10px; }
-
-            !* Adds a small buffer between the two rows in the right column. *!
-            .top-buffer-sidenav { margin-top:5px; }
-
-            !* Adds margins around the main content colum *!
-            .main-column-left-right-buffer { margin-left:10px; margin-right:10px }
-
-            !* On small screens, set height to 'auto' for sidenav and grid *!
-            @media screen and (max-width: 767px) {
-              .sidenav {
-                height: auto;
-                padding: 15px;
-              }
-              .row.content {height:auto;}
-            }
-        */
-    </style>
-    <style>
-        #cy {
-            width: auto;
-            height: 300px;
-            display: block;
-        }
-    </style>
 </head>
-<body>
+<body onresize="cy.center()">
 
-<nav class="navbar navbar-expand-sm mb-2 shadow bg-white navbar-light sticky-top">
+<nav id="big" class="navbar navbar-expand-sm mb-2 shadow bg-dark navbar-light sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
+        <a class="navbar-brand" style="font-size: 3vmin; margin-right: 4vw; filter: invert(100%);"
+           href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav mr-auto">
-<!--                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>-->
-                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                <li class="nav-item"><a style=" font-size: 2vmin;filter: invert(100%);" class="nav-link"
+                                        href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a style=" font-size: 2vmin;filter: invert(100%);" class="nav-link"
+                                        href="#">About</a></li>
+                <li class="nav-item"><a style=" font-size: 2vmin;filter: invert(100%);" class="nav-link" href="#">Contact</a>
+                </li>
             </ul>
 
             <ul class="nav navbar-nav">
                 {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}?next={{request.path}}">Logout</a></li>
+                    <li class="nav-item"><a style=" font-size: 2vmin;filter: invert(100%);" class="nav-link"
+                                            href="{% url 'logout' %}?next={{ request.path }}">Logout</a></li>
                 {% else %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'login' %}?next={{request.path}}">Login</a></li>
+                    <li class="nav-item"><a style=" font-size: 2vmin;filter: invert(100%);" class="nav-link"
+                                            href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
                 {% endif %}
             </ul>
         </div>
     </div>
 </nav>
 
-<div class="container-fluid max-width" style="margin-top:30px ">
-    <div class="row float-right"  style="margin-right:30px">
+<nav id="small" class="navbar navbar-expand-md bg-dark navbar-light sticky-top mb-2">
+    <a class="navbar-brand" style="margin-left: 2vw;font-size: 4vmin; margin-right: 4vw; filter: invert(100%);"
+       href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span style="filter: invert(100%);height: 3vh;
+    width: 5vw;" class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="nav navbar-nav mr-auto">
+            <li class="nav-item"><a style=" margin-left: 4vw;font-size: 3vmin;filter: invert(100%);" class="nav-link"
+                                    href="{% url 'home' %}">Home</a></li>
+            <li class="nav-item"><a style=" margin-left: 4vw;font-size: 3vmin;filter: invert(100%);" class="nav-link"
+                                    href="#">About</a></li>
+            <li class="nav-item"><a style=" margin-left: 4vw;font-size: 3vmin;filter: invert(100%);" class="nav-link"
+                                    href="#">Contact</a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+            {% if user.is_authenticated %}
+                <li class="nav-item"><a style=" margin-left: 4vw;font-size: 3vmin;filter: invert(100%);"
+                                        class="nav-link" href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item"><a style=" margin-left: 4vw;font-size: 3vmin;filter: invert(100%);"
+                                        class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<div class="container-fluid" style="margin-top:30px ">
+    <div class="row " style="margin-right:10px">
         {% if user.is_authenticated %}
-        <div class="btn-group">
-            <a href="{% url 'papers_index' %}" class="btn btn-primary" role="button">Papers&nbsp&nbsp</a>
-            <div class="btn-group">
-                <a href="{% url 'paper_create' %}" class="btn btn-primary" role="button">+</a>
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{% url 'paper_create_from_arxiv' %}">from arXiv.org</a></li>
-                </ul>
-            </div>
-        </div>
 
-        <div class="btn-group ml-1">
-            <a href="{% url 'persons_index' %}" class="btn btn-primary" role="button">People&nbsp&nbsp</a>
-            <div class="btn-group">
-                <a href="{% url 'person_create' %}" class="btn btn-primary" role="button">+</a>
             </div>
-        </div>
-
-        <div class="btn-group ml-1">
-            <a href="{% url 'venues_index' %}" class="btn btn-primary" role="button">Venues&nbsp&nbsp</a>
-            <div class="btn-group">
-                <a href="{% url 'venue_create' %}" class="btn btn-primary" role="button">+</a>
             </div>
-        </div>
-
-        <div class="btn-group ml-1">
-            <a href="{% url 'datasets_index' %}" class="btn btn-primary" role="button">Datasets</a>
-            <div class="btn-group">
-                <a href="{% url 'dataset_create' %}" class="btn btn-primary" role="button">+</a>
+            <div class="btn-group" style="display: inline-flex;">
+                <a href="{% url 'papers_index' %}" class="navButton fir-button navButton-right" role="button"
+                   title="Search for papers">Papers</a>
+                <div class="btn-group">
+                    <a href="{% url 'paper_create' %}" class="navButton navButton-full" role="button"
+                       title="Add new papers">+</a>
+                    <button title="Import" type="button" class="navButton dropdown-toggle navButton-left"
+                            data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{% url 'paper_create_from_url' %}">import external links</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
 
-        <div class="btn-group ml-1">
-            <a href="{% url 'codes_index' %}" class="btn btn-primary" role="button">Codes</a>
-            <div class="btn-group">
-                <a href="{% url 'code_create' %}" class="btn btn-primary" role="button">+</a>
+            <div class="btn-group ml-1">
+                <a href="{% url 'persons_index' %}" class="navButton navButton-right" role="button"
+                   title="Search for people">People</a>
+                <div class="btn-group">
+                    <a href="{% url 'person_create' %}" class="navButton navButton-left" role="button"
+                       title="Add new People">+</a>
+                </div>
             </div>
-        </div>
 
-        <!--                </div>-->
+            <div class="btn-group ml-1">
+                <a href="{% url 'venues_index' %}" class="navButton navButton-right" role="button"
+                   title="Search for venues">Venues</a>
+                <div class="btn-group">
+                    <a href="{% url 'venue_create' %}" class="navButton navButton-left" role="button"
+                       title="Add new venue">+</a>
+                </div>
+            </div>
+
+            <div class="btn-group ml-1">
+                <a href="{% url 'datasets_index' %}" class="navButton navButton-right" role="button"
+                   title="Search for Datasets">Datasets</a>
+                <div class="btn-group">
+                    <a href="{% url 'dataset_create' %}" class="navButton navButton-left" role="button"
+                       title="Add new Datasets">+</a>
+                </div>
+            </div>
+
+            <div class="btn-group ml-1">
+                <a href="{% url 'codes_index' %}" class="navButton navButton-right" role="button"
+                   title="Search for Codes">Codes</a>
+                <div class="btn-group">
+                    <a href="{% url 'code_create' %}" class="navButton navButton-left" role="button"
+                       title="Add new Codes">+</a>
+                </div>
+            </div>
+
+            <!--                </div>-->
         {% else %}
-        <div class="btn-group">
-            <a href="{% url 'papers_index' %}" class="btn btn-primary" role="button">Papers&nbsp&nbsp</a>
-        </div>
+            <div class="btn-group" style="display: inline-flex;">
+                <a href="{% url 'papers_index' %}" class="navButton fir-button" role="button">Papers</a>
+            </div>
 
-        <div class="btn-group ml-1">
-            <a href="{% url 'persons_index' %}" class="btn btn-primary" role="button">People&nbsp&nbsp</a>
-        </div>
+            <div class="btn-group ml-1">
+                <a href="{% url 'persons_index' %}" class="navButton" role="button">People</a>
+            </div>
 
-        <div class="btn-group ml-1">
-            <a href="{% url 'venues_index' %}" class="btn btn-primary" role="button">Venues&nbsp&nbsp</a>
-        </div>
+            <div class="btn-group ml-1">
+                <a href="{% url 'venues_index' %}" class="navButton" role="button">Venues</a>
+            </div>
 
-        <div class="btn-group ml-1">
-            <a href="{% url 'datasets_index' %}" class="btn btn-primary" role="button">Datasets</a>
-        </div>
+            <div class="btn-group ml-1">
+                <a href="{% url 'datasets_index' %}" class="navButton" role="button">Datasets</a>
+            </div>
 
-        <div class="btn-group ml-1">
-            <a href="{% url 'codes_index' %}" class="btn btn-primary" role="button">Codes</a>
-        </div>
+            <div class="btn-group ml-1">
+                <a href="{% url 'codes_index' %}" class="navButton" role="button">Codes</a>
+            </div>
         {% endif %}
-    </div>
-
-    <div class="row float-left w-100 mb-3">
-        <div class="col-sm-12">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </div>
-
-    <!--<div class="col-sm-2 sidenav">-->
-    <!--{% load static %}-->
-    <!--<img src="{% static "catalog/csiro-data61-logos.png" %}" alt="CSIRO and Data61 Logos">-->
-    <!--</div>-->
-    <!--    </div>-->
 </div>
 
-<div class="container-fluid max-width">
+<div class="row float-left w-100 mb-3">
+    <div class="col-sm-12" style="margin-left: 15px;">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+<!--<div class="col-sm-2 sidenav">-->
+<!--{% load static %}-->
+<!--<img src="{% static "catalog/csiro-data61-logos.png" %}" alt="CSIRO and Data61 Logos">-->
+<!--</div>-->
+<!--    </div>-->
+</div>
+
+<div class="container-fluid" style="place-content: center">
     {% block footer %}
-    {% load static %}
-    <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block"
-         alt="CSIRO and Data61 Logos">
+        {% load static %}
+        <div></div>
+        <img src="{% static 'catalog/csiro-data61-logos.png' %}"
+             alt="CSIRO and Data61 Logos" style="margin-left: 42vw">
     {% endblock %}
 
 </div>

@@ -1,0 +1,30 @@
+.color_legend {
+    display: inline-block;
+    width: 50px;
+    height: 20px;
+}
+
+.paper {
+    background-color: #39acff;
+}
+
+.venue {
+    background-color: #d97fff;
+}
+
+.person {
+    background-color: #ffb836;
+}
+
+.dataset {
+    background-color: #ff723d;
+
+}
+
+.code {
+    background: #59d143;
+}
+
+.ego-button {
+    font-family: "Lucida Console", Monaco, monospace;
+}

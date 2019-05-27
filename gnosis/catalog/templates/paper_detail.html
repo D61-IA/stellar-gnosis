@@ -2,157 +2,572 @@
 
 {% block content %}
 
-<div class="card shadow-sm mt-5">
-    <div class="card-header">
-        <h3>{{ paper.title }}</h3>
+    <div class="card shadow-sm mt-5">
+        <div class="card-header">
+            <h3>{{ paper.title }}</h3>
 
-        <h4>
-            <a href={{ paper.download_link }} target="_blank"  class="btn btn-primary" role="button">Download</a>
-            {% if user.is_authenticated %}<a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
-                                             role="button">
-            Edit</a>
-            {% endif %}
-        </h4>
-    </div>
-    <div class="card-body">
-        <h5 class="text-left">
-            {{ authors }} {% if user.is_authenticated and user.is_superuser%}<a
-                href="{% url 'paper_authors' id=paper.id %}"
-                class="btn btn-danger btn-sm" role="button">
-            Edit</a>{% endif %}
-        </h5>
-
-        <h5 class="text-right">
-            <small>keywords: {{ paper.keywords }}</small>
-        </h5>
-
-        <p><strong>Abstract:</strong> {{ paper.abstract }} </p>
-        {% if venue %}
-        <p>
-            <small><strong>Venue:</strong> {{ venue }}</small>
-        </p>
-        {% endif%}
-
-        {% if messages %}
-        {% for message in messages %}
-        <p class="bg-success">{{ message }}</p>
-        {% endfor %}
-        {% endif %}
-
-        <h4 class="text-right">{% if user.is_authenticated %} Connect with: <a
-                href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
-            || <a href="{% url 'paper_connect_venue' paper.id %}">Venue</a> ||
-            <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
-            <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
-            <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>{% endif %}</h4>
-    </div>
-</div>
-{% if user.is_authenticated and user.is_superuser %}
-<div class="card text-left shadow-sm mb-3 mt-3">
-    <div class="card-header"><strong>Admin functions</strong></div>
-    <div class="card-body">
-        <a href="{% url 'paper_delete' paper.id %}" class="btn btn-danger btn-sm" role="button">Delete Paper</a>
-    </div>
-</div>
-{% endif %}
-{% if codes %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>Code</h4></div>
-    <div class="card-body">
-        <ul class="list-group">
-            {% for code in codes %}
-            <li class="list-group-item"><h6><a href="{{ code.get_absolute_url }}">{{ code.website }}</a></h6></li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
-{% endif %}
-
-<div class="card mt-3 shadow-sm">
-    <div class="card-header"><h4>Ego-graph</h4></div>
-    <div class="card-body">
-        <div id="cy"></div>
-    </div>
-</div>
-
-<p>{% if user.is_authenticated %}<a href="{% url 'comment_create' %}" class="btn btn-info mt-3 btn-md">
-    <span class="glyphicon glyphicon-plus"></span> Add Comment</a></p>
-{% else %}
-<p><a href="{% url 'login' %}?next={{request.path}}">Login</a> to comment</p>
-{% endif %}
-{% if num_comments > 0 %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h3>{{ num_comments }} Comments</h3>
-    </div>
-    <div class="card-body">
-        <ul class="list-group">
-            {% for comment in comments %}
-            <li class="list-group-item shadow-sm mt-1">
-                <p><strong>{{comment.author }}</strong> says:</p>
-                <p>
-                    <small>{{ comment.publication_date }}</small>
-                </p>
-                <p>{{ comment.text }}</p>
-                {% if comment.created_by == user.id %}
-                <a href="{% url 'comment_update' comment.id %}">Edit</a>
+            <h4>
+                <a href={{ paper.download_link }} class="btn btn-primary" role="button">Download</a>
+                {% if user.is_authenticated %}<a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
+                                                 role="button">
+                    Edit</a>
                 {% endif %}
-            </li>
-        </ul>
-        {% endfor %}
+            </h4>
+        </div>
+        <div class="card-body">
+            <h5 class="text-left">
+                {{ authors }} {% if user.is_authenticated and user.is_superuser %}<a
+                    href="{% url 'paper_authors' id=paper.id %}"
+                    class="btn btn-danger btn-sm" role="button">
+                Edit</a>{% endif %}
+            </h5>
+
+            <h5 class="text-right">
+                <small>keywords: {{ paper.keywords }}</small>
+            </h5>
+
+            <p><strong>Abstract:</strong> {{ paper.abstract }} </p>
+            {% if venue %}
+                <p>
+                    <small><strong>Venue:</strong> {{ venue }}</small>
+                </p>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="bg-success">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <h4 class="text-right">{% if user.is_authenticated %} Connect with: <a
+                    href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
+                || <a href="{% url 'paper_connect_venue' paper.id %}">Venue</a> ||
+                <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
+                <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
+                <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>{% endif %}</h4>
+        </div>
     </div>
-</div>
-</div>
-{% endif %}
+    {% if user.is_authenticated and user.is_superuser %}
+        <div class="card text-left shadow-sm mb-3 mt-3">
+            <div class="card-header"><strong>Admin functions</strong></div>
+            <div class="card-body">
+                <a href="{% url 'paper_delete' paper.id %}" class="btn btn-danger btn-sm" role="button">Delete Paper</a>
+            </div>
+        </div>
+    {% endif %}
+    {% if codes %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header"><h4>Code</h4></div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for code in codes %}
+                        <li class="list-group-item"><h6><a href="{{ code.get_absolute_url }}">{{ code.website }}</a>
+                        </h6></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
 
-<script type="text/javascript">
-    var cy = cytoscape({
-        container: document.getElementById('cy'), // container to render in
+    <div class="card mt-3 shadow-sm">
+        <div class="card-header">
+            <div style="display: inline-flex; width: 100%; justify-content: space-between">
+                <h4>Ego-graph</h4>
+                <button type="button"
+                        class="btn btn-primary toggle ego-button"
+                        data-toggle="button"
+                        aria-pressed="false" autocomplete="off" onclick="toggle_relas()">
+                    Hide relationships
+                </button>
 
-        elements: {{ ego_network | safe }},
+                <button type="button"
+                        class="btn btn-primary ego-button"
+                        onclick="center()">
+                    Center
+                </button>
 
-    style: [ // the stylesheet for the graph
-        {
-            selector: 'node',
-            style: {
-                'background-color': '#666',
-                'label': 'data(title)',
-                'text-wrap': 'ellipsis',
-                'text-max-width': '200'
-            }
-        },
+                <button type="button"
+                        class="btn btn-primary ego-button"
+                        onclick="reset()">
+                    Reset
+                </button>
+                <label for="graphfilter"></label>
+                <select id="graphfilter"
+                        onchange="show_cites(this.value)">
+                    <option value="all relationships"> - all relationships -</option>
+                    <option value="cites"> - cites -</option>
+                    <option value="uses"> - uses -</option>
+                    <option value="extends"> - extends -</option>
+                    <option value="authors"> - authors -</option>
+                    <option value="was published at"> - was published at -</option>
+                    <option value="evaluates on"> - evaluates on -</option>
+                    <option value="implements"> - implements -</option>
 
-        {
-            selector: 'edge',
-            style: {
-                'width': 1,
-                'label': 'data(label)',
-                'line-color': '#ccc',
-                'target-arrow-color': '#ccc',
-                'target-arrow-shape': 'triangle'
+                </select>
+            </div>
+
+        </div>
+
+        <div class="card-body">
+            <fieldset style="position: absolute; z-index: 1000; left: 20px;">
+                <span class="color_legend paper"></span> Paper <br>
+                <span class="color_legend person"></span> Person<br>
+                <span class="color_legend venue"></span> Venue<br>
+                <span class="color_legend dataset"></span> Dataset<br>
+                <span class="color_legend code"></span> Code<br>
+            </fieldset>
+
+            <div id="cy">
+            </div>
+        </div>
+    </div>
+
+
+    <p>{% if user.is_authenticated %}<a href="{% url 'comment_create' %}" class="btn btn-info mt-3 btn-md">
+        <span class="glyphicon glyphicon-plus"></span> Add Comment</a></p>
+    {% else %}
+        <p><a href="{% url 'login' %}?next={{ request.path }}">Login</a> to comment</p>
+    {% endif %}
+    {% if num_comments > 0 %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header">
+                <h3>{{ num_comments }} Comments</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for comment in comments %}
+                        <li class="list-group-item shadow-sm mt-1">
+                            <p><strong>{{ comment.author }}</strong> says:</p>
+                            <p>
+                                <small>{{ comment.publication_date }}</small>
+                            </p>
+                            <p>{{ comment.text }}</p>
+                            {% if comment.created_by == user.id %}
+                                <a href="{% url 'comment_update' comment.id %}">Edit</a>
+                            {% endif %}
+                        </li>
+                        </ul>
+                    {% endfor %}
+            </div>
+        </div>
+        </div>
+    {% endif %}
+
+    <script type="text/javascript">
+        function myFunction() {
+
+            console.log("haha this is cool")
+        }
+
+        var main_paper_id = '{{ main_paper_id }}';
+
+        var hide_rela = false;
+
+        // function for toggle relationships button
+        function toggle_relas() {
+            hide_rela = !hide_rela;
+            if (hide_rela) {
+                cy.style().selector('edge').style('label', '').update();
+                $(".toggle").text("Show relationships");
+            } else {
+                cy.style().selector('edge').style('label', 'data(label)').update();
+                $(".toggle").text("Hide relationships");
             }
         }
-    ],
 
-        layout
-    :
-    {
-        name: 'circle', rows: 2
-
-    }
-    })
-    ;
-
-    cy.on('tap', 'node', function (evt) {
-        var node = evt.target;
-        console.log('tapped ' + node.data('href'));
-        try {
-            window.open(node.data('href'), '_self');
-        } catch (e) {
-            window.location.href = node.data('href');
+        // center button
+        function center() {
+            cy.animate({
+                center: cy.nodes(),
+                fit: {eles: cy.nodes(), padding: 50},
+                duration: 50,
+            });
         }
-    });
 
-</script>
+        function reset_layout() {
+            var layout = cy.layout({
+                name: 'cola',
+            });
+            layout.run();
+        }
+
+        // reset button
+        function reset() {
+            reset_layout();
+        }
+
+        // dropdown menu
+        function show_cites(value) {
+
+            var cat = value;
+            //document.write('node[label="'+cat+'"]');
+            if (cat === "all relationships") {
+                cy.style().selector('node').style('visibility', 'visible').update();
+                cy.style().selector('edge').style('visibility', 'visible').update();
+            } else {
+                cy.style().selector('node').style('visibility', 'hidden').update();
+                cy.style().selector('edge').style('visibility', 'hidden').update();
+                cy.style().selector('node[label="' + cat + '"]').style('visibility', 'visible').update();
+                cy.style().selector('edge[label="' + cat + '"]').style('visibility', 'visible').update();
+                cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
+            }
+
+        }
+
+        var cy = cytoscape({
+            container: document.getElementById('cy'), // container to render in
+            elements: {{ ego_network | safe }},
+            wheelSensitivity: 0.2,
+
+
+            layout:
+                {
+                    name: 'cola'
+                },
+
+            style: [ // the stylesheet for the graph
+                {
+                    selector: 'node[type="Paper"]',
+                    style: {
+                        'width': 20,
+                        'height': 20,
+                        'background-color': '#39acff',
+                        'label': 'data(title)',
+                        'text-opacity': 1,
+                        'text-wrap': 'ellipsis',
+                        'text-max-width': '50',
+                        'text-background-color': '#FFFFFF',
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '10px',
+                        'border-width': '1.5px',
+                        'border-color': "#9d8b71",
+                        'visibility': 'visible'
+
+                    },
+
+                },
+                {
+                    selector: 'node[id="' + main_paper_id + '"]',
+                    style: {
+                        'width': 30,
+                        'height': 30,
+                        'background-color': '#39acff',
+                        'label': 'data(title)',
+                        'text-opacity': 1,
+                        'text-wrap': 'ellipsis',
+                        'text-max-width': '50',
+                        'text-background-color': '#FFFFFF',
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '10px',
+                        'border-width': '1.5px',
+                        'border-color': "#9d8b71"
+                    }
+                },
+                {
+                    selector: 'node[type="Person"]',
+                    style: {
+                        'width': 20,
+                        'height': 20,
+                        'background-color': '#ffb836',
+                        'label': 'data(last_name)',
+                        'text-opacity': 1,
+                        'text-wrap': 'ellipsis',
+                        'text-max-width': '50',
+                        'text-background-color': '#FFFFFF',
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '10px',
+                        'border-width': '1.5px',
+                        'border-color': "#9d8b71",
+                        'visibility': 'visible'
+
+                    },
+
+                },
+                {
+                    selector: 'node[type="Venue"]',
+                    style: {
+                        'width': 20,
+                        'height': 20,
+                        'background-color': '#d97fff',
+                        'label': 'data(title)',
+                        'text-opacity': 1,
+                        'text-wrap': 'ellipsis',
+                        'text-max-width': '50',
+                        'text-background-color': '#FFFFFF',
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '10px',
+                        'border-width': '1.5px',
+                        'border-color': "#9d8b71",
+                        'visibility': 'visible'
+
+                    },
+
+                },
+                {
+                    selector: 'node[type="Dataset"]',
+                    style: {
+                        'width': 20,
+                        'height': 20,
+                        'background-color': '#ff723d',
+                        'label': 'data(title)',
+                        'text-opacity': 1,
+                        'text-wrap': 'ellipsis',
+                        'text-max-width': '50',
+                        'text-background-color': '#FFFFFF',
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '10px',
+                        'border-width': '1.5px',
+                        'border-color': "#9d8b71",
+                        'visibility': 'visible'
+
+                    },
+
+                },
+                {
+                    selector: 'node[type="Code"]',
+                    style: {
+                        'width': 20,
+                        'height': 20,
+                        'background-color': '#59d143',
+                        'label': 'data(title)',
+                        'text-opacity': 1,
+                        'text-wrap': 'ellipsis',
+                        'text-max-width': '50',
+                        'text-background-color': '#FFFFFF',
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '10px',
+                        'border-width': '1.5px',
+                        'border-color': "#9d8b71",
+                        'visibility': 'visible'
+
+                    },
+
+                },
+                {
+                    selector: 'edge[label="cites"]',
+                    style: {
+                        'width': 5,
+                        'label': 'data(label)',
+                        'line-color': '#2bd6ad',
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#2bd6ad',
+                        'target-arrow-shape': 'triangle',
+                        'text-opacity': 1,
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '9px',
+                        'visibility': 'visible'
+
+                    }
+                },
+                {
+                    selector: 'edge[label="uses"]',
+                    style: {
+                        'width': 5,
+                        'label': 'data(label)',
+                        'line-color': '#4a8ee7',
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#4a8ee7',
+                        'target-arrow-shape': 'triangle',
+                        'text-opacity': 1,
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '9px',
+                        'visibility': 'visible'
+
+                    }
+                },
+                {
+                    selector: 'edge[label="extends"]',
+                    style: {
+                        'width': 5,
+                        'label': 'data(label)',
+                        'line-color': '#31c5ff',
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#31c5ff',
+                        'target-arrow-shape': 'triangle',
+                        'text-opacity': 1,
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '9px',
+                        'visibility': 'visible'
+
+                    }
+                },
+                {
+                    selector: 'edge[label="authors"]',
+                    style: {
+                        'width': 5,
+                        'label': 'data(label)',
+                        'line-color': '#ffb836',
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#ffb836',
+                        'target-arrow-shape': 'triangle',
+                        'text-opacity': 1,
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '9px',
+                        'visibility': 'visible'
+
+                    }
+                },
+                {
+                    selector: 'edge[label="evaluates on"]',
+                    style: {
+                        'width': 5,
+                        'label': 'data(label)',
+                        'line-color': '#ff723d',
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#ff723d',
+                        'target-arrow-shape': 'triangle',
+                        'text-opacity': 1,
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '9px',
+                        'visibility': 'visible'
+
+                    }
+                },
+                {
+                    selector: 'edge[label="was published at"]',
+                    style: {
+                        'width': 5,
+                        'label': 'data(label)',
+                        'line-color': '#d97fff',
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#d97fff',
+                        'target-arrow-shape': 'triangle',
+                        'text-opacity': 1,
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '9px',
+                        'visibility': 'visible'
+
+                    }
+                },
+                {
+                    selector: 'edge[label="implements"]',
+                    style: {
+                        'width': 5,
+                        'label': 'data(label)',
+                        'line-color': '#59d143',
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#59d143',
+                        'target-arrow-shape': 'triangle',
+                        'text-opacity': 1,
+                        'text-outline-opacity': 1,
+                        'text-outline-color': '#FFFFFF',
+                        'text-outline-width': '1px',
+                        'font-size': '9px',
+                        'visibility': 'visible'
+
+                    }
+                }
+            ],
+
+        });
+
+        // timeout for delaying tooltip
+        var time_out = 1000;
+        cy.on('click', 'node', function (evt) {
+            var node = evt.target;
+            console.log('tapped ' + node.data('href'));
+            try {
+                window.open(node.data('href'), '_self');
+            } catch (e) {
+                window.location.href = node.data('href');
+            }
+        })
+
+            .on('mouseover', 'node', function (evt) {
+                var node = evt.target;
+                node.style('opacity', 0.8);
+
+                hoverTimeout = setTimeout(function () {
+                    var px = node.renderedPosition('x');
+                    var py = node.renderedPosition('y');
+
+                    var tip_item = "";
+
+                    var span = document.createElement("span");
+                    if (node.data('type') === 'Person') {
+                        // combine individual names to one
+                        tip_item = node.data('first_name') + node.data('middle_name') + ' ' + node.data('last_name');
+                    }
+
+                    if (node.data('type') === 'Paper' || node.data('type') === 'Venue' || node.data('type') === 'Dataset') {
+                        tip_item = node.data('title')
+                    }
+
+                    span.innerHTML = tip_item;
+                    if (tip_item.length > 0) {
+
+                        $("#cy").append("<div id='tooltip'></div>");
+
+                        // css for tooltip
+                        $('#tooltip').append(span).css({
+                            "display": "block",
+                            "max-width": "200px",
+                            "margin": 0,
+                            "height": "auto",
+                            "position": "absolute",
+                            "padding": "5px",
+                            "left": px,
+                            "top": py,
+                            "background-color": "#f2e5b8",
+                            "z-index": 1000,
+                            "border-radius": "6px",
+                            "opacity": 0.9,
+                            "text-align": "left"
+                        });
+                    }
+                    $('#tooltip span'.css({
+                        "margin": 0,
+                    }))
+
+                }, time_out);
+
+            })
+
+            // remove tooltip on mouseout
+            .on('mouseout', 'node', function (evt) {
+                clearTimeout(hoverTimeout);
+                var node = evt.target;
+                node.style('opacity', 1);
+                $('#tooltip').remove();
+
+            })
+
+            // graph components changes color to reflect hovering
+            .on('mouseover', 'edge', function (evt) {
+                var edge = evt.target;
+                edge.style('opacity', 0.8);
+
+            })
+            .on('mouseout', 'edge', function (evt) {
+                var edge = evt.target;
+                edge.style('opacity', 1);
+
+            })
+
+    </script>
 
 {% endblock %}

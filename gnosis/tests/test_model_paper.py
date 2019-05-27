@@ -5,6 +5,7 @@ from neomodel.exceptions import RequiredProperty
 
 
 # Create your tests here.
+# To run this test, use command: py -3 manage.py test tests.test_model_people
 class PaperModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -20,12 +21,14 @@ class PaperModelTest(TestCase):
         paper.abstract = "The abstract is missing."
         paper.keywords = ""
         paper.download_link = "https://google.com"
+        paper.id = "01"
 
         self.assertEquals(paper.title, "No title")
         self.assertEquals(paper.__str__(), "No title")
         self.assertEquals(paper.abstract, "The abstract is missing.")
         self.assertEquals(paper.download_link, "https://google.com")
         self.assertEquals(len(paper.keywords), 0)
+        url = paper.get_absolute_url()
 
         paper = Paper()
         paper.abstract = "The abstract is missing."
@@ -68,6 +71,12 @@ class PaperModelTest(TestCase):
         Testing if the same paper can be added twice.
         For this test, a neo4j database must be running
         """
+        papers = Paper.nodes.filter(title="No title")
+
+        # delete the paper from the DB
+        for paper in papers:
+            paper.delete()
+
         paper = Paper(
             title="No title",
             abstract="The abstract is missing.",
@@ -98,13 +107,14 @@ class PaperModelTest(TestCase):
 
         self.assertTrue(paper)
 
-        # This will not create an entry in the db.
+        # This will create an entry in the db.
         paper.save()
 
         papers = Paper.nodes.filter(title="No title")
         self.assertEquals(len(papers), 2)
 
         for paper in papers:
+            print(paper)
             paper.delete()
 
         papers = Paper.nodes.filter(title="No title")
@@ -112,6 +122,12 @@ class PaperModelTest(TestCase):
 
     def test_create_delete_in_db(self):
         """ For this test, a neo4j database must be running """
+        papers = Paper.nodes.filter(title="No title")
+
+        # delete the paper from the DB
+        for paper in papers:
+            paper.delete()
+
         paper = Paper(
             title="No title",
             abstract="The abstract is missing.",
@@ -131,7 +147,9 @@ class PaperModelTest(TestCase):
         self.assertEquals(len(papers), 1)
 
         # delete the paper from the DB
-        papers[0].delete()
+        for paper in papers:
+            print(paper)
+            paper.delete()
 
         # check if the paper was indeed deleted
         papers = Paper.nodes.filter(title="No title")

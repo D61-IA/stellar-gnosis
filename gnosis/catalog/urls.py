@@ -23,7 +23,7 @@ urlpatterns += [
     path('paper/<int:id>/authors', views.paper_authors, name='paper_authors'),
     path('paper/<int:id>/remove/author/<int:rid>', views.paper_remove_author, name='paper_remove_author'),
     path('paper/create/', views.paper_create, name='paper_create'),
-    path('paper/import/', views.paper_create_from_arxiv, name='paper_create_from_arxiv'),
+    path('paper/import/', views.paper_create_from_url, name='paper_create_from_url'),
     path('paper/find/', views.paper_find, name='paper_find'),
 ]
 

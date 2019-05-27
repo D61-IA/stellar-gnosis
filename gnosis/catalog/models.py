@@ -18,6 +18,9 @@ class Paper(DjangoNode):
     abstract = StringProperty(required=True)
     keywords = StringProperty(required=False)
     download_link = StringProperty(required=True)
+    # added source link for a paper to record the source website which the information of paper is collected
+    source_link = StringProperty(required=False)
+
 
     # Links
     cites = RelationshipTo("Paper", "cites")
@@ -64,7 +67,8 @@ class Person(DjangoNode):
         ordering = ['last_name', 'first_name', 'affiliation']
 
     def __str__(self):
-        if self.middle_name is not None or len(self.middle_name) > 0:
+
+        if self.middle_name is not None and len(self.middle_name) > 0:
             return '{} {} {}'.format(self.first_name, self.middle_name, self.last_name)
         return '{} {}'.format(self.first_name, self.last_name)
 

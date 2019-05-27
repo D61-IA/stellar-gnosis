@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'el_pagination',
     'catalog.apps.CatalogConfig',
     'home.apps.HomeConfig',
+    'django_nose',
 ]
 
 MIDDLEWARE = [
@@ -130,8 +131,22 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
 # After user login, she will be re-directed to home page instead of accounts/profile
 LOGIN_REDIRECT_URL = '/'
 
 # This is for checking the password reset email when the email server is not configured
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage on the 'catalogue' app
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=catalog',
+    '--cover-html',
+]
