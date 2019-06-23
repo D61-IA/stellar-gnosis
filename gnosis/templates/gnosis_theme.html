@@ -18,7 +18,15 @@
     <script src="{% static "js/cytoscape-cola.js" %}"></script>
 
 </head>
+{% load static %}
  <style>
+ body {
+    background-image: url("{% static "papyrus-bg.jpg" %}");
+ }
+
+#footer_theme{
+background: white;
+}
         .max-width {
             max-width: 1024px;
         }
@@ -174,7 +182,7 @@
 
 
 <!-- Footer -->
-<footer class="page-footer text-center font-small blue pt-4 mt-5">
+<footer class="page-footer text-center font-small blue pt-4 mt-5"  id="footer_theme">
     {% block footer %}
     {% endblock %}
     {% load static %}
