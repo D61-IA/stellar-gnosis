@@ -56,3 +56,4 @@ def get_paper_authors(paper):
     authors = ['{}. {}'.format(author.first_name[0], author.last_name) for author in authors]
 
     return authors
+

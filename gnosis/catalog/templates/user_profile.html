@@ -1,0 +1,20 @@
+{% extends "gnosis_theme.html" %}
+
+{% block content %}
+{% load el_pagination_tags %}
+
+<div class="card shadow-sm mt-5">
+    <div class="card-header">
+        <h3>
+            {% if user.is_authenticated %}
+            {{ user }}
+            {% endif %}
+        </h3>
+    </div>
+    <div class="card-body">
+        <p><strong>Bio:</strong> {{ user.userprofile.bio }}</p>
+        <p><strong>Job Description:</strong> {{ user.userprofile.job_description }}</p>
+    </div>
+</div>
+
+{% endblock %}

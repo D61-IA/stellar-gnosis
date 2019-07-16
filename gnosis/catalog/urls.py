@@ -100,3 +100,8 @@ urlpatterns += [
     # path('collection/<int:id>/entry/<int:eid>/update', views.collection_entry_update, name='collection_entry_update'),
     path('collection/<int:id>/entry/<int:eid>/remove', views.collection_entry_remove, name='collection_entry_remove'),
 ]
+
+#
+urlpatterns += [
+    path('user/profile', views.user_profile, name='profile'),
+]
