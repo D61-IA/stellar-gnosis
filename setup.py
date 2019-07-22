@@ -9,7 +9,7 @@ URL = "https://github.com/stellargraph/stellar-gnosis"
 
 setuptools.setup(
     name="gnosis",
-    version="0.3.0",
+    version="0.3.1b",
     author="Pantelis Elinas, Data61, CSIRO",
     author_email="pantelis.elinas@data61.csiro.au",
     url=URL,
