@@ -7,7 +7,7 @@ var resizeTimer;
 $(window).on('resize', function (e) {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-        center()
+        center();
         // Run code here, resizing has "stopped"
     }, 250);
 
