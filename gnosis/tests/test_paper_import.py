@@ -161,6 +161,7 @@ class PaperImport(TestCase):
             "https://ieeexplore.ieee.org/document/8290763",  # paper from 2018
             "https://ieeexplore.ieee.org/document/6681893",  # paper from 2013
             "https://ieeexplore.ieee.org/document/4501646",  # paper from 1965
+            "https://ieeexplore.ieee.org/abstract/document/6472238",  # same as without abstract
             # ACM papers
             "https://dl.acm.org/citation.cfm?id=3239571",   # article
             "https://dl.acm.org/citation.cfm?id=2804405",   # article

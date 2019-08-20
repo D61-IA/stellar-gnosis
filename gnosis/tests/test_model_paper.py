@@ -1,7 +1,10 @@
 from django.test import TestCase
 
-from catalog.models import Paper
+from catalog.models import Paper, Person, Dataset, Venue, Code
 from neomodel.exceptions import RequiredProperty
+from neomodel import db
+
+import datetime
 
 
 # Create your tests here.
@@ -65,6 +68,69 @@ class PaperModelTest(TestCase):
             assert True
         else:
             assert False
+
+    # !!!!!!!!! THIS TEST WILL REMOVE PREVIOUS DUMMY DATA AND ANYTHING ASSOCIATED WITH DUMMY PAPER 'MAIN' !!!!!!!
+    # def test_create_dummy_data(self):
+    #     """
+    #     create dummy papers for testing purposes
+    #     """
+    #     query = "MATCH (s:Paper {title: 'main'}) -- (p) DETACH DELETE p, s"
+    #     # query = "MATCH (n) DETACH DELETE n"
+    #     results, meta = db.cypher_query(query)
+    #
+    #     main_paper = Paper()
+    #     main_paper.title = "main"
+    #     main_paper.abstract = "This main paper has fewer connections"
+    #     main_paper.download_link = "www.main.com"
+    #     main_paper.save()
+    #
+    #     for i in range(20):
+    #         venue = Venue()
+    #         venue.name = "Venue " + str(i)
+    #         venue.publisher = "Publisher"
+    #         venue.publication_date = datetime.date.today()
+    #         venue.type = "O"
+    #         venue.peer_reviewed = "Y"
+    #         venue.keywords = "Test venues"
+    #         venue.save()
+    #         main_paper.was_published_at.connect(venue)
+    #
+    #     for i in range(50):
+    #         paper = Paper()
+    #         title = "Paper " + str(i)
+    #         abstract = "Abstract " + str(i)
+    #         download_link = "www.DownloadLink" + str(i) + ".com"
+    #         paper.title = title
+    #         paper.abstract = abstract
+    #         paper.keywords = "k"
+    #         paper.download_link = download_link
+    #         paper.save()
+    #         paper.cites.connect(main_paper)
+    #
+    #     for i in range(30):
+    #         code = Code()
+    #         code.website = "www.DownloadLink" + str(i) + ".com"
+    #         code.keywords = "Test code"
+    #         code.description = "This is test code"
+    #         code.save()
+    #         code.implements.connect(main_paper)
+    #
+    #     for i in range(30):
+    #         dataset = Dataset()
+    #         dataset.name = "Dataset " + str(i)
+    #         dataset.description = "Description " + str(i)
+    #         dataset.keywords = "k"
+    #         dataset.source_type = "N"
+    #         dataset.save()
+    #         main_paper.published.connect(dataset)
+    #
+    #     for i in range(30):
+    #         person = Person()
+    #         person.first_name = "FirstName"
+    #         person.last_name = "Author " + str(i)
+    #         person.middle_name = "FirstName " + "Author " + str(i)
+    #         person.save()
+    #         person.authors.connect(main_paper)
 
     def test_create_duplicate(self):
         """

@@ -9,21 +9,21 @@
             <h4>
                 <a href={{ paper.download_link }} class="btn btn-primary" role="button" target="_blank">Download</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
-                                                 role="button">
-                    Add to Group</a>
-                <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
-                                                 role="button">
-                    Add to Collection</a>
-                <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
-                                                 role="button">
-                    Edit</a>
+                    <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
+                       role="button">
+                        Add to Group</a>
+                    <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
+                       role="button">
+                        Add to Collection</a>
+                    <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
+                       role="button">
+                        Edit</a>
                 {% endif %}
             </h4>
         </div>
         <div class="card-body">
             <h5 class="text-left">
-                {{ authors }} {% if user.is_authenticated and user.is_superuser and authors%}<a
+                {{ authors }} {% if user.is_authenticated and user.is_superuser and authors %}<a
                     href="{% url 'paper_authors' id=paper.id %}"
                     class="btn btn-danger btn-sm" role="button">
                 Edit</a>{% endif %}
@@ -80,49 +80,70 @@
         <div class="card-header">
             <div style="display: inline-flex; width: 100%; justify-content: space-between">
                 <h4>Ego-graph</h4>
-                <button style="width: 165px" type="button"
-                        class="btn btn-primary toggle ego-button"
-                        data-toggle="button"
-                        aria-pressed="false" autocomplete="off" onclick="toggle_relas()">
-                    Hide relationships
-                </button>
 
-                <button type="button"
-                        class="btn btn-primary ego-button"
-                        onclick="center()">
-                    Center
-                </button>
+                <div>
+                    <button class="btn btn-primary" id="menu-button" title="Hide add-ons" onclick="toggle_options()">
+                        Hide
+                    </button>
 
-                <button type="button"
-                        class="btn btn-primary ego-button"
-                        onclick="reset()">
-                    Reset
-                </button>
-                <label for="graphfilter"></label>
-                <select id="graphfilter"
-                        onchange="show_cites(this.value)">
-                    <option value="all relationships"> - all relationships -</option>
-                    <option value="cites"> - cites -</option>
-                    <option value="uses"> - uses -</option>
-                    <option value="extends"> - extends -</option>
-                    <option value="authors"> - authors -</option>
-                    <option value="was published at"> - was published at -</option>
-                    <option value="evaluates on"> - evaluates on -</option>
-                    <option value="implements"> - implements -</option>
-
-                </select>
+{#                    dropdown menu in header #}
+                    <label for="graphfilter"></label>
+                    <select id="graphfilter"
+                            onchange="show_cites(this.value)">
+                        <option value="all relationships"> mixed</option>
+                        <option value="cites"> cites</option>
+                        <option value="uses"> uses</option>
+                        <option value="extends"> extends</option>
+                        <option value="authors"> authors</option>
+                        <option value="was published at"> was published at</option>
+                        <option value="evaluates on"> evaluates on</option>
+                        <option value="published"> published</option>
+                        <option value="implements"> implements</option>
+                    </select>
+                </div>
             </div>
 
         </div>
 
         <div class="card-body">
-            <fieldset style="position: absolute; z-index: 1000; left: 20px;">
-                <span class="color_legend paper"></span> Paper <br>
-                <span class="color_legend person"></span> Person<br>
-                <span class="color_legend venue"></span> Venue<br>
-                <span class="color_legend dataset"></span> Dataset<br>
-                <span class="color_legend code"></span> Code<br>
-            </fieldset>
+            <div class="graph-adder">
+{#                legend #}
+                <fieldset style="position: absolute; z-index: 1000; left: 20px;">
+                    <span class="color_legend dataset"></span> Dataset <br>
+                    <span class="color_legend person"></span> Person <br>
+                    <span class="color_legend venue"></span> Venue <br>
+                    <span class="color_legend paper"></span> Paper <br>
+                    <span class="color_legend code"></span> Code <br>
+                </fieldset>
+
+{#                add-on buttons #}
+                <div style="position: absolute; z-index: 1000; right: 20px; display: inline-flex; flex-direction: column">
+                    <button type="button"
+                            class="btn btn-primary ego-button" title="Hide relationships"
+                            data-toggle="button"
+                            aria-pressed="false" onclick="toggle_relas()">
+                        <i class="material-icons" id="rela_toggle">
+                            visibility
+                        </i>
+                    </button>
+
+{#                    <button type="button"#}
+{#                            class="btn btn-primary ego-button" title="Center"#}
+{#                            onclick="center()">#}
+{#                        <i class="material-icons">#}
+{#                            center_focus_strong#}
+{#                        </i>#}
+{#                    </button>#}
+
+                    <button type="button"
+                            class="btn btn-primary ego-button" title="Reset"
+                            onclick="reset_layout()">
+                        <i class="material-icons">
+                            refresh
+                        </i>
+                    </button>
+                </div>
+            </div>
 
             <div id="cy">
             </div>
@@ -157,426 +178,216 @@
                     {% endfor %}
             </div>
         </div>
-        </div>
     {% endif %}
 
-    <script type="text/javascript">
+    {% load static %}
+    <script>
+        // concentric level value
+        var paper_count = 50;
 
-        // auto-centering the graph when browser is resized
-        $(window).resize(function () {
-            cy.center();
-        });
+        // define layout options
+        var layout = {
+            name: 'concentric',
+            concentric: (node) => {
+                if (node.data('label') === "origin") return 1000;
+                // all levels have the same value => one big circle only
+                return paper_count;
+            },
+            padding: 20,
+            startAngle: 2 * Math.PI,
+            minNodeSpacing: 30
+        };
 
-        var main_paper_id = '{{ main_paper_id }}';
+        // node title width
+        var textMaxWidth = '80';
 
-        var hide_rela = false;
+        var defaultNodeStyle = {
+            'width': 20,
+            'height': 20,
+            'background-color': '#39acff',
+            'label': 'data(title)',
+            'text-opacity': 1,
+            'text-wrap': 'ellipsis',
+            'text-max-width': textMaxWidth,
+            'text-background-color': '#FFFFFF',
+            'text-outline-opacity': 1,
+            'text-outline-color': '#FFFFFF',
+            'text-outline-width': '1px',
+            'font-size': '10px',
+            'border-width': '1.5px',
+            'border-color': "#9d8b71",
+            'visibility': 'visible'
 
-        // function for toggle relationships button
-        function toggle_relas() {
-            hide_rela = !hide_rela;
-            if (hide_rela) {
-                cy.style().selector('edge').style('label', '').update();
-                $(".toggle").text("Show relationships");
-            } else {
-                cy.style().selector('edge').style('label', 'data(label)').update();
-                $(".toggle").text("Hide relationships");
-            }
-        }
+        };
 
-        // center button
-        function center() {
-            cy.animate({
-                center: cy.nodes(),
-                fit: {eles: cy.nodes(), padding: 50},
-                duration: 50,
-            });
-        }
+        var defaultEdgeStyle = {
+            'width': 2,
+            'label': 'data(label)',
+            'line-color': '#2bd6ad',
+            'line-style': 'data(line)',
+            'curve-style': 'bezier',
+            'target-arrow-color': '#2bd6ad',
+            'target-arrow-shape': 'triangle',
+            'text-opacity': 1,
+            'text-outline-opacity': 1,
+            'text-outline-color': '#FFFFFF',
+            'text-outline-width': '1px',
+            'font-size': '9px',
+            'visibility': 'visible'
 
-        function reset_layout() {
-            var layout = cy.layout({
-                name: 'cola',
-            });
-            layout.run();
-        }
+        };
 
-        // reset button
-        function reset() {
-            reset_layout();
-        }
-
-        // dropdown menu
-        function show_cites(value) {
-
-            var cat = value;
-            //document.write('node[label="'+cat+'"]');
-            if (cat === "all relationships") {
-                cy.style().selector('node').style('visibility', 'visible').update();
-                cy.style().selector('edge').style('visibility', 'visible').update();
-            } else {
-                cy.style().selector('node').style('visibility', 'hidden').update();
-                cy.style().selector('edge').style('visibility', 'hidden').update();
-                cy.style().selector('node[label="' + cat + '"]').style('visibility', 'visible').update();
-                cy.style().selector('edge[label="' + cat + '"]').style('visibility', 'visible').update();
-                cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
-            }
-
-        }
-
-        var cy = cytoscape({
+        cy = cytoscape({
             container: document.getElementById('cy'), // container to render in
             elements: {{ ego_network | safe }},
-            wheelSensitivity: 0.2,
 
+            // mouse wheel sensitivity, used for zooming
+            wheelSensitivity: 0.1,
 
-            layout:
-                {
-                    name: 'cola'
-                },
+            layout: layout,
+
+            // max zoom factor
+            maxZoom: 2.0,
 
             style: [ // styling the graph
                 {
                     selector: 'node[type="Paper"]',
                     style: {
-                        'width': 20,
-                        'height': 20,
+                        ...defaultNodeStyle,
                         'background-color': '#39acff',
-                        'label': 'data(title)',
-                        'text-opacity': 1,
-                        'text-wrap': 'ellipsis',
-                        'text-max-width': '50',
-                        'text-background-color': '#FFFFFF',
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '10px',
-                        'border-width': '1.5px',
-                        'border-color': "#9d8b71",
-                        'visibility': 'visible'
-
                     },
 
                 },
                 {
-                    selector: 'node[id="' + main_paper_id + '"]',
+                    selector: 'node[label="origin"]',
                     style: {
+                        ...defaultNodeStyle,
                         'width': 30,
                         'height': 30,
                         'background-color': '#39acff',
-                        'label': 'data(title)',
-                        'text-opacity': 1,
-                        'text-wrap': 'ellipsis',
-                        'text-max-width': '50',
-                        'text-background-color': '#FFFFFF',
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '10px',
-                        'border-width': '1.5px',
-                        'border-color': "#9d8b71"
                     }
                 },
                 {
                     selector: 'node[type="Person"]',
                     style: {
-                        'width': 20,
-                        'height': 20,
+                        ...defaultNodeStyle,
                         'background-color': '#ffb836',
                         'label': 'data(last_name)',
-                        'text-opacity': 1,
-                        'text-wrap': 'ellipsis',
-                        'text-max-width': '50',
-                        'text-background-color': '#FFFFFF',
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '10px',
-                        'border-width': '1.5px',
-                        'border-color': "#9d8b71",
-                        'visibility': 'visible'
-
                     },
 
                 },
                 {
                     selector: 'node[type="Venue"]',
                     style: {
-                        'width': 20,
-                        'height': 20,
+                        ...defaultNodeStyle,
                         'background-color': '#d97fff',
-                        'label': 'data(title)',
-                        'text-opacity': 1,
-                        'text-wrap': 'ellipsis',
-                        'text-max-width': '50',
-                        'text-background-color': '#FFFFFF',
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '10px',
-                        'border-width': '1.5px',
-                        'border-color': "#9d8b71",
-                        'visibility': 'visible'
-
                     },
 
                 },
                 {
                     selector: 'node[type="Dataset"]',
                     style: {
-                        'width': 20,
-                        'height': 20,
+                        ...defaultNodeStyle,
                         'background-color': '#ff723d',
-                        'label': 'data(title)',
-                        'text-opacity': 1,
-                        'text-wrap': 'ellipsis',
-                        'text-max-width': '50',
-                        'text-background-color': '#FFFFFF',
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '10px',
-                        'border-width': '1.5px',
-                        'border-color': "#9d8b71",
-                        'visibility': 'visible'
-
                     },
 
                 },
                 {
                     selector: 'node[type="Code"]',
                     style: {
-                        'width': 20,
-                        'height': 20,
+                        ...defaultNodeStyle,
                         'background-color': '#59d143',
-                        'label': 'data(title)',
-                        'text-opacity': 1,
-                        'text-wrap': 'ellipsis',
-                        'text-max-width': '50',
-                        'text-background-color': '#FFFFFF',
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '10px',
-                        'border-width': '1.5px',
-                        'border-color': "#9d8b71",
-                        'visibility': 'visible'
-
                     },
 
                 },
                 {
+                    selector: 'node[type="Comment"]',
+                    style: {
+                        ...defaultNodeStyle,
+                        'background-color': '#9d8b71',
+                    }
+                },
+                {
                     selector: 'edge[label="cites"]',
                     style: {
-                        'width': 5,
-                        'label': 'data(label)',
+                        ...defaultEdgeStyle,
                         'line-color': '#2bd6ad',
-                        'curve-style': 'bezier',
                         'target-arrow-color': '#2bd6ad',
-                        'target-arrow-shape': 'triangle',
-                        'text-opacity': 1,
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '9px',
-                        'visibility': 'visible'
-
                     }
                 },
                 {
                     selector: 'edge[label="uses"]',
                     style: {
-                        'width': 5,
-                        'label': 'data(label)',
+                        ...defaultEdgeStyle,
                         'line-color': '#4a8ee7',
-                        'curve-style': 'bezier',
                         'target-arrow-color': '#4a8ee7',
-                        'target-arrow-shape': 'triangle',
-                        'text-opacity': 1,
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '9px',
-                        'visibility': 'visible'
-
                     }
                 },
                 {
                     selector: 'edge[label="extends"]',
                     style: {
-                        'width': 5,
-                        'label': 'data(label)',
+                        ...defaultEdgeStyle,
                         'line-color': '#31c5ff',
-                        'curve-style': 'bezier',
                         'target-arrow-color': '#31c5ff',
-                        'target-arrow-shape': 'triangle',
-                        'text-opacity': 1,
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '9px',
-                        'visibility': 'visible'
-
                     }
                 },
                 {
                     selector: 'edge[label="authors"]',
                     style: {
-                        'width': 5,
-                        'label': 'data(label)',
+                        ...defaultEdgeStyle,
                         'line-color': '#ffb836',
-                        'curve-style': 'bezier',
                         'target-arrow-color': '#ffb836',
-                        'target-arrow-shape': 'triangle',
-                        'text-opacity': 1,
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '9px',
-                        'visibility': 'visible'
-
                     }
                 },
                 {
                     selector: 'edge[label="evaluates on"]',
                     style: {
-                        'width': 5,
-                        'label': 'data(label)',
+                        ...defaultEdgeStyle,
                         'line-color': '#ff723d',
-                        'curve-style': 'bezier',
                         'target-arrow-color': '#ff723d',
-                        'target-arrow-shape': 'triangle',
-                        'text-opacity': 1,
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '9px',
-                        'visibility': 'visible'
-
+                    }
+                },
+                {
+                    selector: 'edge[label="published"]',
+                    style: {
+                        ...defaultEdgeStyle,
+                        'line-color': '#ff607a',
+                        'target-arrow-color': '#ff607a',
                     }
                 },
                 {
                     selector: 'edge[label="was published at"]',
                     style: {
-                        'width': 5,
-                        'label': 'data(label)',
+                        ...defaultEdgeStyle,
                         'line-color': '#d97fff',
-                        'curve-style': 'bezier',
                         'target-arrow-color': '#d97fff',
-                        'target-arrow-shape': 'triangle',
-                        'text-opacity': 1,
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '9px',
-                        'visibility': 'visible'
-
                     }
                 },
                 {
                     selector: 'edge[label="implements"]',
                     style: {
-                        'width': 5,
-                        'label': 'data(label)',
+                        ...defaultEdgeStyle,
                         'line-color': '#59d143',
-                        'curve-style': 'bezier',
                         'target-arrow-color': '#59d143',
-                        'target-arrow-shape': 'triangle',
-                        'text-opacity': 1,
-                        'text-outline-opacity': 1,
-                        'text-outline-color': '#FFFFFF',
-                        'text-outline-width': '1px',
-                        'font-size': '9px',
-                        'visibility': 'visible'
-
+                    }
+                },
+                {
+                    selector: 'edge[label="discusses"]',
+                    style: {
+                        ...defaultEdgeStyle,
+                        'line-color': '#9d8b71',
+                        'target-arrow-color': '#9d8b71',
                     }
                 }
             ],
 
         });
-        // interactivity with the ego graph
-        // timeout for delaying tooltip
-        var time_out = 1000;
-        cy.on('click', 'node', function (evt) {
-            var node = evt.target;
-            console.log('tapped ' + node.data('href'));
-            try {
-                window.open(node.data('href'), '_self');
-            } catch (e) {
-                window.location.href = node.data('href');
-            }
-        })
 
-            .on('mouseover', 'node', function (evt) {
-                var node = evt.target;
-                node.style('opacity', 0.8);
-
-                hoverTimeout = setTimeout(function () {
-                    var px = node.renderedPosition('x');
-                    var py = node.renderedPosition('y');
-
-                    var tip_item = "";
-
-                    var span = document.createElement("span");
-                    // what is shown on the tooltip
-                    if (node.data('type') === 'Person') {
-                        // combine individual names to one
-                        tip_item = node.data('first_name') + node.data('middle_name') + ' ' + node.data('last_name');
-                    }
-                    // for paper showing title only
-                    if (node.data('type') === 'Paper' || node.data('type') === 'Venue' || node.data('type') === 'Dataset') {
-                        tip_item = node.data('title')
-                    }
-
-                    span.innerHTML = tip_item;
-                    if (tip_item.length > 0) {
-
-                        $("#cy").append("<div id='tooltip'></div>");
-
-                        // css for tooltip
-                        $('#tooltip').append(span).css({
-                            "display": "block",
-                            "max-width": "200px",
-                            "margin": 0,
-                            "height": "auto",
-                            "position": "absolute",
-                            "padding": "5px",
-                            "left": px,
-                            "top": py,
-                            "background-color": "#f2e5b8",
-                            "z-index": 1000,
-                            "border-radius": "6px",
-                            "opacity": 0.9,
-                            "text-align": "left"
-                        });
-                    }
-                    $('#tooltip span').css({
-                        "margin": 0,
-                    })
-
-                }, time_out);
-
-            })
-
-            // remove tooltip on mouseout
-            .on('mouseout', 'node', function (evt) {
-                clearTimeout(hoverTimeout);
-                var node = evt.target;
-                node.style('opacity', 1);
-                $('#tooltip').remove();
-
-            })
-
-            // graph components changes color to reflect hovering
-            .on('mouseover', 'edge', function (evt) {
-                var edge = evt.target;
-                edge.style('opacity', 0.8);
-
-            })
-            .on('mouseout', 'edge', function (evt) {
-                var edge = evt.target;
-                edge.style('opacity', 1);
-
-            })
+        // setting the minimum zoom factor to 50% of its initial zoom
+        cy.minZoom(cy.zoom()* 0.5);
 
     </script>
+
+    <script src="{% static "js/ego-graph.js" %}"></script>
 
 {% endblock %}
