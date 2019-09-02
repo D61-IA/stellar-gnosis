@@ -42,7 +42,7 @@ def codes(request):
 
 def code_detail(request, id):
     # Retrieve the paper from the database
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Code) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         # There should be only one result because ID should be unique. Here we check that at
@@ -141,7 +141,7 @@ def code_create(request):
 def code_update(request, id):
     # retrieve code node by ID
     # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Code) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         codes = [Code.inflate(row[0]) for row in results]
@@ -161,7 +161,7 @@ def code_update(request, id):
             return HttpResponseRedirect(reverse("codes_index"))
     # GET request
     else:
-        query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+        query = "MATCH (a:Code) WHERE ID(a)={id} RETURN a"
         results, meta = db.cypher_query(query, dict(id=id))
         if len(results) > 0:
             codes = [Code.inflate(row[0]) for row in results]
