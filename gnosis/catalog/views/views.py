@@ -135,6 +135,8 @@ def papers(request):
     )
 
 
+
+
 def paper_authors(request, id):
     """Displays the list of authors associated with this paper"""
     relationship_ids = []
@@ -1241,6 +1243,8 @@ def get_authors(bs4obj, source_website):
         return get_authors_from_nips(bs4obj)
     elif source_website == "jmlr":
         return get_authors_from_jmlr(bs4obj)
+    elif source_website == "pmlr":
+        return get_authors_from_pmlr(bs4obj)
     elif source_website == "ieee":
         return get_authors_from_IEEE(bs4obj)
     elif source_website == "acm":
@@ -1261,6 +1265,9 @@ def get_title(bs4obj, source_website):
         titleList = bs4obj.findAll("title")
     elif source_website == "jmlr":
         titleList = bs4obj.findAll("h2")
+    elif source_website == "pmlr":
+        title = bs4obj.find("title").get_text()
+        return title
     elif source_website == "ieee":
         title = bs4obj.find("title").get_text()
         i = title.find("- IEEE")
@@ -1308,14 +1315,9 @@ def get_abstract(bs4obj, source_website):
         if abstract is not None:
             abstract = abstract.get_text()
     elif source_website == "jmlr":
-        abstract = bs4obj.find("p", {"class": "abstract"})
-        if abstract is not None:
-            abstract = abstract.get_text()
-        else:
-            # for some papers from JMLR , the abstract is stored without a tag,so this will find the abstract
-            abstract = bs4obj.find("h3")
-            if abstract is not None:
-                abstract = abstract.next_sibling
+        abstract = get_abstract_from_jmlr(bs4obj)
+    elif source_website == "pmlr":
+        abstract = bs4obj.find("div", {"id":"abstract"}).get_text().strip()
     elif source_website == "ieee":
         abstract = get_abstract_from_IEEE(bs4obj)
     elif source_website == "acm":
@@ -1363,6 +1365,8 @@ def get_download_link(bs4obj, source_website, url):
         print(download_link)
         if download_link.startswith("/papers/"):
             download_link = "http://www.jmlr.org" + download_link
+    elif source_website == "pmlr":
+        download_link = bs4obj.find("a", string="Download PDF")['href']
     elif source_website == "ieee":
         download_link = get_ddl_from_IEEE(bs4obj)
     elif source_website == "acm":

@@ -101,6 +101,11 @@ class PaperImport(TestCase):
             "http://www.jmlr.org/author-info.html",   # author info
             "http://www.jmlr.org/papers/",             # paper selection
             "http://www.jmlr.org/papers/v13/",        # volume selection
+            # PMLR urls
+            "http://proceedings.mlr.press/",  # homepage of pmlr
+            "http://proceedings.mlr.press/v77/" , # volume page
+            "http://proceedings.mlr.press/faq.html", # faq page
+
             # IEEE urls
             "https://www.ieee.org/",                               # homepage of IEEE
             "https://www.ieee.org/membership/join/index.html",  # member page
@@ -111,7 +116,6 @@ class PaperImport(TestCase):
             "https://ieeexplore.ieee.org/search/searchresult.jsp?contentType=books&newsearch=true&queryText=smart", # search result page
             "https://ieeexplore.ieee.org/document/6813242",     # book**
             "https://ieeexplore.ieee.org/document/287238",      # proceeding**
-
             # ACM urls
             "https://dl.acm.org/citation.cfm?id=3281649",  # book
             "https://dl.acm.org/citation.cfm?id=3304087",  # book
@@ -157,6 +161,10 @@ class PaperImport(TestCase):
             "http://www.jmlr.org/papers/v13/zhang12a.html",   # paper from 2012
             "http://www.jmlr.org/papers/v11/strumbelj10a.html",  # paper from 2010
             "http://www.jmlr.org/papers/v1/meila00a.html",    # volume from 2000
+            # PMLR papers
+            "http://proceedings.mlr.press/v40/Kun15.html" ,   # paper from volume 40
+            "http://proceedings.mlr.press/v78/thomason17a.html", # paper from volume 78
+            "http://proceedings.mlr.press/v4/koehler08a.html" , # paper from volume 4
             # IEEE papers
             "https://ieeexplore.ieee.org/document/8290763",  # paper from 2018
             "https://ieeexplore.ieee.org/document/6681893",  # paper from 2013

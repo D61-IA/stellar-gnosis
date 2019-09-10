@@ -57,6 +57,10 @@ def analysis_url(url) :
         url = "http://" + url[8:]
         source_website = "jmlr"
         print("source from jmlr")
+    elif url.startswith("https://proceedings.mlr.press/v") and url.endswith(".html"):
+        url = "http://" + url[8:]
+        source_website = "pmlr"
+        print("source from pmlr")
     # from IEEE
     elif url.startswith("https://ieeexplore.ieee.org/document/") \
             or url.startswith("https://ieeexplore.ieee.org/abstract/document/"):
@@ -143,6 +147,19 @@ def get_abstract_from_ACM(bs4obj):
             abstract = abstract.get_text()
     return abstract
 
+def get_abstract_from_jmlr(bs4obj):
+    abstract = bs4obj.find("p", {"class": "abstract"})
+    if abstract is not None:
+        abstract = abstract.get_text()
+    else:
+        # for some papers from JMLR , the abstract is stored without a tag,so this will find the abstract
+        abstract = bs4obj.find("h3")
+        if abstract is not None:
+            abstract = abstract.next_sibling
+        if abstract.strip() is "":
+            abstract = abstract.next_sibling.text
+    return abstract
+
 def get_authors_from_arxiv(bs4obj):
     authorList = bs4obj.findAll("div", {"class": "authors"})
     if authorList:
@@ -175,6 +192,16 @@ def get_authors_from_jmlr(bs4obj):
         if len(authorList) >= 1:
             author_str = authorList[0].text
             return author_str
+    else :
+        return None
+
+def get_authors_from_pmlr(bs4obj):
+    authorlist = bs4obj.find("div", {"id":"authors"}).get_text()
+    if authorlist:
+        authorlist = authorlist.replace('\r', '').replace('\n', '').replace(';','')
+        authorlist = [x.strip() for x in authorlist.split(',')]
+        author_str = ','.join(authorlist)
+        return author_str
     else :
         return None
 
