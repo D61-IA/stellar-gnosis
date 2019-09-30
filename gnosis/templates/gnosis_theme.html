@@ -10,11 +10,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.3.3/cytoscape.min.js"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     {% load static %}
+    <script src={% static 'js/antispam.js' %}></script>
     <link rel="stylesheet" href="{% static 'css/gnosis_theme.css' %}">
-    <link rel="stylesheet" href="{% static 'css/ego_map.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ego_graph.css' %}">
+    <link rel="stylesheet" href="{% static 'css/flagging.css' %}">
 </head>
 <style>
     .max-width {
@@ -40,6 +41,16 @@
                     <li class="nav-item"><a class="nav-link"
                                             href="{% url 'collections' %}">Collections</a></li>
                     </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'bookmarks' %}">Bookmarks</a></li>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <li class="nav-item"><a class="nav-link"
+                                        href="{% url 'endorsements' %}">Endorsements</a></li>
+                </li>
                 {% endif %}
             </ul>
 
@@ -179,13 +190,60 @@
         </div>
     </div>
 
+    <script src="{% static 'js/gnosis_theme.js' %}"></script>
+
     <!--<div class="col-sm-2 sidenav">-->
     <!--{% load static %}-->
+
     <!--<img src="{% static "catalog/csiro-data61-logos.png" %}" alt="CSIRO and Data61 Logos">-->
     <!--</div>-->
     <!--    </div>-->
 </div>
 
+<!-- response dialog for flag report -->
+<div id="flag_response" class="cover popup" hidden>
+    <div id="flag_response_dialog" class="card">
+        <div class="card-body">
+            <div><span>Thanks. We have received your report. If we find this content to be in violation of our guidelines,
+            we will remove it.</span>
+            </div>
+
+            <div class="ok-container">
+                <span class="response-ok" onclick="$('#flag_response').attr('hidden', true)">Ok</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- spinner loader -->
+{#<div id="loader" class="cover" hidden>#}
+{#    <div class="loader_container">#}
+{#        <div class="loader_icon">#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+
+<!-- growing circles loader -->
+<div id="loader" class="cover" hidden>
+    <div class="loader_container">
+        <div class="spinner-grow paper" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow person" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow venue" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow code" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow dataset" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+</div>
 
 <!-- Footer -->
 <footer class="page-footer text-center font-small blue pt-4 mt-5">

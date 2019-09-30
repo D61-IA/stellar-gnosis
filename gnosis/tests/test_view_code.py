@@ -6,7 +6,7 @@ from django.http import HttpRequest
 
 
 # Create your tests here.
-# To run this test, use command: py -3 manage.py test tests.test_form_paper
+# To run this test, use command: py -3 manage.py test tests.test_view_code
 class CodeViewTest(TestCase):
     def setUp(self):
         # Create a user

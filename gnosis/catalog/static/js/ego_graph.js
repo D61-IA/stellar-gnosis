@@ -1,4 +1,3 @@
-
 /************** resizable graph **************/
 // simulate stop resizing using timer
 var resizeTimer;
@@ -29,27 +28,20 @@ function toggle_relas() {
     }
 }
 
-/************** show/hide graph add-ons **************/
-var hide_opt = false;
-
-function toggle_options() {
-    hide_opt = !hide_opt;
-    if (hide_opt) {
-        $(".graph-adder").hide(300);
-        $("#menu-button").text("Show").attr("title", "Show add-ons");
-
-    } else {
-        $(".graph-adder").show(300);
-        $("#menu-button").text("Hide").attr("title", "Hide add-ons");
-    }
-}
-
-/************** double click toggle **************/
-// $(".graph-canvas").dblclick(
-//     function () {
-//         toggle_options();
+// /************** show/hide graph add-ons **************/
+// var hide_opt = false;
+//
+// function toggle_options() {
+//     hide_opt = !hide_opt;
+//     if (hide_opt) {
+//         $(".graph-adder").hide(300);
+//         $("#menu-button").text("Show").attr("title", "Show add-ons");
+//
+//     } else {
+//         $(".graph-adder").show(300);
+//         $("#menu-button").text("Hide").attr("title", "Hide add-ons");
 //     }
-// );
+// }
 
 // collection of all elements (nodes + edges) in the graph currently
 var collection = cy.elements();
@@ -71,33 +63,66 @@ function reset_layout() {
     center();
 }
 
-/************** dropdown menu **************/
-function show_cites(value) {
-    var cat = value;
+function reset_nodes() {
+    collection = cy.elements();
+    cy.style().selector('node').style('visibility', 'visible').update();
+    cy.style().selector('edge').style('visibility', 'visible').update();
+    reset_layout();
 
-    if (cat === "all relationships") {
+    // sync select menu option to 'all'
+    $('#graphfilter').val('all');
+}
+
+/************** graph filtering function **************/
+function show_cites(label, type) {
+
+    if (label === "all" && type === "all") {
         collection = cy.elements();
         cy.style().selector('node').style('visibility', 'visible').update();
         cy.style().selector('edge').style('visibility', 'visible').update();
     } else {
-        // get all elements currently on the graph
+        // get all elements on the graph
         collection = cy.filter((element) => {
-            return element.data('label') === cat || element.data('label') === "origin"
+            return element.data('label') === label || element.data('type') === type
+                || element.data('label') === "origin"
         });
-
         cy.style().selector('node').style('visibility', 'hidden').update();
         cy.style().selector('edge').style('visibility', 'hidden').update();
-        cy.style().selector('[label="' + cat + '"]').style('visibility', 'visible').update();
+        cy.style().selector('[type="' + type + '"]').style('visibility', 'visible').update();
+        cy.style().selector('[label="' + label + '"]').style('visibility', 'visible').update();
         cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
     }
 
     center();
 }
 
+/************** collapse ego-graph **************/
+// stores state of the collapse target
+var hidden = false;
+
+function collapse_toggle(ele, that) {
+    hidden = !hidden;
+    if (hidden) {
+        $(that).children('.drop_indicator').text('arrow_drop_down');
+        $('#' + ele).hide(200);
+
+    } else {
+        $(that).children('.drop_indicator').text('arrow_drop_up');
+        $('#' + ele).show(200);
+
+    }
+}
+
+// collapse initially if device width is < 600
+// device widths reference: https://www.w3schools.com/css/css_rwd_mediaqueries.asp
+if ($(window).width() < 600){
+    collapse_toggle('ego-graph-content', $('#ego-header'));
+}
+
 /************** tooltip **************/
 // interactivity with the ego graph
 // timeout for delaying tooltip
-var time_out = 1000;
+var time_out = 300;
 var hoverTimeout;
 cy.on('click', 'node', function (evt) {
     var node = evt.target;
@@ -120,7 +145,6 @@ cy.on('click', 'node', function (evt) {
 
             var tip_item = "";
 
-            var span = document.createElement("span");
             // what is shown on the tooltip
             if (node.data('type') === 'Person') {
                 // combine individual names to one
@@ -131,34 +155,24 @@ cy.on('click', 'node', function (evt) {
                 tip_item = node.data('title')
             }
 
-            span.innerHTML = tip_item;
             if (tip_item.length > 0) {
-
-                $("#cy").append("<div id='tooltip'></div>");
-
                 // css for tooltip
-                $('#tooltip').append(span).css({
-                    "display": "block",
-                    "max-width": "200px",
-                    "margin": 0,
-                    "height": "auto",
-                    "position": "absolute",
-                    "padding": "5px",
-                    "left": px,
-                    "top": py,
-                    "background-color": "#f2e5b8",
-                    "z-index": 1000,
-                    "border-radius": "6px",
-                    "opacity": 0.9,
-                    "text-align": "left"
+                $('#tooltip').attr('hidden', false);
+
+                $('#tooltip span').text(tip_item).css({
+                    "left": px + 15,
+                    "top": py + 15,
                 });
             }
-            $('#tooltip span').css({
-                "margin": 0,
-            })
 
         }, time_out);
 
+    })
+    .on('mousedown', 'node', function (evt) {
+        clearTimeout(hoverTimeout);
+        var node = evt.target;
+        node.style('opacity', 1);
+        $('#tooltip').attr('hidden', true);
     })
 
     // remove tooltip on mouseout
@@ -166,7 +180,7 @@ cy.on('click', 'node', function (evt) {
         clearTimeout(hoverTimeout);
         var node = evt.target;
         node.style('opacity', 1);
-        $('#tooltip').remove();
+        $('#tooltip').attr('hidden', true);
 
     })
 

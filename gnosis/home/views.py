@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from catalog.models import Paper, Person
+from catalog.models import Paper, Person, Venue, Dataset, Code
 from neomodel import db
-from catalog.forms import SearchPapersForm
+from catalog.forms import SearchPapersForm, SearchAllForm
 from nltk.corpus import stopwords
 
 
@@ -15,34 +15,65 @@ def home(request):
     papers = list(zip(recent_papers, authors))
 
     message = None
+    paper_results = []
+    person_results = []
+    venue_results =[]
+    dataset_results = []
+    codes_results = []
 
     if request.method == 'POST':
-        form = SearchPapersForm(request.POST)
+        form = SearchAllForm(request.POST)
         print("Received POST request")
         if form.is_valid():
             english_stopwords = stopwords.words('english')
-            paper_title = form.cleaned_data['paper_title'].lower()
-            paper_title_tokens = [w for w in paper_title.split(' ') if not w in english_stopwords]
-            paper_query = '(?i).*' + '+.*'.join('(' + w + ')' for w in paper_title_tokens) + '+.*'
-            query = "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
+            search_keywords = form.cleaned_data['search_keywords'].lower()
+            search_keywords_tokens = [w for w in search_keywords.split(' ') if not w in english_stopwords]
+            all_query = '(?i).*' + '+.*'.join('(' + w + ')' for w in search_keywords_tokens) + '+.*'
+            query = "match (n) with n, [x in keys(n) WHERE n[x]=~ { all_query }] as doesMatch where size(doesMatch) > 0 return n"
+            #query = "MATCH (p:Paper) WHERE  p.title =~ { paper_query } OR p.abstract =~ { paper_query }  RETURN p LIMIT 25"
             print("Cypher query string {}".format(query))
-            results, meta = db.cypher_query(query, dict(paper_query=paper_query))
+            results, meta = db.cypher_query(query, dict(all_query=all_query))
+            print("Results: ", results)
             if len(results) > 0:
-                print("Found {} matching papers".format(len(results)))
-                papers = [Paper.inflate(row[0]) for row in results]
-                return render(request, 'paper_results.html', {'papers': papers, 'form': form, 'message': message})
+                print("{} match(es) found ".format(len(results)))
+
+                for row in results:
+                    for label in row[0].labels:
+
+                        if label == 'Paper':
+                            paper_results.append(Paper.inflate(row[0]))
+
+                        elif label == 'Person':
+                            person_results.append(Person.inflate(row[0]))
+                            print(person_results)
+
+                        elif label == 'Venue':
+                            venue_results.append(Venue.inflate(row[0]))
+
+                        elif label == 'Dataset':
+                            dataset_results.append(Dataset.inflate(row[0]))
+
+                        elif label == 'Code':
+                            codes_results.append(Code.inflate(row[0]))
+
+                #papers = [Paper.inflate(row[0]) for row in results]
+                #search_results = paper_results.append(person_results.append(venue_results.append(
+                 #   dataset_results.append(codes_results))))
+                print("Going to all results page..........")
+                return render(request, 'all_results.html', {'paper_results': paper_results,
+                                                            'person_results': person_results, 'venue_results': venue_results,
+                                                            'dataset_results': dataset_results, 'codes_results': codes_results,
+                                                            'form': form, 'message': message})
             else:
                 message = "No results found. Please try again!"
 
     elif request.method == 'GET':
         print("Received GET request")
-        form = SearchPapersForm()
+        form = SearchAllForm()
 
-    return render(request, 'home.html', {'papers': papers,
-                                         'num_papers': num_papers,
-                                         'num_people': num_people,
-                                         'form': form,
-                                         'message': message})
+    return render(request, 'home.html', {'papers': papers, 'num_papers': num_papers,
+                                             'num_people': num_people, 'form': form, 'message': message})
+
 
 
 def get_paper_authors(paper):

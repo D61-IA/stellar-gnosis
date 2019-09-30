@@ -6,7 +6,7 @@ from catalog.views.views_people import person_create, person_update, \
 from django.http import HttpRequest
 from neomodel import db
 
-
+# To run this test, use command: py -3 manage.py test tests.test_view_person
 class PersonViewTest(TestCase):
 
     def setUp(self):

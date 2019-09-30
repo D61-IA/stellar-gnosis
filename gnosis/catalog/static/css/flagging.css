@@ -1,0 +1,101 @@
+/* style more icon and its container */
+.more_menu {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    border-width: 1px;
+}
+
+.menu_item {
+    vertical-align: bottom;
+    user-select: none;
+}
+
+.more_vert {
+    user-select: none;
+    color: darkgrey;
+}
+
+.more_vert:hover {
+    cursor: pointer;
+    color: black;
+}
+
+.opt_container {
+    padding: 10px;
+}
+
+.opt_container:hover {
+    cursor: pointer;
+    background-color: lightgray;
+}
+
+/* covers entire page as a background to popup elements (e.g. dialogs) */
+.cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(248, 248, 255, 0.5);
+    z-index: 3000;
+
+}
+
+#flag_dialog {
+    position: fixed;
+    background-color: white;
+    padding: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -181.5px;      /* form width/2.0 */
+    margin-top: -239px;     /* form height/2.0 */
+    z-index: 3000;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+
+}
+
+/* style flag dialog */
+/* *A dialog is the popup area that is used to display information on the same page */
+#flag_response_dialog {
+    width: 400px;
+    top: 50%;
+    left: 50%;
+    margin-left: -200px;
+    margin-top: -69px;
+    z-index: 3000;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
+.form_button {
+    font-size: 1.0rem;
+    margin: 1px;
+}
+
+.form_button_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+/* style violation field of the form */
+#id_violation {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* style response dialog */
+.ok-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    user-select: none;
+}
+
+.response-ok {
+    color: darkseagreen;
+    cursor: pointer;
+}
+
+.response-ok:hover {
+    color: olivedrab;
+}
+

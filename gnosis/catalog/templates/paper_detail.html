@@ -4,26 +4,96 @@
 
     <div class="card shadow-sm mt-5">
         <div class="card-header">
-            <h3>{{ paper.title }}</h3>
+
+            <div style="display: flex">
+                <div style="display: flex; width: 11%;">
+                    {% if user.is_authenticated %}
+                        <div id="endorsement">
+                            {% if not endorsed %}
+                                <form id="e_create" action="{% url 'endorsement_create' paper_id=paper.id %}"
+                                      method="post">
+                                    {% csrf_token %}
+                                    <button name="endorse" value="endorse" style="border: none; outline: none !important;
+                            background: none;" onclick="endorsement_bookmark_fun('#e_create', '#endorsement')"><img
+                                            src="https://img.icons8.com/ultraviolet/30/000000/blunt-bulb.png"
+                                    >{{ num_endorsements }}</button>
+                                </form>
+
+
+                            {% else %}
+                                <form id="e_undo" action="{% url 'endorsement_undo' paper_id=paper.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button name="undo_endorse" value="endorse" style="border: none; outline: none !important;
+                            background: none;" onclick="endorsement_bookmark_fun('#e_undo', '#endorsement')"><img
+                                            src="https://img.icons8.com/officel/30/000000/blunt-bulb.png">{{ num_endorsements }}
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+
+                        <div id="bookmark">
+                            {% if not bookmarked %}
+                                <form id="b_create" action="{% url 'paper_add_to_bookmark' pid=paper.id %}"
+                                      method="post">
+                                    {% csrf_token %}
+                                    <button name="add_bookmark_button" value="endorse" style="border: none;outline: none !important;
+                            background: none;" onclick="endorsement_bookmark_fun('#b_create', '#bookmark')"><img
+                                            src="https://img.icons8.com/ios/30/000000/add-bookmark.png"></button>
+                                </form>
+                            {% else %}
+                                <form id="b_undo" action="{% url 'bookmark_entry_remove' pid=paper.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button name="undo_bookmark" value="endorse" style="border: none;outline: none !important;
+                            background: none;" onclick="endorsement_bookmark_fun('#b_undo', '#bookmark')"><img
+                                            src="https://img.icons8.com/ios-filled/30/000000/remove-bookmark.png">
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <form action="{% url 'login' %}?next={{ request.path }}" method="post">
+                            {% csrf_token %}
+                            <button name="endorse" value="endorse" style="border: none; outline: none !important;
+                            background: none;"><img
+                                    src="https://img.icons8.com/ultraviolet/30/000000/blunt-bulb.png">{{ num_endorsements }}
+                            </button>
+                        </form>
+                        <form action="{% url 'login' %}?next={{ request.path }}" method="post">
+                            {% csrf_token %}
+                            <button name="endorse" value="endorse" style="border: none; outline: none !important;
+                            background: none;"><img src="https://img.icons8.com/ios/30/000000/add-bookmark.png">
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                <h3>{{ paper.title }}</h3>
+            </div>
 
             <h4>
-                <a href={{ paper.download_link }} class="btn btn-primary" role="button" target="_blank">Download</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
-                       role="button">
-                        Add to Group</a>
-                    <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
-                       role="button">
-                        Add to Collection</a>
-                    <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
-                       role="button">
-                        Edit</a>
-                {% endif %}
+                <div style="display: flex; align-content: space-between; justify-content: space-between">
+                    <div><a href={{ paper.download_link }} class="btn btn-primary" role="button"
+                        target="_blank">Download</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
+                               role="button">
+                                Add to Group</a>
+                            <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
+                               role="button">
+                                Add to Collection</a>
+                            <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
+                               role="button">
+                                Edit</a>
+                        {% endif %}
+                    </div>
+
+
+                </div>
             </h4>
         </div>
         <div class="card-body">
             <h5 class="text-left">
                 {{ authors }} {% if user.is_authenticated and user.is_superuser and authors %}<a
+
                     href="{% url 'paper_authors' id=paper.id %}"
                     class="btn btn-danger btn-sm" role="button">
                 Edit</a>{% endif %}
@@ -46,12 +116,24 @@
                 {% endfor %}
             {% endif %}
 
-            <h4 class="text-right">{% if user.is_authenticated %} Connect with: <a
-                    href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
-                || <a href="{% url 'paper_connect_venue' paper.id %}">Venue</a> ||
-                <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
-                <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
-                <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>{% endif %}</h4>
+            <h4 class="text-right">
+                {% if not user.is_authenticated %}
+                    <a href={% url 'login' %}>Endorse</a>{% endif %}
+                {% if user.is_authenticated %}
+
+                    <div>
+                        <div>Connect with:
+                            <a
+                                    href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
+                            || <a href="{% url 'paper_connect_venue' paper.id %}">Venue</a> ||
+                            <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
+                            <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
+                            <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>
+                        </div>
+
+
+                    </div>
+                {% endif %}</h4>
         </div>
     </div>
     {% if user.is_authenticated and user.is_superuser %}
@@ -77,85 +159,99 @@
     {% endif %}
 
     <div class="card mt-3 shadow-sm">
-        <div class="card-header">
-            <div style="display: inline-flex; width: 100%; justify-content: space-between">
-                <h4>Ego-graph</h4>
+        <div id="ego-header" class="card-header" onclick="collapse_toggle('ego-graph-content', this)"
+             style="display: flex; flex-direction: row; justify-content: space-between">
+            <h4>Ego-graph</h4>
 
-                <div>
-                    <button class="btn btn-primary" id="menu-button" title="Hide add-ons" onclick="toggle_options()">
-                        Hide
-                    </button>
-
-{#                    dropdown menu in header #}
-                    <label for="graphfilter"></label>
-                    <select id="graphfilter"
-                            onchange="show_cites(this.value)">
-                        <option value="all relationships"> mixed</option>
-                        <option value="cites"> cites</option>
-                        <option value="uses"> uses</option>
-                        <option value="extends"> extends</option>
-                        <option value="authors"> authors</option>
-                        <option value="was published at"> was published at</option>
-                        <option value="evaluates on"> evaluates on</option>
-                        <option value="published"> published</option>
-                        <option value="implements"> implements</option>
-                    </select>
-                </div>
-            </div>
+            <i class="material-icons drop_indicator">
+                arrow_drop_up
+            </i>
 
         </div>
 
-        <div class="card-body">
-            <div class="graph-adder">
-{#                legend #}
-                <fieldset style="position: absolute; z-index: 1000; left: 20px;">
-                    <span class="color_legend dataset"></span> Dataset <br>
-                    <span class="color_legend person"></span> Person <br>
-                    <span class="color_legend venue"></span> Venue <br>
-                    <span class="color_legend paper"></span> Paper <br>
-                    <span class="color_legend code"></span> Code <br>
-                </fieldset>
+        <div id="ego-graph-content">
 
-{#                add-on buttons #}
-                <div style="position: absolute; z-index: 1000; right: 20px; display: inline-flex; flex-direction: column">
-                    <button type="button"
-                            class="btn btn-primary ego-button" title="Hide relationships"
-                            data-toggle="button"
-                            aria-pressed="false" onclick="toggle_relas()">
-                        <i class="material-icons" id="rela_toggle">
-                            visibility
-                        </i>
-                    </button>
+            <div class="ego-button-container">
+                <div class="flex_layout_row legend_container">
+                    <div class="flex_layout_col legend_ele" onclick="show_cites('all', 'Paper')"><span
+                            class="color_legend paper"></span> Paper
+                    </div>
+                    <div class="flex_layout_col legend_ele" onclick="show_cites('all', 'Person')"><span
+                            class="color_legend person"></span> Person
+                    </div>
+                    <div class="flex_layout_col legend_ele" onclick="show_cites('all', 'Venue')"><span
+                            class="color_legend venue"></span> Venue
+                    </div>
+                    <div class="flex_layout_col legend_ele" onclick="show_cites('all', 'Code')"><span
+                            class="color_legend code"></span> Code
+                    </div>
+                    <div class="flex_layout_col legend_ele" onclick="show_cites('all', 'Dataset')"><span
+                            class="color_legend dataset"></span>
+                        Dataset
+                    </div>
+                </div>
 
-{#                    <button type="button"#}
-{#                            class="btn btn-primary ego-button" title="Center"#}
-{#                            onclick="center()">#}
-{#                        <i class="material-icons">#}
-{#                            center_focus_strong#}
-{#                        </i>#}
-{#                    </button>#}
+                <div class="flex_layout_row widget_container">
+                    <div id="hide-refresh" class="flex_layout_row" style="padding: 5px">
+                        <button type="button"
+                                class="btn btn-primary ego-button" title="Reset"
+                                onclick="reset_nodes()">
+                            <i class="material-icons">
+                                refresh
+                            </i>
+                        </button>
+                        <button type="button"
+                                class="btn btn-primary ego-button" title="Hide relationships"
+                                data-toggle="button"
+                                aria-pressed="false" onclick="toggle_relas()">
+                            <i class="material-icons" id="rela_toggle">
+                                visibility
+                            </i>
+                        </button>
 
-                    <button type="button"
-                            class="btn btn-primary ego-button" title="Reset"
-                            onclick="reset_layout()">
-                        <i class="material-icons">
-                            refresh
-                        </i>
-                    </button>
+                    </div>
+
+                    <div class="flex_layout_row" style="padding-right: 5px">
+                        <select id="graphfilter"
+                                onchange="show_cites(this.value, 'all')"
+                                style="height: 35px; margin-top: auto; margin-bottom: auto">
+                            <option value="all"> all</option>
+                            <option value="cites"> cites</option>
+                            <option value="uses"> uses</option>
+                            <option value="extends"> extends</option>
+                            <option value="authors"> authors</option>
+                            <option value="was published at"> was published at</option>
+                            <option value="evaluates on"> evaluates on</option>
+                            <option value="published"> published</option>
+                            <option value="implements"> implements</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div id="cy">
+            <div class="card-body" style="padding-top: 0">
+
+                <div id="cy">
+                    <div id="tooltip" hidden>
+                        <span></span>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
-
-    <p>{% if user.is_authenticated %}<a href="{% url 'comment_create' %}" class="btn btn-info mt-3 btn-md">
-        <span class="glyphicon glyphicon-plus"></span> Add Comment</a></p>
+    {% if user.is_authenticated %}
+        <p><a href="{% url 'comment_create' %}" class="btn btn-info mt-3 btn-md">
+            <span class="glyphicon glyphicon-plus"></span> Add Comment</a>
+            <a href="{% url 'note_create' %}" class="btn btn-info mt-3 btn-md">
+                <span class="glyphicon glyphicon-plus"></span> Create Note</a>
+        </p>
     {% else %}
         <p><a href="{% url 'login' %}?next={{ request.path }}">Login</a> to comment</p>
     {% endif %}
+
+
     {% if num_comments > 0 %}
         <div class="card shadow-sm mt-3">
             <div class="card-header">
@@ -165,6 +261,43 @@
                 <ul class="list-group">
                     {% for comment in comments %}
                         <li class="list-group-item shadow-sm mt-1">
+                            <!-- start-flagging -->
+                            <div style="float: right; text-align: right;">
+                                <i class="material-icons more_vert" onclick="toggle_more(this)">
+                                    more_vert
+                                </i>
+                                <div class="popup" hidden>
+                                    <div class="more_menu">
+                                        {% if user.is_authenticated %}
+                                            <div class="opt_container" onclick="open_flag_dialog({{ comment.id }})">
+                                                <i class="material-icons menu_item">
+                                                    outlined_flag
+                                                </i>
+                                                <span class="menu_item">Report</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="opt_container">
+                                                <a class="icon_link"
+                                                   href="{% url 'login' %}?next={{ request.path }}"
+                                                   style="text-decoration: none; color: black">
+                                                    <i class="material-icons menu_item">
+                                                        outlined_flag
+                                                    </i>
+                                                    <span class="menu_item">Report</span>
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                        {#                                            <div class="opt_container">#}
+                                        {#                                                <i class="material-icons menu_item">#}
+                                        {#                                                    delete#}
+                                        {#                                                </i>#}
+                                        {#                                                <span class="menu_item">Delete</span>#}
+                                        {#                                            </div>#}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- end-flagging -->
                             <p><strong>{{ comment.author }}</strong> says:</p>
                             <p>
                                 <small>{{ comment.publication_date }}</small>
@@ -174,13 +307,82 @@
                                 <a href="{% url 'comment_update' comment.id %}">Edit</a>
                             {% endif %}
                         </li>
-                        </ul>
                     {% endfor %}
+                </ul>
             </div>
         </div>
+
+        <!-- start-flagging -->
+        <div id="flag_form_container" class="cover popup" hidden>
+            <div id="flag_dialog">
+                <form id="flag_form" action="" method="post">
+                    {% csrf_token %}
+                    <table class="w-75">
+                        {% for field in flag_form %}
+                            <div style="font-weight: bold">
+                                {{ field.label_tag }}
+                            </div>
+                            <div style="padding: 0 10px">
+                                {{ field }}
+                            </div>
+                            {% if field.help_text %}
+                                {{ field.help_text }}
+                            {% endif %}
+
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        {% endfor %}
+                    </table>
+                    <br/>
+                    <div class="form_button_container">
+                        <button type="button" class="btn btn-primary btn-lg form_button"
+                                onclick="cancel_form()">
+                            Cancel
+                        </button>
+                        <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- if form is valid show the form in the popup window -->
+        {% if flag_form.has_changed %}
+            <script>$('.cover').attr('hidden', false);</script>
+        {% endif %}
+
+        <!-- end-flagging -->
+
+    {% endif %}
+
+    {% if num_notes > 0 %}
+        {% if user.is_authenticated %}
+            <div class="card shadow-sm mt-3">
+                <div class="card-header">
+                    <h3>Private Note</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for note in notes %}
+                            <li class="list-group-item shadow-sm mt-1">
+                                <p>{{ note.text }}</p>
+                                <p class="text-right">
+                                    <small>{{ note.date_posted }}</small>
+                                </p>
+                                <a href="{% url 'note_update' note.id %}">Edit</a>
+                                <a href="{% url 'note_delete' note.id %}"> Delete</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 
     {% load static %}
+    <script src="{% static "js/flagging.js" %}"></script>
+
     <script>
         // concentric level value
         var paper_count = 50;
@@ -189,17 +391,18 @@
         var layout = {
             name: 'concentric',
             concentric: (node) => {
-                if (node.data('label') === "origin") return 1000;
+                if (node.data('label') === "origin") return paper_count + 50;
                 // all levels have the same value => one big circle only
                 return paper_count;
             },
             padding: 20,
             startAngle: 2 * Math.PI,
-            minNodeSpacing: 30
+            minNodeSpacing: 25,
+            nodeDimensionsIncludeLabels: true,
         };
 
         // node title width
-        var textMaxWidth = '80';
+        var textMaxWidth = '100';
 
         var defaultNodeStyle = {
             'width': 20,
@@ -385,9 +588,11 @@
 
         // setting the minimum zoom factor to 50% of its initial zoom
         cy.minZoom(cy.zoom()* 0.5);
-
     </script>
 
-    <script src="{% static "js/ego-graph.js" %}"></script>
+    <script src="{% static "js/ego_graph.js" %}"></script>
+
+    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+    <script src="{% static "js/endorsement-bookmark.js" %}"></script>
 
 {% endblock %}

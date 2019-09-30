@@ -1,0 +1,136 @@
+.color_legend {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    vertical-align: bottom;
+    margin-left: auto;
+    margin-right: auto
+}
+
+.legend_label {
+    font-size: 100%;
+}
+
+.paper {
+    background-color: #39acff;
+}
+
+.venue {
+    background-color: #d97fff;
+}
+
+.person {
+    background-color: #ffb836;
+}
+
+.dataset {
+    background-color: #ff723d;
+}
+
+.code {
+    background-color: #59d143;
+}
+
+.ego-button-container .material-icons {
+    display: block;
+}
+
+.ego-button {
+    text-align: center;
+    margin: 2px;
+}
+
+.ego-button-container {
+    display: flex;
+    z-index: 1000;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: ghostwhite;
+}
+
+.flex_layout_row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+}
+
+.flex_layout_col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 3px;
+}
+
+.legend_ele {
+    padding: 5px 20px;
+    user-select: none;
+}
+
+.legend_ele:hover {
+    background-color: #eeeeee;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.widget_container {
+    justify-content: flex-end;
+}
+
+#ego-header:hover {
+    cursor: pointer;
+}
+
+.drop_indicator {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#tooltip span {
+    display: block;
+    max-width: 200px;
+    margin: 0;
+    height: auto;
+    position: absolute;
+    padding: 5px;
+    background-color: ghostwhite;
+    border: 2px solid #999999;
+    z-index: 1000;
+    border-radius: 6px;
+    opacity: 0.9;
+    text-align: left
+}
+
+@media only screen and (max-width: 768px) {
+    .legend_ele {
+        padding: 5px 10px;
+    }
+}
+
+@media only screen and (max-width: 678px) {
+    #hide-refresh {
+        position: absolute;
+        flex-direction: column;
+        top: 130px;
+    }
+
+    .widget_container {
+        width: auto;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .legend_ele {
+        padding: 5px;
+    }
+}
+
+
+
+
+
+
+
+
+
