@@ -772,12 +772,21 @@ def paper_connect_paper_selected(request, id, pid):
 
             # check if the papers are already connected with a cites link; if yes, then
             # do nothing. Otherwise, add the link.
-            query = "MATCH (q:Paper)<-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} return p"
+            query = "MATCH (q:Paper)-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} return p"
             results, meta = db.cypher_query(
                 query,
                 dict(source_id=id, target_id=pid),
             )
-            if len(results) == 0:
+            if len(results) > 0:
+                # papers already linked. So remove the link before adding the new one.
+                print("Connection link found! Will delete the old one first.")
+                query = "MATCH (q:Paper)-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} DELETE r"
+                results, meta = db.cypher_query(
+                    query,
+                    dict(source_id=id, target_id=pid),
+                )
+                print("Adding the new relationship.")
+                # add the new link
                 link_type = request.session["link_type"]
                 # papers are not linked so add the edge
                 print("Connection link not found, adding it!")
@@ -788,11 +797,6 @@ def paper_connect_paper_selected(request, id, pid):
                 elif link_type == 'extends':
                     paper_source.extends.connect(paper_target)
                 messages.add_message(request, messages.INFO, "Connection Added!")
-            else:
-                print("Connection link found not adding it!")
-                messages.add_message(
-                    request, messages.INFO, "Papers are already linked!"
-                )
     else:
         print("Could not find paper!")
         messages.add_message(
