@@ -114,7 +114,7 @@ def persons(request):
 def person_detail(request, id):
     # Retrieve the paper from the database
     papers_authored = []
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Person) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         # There should be only one results because ID should be unique. Here we check that at
@@ -169,7 +169,7 @@ def person_create(request):
 def person_update(request, id):
     # retrieve paper by ID
     # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Person) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         all_people = [Person.inflate(row[0]) for row in results]
@@ -191,7 +191,7 @@ def person_update(request, id):
             return HttpResponseRedirect(reverse("persons_index"))
     # GET request
     else:
-        query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+        query = "MATCH (a:Person) WHERE ID(a)={id} RETURN a"
         results, meta = db.cypher_query(query, dict(id=id))
         if len(results) > 0:
             all_people = [Person.inflate(row[0]) for row in results]

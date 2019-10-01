@@ -199,7 +199,7 @@ def paper_delete(request, id):
 
 def _get_paper_by_id(id):
     # Retrieve the paper from the database
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     paper = None
     if len(results) > 0:
@@ -210,7 +210,7 @@ def _get_paper_by_id(id):
 
 def paper_detail(request, id):
     # Retrieve the paper from the database
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         all_papers = [Paper.inflate(row[0]) for row in results]
@@ -618,7 +618,7 @@ def paper_connect_venue(request, id):
                     print("Selected Venue: {}".format(venue))
 
                 # retrieve the paper
-                query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+                query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
                 results, meta = db.cypher_query(query, dict(id=id))
                 if len(results) > 0:
                     all_papers = [Paper.inflate(row[0]) for row in results]
@@ -662,7 +662,7 @@ def paper_connect_venue(request, id):
 def paper_add_to_collection_selected(request, id, cid):
     message = None
     print("In paper_add_to_collection_selected")
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         all_papers = [Paper.inflate(row[0]) for row in results]
@@ -760,7 +760,7 @@ def paper_add_to_bookmark(request, pid):
 
 @login_required
 def paper_add_to_group_selected(request, id, gid):
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         all_papers = [Paper.inflate(row[0]) for row in results]
@@ -874,7 +874,7 @@ def paper_connect_author(request, id):
 
 @login_required
 def paper_connect_paper_selected(request, id, pid):
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         all_papers = [Paper.inflate(row[0]) for row in results]
@@ -882,7 +882,7 @@ def paper_connect_paper_selected(request, id, pid):
             0
         ]  # since we search by id only one paper should have been returned.
         print("Found source paper: {}".format(paper_source.title))
-        query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+        query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
         results, meta = db.cypher_query(query, dict(id=pid))
         if len(results) > 0:
             all_papers = [Paper.inflate(row[0]) for row in results]
@@ -893,12 +893,21 @@ def paper_connect_paper_selected(request, id, pid):
 
             # check if the papers are already connected with a cites link; if yes, then
             # do nothing. Otherwise, add the link.
-            query = "MATCH (q:Paper)<-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} return p"
+            query = "MATCH (q:Paper)-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} return p"
             results, meta = db.cypher_query(
                 query,
                 dict(source_id=id, target_id=pid),
             )
-            if len(results) == 0:
+            if len(results) > 0:
+                # papers already linked. So remove the link before adding the new one.
+                print("Connection link found! Will delete the old one first.")
+                query = "MATCH (q:Paper)-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} DELETE r"
+                results, meta = db.cypher_query(
+                    query,
+                    dict(source_id=id, target_id=pid),
+                )
+                print("Adding the new relationship.")
+                # add the new link
                 link_type = request.session["link_type"]
                 # papers are not linked so add the edge
                 print("Connection link not found, adding it!")
@@ -909,11 +918,6 @@ def paper_connect_paper_selected(request, id, pid):
                 elif link_type == 'extends':
                     paper_source.extends.connect(paper_target)
                 messages.add_message(request, messages.INFO, "Connection Added!")
-            else:
-                print("Connection link found not adding it!")
-                messages.add_message(
-                    request, messages.INFO, "Papers are already linked!"
-                )
     else:
         print("Could not find paper!")
         messages.add_message(
@@ -1069,7 +1073,7 @@ def paper_connect_dataset(request, id):
                     print("Selected dataset: {}".format(dataset_target.name))
 
                 # retrieve the paper
-                query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+                query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
                 results, meta = db.cypher_query(query, dict(id=id))
                 if len(results) > 0:
                     all_papers = [Paper.inflate(row[0]) for row in results]
@@ -1185,7 +1189,7 @@ def paper_connect_code(request, id):
 def paper_update(request, id):
     # retrieve paper by ID
     # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         all_papers = [Paper.inflate(row[0]) for row in results]
@@ -1207,7 +1211,7 @@ def paper_update(request, id):
             return HttpResponseRedirect(reverse("papers_index"))
     # GET request
     else:
-        query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+        query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
         results, meta = db.cypher_query(query, dict(id=id))
         if len(results) > 0:
             all_papers = [Paper.inflate(row[0]) for row in results]
@@ -1660,7 +1664,7 @@ def datasets(request):
 
 def dataset_detail(request, id):
     # Retrieve the paper from the database
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Dataset) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         # There should be only one results because ID should be unique. Here we check that at
@@ -1803,7 +1807,7 @@ def dataset_delete(request, id):
 def dataset_update(request, id):
     # retrieve paper by ID
     # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Dataset) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         datasets = [Dataset.inflate(row[0]) for row in results]
@@ -1826,7 +1830,7 @@ def dataset_update(request, id):
             return HttpResponseRedirect(reverse("datasets_index"))
     # GET request
     else:
-        query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+        query = "MATCH (a:Dataset) WHERE ID(a)={id} RETURN a"
         results, meta = db.cypher_query(query, dict(id=id))
         if len(results) > 0:
             datasets = [Dataset.inflate(row[0]) for row in results]
@@ -1900,7 +1904,7 @@ def venues(request):
 def venue_detail(request, id):
     papers_published_at_venue = None
     # Retrieve the paper from the database
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Venue) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         # There should be only one results because ID should be unique. Here we check that at
@@ -2015,7 +2019,7 @@ def venue_delete(request, id):
 def venue_update(request, id):
     # retrieve paper by ID
     # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Venue) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         venues = [Venue.inflate(row[0]) for row in results]
@@ -2039,7 +2043,7 @@ def venue_update(request, id):
             return HttpResponseRedirect(reverse("venues_index"))
     # GET request
     else:
-        query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+        query = "MATCH (a:Venue) WHERE ID(a)={id} RETURN a"
         results, meta = db.cypher_query(query, dict(id=id))
         if len(results) > 0:
             venues = [Venue.inflate(row[0]) for row in results]
@@ -2129,7 +2133,7 @@ def comment_create(request):
 def comment_update(request, id):
     # retrieve paper by ID
     # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    query = "MATCH (a:Comment) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
     if len(results) > 0:
         comments = [Comment.inflate(row[0]) for row in results]
@@ -2153,7 +2157,7 @@ def comment_update(request, id):
 
     # GET request
     else:
-        query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+        query = "MATCH (a:Comment) WHERE ID(a)={id} RETURN a"
         results, meta = db.cypher_query(query, dict(id=id))
         if len(results) > 0:
             comments = [Comment.inflate(row[0]) for row in results]
