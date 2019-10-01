@@ -906,18 +906,18 @@ def paper_connect_paper_selected(request, id, pid):
                     query,
                     dict(source_id=id, target_id=pid),
                 )
-                print("Adding the new relationship.")
-                # add the new link
-                link_type = request.session["link_type"]
-                # papers are not linked so add the edge
-                print("Connection link not found, adding it!")
-                if link_type == 'cites':
-                    paper_source.cites.connect(paper_target)
-                elif link_type == 'uses':
-                    paper_source.uses.connect(paper_target)
-                elif link_type == 'extends':
-                    paper_source.extends.connect(paper_target)
-                messages.add_message(request, messages.INFO, "Connection Added!")
+            print("Adding the new relationship.")
+            # add the new link
+            link_type = request.session["link_type"]
+            # papers are not linked so add the edge
+            print("Connection link not found, adding it!")
+            if link_type == 'cites':
+                paper_source.cites.connect(paper_target)
+            elif link_type == 'uses':
+                paper_source.uses.connect(paper_target)
+            elif link_type == 'extends':
+                paper_source.extends.connect(paper_target)
+            messages.add_message(request, messages.INFO, "Connection Added!")
     else:
         print("Could not find paper!")
         messages.add_message(
