@@ -9,7 +9,6 @@ from neomodel import StringProperty, DateTimeProperty, DateProperty, UniqueIdPro
 
 # Create your models here.
 class Paper(DjangoNode):
-
     uid = UniqueIdProperty()
 
     created = DateTimeProperty(default=datetime.now())
@@ -22,7 +21,6 @@ class Paper(DjangoNode):
     download_link = StringProperty(required=True)
     # added source link for a paper to record the source website which the information of paper is collected
     source_link = StringProperty(required=False)
-
 
     # Links
     cites = RelationshipTo("Paper", "cites")
@@ -48,7 +46,6 @@ class Paper(DjangoNode):
 
 
 class Person(DjangoNode):
-
     uid = UniqueIdProperty()
     created = DateTimeProperty(default=datetime.now())
     created_by = IntegerProperty()  # The uid of the user who created this node
@@ -69,7 +66,6 @@ class Person(DjangoNode):
         ordering = ['last_name', 'first_name', 'affiliation']
 
     def __str__(self):
-
         if self.middle_name is not None and len(self.middle_name) > 0:
             return '{} {} {}'.format(self.first_name, self.middle_name, self.last_name)
         return '{} {}'.format(self.first_name, self.last_name)
@@ -79,7 +75,6 @@ class Person(DjangoNode):
 
 
 class Dataset(DjangoNode):
-
     uid = UniqueIdProperty()
     created = DateTimeProperty(default=datetime.now())
     created_by = IntegerProperty()  # The uid of the user who created this node
@@ -119,7 +114,6 @@ class Dataset(DjangoNode):
 
 
 class Venue(DjangoNode):
-
     venue_types = (('J', 'Journal'),
                    ('C', 'Conference'),
                    ('W', 'Workshop'),
@@ -156,7 +150,6 @@ class Venue(DjangoNode):
 
 
 class Comment(DjangoNode):
-
     uid = UniqueIdProperty()
     created = DateTimeProperty(default=datetime.now())
     created_by = IntegerProperty()  # The uid of the user who created this node
@@ -181,7 +174,6 @@ class Comment(DjangoNode):
 
 
 class Code(DjangoNode):
-
     uid = UniqueIdProperty()
     created = DateTimeProperty(default=datetime.now())
     created_by = IntegerProperty()  # The uid of the user who created this node
@@ -202,10 +194,35 @@ class Code(DjangoNode):
     def get_absolute_url(self):
         return reverse('code_detail', args=[self.id])
 
+    #
+    # These are models for the SQL database
+    #
 
-#
-# These are models for the SQL database
-#
+
+class FlaggedComment(models.Model):
+    comment_id = models.IntegerField(null=False, blank=False)  # id of the flagged comment
+
+    violation = models.CharField(max_length=100)
+    description = models.TextField()
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+
+    # user who flags the item
+    proposed_by = models.ForeignKey(to=User,
+                                    on_delete=models.CASCADE,
+                                    related_name="flagged_items")
+
+    class Meta:
+        ordering = ['violation', '-created_at']
+        verbose_name = "comment flag"
+
+    # Methods
+    def get_absolute_url(self):
+        return reverse('paper_detail', args=[str(self.id)])
+
+    def __str__(self):
+        return self.description
+
+
 class ReadingGroup(models.Model):
     """A ReadingGroup model"""
 
@@ -304,7 +321,31 @@ class CollectionEntry(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     def get_absolute_url(self):
-        return reverse('collection_detail', args=[str[self.id]])
+        return reverse('collection_detail', args=[str(self.id)])
 
     def __str__(self):
         return str(self.paper_id)
+
+
+class EndorsementEntry(models.Model):
+    """An entry, that is user, in an endorsement for a paper"""
+
+    # Fields
+    paper_id = models.IntegerField(null=False, blank=False)
+    paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+
+    user = models.ForeignKey(to=User,
+                             on_delete=models.CASCADE,
+                             related_name="endorsements")
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+
+    # Metadata
+    class Meta:
+        ordering = ['-created_at']
+
+    def get_absolute_url(self):
+        return reverse('paper_detail', args=[str(self.id)])
+
+    def __str__(self):
+        return str(self.user) + ' endorse ' + str(self.paper)

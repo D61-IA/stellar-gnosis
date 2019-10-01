@@ -1,0 +1,95 @@
+{% extends "gnosis_theme.html" %}
+
+{% block content %}
+
+
+
+<div class="card shadow-sm mt-3">
+    <div class="card-body text-center">
+        {% if message %}
+        <p class="bg-info">{{ message }}</p>
+        {% endif %}
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            {{ field }}
+            {% endfor %}
+            <br/>
+            <input type="submit" class="btn btn-primary btn-lg" value="Search"/>
+        </form>
+    </div>
+</div>
+
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header"><h4>Items that match your query</h4></div>
+    <div class="card-body">
+
+        <ul class="list-group">
+
+            {% if paper_results %}
+            {% for paper in paper_results %}
+            <li class="list-group-item mt-1">
+                <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>
+            </li>
+
+            {% endfor %}
+            {% endif %}
+
+            {% if person_results %}
+            {% for person in person_results %}
+            <li class="list-group-item mt-1">
+                {% if person.middle_name %}
+                <p><a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.middle_name }}
+                    {{ person.last_name }}</a>
+                </p>
+                {% else %}
+                <p><a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.last_name }}</a></p>
+                {% endif %}
+            </li>
+
+            {% endfor %}
+            {% endif %}
+
+            {% if venue_results %}
+            {% for venue in venue_results %}
+
+            <li class="list-group-item mt-1">
+                <p><a href="{{ venue.get_absolute_url }}">{{ venue.name }}</a></p>
+                <p>Published on {{ venue.publication_date }} by {{ venue.publisher }}</p>
+            </li>
+
+            {% endfor %}
+            {% endif %}
+
+            {% if dataset_results %}
+            {% for dataset in dataset_results %}
+
+            <li class="list-group-item mt-1">
+
+                <p><a href="{{ dataset.get_absolute_url }}">{{ dataset.name }}</a></p>
+                <p>{{ dataset.description|truncatewords:25 }}</p>
+            </li>
+
+            {% endfor %}
+            {% endif %}
+
+            {% if codes_results %}
+            {% for code in codes_results %}
+
+            <li class="list-group-item mt-1">
+                <p><a href="{{ code.get_absolute_url }}">{{ code.website }}</a></p>
+                <p>{{ code.description|truncatewords:25 }}</p>
+                <p class="text-right">
+                    <small>Keywords: {{ code.keywords }}</small>
+                </p>
+            </li>
+
+            {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+
+</div>
+{% endblock %}

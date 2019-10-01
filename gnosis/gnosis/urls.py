@@ -19,11 +19,13 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.urls import path
+from notes import views as note_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('catalog/', include('catalog.urls')),
     path('home/', include('home.urls')),
+    path('bookmarks/', include('bookmark.urls')),
     # the next one redirects the root URL to host/catalog/
     # change this as necessary later, maybe make it redirect to a welcome page
     path('', RedirectView.as_view(url='/home/')),
@@ -37,3 +39,10 @@ urlpatterns += [
 
 # Use static() to add url mapping to serve static files during development (only)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Add url pattern for note app
+urlpatterns += [
+    path('note/create/', note_views.note_create, name='note_create'),
+    path('note/<int:id>/update', note_views.note_update, name='note_update'),
+    path('note/<int:id>/delete', note_views.note_delete, name='note_delete'),
+]

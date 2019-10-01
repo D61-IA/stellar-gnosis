@@ -1,10 +1,11 @@
 from catalog.forms import PaperForm, PaperImportForm, PersonForm, DatasetForm, VenueForm, CommentForm, CodeForm, \
-    SearchVenuesForm, SearchDatasetsForm, SearchPapersForm, SearchPeopleForm, SearchCodesForm
+    SearchVenuesForm, SearchDatasetsForm, SearchPapersForm, SearchPeopleForm, SearchCodesForm, FlaggedCommentForm
 from django.test import TestCase
 import datetime as dt
 
+
 # Create your tests here.
-# To run this test, use command: py -3 manage.py test tests.test_form_paper
+# To run this test, use command: py -3 manage.py test tests.test_form
 
 
 #
@@ -35,7 +36,8 @@ class SearchVenuesFormTest(TestCase):
         if form.is_valid():
             x = form.clean_venue_publication_year()
             self.assertEquals(x, "1995")
-            self.assertTrue(form.fields['venue_publication_year'].label is None or form.fields['venue_publication_year'].label == 'venue_publication_year')
+            self.assertTrue(form.fields['venue_publication_year'].label is None or form.fields[
+                'venue_publication_year'].label == 'venue_publication_year')
 
 
 class SearchDatasetsFormTest(TestCase):
@@ -75,12 +77,13 @@ class SearchPapersFormTest(TestCase):
             self.assertEquals(visible.field.widget.attrs["class"], "form-control")
 
     def test_clean_paper_title(self):
-        data = {'paper_title':"ML"}
+        data = {'paper_title': "ML"}
         form = SearchPapersForm(data)
         if form.is_valid():
             x = form.clean_paper_title()
             self.assertTrue(x == "ML")
-            self.assertTrue(form.fields['paper_title'].label is None or form.fields['paper_title'].label == 'paper_title')
+            self.assertTrue(
+                form.fields['paper_title'].label is None or form.fields['paper_title'].label == 'paper_title')
 
 
 class SearchPeopleFormTest(TestCase):
@@ -91,12 +94,13 @@ class SearchPeopleFormTest(TestCase):
             self.assertEquals(visible.field.widget.attrs["class"], "form-control")
 
     def test_clean_person_name(self):
-        data = {"person_name":"Alice"}
+        data = {"person_name": "Alice"}
         form = SearchPeopleForm(data)
         if form.is_valid():
             x = form.clean_person_name()
             self.assertTrue(x == "Alice")
-            self.assertTrue(form.fields['person_name'].label is None or form.fields['person_name'].label == 'person_name')
+            self.assertTrue(
+                form.fields['person_name'].label is None or form.fields['person_name'].label == 'person_name')
 
 
 class SearchCodesFormTest(TestCase):
@@ -172,7 +176,7 @@ class PaperFormTest(TestCase):
 class PaperImportFormTest(TestCase):
 
     def test_clean_url(self):
-        data = {"url" : "www.google.com"}
+        data = {"url": "www.google.com"}
         form = PaperImportForm(data)
         if form.is_valid():
             x = form.clean_url()
@@ -545,3 +549,34 @@ class CodeFormTest(TestCase):
             x = form.clean_website()
             self.assertTrue(x == "w")
             self.assertTrue(form.fields['website'].label is None or form.fields['website'].label == 'Website*')
+
+
+class FlagFormTest(TestCase):
+    def test_fields(self):
+        form = FlaggedCommentForm()
+        self.assertEquals(form.fields["violation"].label, "Violation")
+        self.assertEquals(form.fields["description"].label, "Description")
+
+    def test_clean_description(self):
+        data = {
+            "violation": "Child abuse",
+            "description": "test description"
+        }
+        form = FlaggedCommentForm(data)
+        if form.is_valid():
+            d = form.clean_description()
+            self.assertTrue(d == "test description")
+            self.assertTrue(
+                form.fields['description'].label is None or form.fields['description'].label == 'Description*')
+
+    def test_clean_violation(self):
+        data = {
+            "violation": "Child abuse",
+            "description": "test description"
+        }
+        form = FlaggedCommentForm(data)
+        if form.is_valid():
+            v = form.clean_violation()
+            self.assertTrue(v == "Child abuse")
+            self.assertTrue(
+                form.fields['violation'].label is None or form.fields['violation'].label == 'Violation*')

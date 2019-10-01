@@ -84,7 +84,7 @@ class PaperModelTest(TestCase):
     #     main_paper.download_link = "www.main.com"
     #     main_paper.save()
     #
-    #     for i in range(20):
+    #     for i in range(10):
     #         venue = Venue()
     #         venue.name = "Venue " + str(i)
     #         venue.publisher = "Publisher"
@@ -95,7 +95,7 @@ class PaperModelTest(TestCase):
     #         venue.save()
     #         main_paper.was_published_at.connect(venue)
     #
-    #     for i in range(50):
+    #     for i in range(10):
     #         paper = Paper()
     #         title = "Paper " + str(i)
     #         abstract = "Abstract " + str(i)
@@ -107,7 +107,7 @@ class PaperModelTest(TestCase):
     #         paper.save()
     #         paper.cites.connect(main_paper)
     #
-    #     for i in range(30):
+    #     for i in range(10):
     #         code = Code()
     #         code.website = "www.DownloadLink" + str(i) + ".com"
     #         code.keywords = "Test code"
@@ -115,7 +115,7 @@ class PaperModelTest(TestCase):
     #         code.save()
     #         code.implements.connect(main_paper)
     #
-    #     for i in range(30):
+    #     for i in range(10):
     #         dataset = Dataset()
     #         dataset.name = "Dataset " + str(i)
     #         dataset.description = "Description " + str(i)
@@ -124,13 +124,25 @@ class PaperModelTest(TestCase):
     #         dataset.save()
     #         main_paper.published.connect(dataset)
     #
-    #     for i in range(30):
+    #     for i in range(10):
     #         person = Person()
     #         person.first_name = "FirstName"
     #         person.last_name = "Author " + str(i)
-    #         person.middle_name = "FirstName " + "Author " + str(i)
+    #         person.middle_name = "['MiddleName']" # notice the middle name format must be "[' ... ']"
     #         person.save()
     #         person.authors.connect(main_paper)
+    #
+    #     for i in range(10, 20):
+    #         paper = Paper()
+    #         title = "Paper " + str(i)
+    #         abstract = "Abstract " + str(i)
+    #         download_link = "www.DownloadLink" + str(i) + ".com"
+    #         paper.title = title
+    #         paper.abstract = abstract
+    #         paper.keywords = "k"
+    #         paper.download_link = download_link
+    #         paper.save()
+    #         paper.uses.connect(main_paper)
 
     def test_create_duplicate(self):
         """

@@ -1,14 +1,17 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-<div class="mt-5">
-    <h3>Share your thoughts!</h3>
+    <div class="mt-5">
+        <h3>Share your thoughts!</h3>
 
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <br/>
-        <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
-    </form>
-</div>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <br/>
+            <input type="submit" class="btn btn-primary btn-lg float-right captcha-submit" value="Submit"/>
+        </form>
+    </div>
+    <script>
+        setButton();
+    </script>
 {% endblock %}

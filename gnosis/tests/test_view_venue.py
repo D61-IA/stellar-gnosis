@@ -5,7 +5,7 @@ from catalog.views.views import venue_create, venues, venue_detail, venue_find, 
 from django.http import HttpRequest
 
 # Create your tests here.
-# To run this test, use command: py -3 manage.py test tests.test_form_paper
+# To run this test, use command: py -3 manage.py test tests.test_view_venue
 class VenueViewTest(TestCase):
     def setUp(self):
         # Create a user
