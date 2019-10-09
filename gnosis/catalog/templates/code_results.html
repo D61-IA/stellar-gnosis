@@ -1,6 +1,7 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
+
 {% load el_pagination_tags %}
 
 <div class="card shadow-sm mt-3">
@@ -26,28 +27,25 @@
     </div>
 </div>
 
-{% if people %}
+{% if codes_results %}
+
 <div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>People</h4></div>
-    {% paginate people %}
+    <div class="card-header"><h4>Codes that match your query</h4></div>
+    {% paginate codes_results %}
     <div class="card-body">
 
-        {% for person in people %}
+        {% for code in codes_results %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
-                {% if person.middle_name %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{person.middle_name}}
-                    {{ person.last_name }}</a>
+                <p><a href="{{ code.get_absolute_url }}">{{ code.website }}</a></p>
+                <p>{{ code.description|truncatewords:25 }}</p>
+                <p class="text-right">
+                    <small>Keywords: {{ code.keywords }}</small>
                 </p>
-                {% else %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{ person.last_name }}</a></p>
-                {% endif %}
-                {% if person.affiliation %}<p>Affiliation: {{ person.affiliation }}</p>{% endif %}
             </li>
         </ul>
         {% endfor %}
     </div>
-
         {% get_pages %}
         <!-- Center-aligned -->
         <ul class="pagination justify-content-center" style="margin:20px 0">
@@ -68,4 +66,5 @@
 
 </div>
 {% endif %}
+
 {% endblock %}

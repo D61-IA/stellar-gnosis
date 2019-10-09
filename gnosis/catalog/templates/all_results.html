@@ -2,21 +2,28 @@
 
 {% block content %}
 
-
+{% load el_pagination_tags %}
 
 <div class="card shadow-sm mt-3">
     <div class="card-body text-center">
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-
         <form action="" method="post">
             {% csrf_token %}
-            {% for field in form %}
-            {{ field }}
-            {% endfor %}
-            <br/>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search"/>
+           <div class="row row-no-gutters">
+                <div class="col-2" style="padding-right: 0px">
+                    {{ form.search_type }}
+                </div>
+                <div class="col-10" style="padding-left: 0px">
+                    {{ form.search_keywords }}
+
+                </div>
+            </div>
+            <br>
+           <div>
+              <input type="submit" class="btn btn-primary" value="Search"/>
+          </div>
         </form>
     </div>
 </div>
@@ -29,6 +36,7 @@
         <ul class="list-group">
 
             {% if paper_results %}
+            {% paginate paper_results %}
             {% for paper in paper_results %}
             <li class="list-group-item mt-1">
                 <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>
@@ -38,6 +46,7 @@
             {% endif %}
 
             {% if person_results %}
+            {% paginate person_results %}
             {% for person in person_results %}
             <li class="list-group-item mt-1">
                 {% if person.middle_name %}
@@ -53,6 +62,7 @@
             {% endif %}
 
             {% if venue_results %}
+            {% paginate venue_results %}
             {% for venue in venue_results %}
 
             <li class="list-group-item mt-1">
@@ -64,6 +74,7 @@
             {% endif %}
 
             {% if dataset_results %}
+            {% paginate dataset_results %}
             {% for dataset in dataset_results %}
 
             <li class="list-group-item mt-1">
@@ -76,6 +87,7 @@
             {% endif %}
 
             {% if codes_results %}
+            {% paginate codes_results %}
             {% for code in codes_results %}
 
             <li class="list-group-item mt-1">
@@ -87,6 +99,24 @@
             </li>
 
             {% endfor %}
+            {% endif %}
+        </ul>
+
+        {% get_pages %}
+        <!-- Center-aligned -->
+        <ul class="pagination justify-content-center" style="margin:20px 0">
+            {% if not pages.current.is_first %}
+            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+            {% endif %}
+            {% for page in pages %}
+            {% if page.is_current %}
+            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if not pages.current.is_last %}
+            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
         </ul>
     </div>

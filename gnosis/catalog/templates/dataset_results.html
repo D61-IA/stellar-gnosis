@@ -1,5 +1,4 @@
 {% extends "gnosis_theme.html" %}
-
 {% block content %}
 {% load el_pagination_tags %}
 
@@ -26,23 +25,17 @@
     </div>
 </div>
 
-{% if people %}
+{% if dataset_results %}
 <div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>People</h4></div>
-    {% paginate people %}
+    <div class="card-header"><h4>Datasets that match your query</h4></div>
+    {% paginate dataset_results %}
     <div class="card-body">
 
-        {% for person in people %}
+        {% for dataset in dataset_results %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
-                {% if person.middle_name %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{person.middle_name}}
-                    {{ person.last_name }}</a>
-                </p>
-                {% else %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{ person.last_name }}</a></p>
-                {% endif %}
-                {% if person.affiliation %}<p>Affiliation: {{ person.affiliation }}</p>{% endif %}
+                <p><a href="{{ dataset.get_absolute_url }}">{{ dataset.name }}</a></p>
+                <p>{{ dataset.description|truncatewords:25 }}</p>
             </li>
         </ul>
         {% endfor %}
@@ -65,7 +58,6 @@
             <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
         </ul>
-
 </div>
 {% endif %}
 {% endblock %}

@@ -1,14 +1,28 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render
-from catalog.models import Person, Paper
+from django.shortcuts import render, redirect, get_object_or_404
+from catalog.models import Paper, Person, Venue, Dataset, Code
 from catalog.forms import PersonForm
-from catalog.forms import SearchPeopleForm
+from catalog.forms import SearchPeopleForm, SearchAllForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from neomodel import db
 from django.shortcuts import redirect
 from django.contrib import messages
+from catalog.views.utils.import_functions import *
+
+from django.urls import reverse
+from django.http import HttpResponseRedirect, JsonResponse
+from neomodel import db
+from datetime import date
+from nltk.corpus import stopwords
+from urllib.request import urlopen, Request
+from urllib.error import HTTPError, URLError
+from bs4 import BeautifulSoup
+from django.contrib import messages
+import re
+
+
 
 
 def _person_find(person_name, exact_match=False):
@@ -81,30 +95,154 @@ def person_find(request):
 #
 def persons(request):
     people = Person.nodes.order_by("-created")[:50]
+
+    form = SearchAllForm(request.POST)
+    form.fields['search_type'].initial = 'people'
+
     message = None
-    if request.method == "POST":
-        form = SearchPeopleForm(request.POST)
+    paper_results = []
+    person_results = []
+    venue_results = []
+    dataset_results = []
+    codes_results = []
+
+    if request.method == 'POST':
+
         print("Received POST request")
         if form.is_valid():
-            print("Valid form")
-            people_found = _person_find(form.cleaned_data["person_name"])
-            if people_found is not None:
-                #print("Found people. Rendering person_find.html")
-                people_found_ids = [person.uid for person in people_found]
-                #print("ids as string {}".format(",".join(str(pid) for pid in people_found_ids)))
-                messages.add_message(request, messages.INFO, ",".join(str(pid) for pid in people_found_ids))
-                return redirect("person_find")
-                # return render(
-                #      request,
-                #      "person_find.html",
-                #      {"people": people_found, "form": form, "message": ""},
-                # )
+            english_stopwords = stopwords.words('english')
+            search_filter = form.cleaned_data['search_type']
+            search_keywords = form.cleaned_data['search_keywords'].lower()
+            search_keywords_tokens = [w for w in search_keywords.split(' ') if not w in english_stopwords]
+
+            all_query = '(?i).*' + '+.*'.join('(' + w + ')' for w in search_keywords_tokens) + '+.*'
+            query = "match (n) with n, [x in keys(n) WHERE n[x]=~ { all_query }] as doesMatch where size(doesMatch) > 0 return n"
+            # query = "MATCH (p:Paper) WHERE  p.title =~ { paper_query } OR p.abstract =~ { paper_query }  RETURN p LIMIT 25"
+            # print("Cypher query string {}".format(query))
+            results, meta = db.cypher_query(query, dict(all_query=all_query))
+
+            # print("Results: ", results)
+            if len(results) > 0:
+
+                if search_filter == 'all':
+                    print("{} match(es) found ".format(len(results)))
+
+                    for row in results:
+                        for label in row[0].labels:
+
+                            if label == 'Paper':
+                                paper_results.append(Paper.inflate(row[0]))
+
+                            elif label == 'Person':
+                                person_results.append(Person.inflate(row[0]))
+                                print(person_results)
+
+                            elif label == 'Venue':
+                                venue_results.append(Venue.inflate(row[0]))
+
+                            elif label == 'Dataset':
+                                dataset_results.append(Dataset.inflate(row[0]))
+
+                            elif label == 'Code':
+                                codes_results.append(Code.inflate(row[0]))
+
+                    # papers = [Paper.inflate(row[0]) for row in results]
+                    # search_results = paper_results.append(person_results.append(venue_results.append(
+                    #   dataset_results.append(codes_results))))
+                    print("Going to all results page..........")
+                    return render(request, 'all_results.html', {'paper_results': paper_results,
+                                                                'person_results': person_results,
+                                                                'venue_results': venue_results,
+                                                                'dataset_results': dataset_results,
+                                                                'codes_results': codes_results,
+                                                                'form': form, 'message': message})
+
+                elif search_filter == 'papers':
+                    for row in results:
+                        for label in row[0].labels:
+                            if label == 'Paper':
+                                paper_results.append(Paper.inflate(row[0]))
+
+                    if len(paper_results) > 0:
+                        print("Found {} matching papers".format(len(paper_results)))
+                        return render(request, "paper_results.html",
+                                      {"paper_results": paper_results, "form": form, "message": ""})
+                    else:
+                        message = "No results found. Please try again!"
+                        return render(request, 'papers.html', {'people': people, 'form': form,
+                                                               'message': message})
+
+                elif search_filter == 'people':
+                    for row in results:
+                        for label in row[0].labels:
+                            if label == 'Person':
+                                person_results.append(Person.inflate(row[0]))
+
+                    if len(person_results) > 0:
+                        print("Found {} matching papers".format(len(person_results)))
+                        return render(request, "people_results.html",
+                                      {"person_results": person_results, "form": form, "message": ""})
+                    else:
+                        message = "No results found. Please try again!"
+                        return render(request, 'papers.html', {'people': people, 'form': form,
+                                                               'message': message})
+
+                elif search_filter == 'venues':
+                    for row in results:
+                        for label in row[0].labels:
+                            if label == 'Venue':
+                                venue_results.append(Venue.inflate(row[0]))
+
+                    if len(venue_results) > 0:
+                        print("Found {} matching papers".format(len(venue_results)))
+                        return render(request, "venue_results.html",
+                                      {"venue_results": venue_results, "form": form, "message": ""})
+                    else:
+                        message = "No results found. Please try again!"
+                        return render(request, 'papers.html', {'people': people, 'form': form,
+                                                               'message': message})
+
+                elif search_filter == 'datasets':
+                    for row in results:
+                        for label in row[0].labels:
+                            if label == 'Dataset':
+                                dataset_results.append(Dataset.inflate(row[0]))
+
+                    if len(dataset_results) > 0:
+                        print("Found {} matching papers".format(len(dataset_results)))
+                        return render(request, "dataset_results.html",
+                                      {"dataset_results": dataset_results, "form": form, "message": ""})
+                    else:
+                        message = "No results found. Please try again!"
+                        return render(request, 'papers.html', {'people': people, 'form': form,
+                                                               'message': message})
+
+                elif search_filter == 'codes':
+                    for row in results:
+                        for label in row[0].labels:
+                            if label == 'Code':
+                                codes_results.append(Code.inflate(row[0]))
+
+                    if len(codes_results) > 0:
+                        print("Found {} matching papers".format(len(codes_results)))
+                        return render(request, "code_results.html",
+                                      {"codes_results": codes_results, "form": form, "message": ""})
+                    else:
+                        message = "No results found. Please try again!"
+                        return render(request, 'papers.html', {'people': people,
+                                                               'form': form,
+                                                               'message': message})
+
             else:
                 message = "No results found. Please try again!"
 
+
     elif request.method == "GET":
         print("Received GET request")
-        form = SearchPeopleForm()
+        form = SearchAllForm()
+        form.fields['search_type'].initial = 'people'
+
+    print(message);
 
     return render(
         request, "people.html", {"people": people, "form": form, "message": message}

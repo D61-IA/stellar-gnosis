@@ -1,63 +1,95 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-<div class="card shadow-sm mt-3">
-    <div class="card-body">
-        <h1>&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</h1>
-        <h2>A knowledge management system for technical documents.</h2>
-        {% if not user.is_authenticated %}
-        <h3> Hi, <a href="{% url 'login' %}?next={{request.path}}">login</a> to make full use of &gamma;&nu;&#974;&sigma;&iota;&sigmaf;.
-        </h3>
-        <h4>If you are new here then why not <a href="{% url 'django_registration_register' %}">register a new
-            account!</a></h4>
-        {% endif %}
+    <div class="card shadow-sm mt-3">
+        <div class="card-body">
+            <h1>&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</h1>
+            <h2>A knowledge management system for technical documents.</h2>
+            {% if not user.is_authenticated %}
+                <h3> Hi, <a href="{% url 'login' %}?next={{ request.path }}">login</a> to make full use of &gamma;&nu;&#974;&sigma;&iota;&sigmaf;.
+                </h3>
+                <h4>If you are new here then why not <a href="{% url 'django_registration_register' %}">register a new
+                    account!</a></h4>git fetch origin
+            {% endif %}
 
-        <p class="text-right">Statistics: We have {{ num_papers }} papers and {{ num_people }} people in our DB</p>
+            <p class="text-right">Statistics: We have {{ num_papers }} papers and {{ num_people }} people in our DB</p>
+        </div>
     </div>
-</div>
 
-<div class="card shadow-sm mt-3">
-    <div class="card-body text-center">
-        {% if message %}
-        <p class="bg-info">{{ message }}</p>
-        {% endif %}
-        <br>
-        <form action="" method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            <span class="rounded-lg">
-        {{ field }}
-        </span>
-            {% endfor %}
-            <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search"/>
-        </form>
-    </div>
-</div>
+    <div class="card shadow-sm mt-3">
+        <div class="card-body text-center">
+            {% if message %}
+                <p class="bg-info">{{ message }}</p>
+            {% endif %}
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="row row-no-gutters">
+                    <div class="col-2" style="padding-right: 0px">
+                        {{ form.search_type }}
+                    </div>
+                    <div class="col-10" style="padding-left: 0px">
+                        {{ form.search_keywords }}
 
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h4>Recently added papers</h4>
+                    </div>
+                </div>
+                <br>
+                <div>
+                    <input type="submit" class="btn btn-primary" value="Search"/>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-        {% for paper, authors in papers %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
-                <p>{{ authors }}</p>
-                <p>{{ paper.abstract|truncatewords:50 }}</p>
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h4>Recently added</h4>
+        </div>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                   aria-selected="true">Papers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                   aria-controls="profile" aria-selected="false">People</a>
             </li>
         </ul>
-        {% endfor %}
-    </div>
-</div>
 
-{% if user.is_superuser %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header"><strong>Admin Functions</strong></div>
-    <div class="card-body"><a href="{% url 'build_db' %}">Populate test DB</a></div>
-</div>
-{% endif %}
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="card-body">
+                    {% for paper, authors in papers %}
+                        <ul class="list-group">
+                            <li class="list-group-item mt-1">
+                                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
+                                <p>{{ authors }}</p>
+                                <p>{{ paper.abstract|truncatewords:50 }}</p>
+                            </li>
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="card-body">
+                    {% for author in recent_authors %}
+                        <ul class=" list-group">
+                            <li class="list-group-item mt-1">
+                                <h4><a href="{{ paper.get_absolute_url }}">{{ author }}</a></h4>
+                            </li>
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_superuser %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header"><strong>Admin Functions</strong></div>
+            <div class="card-body"><a href="{% url 'build_db' %}">Populate test DB</a></div>
+        </div>
+    {% endif %}
 
 
 {% endblock %}

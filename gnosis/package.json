@@ -1,7 +1,5 @@
 {
   "name": "gnosis",
   "version": "1.0.0",
-  "dependencies": {
-    "cytoscape-cola": "latest"
-  }
+  "dependencies": {}
 }

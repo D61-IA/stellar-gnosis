@@ -7,13 +7,13 @@ class NoteForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
 
-        self.fields["text"].widget = forms.Textarea()
-        self.fields["text"].widget.attrs.update({"rows": "5"})
-        self.fields["text"].label = ""
+        self.fields["note_content"].widget = forms.Textarea()
+        self.fields["note_content"].widget.attrs.update({"rows": "5"})
+        self.fields["note_content"].label = ""
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:35em"})
+            visible.field.widget.attrs.update({"style": "width:100%"})
             print(visible.field.widget.attrs.items())
 
     def clean_text(self):
@@ -27,4 +27,4 @@ class NoteForm(ModelForm):
 
     class Meta:
         model = Note
-        fields = ["text"]
+        fields = ["note_content"]

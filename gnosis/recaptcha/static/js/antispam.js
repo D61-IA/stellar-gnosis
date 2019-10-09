@@ -7,12 +7,8 @@ function setWidget(w) {
 
 // if submit button id is not provided, it will use class 'captcha-submit instead.
 // if recaptcha is checkbox, set it to disable.
-function setButton(id) {
+function setButton() {
     var button_id = '.captcha-submit';
-
-    if (id !== undefined) {
-        button_id = '#' + id;
-    }
 
     $(button_id).prop('disabled', false);
 
