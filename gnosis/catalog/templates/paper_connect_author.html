@@ -22,7 +22,7 @@
             {% for person, person_connect_url in people %}
             <li class="list-group-item clearfix mt-1">
                 <a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.last_name }}</a>
-                {% if user.is_authenticated and user.is_superuser %}
+                {% if user.is_authenticated %}
                 <a class="btn btn-warning float-right" href={{ person_connect_url }}>Connect</a>
                 {% endif %}
             </li>
