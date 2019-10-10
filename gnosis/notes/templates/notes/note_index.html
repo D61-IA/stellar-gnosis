@@ -3,42 +3,25 @@
 {% load el_pagination_tags %}
 
 <div class="card shadow-sm mt-3">
-    <div class="card-body text-center">
-        {% if message %}
-        <p class="bg-info">{{ message }}</p>
-        {% endif %}
-       <form action="" method="post">
-            {% csrf_token %}
-           <div class="row row-no-gutters">
-                <div class="col-2" style="padding-right: 0px">
-                    {{ form.search_type }}
-                </div>
-                <div class="col-10" style="padding-left: 0px">
-                    {{ form.search_keywords }}
-                </div>
-            </div>
-            <br>
-           <div>
-              <input type="submit" class="btn btn-primary" value="Search"/>
-          </div>
-        </form>
-    </div>
-</div>
+    <div class="card-header">
+        <h4>Notes</h4>
 
-{% if datasets %}
-<div class="card shadow-sm mt-3">
-    {% paginate datasets %}
-    <div class="card-header"><h4>Datasets</h4></div>
+    </div>
     <div class="card-body">
-        {% for dataset in datasets %}
+        {% if num_notes != 0 %}
+        {% paginate notes_info %}
+        {% for note_info in notes_info %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
-                <p><a href="{{ dataset.get_absolute_url }}">{{ dataset.name }}</a></p>
-                <p>{{ dataset.description|truncatewords:25 }}</p>
+                <div class="mr-auto p-2">
+                    <p>{{ note_info.0.note_content }}</p>
+                    <p> Posted on {{ note_info.0.updated_at }} </p>
+                    <p> On {{ note_info.1 }} <a href="{% url 'paper_detail' note_info.0.paper_id %}">View</a></p>
+
+                </div>
             </li>
         </ul>
         {% endfor %}
-    </div>
 
         {% get_pages %}
         <!-- Center-aligned -->
@@ -56,8 +39,10 @@
             {% if not pages.current.is_last %}
             <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
+        {% else %}
+        <p class="font-heavy-light font-italic">You have not post any notes yet.</p>
+        {% endif %}
         </ul>
-
+    </div>
 </div>
-{% endif %}
 {% endblock %}

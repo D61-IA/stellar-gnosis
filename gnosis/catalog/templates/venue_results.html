@@ -8,7 +8,7 @@
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-       <form action="" method="post">
+        <form action="" method="post">
             {% csrf_token %}
            <div class="row row-no-gutters">
                 <div class="col-2" style="padding-right: 0px">
@@ -26,23 +26,16 @@
     </div>
 </div>
 
-{% if people %}
+{% if venue_results %}
 <div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>People</h4></div>
-    {% paginate people %}
+    <div class="card-header"><h4>Venues that match your query</h4></div>
+    {% paginate venue_results %}
     <div class="card-body">
-
-        {% for person in people %}
+        {% for venue in venue_results %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
-                {% if person.middle_name %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{person.middle_name}}
-                    {{ person.last_name }}</a>
-                </p>
-                {% else %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{ person.last_name }}</a></p>
-                {% endif %}
-                {% if person.affiliation %}<p>Affiliation: {{ person.affiliation }}</p>{% endif %}
+                <p><a href="{{ venue.get_absolute_url }}">{{ venue.name }}</a></p>
+                <p>Published on {{ venue.publication_date }} by {{ venue.publisher }}</p>
             </li>
         </ul>
         {% endfor %}
@@ -67,5 +60,6 @@
         </ul>
 
 </div>
+
 {% endif %}
 {% endblock %}

@@ -25,7 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('catalog/', include('catalog.urls')),
     path('home/', include('home.urls')),
-    path('bookmarks/', include('bookmark.urls')),
+
+    path('bookmark/', include('bookmark.urls')),
+    path('note/', include('notes.urls')),
     # the next one redirects the root URL to host/catalog/
     # change this as necessary later, maybe make it redirect to a welcome page
     path('', RedirectView.as_view(url='/home/')),

@@ -1,6 +1,8 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
+    {% load el_pagination_tags %}
+    {% load humanize %}
 
     <div class="card shadow-sm mt-5">
         <div class="card-header">
@@ -241,149 +243,270 @@
         </div>
     </div>
 
-    {% if user.is_authenticated %}
-        <p><a href="{% url 'comment_create' %}" class="btn btn-info mt-3 btn-md">
-            <span class="glyphicon glyphicon-plus"></span> Add Comment</a>
-            <a href="{% url 'note_create' %}" class="btn btn-info mt-3 btn-md">
-                <span class="glyphicon glyphicon-plus"></span> Create Note</a>
-        </p>
-    {% else %}
-        <p><a href="{% url 'login' %}?next={{ request.path }}">Login</a> to comment</p>
-    {% endif %}
 
+    <div class="card shadow-sm mt-5">
+        {#    Comments / Notes heading#}
+        <div class="card-header">
+            {% if user.is_authenticated %}
+                <h3>Comments / Notes</h3>
+            {% else %}
+                <h3>Comments</h3>
+            {% endif %}
+        </div>
 
-    {% if num_comments > 0 %}
-        <div class="card shadow-sm mt-3">
-            <div class="card-header">
-                <h3>{{ num_comments }} Comments</h3>
-            </div>
-            <div class="card-body">
-                <ul class="list-group">
-                    {% for comment in comments %}
-                        <li class="list-group-item shadow-sm mt-1">
-                            <!-- start-flagging -->
-                            <div style="float: right; text-align: right;">
-                                <i class="material-icons more_vert" onclick="toggle_more(this)">
-                                    more_vert
-                                </i>
-                                <div class="popup" hidden>
-                                    <div class="more_menu">
-                                        {% if user.is_authenticated %}
-                                            <div class="opt_container" onclick="open_flag_dialog({{ comment.id }})">
-                                                <i class="material-icons menu_item">
-                                                    outlined_flag
-                                                </i>
-                                                <span class="menu_item">Report</span>
+        <div class="card-body">
+            {#        Navigation bar in tag view, show the comment and note tab depending on the login condition #}
+            {% if user.is_authenticated %}
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-comment-tab" data-toggle="tab" href="#navcomment"
+                           role="tab" aria-controls="navcomment" aria-selected="true">Comments</a>
+                        <a class="nav-item nav-link " id="nav-note-tab" data-toggle="tab" href="#navnote" role="tab"
+                           aria-controls="navnote" aria-selected="false">Notes</a>
+                    </div>
+                </nav>
+
+                <div class="tab-content" id="nav-tabContent">
+                    {#            tab content of comment tab#}
+                    <div class="tab-pane fade show active" id="navcomment" role="tabpanel"
+                         aria-labelledby="nav-comment-tab">
+                        <div class="mt-2">
+                            {#                            comment form#}
+                            <form action="" method="POST" id="comment-form">
+                                {% csrf_token %}
+                                {{ commentform }}
+                                <input type="submit" name="comment_form" class="btn btn-info mt-3 btn-md captcha-submit"
+                                       value="Post a comment"/>
+                                <small class="mt-2 float-right">* Comments are public and visible to all users.</small>
+                            </form>
+                        </div>
+                        <br/>
+                        {#                    show comments#}
+                        {% if num_comments > 0 %}
+                            <ul class="list-group list-group-flush">
+                            {% paginate comments %}
+                            {% for comment in comments %}
+                                <li class="list-group-item shadow-sm mt-1">
+                                    <div style="float: right; text-align: right;">
+                                        <i class="material-icons more_vert" onclick="toggle_more(this)">
+                                            more_vert
+                                        </i>
+                                        <div class="popup" hidden>
+                                            <div class="more_menu">
+                                                {% if user.is_authenticated %}
+                                                    <div class="opt_container"
+                                                         onclick="open_flag_dialog({{ comment.id }})">
+                                                        <i class="material-icons menu_item">
+                                                            outlined_flag
+                                                        </i>
+                                                        <span class="menu_item">Report</span>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="opt_container">
+                                                        <a class="icon_link"
+                                                           href="{% url 'login' %}?next={{ request.path }}"
+                                                           style="text-decoration: none; color: black">
+                                                            <i class="material-icons menu_item">
+                                                                outlined_flag
+                                                            </i>
+                                                            <span class="menu_item">Report</span>
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
                                             </div>
+                                        </div>
+                                    </div>
+                                    <p><strong>{{ comment.author }}</strong>
+
+                                        <small class="ml-3 text-muted">{{ comment.publication_date|naturaltime }}</small>
+                                        {% if comment.created_by == user.id %}
+                                            <a class="ml-5" href="{% url 'comment_update' comment.id %}">Edit</a>
+                                            <a class="ml-5" href="{% url 'comment_delete' comment.id %}"> Delete</a>
+                                        {% endif %}
+                                    </p>
+                                    <p>{{ comment.text }}</p>
+                                </li>
+                            {% endfor %}
+                            {% get_pages %}
+                            <ul class="pagination justify-content-center" style="margin:20px 0">
+                                {% if not pages.current.is_first %}
+                                    <li class="page-item"><a class="page-link"
+                                                             href="{{ pages.previous.path }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                {% for page in pages %}
+                                    {% if page.is_current %}
+                                        <li class="page-item active"><a class="page-link"
+                                                                        href="{{ page.path }}">{{ page.number }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ page.path }}">{{ page.number }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if not pages.current.is_last %}
+                                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    {#              tab content of note tab#}
+                    <div class="tab-pane fade" id="navnote" role="tabpanel" aria-labelledby="nav-note-tab">
+                        <div class="mt-2">
+                            {#                            note form#}
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                {{ noteform }}
+                                <input type="submit" name="note_form" class="btn btn-info mt-3 btn-md"
+                                       value="Post a note"/>
+                                <small class="mt-2 float-right">* Notes are private and only visible to the
+                                    creator</small>
+                            </form>
+                        </div>
+                        <br/>
+                        {% if num_notes > 0 %}
+                            <ul class="list-group list-group-flush">
+                                {% paginate notes %}
+                                {% for note in notes %}
+                                    <li class="list-group-item shadow-sm mt-1">
+                                        <p>{{ note.note_content }}</p>
+                                        <p>Date:
+                                            <small class="ml-0 pr-5 text-muted">{{ note.created_at|naturaltime }}</small>
+                                            Modified:
+                                            <small class="ml-0 text-muted">{{ note.updated_at|naturaltime }}</small>
+                                            <a class="ml-5" href="{% url 'note_update' note.id %}">Edit</a>
+                                            <a class="ml-5" href="{% url 'note_delete' note.id %}"> Delete</a>
+                                        </p>
+                                    </li>
+                                {% endfor %}
+
+                                {% get_pages %}
+                                <!-- Center-aligned -->
+                                <ul class="pagination justify-content-center" style="margin:20px 0">
+                                    {% if not pages.current.is_first %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="{{ pages.previous.path }}">Previous</a></li>
+                                    {% endif %}
+                                    {% for page in pages %}
+                                        {% if page.is_current %}
+                                            <li class="page-item active"><a class="page-link"
+                                                                            href="{{ page.path }}">{{ page.number }}</a>
+                                            </li>
                                         {% else %}
-                                            <div class="opt_container">
-                                                <a class="icon_link"
-                                                   href="{% url 'login' %}?next={{ request.path }}"
-                                                   style="text-decoration: none; color: black">
+                                            <li class="page-item"><a class="page-link"
+                                                                     href="{{ page.path }}">{{ page.number }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if not pages.current.is_last %}
+                                        <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                {#        if the user is not login#}
+            {% else %}
+                <h4 class="mt-2 mb-2">Sign up or <a href="{% url 'login' %}?next={{ request.path }}">login</a> to leave
+                    a
+                    comment</h4>
+                {% if num_comments > 0 %}
+                    <ul class="list-group list-group-flush">
+                        {% for comment in comments %}
+                            <li class="list-group-item shadow-sm mt-1">
+                                <div style="float: right; text-align: right;">
+                                    <i class="material-icons more_vert" onclick="toggle_more(this)">
+                                        more_vert
+                                    </i>
+                                    <div class="popup" hidden>
+                                        <div class="more_menu">
+                                            {% if user.is_authenticated %}
+                                                <div class="opt_container" onclick="open_flag_dialog({{ comment.id }})">
                                                     <i class="material-icons menu_item">
                                                         outlined_flag
                                                     </i>
                                                     <span class="menu_item">Report</span>
-                                                </a>
-                                            </div>
-                                        {% endif %}
-                                        {#                                            <div class="opt_container">#}
-                                        {#                                                <i class="material-icons menu_item">#}
-                                        {#                                                    delete#}
-                                        {#                                                </i>#}
-                                        {#                                                <span class="menu_item">Delete</span>#}
-                                        {#                                            </div>#}
+                                                </div>
+                                            {% else %}
+                                                <div class="opt_container">
+                                                    <a class="icon_link"
+                                                       href="{% url 'login' %}?next={{ request.path }}"
+                                                       style="text-decoration: none; color: black">
+                                                        <i class="material-icons menu_item">
+                                                            outlined_flag
+                                                        </i>
+                                                        <span class="menu_item">Report</span>
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
-
                                 </div>
-                            </div>
-                            <!-- end-flagging -->
-                            <p><strong>{{ comment.author }}</strong> says:</p>
-                            <p>
-                                <small>{{ comment.publication_date }}</small>
-                            </p>
-                            <p>{{ comment.text }}</p>
-                            {% if comment.created_by == user.id %}
-                                <a href="{% url 'comment_update' comment.id %}">Edit</a>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-
-        <!-- start-flagging -->
-        <div id="flag_form_container" class="cover popup" hidden>
-            <div id="flag_dialog">
-                <form id="flag_form" action="" method="post">
-                    {% csrf_token %}
-                    <table class="w-75">
-                        {% for field in flag_form %}
-                            <div style="font-weight: bold">
-                                {{ field.label_tag }}
-                            </div>
-                            <div style="padding: 0 10px">
-                                {{ field }}
-                            </div>
-                            {% if field.help_text %}
-                                {{ field.help_text }}
-                            {% endif %}
-
-                            {% for error in field.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        {% endfor %}
-                    </table>
-                    <br/>
-                    <div class="form_button_container">
-                        <button type="button" class="btn btn-primary btn-lg form_button"
-                                onclick="cancel_form()">
-                            Cancel
-                        </button>
-                        <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-
-        <!-- if form is valid show the form in the popup window -->
-        {% if flag_form.has_changed %}
-            <script>$('.cover').attr('hidden', false);</script>
-        {% endif %}
-
-        <!-- end-flagging -->
-
-    {% endif %}
-
-    {% if num_notes > 0 %}
-        {% if user.is_authenticated %}
-            <div class="card shadow-sm mt-3">
-                <div class="card-header">
-                    <h3>Private Note</h3>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for note in notes %}
-                            <li class="list-group-item shadow-sm mt-1">
-                                <p>{{ note.text }}</p>
-                                <p class="text-right">
-                                    <small>{{ note.date_posted }}</small>
+                                <p><strong>{{ comment.author }}</strong>
+                                    <small class="ml-3 text-muted">{{ comment.publication_date|date:"F d, Y" }}</small>
+                                    {% if comment.created_by == user.id %}
+                                        <a class="ml-3" href="{% url 'comment_update' comment.id %}">Edit</a>
+                                    {% endif %}
                                 </p>
-                                <a href="{% url 'note_update' note.id %}">Edit</a>
-                                <a href="{% url 'note_delete' note.id %}"> Delete</a>
+                                <p>{{ comment.text }}</p>
                             </li>
                         {% endfor %}
                     </ul>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- start-flagging -->
+    <div id="flag_form_container" class="cover popup" hidden>
+        <div id="flag_dialog">
+            <form id="flag_form" action="" method="post">
+                {% csrf_token %}
+                <table class="w-75">
+                    {% for field in flag_form %}
+                        <div style="font-weight: bold">
+                            {{ field.label_tag }}
+                        </div>
+                        <div style="padding: 0 10px">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                            {{ field.help_text }}
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+                <br/>
+                <div class="form_button_container">
+                    <button type="button" class="btn btn-primary btn-lg form_button"
+                            onclick="cancel_form()">
+                        Cancel
+                    </button>
+                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
                 </div>
-            </div>
-        {% endif %}
+            </form>
+        </div>
+    </div>
+
+
+    <!-- if form is valid show the form in the popup window -->
+    {% if flag_form.has_changed %}
+        <script>$('.cover').attr('hidden', false);</script>
     {% endif %}
+
+    <!-- end-flagging -->
 
     {% load static %}
     <script src="{% static "js/flagging.js" %}"></script>
 
-    <script>
+    <script type="text/javascript">
+
         // concentric level value
         var paper_count = 50;
 
@@ -401,46 +524,7 @@
             nodeDimensionsIncludeLabels: true,
         };
 
-        // node title width
-        var textMaxWidth = '100';
-
-        var defaultNodeStyle = {
-            'width': 20,
-            'height': 20,
-            'background-color': '#39acff',
-            'label': 'data(title)',
-            'text-opacity': 1,
-            'text-wrap': 'ellipsis',
-            'text-max-width': textMaxWidth,
-            'text-background-color': '#FFFFFF',
-            'text-outline-opacity': 1,
-            'text-outline-color': '#FFFFFF',
-            'text-outline-width': '1px',
-            'font-size': '10px',
-            'border-width': '1.5px',
-            'border-color': "#9d8b71",
-            'visibility': 'visible'
-
-        };
-
-        var defaultEdgeStyle = {
-            'width': 2,
-            'label': 'data(label)',
-            'line-color': '#2bd6ad',
-            'line-style': 'data(line)',
-            'curve-style': 'bezier',
-            'target-arrow-color': '#2bd6ad',
-            'target-arrow-shape': 'triangle',
-            'text-opacity': 1,
-            'text-outline-opacity': 1,
-            'text-outline-color': '#FFFFFF',
-            'text-outline-width': '1px',
-            'font-size': '9px',
-            'visibility': 'visible'
-
-        };
-
-        cy = cytoscape({
+        var cy = cytoscape({
             container: document.getElementById('cy'), // container to render in
             elements: {{ ego_network | safe }},
 
@@ -455,132 +539,115 @@
             style: [ // styling the graph
                 {
                     selector: 'node[type="Paper"]',
-                    style: {
-                        ...defaultNodeStyle,
-                        'background-color': '#39acff',
-                    },
-
+                    style: getCustomNodeStyle({
+                        'background-color': '#39acff'
+                    }),
                 },
                 {
                     selector: 'node[label="origin"]',
-                    style: {
-                        ...defaultNodeStyle,
+                    style: getCustomNodeStyle({
                         'width': 30,
                         'height': 30,
                         'background-color': '#39acff',
-                    }
+                    }),
                 },
                 {
                     selector: 'node[type="Person"]',
-                    style: {
-                        ...defaultNodeStyle,
+                    style: getCustomNodeStyle({
                         'background-color': '#ffb836',
                         'label': 'data(last_name)',
-                    },
+                    }),
 
                 },
                 {
                     selector: 'node[type="Venue"]',
-                    style: {
-                        ...defaultNodeStyle,
+                    style: getCustomNodeStyle({
                         'background-color': '#d97fff',
-                    },
+                    }),
 
                 },
                 {
                     selector: 'node[type="Dataset"]',
-                    style: {
-                        ...defaultNodeStyle,
+                    style: getCustomNodeStyle({
                         'background-color': '#ff723d',
-                    },
+                    }),
 
                 },
                 {
                     selector: 'node[type="Code"]',
-                    style: {
-                        ...defaultNodeStyle,
+                    style: getCustomNodeStyle({
                         'background-color': '#59d143',
-                    },
+                    }),
 
                 },
                 {
                     selector: 'node[type="Comment"]',
-                    style: {
-                        ...defaultNodeStyle,
+                    style: getCustomNodeStyle({
                         'background-color': '#9d8b71',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="cites"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#2bd6ad',
                         'target-arrow-color': '#2bd6ad',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="uses"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#4a8ee7',
                         'target-arrow-color': '#4a8ee7',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="extends"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#31c5ff',
                         'target-arrow-color': '#31c5ff',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="authors"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#ffb836',
                         'target-arrow-color': '#ffb836',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="evaluates on"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#ff723d',
                         'target-arrow-color': '#ff723d',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="published"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#ff607a',
                         'target-arrow-color': '#ff607a',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="was published at"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#d97fff',
                         'target-arrow-color': '#d97fff',
-                    }
+                    }),
                 },
                 {
                     selector: 'edge[label="implements"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#59d143',
                         'target-arrow-color': '#59d143',
-                    }
+                    })
                 },
                 {
                     selector: 'edge[label="discusses"]',
-                    style: {
-                        ...defaultEdgeStyle,
+                    style: getCustomEdgeStyle({
                         'line-color': '#9d8b71',
                         'target-arrow-color': '#9d8b71',
-                    }
+                    }),
                 }
             ],
 

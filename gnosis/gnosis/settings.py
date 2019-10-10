@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'django_nose',
     'recaptcha',
-    'captcha'
+    'captcha',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
