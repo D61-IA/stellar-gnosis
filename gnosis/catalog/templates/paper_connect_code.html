@@ -23,7 +23,7 @@
             {% for code, code_connect_url in codes %}
             <li class="list-group-item clearfix mt-1">
                 <a href="{{ code.get_absolute_url }}">{{ code.website }}</a>
-                {% if user.is_authenticated and user.is_superuser %}
+                {% if user.is_authenticated %}
                 <a class="btn btn-warning float-right" href={{ code_connect_url }}>Connect</a>
                 {% endif %}
             </li>
