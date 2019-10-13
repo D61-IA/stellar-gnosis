@@ -25,12 +25,10 @@
     <div class="card-header"><h4>Papers</h4></div>
     <div class="card-body">
         {% paginate papers %}
-        {% for paper, authors, venue in papers %}
+        {% for paper in papers %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
-                <p>{{ authors }}</p>
-                <p>{{ venue }}</p>
                 <p>{{ paper.abstract|truncatewords:50 }}</p>
             </li>
         </ul>

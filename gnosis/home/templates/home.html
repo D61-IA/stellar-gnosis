@@ -12,7 +12,7 @@
             account!</a></h4>
         {% endif %}
 
-        <p class="text-right">Statistics: We have {{ num_papers }} papers and {{ num_people }} people in our DB</p>
+<!--        <p class="text-right">Statistics: We have {{ num_papers }} papers and {{ num_people }} people in our DB</p>-->
     </div>
 </div>
 
@@ -40,11 +40,10 @@
         <h4>Recently added papers</h4>
     </div>
     <div class="card-body">
-        {% for paper, authors in papers %}
+        {% for paper in papers %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
-                <p>{{ authors }}</p>
                 <p>{{ paper.abstract|truncatewords:50 }}</p>
             </li>
         </ul>

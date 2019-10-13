@@ -86,38 +86,38 @@ def papers(request):
     # However, even with pagination, we are going to want to limit
     # the number of papers retrieved for speed, especially when the
     # the DB grows large.
-    all_papers = Paper.nodes.order_by("-created")[:50]
+    all_papers = Paper.objects.all()  # nodes.order_by("-created")[:50]
     # Retrieve all comments about this paper.
-    all_authors = [", ".join(get_paper_authors(paper)) for paper in all_papers]
-    all_venues = [get_paper_venue(paper) for paper in all_papers]
-
-    papers = list(zip(all_papers, all_authors, all_venues))
+    # all_authors = [", ".join(get_paper_authors(paper)) for paper in all_papers]
+    # all_venues = [get_paper_venue(paper) for paper in all_papers]
+    #
+    # papers = list(zip(all_papers, all_authors, all_venues))
 
     message = None
     if request.method == "POST":
         form = SearchPapersForm(request.POST)
         print("Received POST request")
         if form.is_valid():
-            english_stopwords = stopwords.words("english")
-            paper_title = form.cleaned_data["paper_title"].lower()
-            paper_title_tokens = [
-                w for w in paper_title.split(" ") if not w in english_stopwords
-            ]
-            paper_query = (
-                    "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
-            )
-            query = (
-                "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
-            )
-            print("Cypher query string {}".format(query))
-            results, meta = db.cypher_query(query, dict(paper_query=paper_query))
-            if len(results) > 0:
-                print("Found {} matching papers".format(len(results)))
-                papers = [Paper.inflate(row[0]) for row in results]
-                return render(request, "paper_results.html", {"papers": papers, "form": form, "message": ""})
-            else:
-                message = "No results found. Please try again!"
-
+            # english_stopwords = stopwords.words("english")
+            # paper_title = form.cleaned_data["paper_title"].lower()
+            # paper_title_tokens = [
+            #     w for w in paper_title.split(" ") if not w in english_stopwords
+            # ]
+            # paper_query = (
+            #         "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
+            # )
+            # query = (
+            #     "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
+            # )
+            # print("Cypher query string {}".format(query))
+            # results, meta = db.cypher_query(query, dict(paper_query=paper_query))
+            # if len(results) > 0:
+            #     print("Found {} matching papers".format(len(results)))
+            #     papers = [Paper.inflate(row[0]) for row in results]
+            #     return render(request, "paper_results.html", {"papers": papers, "form": form, "message": ""})
+            # else:
+            #     message = "No results found. Please try again!"
+            pass
     elif request.method == "GET":
         print("Received GET request")
         form = SearchPapersForm()
@@ -126,9 +126,9 @@ def papers(request):
         request,
         "papers.html",
         {
-            "papers": papers,
-            "papers_only": all_papers,
-            "num_papers": len(Paper.nodes.all()),
+            "papers": all_papers,
+            # "papers_only": all_papers,
+            # "num_papers": len(Paper.nodes.all()),
             "form": form,
             "message": message,
         },

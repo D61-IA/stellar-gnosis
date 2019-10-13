@@ -8,43 +8,44 @@ from neomodel import StringProperty, DateTimeProperty, DateProperty, UniqueIdPro
 
 
 # Create your models here.
-class Paper(DjangoNode):
-
-    uid = UniqueIdProperty()
-
-    created = DateTimeProperty(default=datetime.now())
-    created_by = IntegerProperty()  # The uid of the user who created this node
-
-    # These are always required
-    title = StringProperty(required=True)
-    abstract = StringProperty(required=True)
-    keywords = StringProperty(required=False)
-    download_link = StringProperty(required=True)
-    # added source link for a paper to record the source website which the information of paper is collected
-    source_link = StringProperty(required=False)
-
-
-    # Links
-    cites = RelationshipTo("Paper", "cites")
-    uses = RelationshipTo("Paper", "uses")
-    extends = RelationshipTo("Paper", "extends")
-    evaluates_on = RelationshipTo("Dataset", "evaluates_on")
-    was_published_at = RelationshipTo("Venue", "was_published_at")
-    published = RelationshipTo("Dataset", "published")
-
-    class Meta:
-        app_label = 'catalog'
-        ordering = ["title", "-published"]  # title is A-Z and published is from newest to oldest
-
-    def __str__(self):
-        """
-        String for representing the Paper object, e.g., in Admin site.
-        :return: The paper's title
-        """
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('paper_detail', args=[self.id])
+# This is the Neo4j model
+# class Paper(DjangoNode):
+#
+#     uid = UniqueIdProperty()
+#
+#     created = DateTimeProperty(default=datetime.now())
+#     created_by = IntegerProperty()  # The uid of the user who created this node
+#
+#     # These are always required
+#     title = StringProperty(required=True)
+#     abstract = StringProperty(required=True)
+#     keywords = StringProperty(required=False)
+#     download_link = StringProperty(required=True)
+#     # added source link for a paper to record the source website which the information of paper is collected
+#     source_link = StringProperty(required=False)
+#
+#
+#     # Links
+#     cites = RelationshipTo("Paper", "cites")
+#     uses = RelationshipTo("Paper", "uses")
+#     extends = RelationshipTo("Paper", "extends")
+#     evaluates_on = RelationshipTo("Dataset", "evaluates_on")
+#     was_published_at = RelationshipTo("Venue", "was_published_at")
+#     published = RelationshipTo("Dataset", "published")
+#
+#     class Meta:
+#         app_label = 'catalog'
+#         ordering = ["title", "-published"]  # title is A-Z and published is from newest to oldest
+#
+#     def __str__(self):
+#         """
+#         String for representing the Paper object, e.g., in Admin site.
+#         :return: The paper's title
+#         """
+#         return self.title
+#
+#     def get_absolute_url(self):
+#         return reverse('paper_detail', args=[self.id])
 
 
 class Person(DjangoNode):
@@ -206,6 +207,49 @@ class Code(DjangoNode):
 #
 # These are models for the SQL database
 #
+
+class Paper(models.Model):
+
+    # uid = UniqueIdProperty()
+
+    # These are always required
+    title = models.CharField(max_length=500, blank=False)  # StringProperty(required=True)
+    abstract = models.TextField(blank=False)  # StringProperty(required=True)
+    keywords = models.CharField(max_length=125, blank=True)  #StringProperty(required=False)
+    download_link = models.CharField(max_length=250, blank=False)  #StringProperty(required=True)
+    # added source link for a paper to record the source website which the information of paper is collected
+    source_link = models.CharField(max_length=250, blank=True)  # StringProperty(required=False)
+
+    # created = DateTimeProperty(default=datetime.now())
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+    created_by = models.ForeignKey(to=User,
+                                   on_delete=models.CASCADE,
+                                   related_name="papers_added")
+
+    # Links
+    # cites = RelationshipTo("Paper", "cites")
+    # uses = RelationshipTo("Paper", "uses")
+    # extends = RelationshipTo("Paper", "extends")
+    # evaluates_on = RelationshipTo("Dataset", "evaluates_on")
+    # was_published_at = RelationshipTo("Venue", "was_published_at")
+    # published = RelationshipTo("Dataset", "published")
+
+    class Meta:
+        app_label = 'catalog'
+        ordering = ["title", "-created_at" ]  # title is A-Z and published is from newest to oldest
+
+    def __str__(self):
+        """
+        String for representing the Paper object, e.g., in Admin site.
+        :return: The paper's title
+        """
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('paper_detail', args=[self.id])
+
+
 class ReadingGroup(models.Model):
     """A ReadingGroup model"""
 
