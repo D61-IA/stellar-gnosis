@@ -181,27 +181,27 @@ class Comment(DjangoNode):
         return reverse('comment_detail', args=[self.id])
 
 
-class Code(DjangoNode):
-
-    uid = UniqueIdProperty()
-    created = DateTimeProperty(default=datetime.now())
-    created_by = IntegerProperty()  # The uid of the user who created this node
-
-    description = StringProperty(required=True)
-    website = StringProperty(required=True)
-    keywords = StringProperty(required=True)
-
-    implements = RelationshipTo("Paper", "implements")
-
-    class Meta:
-        app_label = 'catalog'
-        ordering = ['website', 'description', 'keywords']
-
-    def __str__(self):
-        return '{}'.format(self.website)
-
-    def get_absolute_url(self):
-        return reverse('code_detail', args=[self.id])
+# class Code(DjangoNode):
+#
+#     uid = UniqueIdProperty()
+#     created = DateTimeProperty(default=datetime.now())
+#     created_by = IntegerProperty()  # The uid of the user who created this node
+#
+#     description = StringProperty(required=True)
+#     website = StringProperty(required=True)
+#     keywords = StringProperty(required=True)
+#
+#     implements = RelationshipTo("Paper", "implements")
+#
+#     class Meta:
+#         app_label = 'catalog'
+#         ordering = ['website', 'description', 'keywords']
+#
+#     def __str__(self):
+#         return '{}'.format(self.website)
+#
+#     def get_absolute_url(self):
+#         return reverse('code_detail', args=[self.id])
 
 
 #
@@ -248,6 +248,35 @@ class Paper(models.Model):
 
     def get_absolute_url(self):
         return reverse('paper_detail', args=[self.id])
+
+
+class Code(models.Model):
+
+    # uid = UniqueIdProperty()
+    # created = DateTimeProperty(default=datetime.now())
+    # created_by = IntegerProperty()  # The uid of the user who created this node
+
+    description = models.TextField(blank=False)  # StringProperty(required=True)
+    website = models.CharField(max_length=225, blank=False)  #StringProperty(required=True)
+    keywords = models.CharField(max_length=250, blank=False)  #StringProperty(required=True)
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+    created_by = models.ForeignKey(to=User,
+                                   on_delete=models.CASCADE,
+                                   related_name="codes_added")
+
+    #implements = RelationshipTo("Paper", "implements")
+
+    class Meta:
+        app_label = 'catalog'
+        ordering = ['website', 'description', 'keywords']
+
+    def __str__(self):
+        return '{}'.format(self.website)
+
+    def get_absolute_url(self):
+        return reverse('code_detail', args=[self.id])
 
 
 class ReadingGroup(models.Model):

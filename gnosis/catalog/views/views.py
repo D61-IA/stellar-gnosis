@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from catalog.models import Paper, Person, Dataset, Venue, Comment, Code
@@ -32,7 +33,7 @@ from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
 from django.contrib import messages
-from catalog.views.views_codes import _code_find
+# from catalog.views.views_codes import _code_find
 import re
 
 
@@ -471,9 +472,6 @@ def _get_node_ego_network(id, paper_title):
 #         form = SearchPapersForm()
 #
 #     return render(request, "papers_index.html", {"form": form, "message": message})
-
-from django.contrib.postgres.search import SearchQuery, SearchVector
-
 
 def paper_find(request):
     message = None
@@ -1065,8 +1063,9 @@ def paper_connect_code(request, id):
             # if the person is found, then link with paper and go back to paper view
             # if not, ask the user to create a new person
             keywords = form.cleaned_data["keywords"]
-            codes_found = _code_find(keywords)
-
+            # codes_found = _code_find(keywords)
+            codes_found = []
+            
             if len(codes_found) > 0:
                 print("Found {} codes that match".format(len(codes_found)))
                 for code in codes_found:
