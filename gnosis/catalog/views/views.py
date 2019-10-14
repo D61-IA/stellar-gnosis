@@ -1107,48 +1107,37 @@ def paper_connect_code(request, id):
 
 @login_required
 def paper_update(request, id):
-    # retrieve paper by ID
-    # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper_inst = all_papers[0]
-    else:
-        paper_inst = Paper()
+    try:
+        paper_inst = Paper.objects.filter(pk=id)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("papers_index"))
+
+    paper = paper_inst.first()
 
     # if this is POST request then process the Form data
     if request.method == "POST":
 
         form = PaperForm(request.POST)
         if form.is_valid():
-            paper_inst.title = form.cleaned_data["title"]
-            paper_inst.abstract = form.cleaned_data["abstract"]
-            paper_inst.keywords = form.cleaned_data["keywords"]
-            paper_inst.download_link = form.cleaned_data["download_link"]
-            paper_inst.save()
+            paper.title = form.cleaned_data["title"]
+            paper.abstract = form.cleaned_data["abstract"]
+            paper.keywords = form.cleaned_data["keywords"]
+            paper.download_link = form.cleaned_data["download_link"]
+            paper.save()
 
             return HttpResponseRedirect(reverse("papers_index"))
     # GET request
     else:
-        query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-        results, meta = db.cypher_query(query, dict(id=id))
-        if len(results) > 0:
-            all_papers = [Paper.inflate(row[0]) for row in results]
-            paper_inst = all_papers[0]
-        else:
-            paper_inst = Paper()
-        # paper_inst = Paper()
         form = PaperForm(
             initial={
-                "title": paper_inst.title,
-                "abstract": paper_inst.abstract,
-                "keywords": paper_inst.keywords,
-                "download_link": paper_inst.download_link,
+                "title": paper.title,
+                "abstract": paper.abstract,
+                "keywords": paper.keywords,
+                "download_link": paper.download_link,
             }
         )
 
-    return render(request, "paper_update.html", {"form": form, "paper": paper_inst})
+    return render(request, "paper_update.html", {"form": form, "paper": paper})
 
 
 def _find_paper(query_string):
