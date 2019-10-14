@@ -2,16 +2,14 @@
 {% block content %}
 {% load el_pagination_tags %}
 
-{% if groups %}
-
 <div class="card shadow-sm mt-3">
     <div class="card-header">
         <h4>Study/Reading Groups</h4>
-        {% if user.is_authenticated %}<a href="{% url 'group_create' %}" class="btn btn-link float-right">Create Group</a>
-        {% endif %}
-
+        <a href="{% url 'group_create' %}" class="btn btn-link float-right">Create Group</a>
     </div>
+
     <div class="card-body">
+        {% if groups %}
         {% paginate groups %}
         {% for group in groups %}
         <ul class="list-group">
@@ -39,7 +37,9 @@
             <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
         </ul>
+        {% else %}
+        There are no groups. <a href="{% url 'group_create' %}">Create a new Reading Group.</a>
+        {% endif %}
     </div>
 </div>
-{% endif %}
 {% endblock %}

@@ -11,9 +11,11 @@ from datetime import date
 
 def groups(request):
 
-    all_groups = ReadingGroup.objects.all()
+    all_groups = ReadingGroup.objects.all()  # filter(owner=request.user)
 
-    message = None
+    # all_groups = ReadingGroup.objects.all()
+
+    message = 'Hello'
 
     return render(
         request, "groups.html", {"groups": all_groups, "message": message}
