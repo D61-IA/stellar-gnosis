@@ -237,7 +237,7 @@ class Paper(models.Model):
 
     class Meta:
         app_label = 'catalog'
-        ordering = ["title", "-created_at" ]  # title is A-Z and published is from newest to oldest
+        ordering = ["title", "-created_at"]  # title is A-Z and published is from newest to oldest
 
     def __str__(self):
         """

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from catalog.models import Paper, Person, Dataset, Venue, Comment, Code
 from catalog.models import ReadingGroup, ReadingGroupEntry
@@ -87,39 +88,28 @@ def papers(request):
     # the number of papers retrieved for speed, especially when the
     # the DB grows large.
     all_papers = Paper.objects.all()  # nodes.order_by("-created")[:50]
-    # Retrieve all comments about this paper.
-    # all_authors = [", ".join(get_paper_authors(paper)) for paper in all_papers]
-    # all_venues = [get_paper_venue(paper) for paper in all_papers]
-    #
-    # papers = list(zip(all_papers, all_authors, all_venues))
 
     message = None
     if request.method == "POST":
         form = SearchPapersForm(request.POST)
-        print("Received POST request")
+        print("papers: Received POST request")
         if form.is_valid():
             # english_stopwords = stopwords.words("english")
-            # paper_title = form.cleaned_data["paper_title"].lower()
-            # paper_title_tokens = [
-            #     w for w in paper_title.split(" ") if not w in english_stopwords
-            # ]
-            # paper_query = (
-            #         "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
-            # )
-            # query = (
-            #     "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
-            # )
-            # print("Cypher query string {}".format(query))
-            # results, meta = db.cypher_query(query, dict(paper_query=paper_query))
-            # if len(results) > 0:
-            #     print("Found {} matching papers".format(len(results)))
-            #     papers = [Paper.inflate(row[0]) for row in results]
-            #     return render(request, "paper_results.html", {"papers": papers, "form": form, "message": ""})
-            # else:
-            #     message = "No results found. Please try again!"
-            pass
+            paper_title = form.cleaned_data["paper_title"].lower()
+            print(f"Searching for paper using keywords {paper_title}")
+            papers = Paper.objects.annotate(
+                 search=SearchVector('title')
+            ).filter(search=SearchQuery(paper_title, search_type='plain'))
+
+            print(papers)
+
+            if papers:
+                return render(request, "paper_results.html", {"papers": papers, "form": form, "message": ""})
+            else:
+                message = "No results found. Please try again!"
+
     elif request.method == "GET":
-        print("Received GET request")
+        print("papers: Received GET request")
         form = SearchPapersForm()
 
     return render(
@@ -127,8 +117,6 @@ def papers(request):
         "papers.html",
         {
             "papers": all_papers,
-            # "papers_only": all_papers,
-            # "num_papers": len(Paper.nodes.all()),
             "form": form,
             "message": message,
         },
@@ -185,9 +173,12 @@ def paper_remove_author(request, id, rid):
 def paper_delete(request, id):
     print("WARNING: Deleting paper id {} and all related edges".format(id))
 
-    # Cypher query to delete the paper node
-    query = "MATCH (p:Paper) WHERE ID(p)={id} DETACH DELETE p"
-    results, meta = db.cypher_query(query, dict(id=id))
+    try:
+        paper = Paper.objects.filter(pk=id)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("papers_index"))
+
+    paper.delete()
 
     return HttpResponseRedirect(reverse("papers_index"))
 
@@ -205,51 +196,53 @@ def _get_paper_by_id(id):
 
 def paper_detail(request, id):
     # Retrieve the paper from the database
-    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper = all_papers[0]
-    else:  # go back to the paper index page
-        return render(
-            request,
-            "papers.html",
-            {"papers": Paper.nodes.all(), "num_papers": len(Paper.nodes.all())},
-        )
+    try:
+        paper = Paper.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        return render(request,
+                      "papers.html",
+                      {"papers": Paper.objects.all(),
+                       "num_papers": 0 },
+                      )
 
     # Retrieve the paper's authors
-    authors = get_paper_authors(paper)
+    # authors = get_paper_authors(paper)
     # authors is a list of strings so just concatenate the strings.
-    authors = ", ".join(authors)
+    authors = ""  #", ".join(authors)
 
     # Retrieve all comments about this paper.
-    query = "MATCH (:Paper {title: {paper_title}})<--(c:Comment) RETURN c"
+    # query = "MATCH (:Paper {title: {paper_title}})<--(c:Comment) RETURN c"
+    #
+    # results, meta = db.cypher_query(query, dict(paper_title=paper.title))
+    # if len(results) > 0:
+    #     comments = [Comment.inflate(row[0]) for row in results]
+    #     num_comments = len(comments)
+    # else:
+    #     comments = []
+    #     num_comments = 0
 
-    results, meta = db.cypher_query(query, dict(paper_title=paper.title))
-    if len(results) > 0:
-        comments = [Comment.inflate(row[0]) for row in results]
-        num_comments = len(comments)
-    else:
-        comments = []
-        num_comments = 0
+    comments = []
 
     # Retrieve the code repos that implement the algorithm(s) in this paper
-    codes = _get_paper_codes(paper)
+    # codes = _get_paper_codes(paper)
+
+    codes = []
 
     # Retrieve venue where paper was published.
-    query = "MATCH (:Paper {title: {paper_title}})-->(v:Venue) RETURN v"
-    results, meta = db.cypher_query(query, dict(paper_title=paper.title))
-    if len(results) > 0:
-        venues = [Venue.inflate(row[0]) for row in results]
-        venue = venues[0]
-    else:
-        venue = None
+    # query = "MATCH (:Paper {title: {paper_title}})-->(v:Venue) RETURN v"
+    # results, meta = db.cypher_query(query, dict(paper_title=paper.title))
+    # if len(results) > 0:
+    #     venues = [Venue.inflate(row[0]) for row in results]
+    #     venue = venues[0]
+    # else:
+    #     venue = None
+    venue = None
 
     request.session["last-viewed-paper"] = id
 
-    ego_network_json = _get_node_ego_network(paper.id, paper.title)
+    ego_network_json = []  #_get_node_ego_network(paper.id, paper.title)
 
-    print("ego_network_json: {}".format(ego_network_json))
+    # print("ego_network_json: {}".format(ego_network_json))
     return render(
         request,
         "paper_detail.html",
@@ -259,7 +252,7 @@ def paper_detail(request, id):
             "authors": authors,
             "comments": comments,
             "codes": codes,
-            "num_comments": num_comments,
+            "num_comments": 0,
             "ego_network": ego_network_json,
         },
     )
@@ -447,34 +440,82 @@ def _get_node_ego_network(id, paper_title):
     return "[" + ego_json + "]"
 
 
+# def paper_find(request):
+#     message = None
+#     if request.method == "POST":
+#         form = SearchPapersForm(request.POST)
+#         print("Received POST request")
+#         if form.is_valid():
+#             english_stopwords = stopwords.words("english")
+#             paper_title = form.cleaned_data["paper_title"].lower()
+#             paper_title_tokens = [
+#                 w for w in paper_title.split(" ") if not w in english_stopwords
+#             ]
+#             paper_query = (
+#                     "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
+#             )
+#             query = (
+#                 "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
+#             )
+#             print("Cypher query string {}".format(query))
+#             results, meta = db.cypher_query(query, dict(paper_query=paper_query))
+#             if len(results) > 0:
+#                 print("Found {} matching papers".format(len(results)))
+#                 papers = [Paper.inflate(row[0]) for row in results]
+#                 return render(request, "papers_index.html", {"papers": papers, "form": form, "message": message})
+#             else:
+#                 message = "No results found. Please try again!"
+#
+#     elif request.method == "GET":
+#         print("Received GET request")
+#         form = SearchPapersForm()
+#
+#     return render(request, "papers_index.html", {"form": form, "message": message})
+
+from django.contrib.postgres.search import SearchQuery, SearchVector
+
+
 def paper_find(request):
     message = None
     if request.method == "POST":
         form = SearchPapersForm(request.POST)
-        print("Received POST request")
+        print("paper_find: Received POST request")
         if form.is_valid():
             english_stopwords = stopwords.words("english")
             paper_title = form.cleaned_data["paper_title"].lower()
-            paper_title_tokens = [
-                w for w in paper_title.split(" ") if not w in english_stopwords
-            ]
-            paper_query = (
-                    "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
-            )
-            query = (
-                "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
-            )
-            print("Cypher query string {}".format(query))
-            results, meta = db.cypher_query(query, dict(paper_query=paper_query))
-            if len(results) > 0:
-                print("Found {} matching papers".format(len(results)))
-                papers = [Paper.inflate(row[0]) for row in results]
+            print(f"Searching for paper using keywords {paper_title}")
+            papers = Paper.objects.filter(title__contains=paper_title)
+            # papers = Paper.objects.annotate(
+            #     search=SearchVector('title')
+            # ).filter(search=SearchQuery(paper_title, search_type='plain'))
+            print(papers)
+            #
+            # paper_title_tokens = [
+            #     w for w in paper_title.split(" ") if not w in english_stopwords
+            # ]
+            # paper_query = (
+            #         "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
+            # )
+            # query = (
+            #     "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
+            # )
+            # print("Cypher query string {}".format(query))
+            # results, meta = db.cypher_query(query, dict(paper_query=paper_query))
+            # if len(results) > 0:
+            #     print("Found {} matching papers".format(len(results)))
+            #     papers = [Paper.inflate(row[0]) for row in results]
+            #     return render(request, "papers_index.html", {"papers": papers, "form": form, "message": message})
+            # else:
+            #     message = "No results found. Please try again!"
+            if papers:
                 return render(request, "papers_index.html", {"papers": papers, "form": form, "message": message})
             else:
                 message = "No results found. Please try again!"
+        else:
+            print("form is not valid!")
 
     elif request.method == "GET":
-        print("Received GET request")
+        print("paper_find: Received GET request")
         form = SearchPapersForm()
 
     return render(request, "papers_index.html", {"form": form, "message": message})
@@ -1187,11 +1228,11 @@ def paper_create(request):
     if request.method == "POST":
         print("   POST")
         paper = Paper()
-        paper.created_by = user.id
+        paper.created_by = user  # .id
         form = PaperForm(instance=paper, data=request.POST)
         if form.is_valid():
             # Check if the paper already exists in DB
-            matching_papers = _find_paper(form.cleaned_data["title"])
+            matching_papers = []  # _find_paper(form.cleaned_data["title"])
             if len(matching_papers) > 0:  # paper in DB already
                 message = "Paper already exists in Gnosis!"
                 return render(
@@ -1203,11 +1244,11 @@ def paper_create(request):
                 form.save()  # store
                 # Now, add the authors and link each author to the paper with an "authors"
                 # type edge.
-                if request.session.get("from_external", False):
-                    paper_authors = request.session["external_authors"]
-                    for paper_author in reversed(paper_authors.split(",")):
-                        print("Adding author {}".format(paper_author))
-                        _add_author(paper_author, paper)
+                # if request.session.get("from_external", False):
+                #     paper_authors = request.session["external_authors"]
+                #     for paper_author in reversed(paper_authors.split(",")):
+                #         print("Adding author {}".format(paper_author))
+                #         _add_author(paper_author, paper)
 
                 request.session["from_external"] = False  # reset
                 # go back to paper index page.
