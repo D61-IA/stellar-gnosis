@@ -156,29 +156,29 @@ class Venue(DjangoNode):
         return reverse('venue_detail', args=[self.id])
 
 
-class Comment(DjangoNode):
-
-    uid = UniqueIdProperty()
-    created = DateTimeProperty(default=datetime.now())
-    created_by = IntegerProperty()  # The uid of the user who created this node
-
-    # These are always required
-    author = StringProperty()  # required but should be able to get it from user object
-    text = StringProperty(required=True)
-
-    publication_date = DateTimeProperty(default_now=True)
-
-    discusses = RelationshipTo("Paper", "discusses")
-
-    class Meta:
-        app_label = 'catalog'
-        ordering = ['publication_date']
-
-    def __str__(self):
-        return '{%s}'.format(self.author)
-
-    def get_absolute_url(self):
-        return reverse('comment_detail', args=[self.id])
+# class Comment(DjangoNode):
+#
+#     uid = UniqueIdProperty()
+#     created = DateTimeProperty(default=datetime.now())
+#     created_by = IntegerProperty()  # The uid of the user who created this node
+#
+#     # These are always required
+#     author = StringProperty()  # required but should be able to get it from user object
+#     text = StringProperty(required=True)
+#
+#     publication_date = DateTimeProperty(default_now=True)
+#
+#     discusses = RelationshipTo("Paper", "discusses")
+#
+#     class Meta:
+#         app_label = 'catalog'
+#         ordering = ['publication_date']
+#
+#     def __str__(self):
+#         return '{%s}'.format(self.author)
+#
+#     def get_absolute_url(self):
+#         return reverse('comment_detail', args=[self.id])
 
 
 # class Code(DjangoNode):
@@ -277,6 +277,36 @@ class Code(models.Model):
 
     def get_absolute_url(self):
         return reverse('code_detail', args=[self.id])
+
+
+class Comment(models.Model):
+
+    # These are always required
+    # author = StringProperty()  # required but should be able to get it from user object
+    text = models.TextField(blank=False)  # StringProperty(required=True)
+
+    # publication_date = DateTimeProperty(default_now=True)
+    # publication_data is now replaced by created_at.
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+    created_by = models.ForeignKey(to=User,
+                                   on_delete=models.CASCADE,
+                                   related_name="author")
+
+    # a paper can have many comments from several users.
+    # The below creates a one-to-many relationship between the Paper and Comment models
+    paper = models.ForeignKey(Paper,
+                              on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'catalog'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return '{}'.format(self.text)
+
+    def get_absolute_url(self):
+        return reverse('comment_detail', args=[self.id])
 
 
 class ReadingGroup(models.Model):

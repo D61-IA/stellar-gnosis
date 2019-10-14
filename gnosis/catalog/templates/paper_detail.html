@@ -165,12 +165,12 @@
                 <ul class="list-group">
                     {% for comment in comments %}
                         <li class="list-group-item shadow-sm mt-1">
-                            <p><strong>{{ comment.author }}</strong> says:</p>
+                            <p><strong>{{ comment.created_by }}</strong> says:</p>
                             <p>
-                                <small>{{ comment.publication_date }}</small>
+                                <small>{{ comment.created_at }}</small>
                             </p>
                             <p>{{ comment.text }}</p>
-                            {% if comment.created_by == user.id %}
+                            {% if comment.created_by == user %}
                                 <a href="{% url 'comment_update' comment.id %}">Edit</a>
                             {% endif %}
                         </li>

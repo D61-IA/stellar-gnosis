@@ -222,7 +222,9 @@ def paper_detail(request, id):
     #     comments = []
     #     num_comments = 0
 
-    comments = []
+    comments = paper.comment_set.all()
+    print("**** Comments ****")
+    print(comments)
 
     # Retrieve the code repos that implement the algorithm(s) in this paper
     # codes = _get_paper_codes(paper)
@@ -253,7 +255,7 @@ def paper_detail(request, id):
             "authors": authors,
             "comments": comments,
             "codes": codes,
-            "num_comments": 0,
+            "num_comments": comments.count(),
             "ego_network": ego_network_json,
         },
     )
@@ -1065,7 +1067,7 @@ def paper_connect_code(request, id):
             keywords = form.cleaned_data["keywords"]
             # codes_found = _code_find(keywords)
             codes_found = []
-            
+
             if len(codes_found) > 0:
                 print("Found {} codes that match".format(len(codes_found)))
                 for code in codes_found:
@@ -1967,118 +1969,6 @@ def venue_update(request, id):
         )
 
     return render(request, "venue_update.html", {"form": form, "venue": venue})
-
-
-#
-# Comment Views
-#
-@login_required
-def comments(request):
-    """
-    We should only show the list of comments if the user is admin. Otherwise, the user should
-    be redirected to the home page.
-    :param request:
-    :return:
-    """
-    # Only superusers can view all the comments
-    if request.user.is_superuser:
-        return render(
-            request,
-            "comments.html",
-            {"comments": Comment.nodes.all(), "num_comments": len(Comment.nodes.all())},
-        )
-    else:
-        # other users are sent back to the paper index
-        return HttpResponseRedirect(reverse("papers_index"))
-
-
-@login_required
-def comment_detail(request, id):
-    # Only superusers can view comment details.
-    if request.user.is_superuser:
-        return render(request, "comment_detail.html", {"comment": Comment.nodes.all()})
-    else:
-        # other users are sent back to the papers index
-        return HttpResponseRedirect(reverse("papers_index"))
-
-
-@login_required
-def comment_create(request):
-    user = request.user
-
-    # Retrieve paper using paper id
-    paper_id = request.session["last-viewed-paper"]
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=paper_id))
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper = all_papers[0]
-    else:  # just send him to the list of papers
-        HttpResponseRedirect(reverse("papers_index"))
-
-    if request.method == "POST":
-        comment = Comment()
-        comment.created_by = user.id
-        comment.author = user.username
-        form = CommentForm(instance=comment, data=request.POST)
-        if form.is_valid():
-            # add link from new comment to paper
-            form.save()
-            comment.discusses.connect(paper)
-            del request.session["last-viewed-paper"]
-            return redirect("paper_detail", id=paper_id)
-    else:  # GET
-        form = CommentForm()
-
-    return render(request, "comment_form.html", {"form": form})
-
-
-@login_required
-def comment_update(request, id):
-    # retrieve paper by ID
-    # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a:Comment) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        comments = [Comment.inflate(row[0]) for row in results]
-        comment = comments[0]
-    else:
-        comment = Comment()
-
-    # Retrieve paper using paper id
-    paper_id = request.session["last-viewed-paper"]
-
-    # if this is POST request then process the Form data
-    if request.method == "POST":
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment.text = form.cleaned_data["text"]
-            # comment.author = form.cleaned_data['author']
-            comment.save()
-            # return HttpResponseRedirect(reverse('comments_index'))
-            del request.session["last-viewed-paper"]
-            return redirect("paper_detail", id=paper_id)
-
-    # GET request
-    else:
-        query = "MATCH (a:Comment) WHERE ID(a)={id} RETURN a"
-        results, meta = db.cypher_query(query, dict(id=id))
-        if len(results) > 0:
-            comments = [Comment.inflate(row[0]) for row in results]
-            comment = comments[0]
-        else:
-            comment = Comment()
-        # form = CommentForm(initial={'author': comment.author,
-        #                             'text': comment.text,
-        #                             'publication_date': comment.publication_date,
-        #                             }
-        #                    )
-        form = CommentForm(
-            initial={"text": comment.text, "publication_date": comment.publication_date}
-        )
-
-    return render(request, "comment_update.html", {"form": form, "comment": comment})
-
 
 #
 # Utility Views (admin required)
