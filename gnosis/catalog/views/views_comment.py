@@ -12,14 +12,12 @@ from catalog.forms import CommentForm
 
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from neomodel import db
 from datetime import date
 from nltk.corpus import stopwords
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
 from django.contrib import messages
-# from catalog.views.views_codes import _code_find
 import re
 
 

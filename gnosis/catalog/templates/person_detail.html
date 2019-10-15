@@ -21,10 +21,8 @@
             {% endif %}
             {% endif %}
             {% if user.is_authenticated %}
-            {% if user.is_superuser or user.id == person.created_by %}
             <p><a href="{% url 'person_update' person.id %}" class="btn btn-sm btn-danger" role="button">Edit
             </a></p>
-            {% endif %}
             {% endif %}
         </h3>
     </div>

@@ -48,35 +48,35 @@ from neomodel import StringProperty, DateTimeProperty, DateProperty, UniqueIdPro
 #         return reverse('paper_detail', args=[self.id])
 
 
-class Person(DjangoNode):
-
-    uid = UniqueIdProperty()
-    created = DateTimeProperty(default=datetime.now())
-    created_by = IntegerProperty()  # The uid of the user who created this node
-
-    # These are always required
-    first_name = StringProperty(required=True)
-    last_name = StringProperty(required=True)
-    middle_name = StringProperty()
-    affiliation = StringProperty()
-    website = StringProperty()
-
-    authors = RelationshipTo("Paper", "authors")
-    co_authors_with = RelationshipTo("Person", "co_authors_with")
-    advisor_of = RelationshipTo("Person", "advisor_of")
-
-    class Meta:
-        app_label = 'catalog'
-        ordering = ['last_name', 'first_name', 'affiliation']
-
-    def __str__(self):
-
-        if self.middle_name is not None and len(self.middle_name) > 0:
-            return '{} {} {}'.format(self.first_name, self.middle_name, self.last_name)
-        return '{} {}'.format(self.first_name, self.last_name)
-
-    def get_absolute_url(self):
-        return reverse('person_detail', args=[self.id])
+# class Person(DjangoNode):
+#
+#     uid = UniqueIdProperty()
+#     created = DateTimeProperty(default=datetime.now())
+#     created_by = IntegerProperty()  # The uid of the user who created this node
+#
+#     # These are always required
+#     first_name = StringProperty(required=True)
+#     last_name = StringProperty(required=True)
+#     middle_name = StringProperty()
+#     affiliation = StringProperty()
+#     website = StringProperty()
+#
+#     authors = RelationshipTo("Paper", "authors")
+#     co_authors_with = RelationshipTo("Person", "co_authors_with")
+#     advisor_of = RelationshipTo("Person", "advisor_of")
+#
+#     class Meta:
+#         app_label = 'catalog'
+#         ordering = ['last_name', 'first_name', 'affiliation']
+#
+#     def __str__(self):
+#
+#         if self.middle_name is not None and len(self.middle_name) > 0:
+#             return '{} {} {}'.format(self.first_name, self.middle_name, self.last_name)
+#         return '{} {}'.format(self.first_name, self.last_name)
+#
+#     def get_absolute_url(self):
+#         return reverse('person_detail', args=[self.id])
 
 
 class Dataset(DjangoNode):
@@ -307,6 +307,39 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return reverse('comment_detail', args=[self.id])
+
+
+class Person(models.Model):
+
+    # These are always required
+    first_name = models.CharField(max_length=100, blank=False)
+    last_name = models.CharField(max_length=100, blank=False)
+    middle_name = models.CharField(max_length=100, blank=True, null=True)
+    affiliation = models.CharField(max_length=250, blank=True, null=True)
+    website = models.URLField(max_length=500, blank=True, null=True)
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+    created_by = models.ForeignKey(to=User,
+                                   on_delete=models.CASCADE,
+                                   related_name="person")
+
+    # authors = RelationshipTo("Paper", "authors")
+    # co_authors_with = RelationshipTo("Person", "co_authors_with")
+    # advisor_of = RelationshipTo("Person", "advisor_of")
+
+    class Meta:
+        app_label = 'catalog'
+        ordering = ['last_name', 'first_name', 'affiliation']
+
+    def __str__(self):
+
+        if self.middle_name is not None and len(self.middle_name) > 0:
+            return '{} {} {}'.format(self.first_name, self.middle_name, self.last_name)
+        return '{} {}'.format(self.first_name, self.last_name)
+
+    def get_absolute_url(self):
+        return reverse('person_detail', args=[self.id])
 
 
 class ReadingGroup(models.Model):
