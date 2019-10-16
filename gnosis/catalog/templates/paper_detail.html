@@ -22,12 +22,12 @@
             </h4>
         </div>
         <div class="card-body">
-<!--            <h5 class="text-left">-->
-<!--                {{ authors }} {% if user.is_authenticated and user.is_superuser and authors %}<a-->
-<!--                    href="{% url 'paper_authors' id=paper.id %}"-->
-<!--                    class="btn btn-danger btn-sm" role="button">-->
-<!--                Edit</a>{% endif %}-->
-<!--            </h5>-->
+            <h5 class="text-left">
+                {{ authors }} {% if user.is_authenticated and user.is_superuser and authors %}<a
+                    href="{% url 'paper_authors' id=paper.id %}"
+                    class="btn btn-danger btn-sm" role="button">
+                Edit</a>{% endif %}
+            </h5>
 
             <h5 class="text-right">
                 <small>keywords: {{ paper.keywords }}</small>

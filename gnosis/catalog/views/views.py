@@ -127,24 +127,21 @@ def papers(request):
 def paper_authors(request, id):
     """Displays the list of authors associated with this paper"""
     relationship_ids = []
-    paper = _get_paper_by_id(id)
+    try:
+        paper = Paper.objects.get(pk=id)
+        authors = paper.person_set.all()
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse(("papers_index")))
+
     print("Retrieved paper with title {}".format(paper.title))
 
-    query = "MATCH (p:Paper)<-[r]-(a:Person) WHERE ID(p)={id} RETURN a, ID(r)"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        authors = [Person.inflate(row[0]) for row in results]
-        relationship_ids = [row[1] for row in results]
-    else:
-        authors = []
-
-    num_authors = len(authors)
+    num_authors = authors.count()  # len(authors)
     print("paper author link ids {}".format(relationship_ids))
     print("Found {} authors for paper with id {}".format(len(authors), id))
     # for rid in relationship_ids:
     delete_urls = [
-        reverse("paper_remove_author", kwargs={"id": id, "rid": rid})
-        for rid in relationship_ids
+        reverse("paper_remove_author", kwargs={"id": id, "rid": author.id})
+        for author in authors  # relationship_ids
     ]
     print("author remove urls")
     print(delete_urls)
@@ -157,12 +154,14 @@ def paper_authors(request, id):
 # should limit access to admin users only!!
 @staff_member_required
 def paper_remove_author(request, id, rid):
-    print("Paper id {} and edge id {}".format(id, rid))
+    print("Paper id {} and author id {}".format(id, rid))
 
-    # Cypher query to delete edge of type authors with id equal to rid
-    query = "MATCH ()-[r:authors]-() WHERE ID(r)={id} DELETE r"
-    results, meta = db.cypher_query(query, dict(id=rid))
-
+    try:
+        paper = Paper.objects.get(pk=id)
+        author = Person.objects.get(pk=rid)
+        author.papers.remove(paper)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("paper_authors", kwargs={"id": id}))
     # TO DO
     # What does this return? How can I make certain that the paper was deleted?
 
@@ -207,24 +206,24 @@ def paper_detail(request, id):
                       )
 
     # Retrieve the paper's authors
-    # authors = get_paper_authors(paper)
     # authors is a list of strings so just concatenate the strings.
-    authors = ""  #", ".join(authors)
-
-    # Retrieve all comments about this paper.
-    # query = "MATCH (:Paper {title: {paper_title}})<--(c:Comment) RETURN c"
-    #
-    # results, meta = db.cypher_query(query, dict(paper_title=paper.title))
-    # if len(results) > 0:
-    #     comments = [Comment.inflate(row[0]) for row in results]
-    #     num_comments = len(comments)
-    # else:
-    #     comments = []
-    #     num_comments = 0
+    # ToDo: Improve this code to correctly handle middle names that are more than one word.
+    authors_set = paper.person_set.all()  #", ".join(authors)
+    authors = []
+    for author in authors_set:
+        author_name = str(author)  # author.first_name[0]+'. '+author.middle_name
+        author_name = author_name.split()
+        if len(author_name) > 2:
+            authors.append(author_name[0][0]+'. '+author_name[1][0]+'. '+author_name[2])
+        else:
+            authors.append(author_name[0][0]+'. '+author_name[1])
+    authors = ', '.join(authors)
+    # print("**** Authors ****")
+    # print(authors)
 
     comments = paper.comment_set.all()
-    print("**** Comments ****")
-    print(comments)
+    # print("**** Comments ****")
+    # print(comments)
 
     # Retrieve the code repos that implement the algorithm(s) in this paper
     # codes = _get_paper_codes(paper)
@@ -727,19 +726,29 @@ def paper_add_to_group(request, id):
 
 @login_required
 def paper_connect_author_selected(request, id, aid):
-    query = "MATCH (p:Paper), (a:Person) WHERE ID(p)={id} AND ID(a)={aid} MERGE (a)-[r:authors]->(p) RETURN r"
-    results, meta = db.cypher_query(query, dict(id=id, aid=aid))
 
-    if len(results) > 0:
+    try:
+        paper = Paper.objects.get(pk=id)
+        author = Person.objects.get(pk=aid)
+        author.papers.add(paper)
         messages.add_message(request, messages.INFO, "Linked with author.")
-    else:
+    except ObjectDoesNotExist:
+        print("Paper or author not found in DB.")
         messages.add_message(request, messages.INFO, "Link to author failed!")
+
+    # query = "MATCH (p:Paper), (a:Person) WHERE ID(p)={id} AND ID(a)={aid} MERGE (a)-[r:authors]->(p) RETURN r"
+    # results, meta = db.cypher_query(query, dict(id=id, aid=aid))
+    # if len(results) > 0:
+    #     messages.add_message(request, messages.INFO, "Linked with author.")
+    # else:
+    #     messages.add_message(request, messages.INFO, "Link to author failed!")
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
 
 @login_required
 def paper_connect_author(request, id):
+    message = ''
     if request.method == "POST":
         form = SearchPeopleForm(request.POST)
         if form.is_valid():
@@ -747,7 +756,15 @@ def paper_connect_author(request, id):
             # if the person is found, then link with paper and go back to paper view
             # if not, ask the user to create a new person
             name = form.cleaned_data["person_name"]
-            people_found = _person_find(name)
+            # Search for people matching the name
+            # Should I split name before searching?
+            people_found = Person.objects.annotate(
+                 search=SearchVector('first_name', 'last_name', 'middle_name')
+            ).filter(search=SearchQuery(name, search_type='plain'))
+
+            print(people_found)
+
+            # people_found = _person_find(name)
 
             if people_found is not None:
                 print("Found {} people that match".format(len(people_found)))
@@ -767,7 +784,7 @@ def paper_connect_author(request, id):
                         )
                         for person in people_found
                     ]
-                    print("author remove urls")
+                    print("author connect urls")
                     print(author_connect_urls)
 
                     authors = zip(people_found, author_connect_urls)
@@ -1167,32 +1184,89 @@ def _find_paper(query_string):
     return papers_found
 
 
+# def _add_author(author, paper=None):
+#     """
+#     Adds author to the DB if author does not already exist and links to paper
+#     as author if paper is not None
+#     :param author:
+#     :param paper:
+#     """
+#     link_with_paper = False
+#     p = None
+#     people_found = _person_find(author, exact_match=True)
+#     author_name = author.strip().split(" ")
+#     if people_found is None:  # not in DB
+#         print("Author {} not in DB".format(author))
+#         p = Person()
+#         p.first_name = author_name[0]
+#         if len(author_name) > 2:  # has middle name(s)
+#             p.middle_name = author_name[1:-1]
+#         else:
+#             p.middle_name = None
+#         p.last_name = author_name[-1]
+#         # print("**** Person {} ***".format(p))
+#         p.save()  # save to DB
+#         link_with_paper = True
+#     elif len(people_found) == 1:
+#         # Exactly one person found. Check if name is an exact match.
+#         p = people_found[0]
+#         # NOTE: The problem with this simple check is that if two people have
+#         # the same name then the wrong person will be linked to the paper.
+#         if p.first_name == author_name[0] and p.last_name == author_name[-1]:
+#             if len(author_name) > 2:
+#                 if p.middle_name == author_name[1:-1]:
+#                     link_with_paper = True
+#             else:
+#                 link_with_paper = True
+#     else:
+#         print("Person with similar but not exactly the same name is already in DB.")
+#
+#     if link_with_paper and paper is not None:
+#         print("Adding authors link to paper {}".format(paper.title[:50]))
+#         # link author with paper
+#         p.authors.connect(paper)
+
 def _add_author(author, paper=None):
     """
     Adds author to the DB if author does not already exist and links to paper
     as author if paper is not None
-    :param author:
+    :param author <str>: Author name
     :param paper:
     """
     link_with_paper = False
-    p = None
-    people_found = _person_find(author, exact_match=True)
+    # p = None
+    # people_found = _person_find(author, exact_match=True)
     author_name = author.strip().split(" ")
-    if people_found is None:  # not in DB
+    # for a in author_name:
+    #     print(type(a))
+
+    if len(author_name) > 2:
+        people_found = Person.objects.filter(first_name=author_name[0],
+                                             middle_name=author_name[1],
+                                             last_name=author_name[2])
+    else:
+        people_found = Person.objects.filter(first_name=author_name[0], last_name=author_name[1])
+
+    print("**** People matching query {} ****".format(author_name))
+    print(people_found)
+
+    if people_found.count() == 0:  # not in DB
         print("Author {} not in DB".format(author))
         p = Person()
         p.first_name = author_name[0]
+
         if len(author_name) > 2:  # has middle name(s)
             p.middle_name = author_name[1:-1]
-        else:
-            p.middle_name = None
+        # else:
+        #     p.middle_name = None
         p.last_name = author_name[-1]
-        # print("**** Person {} ***".format(p))
+        print("**** Person {} ***".format(p))
         p.save()  # save to DB
         link_with_paper = True
-    elif len(people_found) == 1:
+    elif people_found.count() == 1:
         # Exactly one person found. Check if name is an exact match.
         p = people_found[0]
+        print("Author {} found in DB with name {}".format(author_name, p))
         # NOTE: The problem with this simple check is that if two people have
         # the same name then the wrong person will be linked to the paper.
         if p.first_name == author_name[0] and p.last_name == author_name[-1]:
@@ -1207,7 +1281,7 @@ def _add_author(author, paper=None):
     if link_with_paper and paper is not None:
         print("Adding authors link to paper {}".format(paper.title[:50]))
         # link author with paper
-        p.authors.connect(paper)
+        p.papers.add(paper)
 
 
 @login_required
@@ -1218,12 +1292,13 @@ def paper_create(request):
     if request.method == "POST":
         print("   POST")
         paper = Paper()
-        paper.created_by = user  # .id
+        paper.created_by = user
         form = PaperForm(instance=paper, data=request.POST)
         if form.is_valid():
             # Check if the paper already exists in DB
-            matching_papers = []  # _find_paper(form.cleaned_data["title"])
-            if len(matching_papers) > 0:  # paper in DB already
+            # Exact match on title.
+            matching_papers = Paper.objects.filter(title=form.cleaned_data["title"])
+            if matching_papers.count() > 0:  # paper in DB already
                 message = "Paper already exists in Gnosis!"
                 return render(
                     request,
@@ -1234,11 +1309,11 @@ def paper_create(request):
                 form.save()  # store
                 # Now, add the authors and link each author to the paper with an "authors"
                 # type edge.
-                # if request.session.get("from_external", False):
-                #     paper_authors = request.session["external_authors"]
-                #     for paper_author in reversed(paper_authors.split(",")):
-                #         print("Adding author {}".format(paper_author))
-                #         _add_author(paper_author, paper)
+                if request.session.get("from_external", False):
+                    paper_authors = request.session["external_authors"]
+                    for paper_author in reversed(paper_authors.split(",")):
+                        print("Adding author {}".format(paper_author))
+                        _add_author(paper_author, paper)
 
                 request.session["from_external"] = False  # reset
                 # go back to paper index page.

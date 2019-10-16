@@ -94,18 +94,7 @@ def person_detail(request, id):
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("persons_index"))
 
-    #
-    # Retrieve all papers co-authored by this person and list them
-    #
-    # query = "MATCH (a:Person)-[r:authors]->(p:Paper) where id(a)={id} return p"
-    # results, meta = db.cypher_query(query, dict(id=id))
-    # if len(results) > 0:
-    #     papers_authored = [Paper.inflate(row[0]) for row in results]
-    #     print("Number of papers co-authored by {}: {}".format(person.last_name, len(papers_authored)))
-    #     for p in papers_authored:
-    #         print("Title: {}".format(p.title))
-    # else:
-    #     print("No papers found for author {}".format(person.last_name))
+    papers_authored = person.papers.all()
 
     request.session["last-viewed-person"] = id
     return render(request, "person_detail.html", {"person": person, "papers": papers_authored})

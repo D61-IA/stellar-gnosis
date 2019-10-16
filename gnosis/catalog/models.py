@@ -349,7 +349,8 @@ class Person(models.Model):
         ordering = ['last_name', 'first_name', 'affiliation']
 
     def __str__(self):
-
+        # print("--- middle name ---")
+        # print(self.middle_name)
         if self.middle_name is not None and len(self.middle_name) > 0:
             return '{} {} {}'.format(self.first_name, self.middle_name, self.last_name)
         return '{} {}'.format(self.first_name, self.last_name)
