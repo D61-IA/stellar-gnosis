@@ -224,8 +224,15 @@ class Paper(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     created_by = models.ForeignKey(to=User,
-                                   on_delete=models.CASCADE,
-                                   related_name="papers_added")
+                                   on_delete=models.SET_NULL,   # CASCADE, # what happens if I delete a user or a paper?
+                                   related_name="papers_added",
+                                   null=True)
+
+    # Relationships/Edges
+    # A Paper has a ManyToMany relationship with Person. We can access all the people associated with a paper,
+    # using paper.person_set.all()
+    # I can associate a paper with a person using
+    # paper.person_set.add(person)
 
     # Links
     # cites = RelationshipTo("Paper", "cites")
@@ -263,8 +270,8 @@ class Code(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     created_by = models.ForeignKey(to=User,
-                                   on_delete=models.CASCADE,
-                                   related_name="codes_added")
+                                   on_delete=models.SET_NULL,  #CASCADE,
+                                   related_name="codes_added", null=True)
 
     #implements = RelationshipTo("Paper", "implements")
 
@@ -290,13 +297,14 @@ class Comment(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     created_by = models.ForeignKey(to=User,
-                                   on_delete=models.CASCADE,
+                                   on_delete=models.CASCADE,  # deleting a user deletes all her comments.
                                    related_name="author")
 
     # a paper can have many comments from several users.
     # The below creates a one-to-many relationship between the Paper and Comment models
     paper = models.ForeignKey(Paper,
-                              on_delete=models.CASCADE)
+                              on_delete=models.CASCADE,  # deleting a paper deletes all associated comments
+                              )
 
     class Meta:
         app_label = 'catalog'
@@ -318,11 +326,19 @@ class Person(models.Model):
     affiliation = models.CharField(max_length=250, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
 
+    # A Paper can have many authors and an author can have many papers.
+    # We can add a paper to an author/person by calling
+    # person.papers.add(paper)
+    # I can retrieve all papers by a person using
+    # parson.papers.all()
+    papers = models.ManyToManyField(Paper)
+
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     created_by = models.ForeignKey(to=User,
-                                   on_delete=models.CASCADE,
-                                   related_name="person")
+                                   on_delete=models.SET_NULL,  # CASCADE,
+                                   related_name="person",
+                                   null=True)
 
     # authors = RelationshipTo("Paper", "authors")
     # co_authors_with = RelationshipTo("Person", "co_authors_with")
@@ -357,8 +373,9 @@ class ReadingGroup(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     owner = models.ForeignKey(to=User,
-                              on_delete=models.CASCADE,
-                              related_name="reading_groups")
+                              on_delete=models.SET_NULL,  # CASCADE,
+                              related_name="reading_groups",
+                              null=True)
 
     # Metadata
     class Meta:
@@ -383,8 +400,9 @@ class ReadingGroupEntry(models.Model):
     paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
     paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
     proposed_by = models.ForeignKey(to=User,
-                                    on_delete=models.CASCADE,
-                                    related_name="papers")  # User.papers()
+                                    on_delete=models.SET_NULL,  #CASCADE,
+                                    related_name="papers",
+                                    null=True)  # User.papers()
     date_discussed = models.DateField(null=True, blank=True)
     date_proposed = models.DateField(auto_now_add=True, auto_now=False)
 
@@ -411,7 +429,7 @@ class Collection(models.Model):
     updated_at = models.DateField(null=True)
 
     owner = models.ForeignKey(to=User,
-                              on_delete=models.CASCADE,
+                              on_delete=models.CASCADE,  # deleting a user deletes all her collections
                               related_name="collections")
 
     # Metadata
