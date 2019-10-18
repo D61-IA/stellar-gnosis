@@ -57,7 +57,7 @@ def code_detail(request, id):
     #
     request.session["last-viewed-code"] = id
 
-    return render(request, "code_detail.html", {"code": code})
+    return render(request, "code_detail.html", {"code": code, "papers": code.papers.all()})
 
 
 def code_find(request):

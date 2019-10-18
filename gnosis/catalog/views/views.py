@@ -202,7 +202,7 @@ def paper_detail(request, id):
         return render(request,
                       "papers.html",
                       {"papers": Paper.objects.all(),
-                       "num_papers": 0 },
+                       "num_papers": 0},
                       )
 
     # Retrieve the paper's authors
@@ -225,10 +225,7 @@ def paper_detail(request, id):
     # print("**** Comments ****")
     # print(comments)
 
-    # Retrieve the code repos that implement the algorithm(s) in this paper
-    # codes = _get_paper_codes(paper)
-
-    codes = []
+    codes = paper.code_set.all()
 
     # Retrieve venue where paper was published.
     # query = "MATCH (:Paper {title: {paper_title}})-->(v:Venue) RETURN v"
@@ -736,13 +733,6 @@ def paper_connect_author_selected(request, id, aid):
         print("Paper or author not found in DB.")
         messages.add_message(request, messages.INFO, "Link to author failed!")
 
-    # query = "MATCH (p:Paper), (a:Person) WHERE ID(p)={id} AND ID(a)={aid} MERGE (a)-[r:authors]->(p) RETURN r"
-    # results, meta = db.cypher_query(query, dict(id=id, aid=aid))
-    # if len(results) > 0:
-    #     messages.add_message(request, messages.INFO, "Linked with author.")
-    # else:
-    #     messages.add_message(request, messages.INFO, "Link to author failed!")
-
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
 
@@ -775,7 +765,7 @@ def paper_connect_author(request, id):
                         )
                     )
 
-                if len(people_found) > 0:
+                if people_found.count() > 0:
                     # for rid in relationship_ids:
                     author_connect_urls = [
                         reverse(
@@ -1054,13 +1044,22 @@ def paper_connect_dataset(request, id):
 
 @login_required
 def paper_connect_code_selected(request, id, cid):
-    query = "MATCH (p:Paper), (c:Code) WHERE ID(p)={id} AND ID(c)={cid} MERGE (c)-[r:implements]->(p) RETURN r"
-    results, meta = db.cypher_query(query, dict(id=id, cid=cid))
+    # query = "MATCH (p:Paper), (c:Code) WHERE ID(p)={id} AND ID(c)={cid} MERGE (c)-[r:implements]->(p) RETURN r"
+    # results, meta = db.cypher_query(query, dict(id=id, cid=cid))
 
-    if len(results) > 0:
+    try:
+        paper = Paper.objects.get(pk=id)
+        code = Code.objects.get(pk=cid)
+        code.papers.add(paper)
         messages.add_message(request, messages.INFO, "Linked with code repo.")
-    else:
+    except ObjectDoesNotExist:
+        print("Code or paper not found in DB.")
         messages.add_message(request, messages.INFO, "Link to code repo failed!")
+
+    # if len(results) > 0:
+    #     messages.add_message(request, messages.INFO, "Linked with code repo.")
+    # else:
+    #     messages.add_message(request, messages.INFO, "Link to code repo failed!")
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
@@ -1082,15 +1081,18 @@ def paper_connect_code(request, id):
             # if the person is found, then link with paper and go back to paper view
             # if not, ask the user to create a new person
             keywords = form.cleaned_data["keywords"]
-            # codes_found = _code_find(keywords)
-            codes_found = []
+            codes_found = Code.objects.annotate(
+                 search=SearchVector('keywords',)
+            ).filter(search=SearchQuery(keywords, search_type='plain'))
 
-            if len(codes_found) > 0:
-                print("Found {} codes that match".format(len(codes_found)))
+            print(codes_found)
+
+            if codes_found is not None:
+                print("Found {} codes that match".format(codes_found.count()))
                 for code in codes_found:
                     print("\t{} {}".format(code.website, code.keywords))
 
-                if len(codes_found) > 0:
+                if codes_found.count() > 0:
                     # for rid in relationship_ids:
                     codes_connect_urls = [
                         reverse(

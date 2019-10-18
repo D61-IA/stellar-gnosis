@@ -273,7 +273,12 @@ class Code(models.Model):
                                    on_delete=models.SET_NULL,  #CASCADE,
                                    related_name="codes_added", null=True)
 
-    #implements = RelationshipTo("Paper", "implements")
+    # A piece of Code can implement the algorithms in one or more papers.
+    # We can add a paper to a Code object calling
+    # code.papers.add(paper)
+    # I can retrieve all papers implemented in some Code using
+    # code.papers.all()
+    papers = models.ManyToManyField(Paper)
 
     class Meta:
         app_label = 'catalog'
