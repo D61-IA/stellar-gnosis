@@ -156,54 +156,6 @@ class Venue(DjangoNode):
         return reverse('venue_detail', args=[self.id])
 
 
-# class Comment(DjangoNode):
-#
-#     uid = UniqueIdProperty()
-#     created = DateTimeProperty(default=datetime.now())
-#     created_by = IntegerProperty()  # The uid of the user who created this node
-#
-#     # These are always required
-#     author = StringProperty()  # required but should be able to get it from user object
-#     text = StringProperty(required=True)
-#
-#     publication_date = DateTimeProperty(default_now=True)
-#
-#     discusses = RelationshipTo("Paper", "discusses")
-#
-#     class Meta:
-#         app_label = 'catalog'
-#         ordering = ['publication_date']
-#
-#     def __str__(self):
-#         return '{%s}'.format(self.author)
-#
-#     def get_absolute_url(self):
-#         return reverse('comment_detail', args=[self.id])
-
-
-# class Code(DjangoNode):
-#
-#     uid = UniqueIdProperty()
-#     created = DateTimeProperty(default=datetime.now())
-#     created_by = IntegerProperty()  # The uid of the user who created this node
-#
-#     description = StringProperty(required=True)
-#     website = StringProperty(required=True)
-#     keywords = StringProperty(required=True)
-#
-#     implements = RelationshipTo("Paper", "implements")
-#
-#     class Meta:
-#         app_label = 'catalog'
-#         ordering = ['website', 'description', 'keywords']
-#
-#     def __str__(self):
-#         return '{}'.format(self.website)
-#
-#     def get_absolute_url(self):
-#         return reverse('code_detail', args=[self.id])
-
-
 #
 # These are models for the SQL database
 #
@@ -259,13 +211,9 @@ class Paper(models.Model):
 
 class Code(models.Model):
 
-    # uid = UniqueIdProperty()
-    # created = DateTimeProperty(default=datetime.now())
-    # created_by = IntegerProperty()  # The uid of the user who created this node
-
-    description = models.TextField(blank=False)  # StringProperty(required=True)
-    website = models.CharField(max_length=225, blank=False)  #StringProperty(required=True)
-    keywords = models.CharField(max_length=250, blank=False)  #StringProperty(required=True)
+    description = models.TextField(blank=False)
+    website = models.CharField(max_length=225, blank=False)
+    keywords = models.CharField(max_length=250, blank=False)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
@@ -293,12 +241,8 @@ class Code(models.Model):
 
 class Comment(models.Model):
 
-    # These are always required
-    # author = StringProperty()  # required but should be able to get it from user object
-    text = models.TextField(blank=False)  # StringProperty(required=True)
+    text = models.TextField(blank=False)
 
-    # publication_date = DateTimeProperty(default_now=True)
-    # publication_data is now replaced by created_at.
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     created_by = models.ForeignKey(to=User,
@@ -344,10 +288,6 @@ class Person(models.Model):
                                    on_delete=models.SET_NULL,  # CASCADE,
                                    related_name="person",
                                    null=True)
-
-    # authors = RelationshipTo("Paper", "authors")
-    # co_authors_with = RelationshipTo("Person", "co_authors_with")
-    # advisor_of = RelationshipTo("Person", "advisor_of")
 
     class Meta:
         app_label = 'catalog'
@@ -406,7 +346,7 @@ class ReadingGroupEntry(models.Model):
     paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
     paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
     proposed_by = models.ForeignKey(to=User,
-                                    on_delete=models.SET_NULL,  #CASCADE,
+                                    on_delete=models.SET_NULL,
                                     related_name="papers",
                                     null=True)  # User.papers()
     date_discussed = models.DateField(null=True, blank=True)
@@ -434,8 +374,9 @@ class Collection(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
 
+    # deleting a user deletes all her collections
     owner = models.ForeignKey(to=User,
-                              on_delete=models.CASCADE,  # deleting a user deletes all her collections
+                              on_delete=models.CASCADE,
                               related_name="collections")
 
     # Metadata
@@ -458,8 +399,10 @@ class CollectionEntry(models.Model):
                                    on_delete=models.CASCADE,
                                    related_name="papers")  # Collection.papers()
 
-    paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
-    paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+    # A paper in the Neo4j DB
+    paper_id = models.IntegerField(null=False, blank=False)
+    # The paper title to avoid extra DB calls
+    paper_title = models.TextField(null=False, blank=False)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
