@@ -1,82 +1,12 @@
+import calendar
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django_neomodel import DjangoNode
 from django.urls import reverse
 from neomodel import StringProperty, DateTimeProperty, DateProperty, UniqueIdProperty, \
-    IntegerProperty, RelationshipTo
-
-
-# Create your models here.
-# This is the Neo4j model
-# class Paper(DjangoNode):
-#
-#     uid = UniqueIdProperty()
-#
-#     created = DateTimeProperty(default=datetime.now())
-#     created_by = IntegerProperty()  # The uid of the user who created this node
-#
-#     # These are always required
-#     title = StringProperty(required=True)
-#     abstract = StringProperty(required=True)
-#     keywords = StringProperty(required=False)
-#     download_link = StringProperty(required=True)
-#     # added source link for a paper to record the source website which the information of paper is collected
-#     source_link = StringProperty(required=False)
-#
-#
-#     # Links
-#     cites = RelationshipTo("Paper", "cites")
-#     uses = RelationshipTo("Paper", "uses")
-#     extends = RelationshipTo("Paper", "extends")
-#     evaluates_on = RelationshipTo("Dataset", "evaluates_on")
-#     was_published_at = RelationshipTo("Venue", "was_published_at")
-#     published = RelationshipTo("Dataset", "published")
-#
-#     class Meta:
-#         app_label = 'catalog'
-#         ordering = ["title", "-published"]  # title is A-Z and published is from newest to oldest
-#
-#     def __str__(self):
-#         """
-#         String for representing the Paper object, e.g., in Admin site.
-#         :return: The paper's title
-#         """
-#         return self.title
-#
-#     def get_absolute_url(self):
-#         return reverse('paper_detail', args=[self.id])
-
-
-# class Person(DjangoNode):
-#
-#     uid = UniqueIdProperty()
-#     created = DateTimeProperty(default=datetime.now())
-#     created_by = IntegerProperty()  # The uid of the user who created this node
-#
-#     # These are always required
-#     first_name = StringProperty(required=True)
-#     last_name = StringProperty(required=True)
-#     middle_name = StringProperty()
-#     affiliation = StringProperty()
-#     website = StringProperty()
-#
-#     authors = RelationshipTo("Paper", "authors")
-#     co_authors_with = RelationshipTo("Person", "co_authors_with")
-#     advisor_of = RelationshipTo("Person", "advisor_of")
-#
-#     class Meta:
-#         app_label = 'catalog'
-#         ordering = ['last_name', 'first_name', 'affiliation']
-#
-#     def __str__(self):
-#
-#         if self.middle_name is not None and len(self.middle_name) > 0:
-#             return '{} {} {}'.format(self.first_name, self.middle_name, self.last_name)
-#         return '{} {}'.format(self.first_name, self.last_name)
-#
-#     def get_absolute_url(self):
-#         return reverse('person_detail', args=[self.id])
+    IntegerProperty
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Dataset(DjangoNode):
@@ -118,65 +48,27 @@ class Dataset(DjangoNode):
     def get_absolute_url(self):
         return reverse('dataset_detail', args=[self.id])
 
+###########################################
+#                                         #
+# These are models for the SQL database   #
+#                                         #
+###########################################
 
-class Venue(DjangoNode):
-
-    venue_types = (('J', 'Journal'),
-                   ('C', 'Conference'),
-                   ('W', 'Workshop'),
-                   ('O', 'Open Source'),
-                   ('R', 'Tech Report'),
-                   ('O', 'Other'),)
-
-    review_types = (('Y', 'Yes'),
-                    ('N', 'No'),)
-
-    uid = UniqueIdProperty()
-    created = DateTimeProperty(default=datetime.now())
-    created_by = IntegerProperty()  # The uid of the user who created this node
-
-    # These are always required
-    name = StringProperty(required=True)
-    publication_date = DateProperty(required=True)
-    type = StringProperty(required=True, choices=venue_types)  # journal, tech report, open source, conference, workshop
-    publisher = StringProperty(required=True)
-    keywords = StringProperty(required=True)
-
-    peer_reviewed = StringProperty(required=True, choices=review_types)  # Yes or no
-    website = StringProperty()
-
-    class Meta:
-        app_label = 'catalog'
-        ordering = ['name', 'publisher', 'publication_date', 'type']
-
-    def __str__(self):
-        return '{} by {} on {}'.format(self.name, self.publisher, self.publication_date)
-
-    def get_absolute_url(self):
-        return reverse('venue_detail', args=[self.id])
-
-
-#
-# These are models for the SQL database
-#
 
 class Paper(models.Model):
 
-    # uid = UniqueIdProperty()
-
     # These are always required
-    title = models.CharField(max_length=500, blank=False)  # StringProperty(required=True)
-    abstract = models.TextField(blank=False)  # StringProperty(required=True)
-    keywords = models.CharField(max_length=125, blank=True)  #StringProperty(required=False)
-    download_link = models.CharField(max_length=250, blank=False)  #StringProperty(required=True)
+    title = models.CharField(max_length=500, blank=False)
+    abstract = models.TextField(blank=False)
+    keywords = models.CharField(max_length=125, blank=True)
+    download_link = models.CharField(max_length=250, blank=False)
     # added source link for a paper to record the source website which the information of paper is collected
-    source_link = models.CharField(max_length=250, blank=True)  # StringProperty(required=False)
+    source_link = models.CharField(max_length=250, blank=True)
 
-    # created = DateTimeProperty(default=datetime.now())
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     created_by = models.ForeignKey(to=User,
-                                   on_delete=models.SET_NULL,   # CASCADE, # what happens if I delete a user or a paper?
+                                   on_delete=models.SET_NULL,
                                    related_name="papers_added",
                                    null=True)
 
@@ -302,6 +194,58 @@ class Person(models.Model):
 
     def get_absolute_url(self):
         return reverse('person_detail', args=[self.id])
+
+
+class Venue(models.Model):
+
+    venue_types = (('Journal', 'Journal'),
+                   ('Conference', 'Conference'),
+                   ('Workshop', 'Workshop'),
+                   ('Open Source', 'Open Source'),
+                   ('Tech Report', 'Tech Report'),
+                   ('Other', 'Other'),)
+
+    review_types = (('Yes', 'Yes'),
+                    ('No', 'No'),)
+
+    venue_months = [(calendar.month_name[month], calendar.month_name[month]) for month in range(1, 13)]
+
+    # These are always required
+    name = models.CharField(max_length=250, blank=False)
+    # publication_date = models.DateField()
+
+    publication_year = models.SmallIntegerField(blank=False,
+                                                validators=[MaxValueValidator(2020),
+                                                            MinValueValidator(1900)])
+    publication_month = models.CharField(max_length=25, blank=False, choices=venue_months)
+
+    type = models.CharField(max_length=50, choices=venue_types, blank=False)
+    publisher = models.CharField(max_length=250, blank=True)
+    keywords = models.CharField(max_length=250, blank=False)
+
+    peer_reviewed = models.CharField(max_length=15, choices=review_types, blank=False)
+    website = models.CharField(max_length=300, blank=True)
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+    created_by = models.ForeignKey(to=User,
+                                   on_delete=models.SET_NULL,
+                                   related_name="venue",
+                                   null=True)
+
+    # Relationships
+    # A Venue publishes zero or more papers so there is a one to many relationship between venue and paper
+    # since a paper can only be published in a single venue.
+
+    class Meta:
+        app_label = 'catalog'
+        ordering = ['name', 'publication_year', 'publication_month', 'type']
+
+    def __str__(self):
+        return '{} by {} on {}'.format(self.name, self.publisher, self.publication_date)
+
+    def get_absolute_url(self):
+        return reverse('venue_detail', args=[self.id])
 
 
 class ReadingGroup(models.Model):

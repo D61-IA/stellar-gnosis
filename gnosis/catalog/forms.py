@@ -15,14 +15,13 @@ class SearchVenuesForm(Form):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
 
-    def clean_venue_name(self):
-        return self.cleaned_data["venue_name"]
+    def clean_keywords(self):
+        return self.cleaned_data["keywords"]
 
-    def clean_venue_publication_year(self):
-        return self.cleaned_data["venue_publication_year"]
-
-    venue_name = forms.CharField(required=True)
-    venue_publication_year = forms.CharField(required=True)
+    # keywords = forms.CharField(required=True, widget=forms.TextInput(attrs={"size": 60}))
+    keywords = forms.CharField(required=True )
+    # venue_name = forms.CharField(required=True)
+    # venue_publication_year = forms.CharField(required=True)
 
 
 class SearchDatasetsForm(Form):
@@ -65,6 +64,7 @@ class SearchPapersForm(Form):
     paper_title = forms.CharField(
         required=True, widget=forms.TextInput(attrs={"size": 60})
     )
+
 
 class PaperConnectionForm(Form):
     def __init__(self, *args, **kwargs):
@@ -262,9 +262,10 @@ class VenueForm(ModelForm):
         super(ModelForm, self).__init__(*args, **kwargs)
 
         self.fields["name"].label = "Name*"
-        self.fields["publisher"].label = "Publisher*"
+        self.fields["publisher"].label = "Publisher"
         # self.fields['publication_date'].help_text = 'YYYY-MM-DD'
-        self.fields["publication_date"].label = "Publication Date (yyyy-mm-dd)*"
+        self.fields["publication_year"].label = "Publication Year (yyyy)*"
+        self.fields["publication_month"].label = "Publication Month (mm)*"
         self.fields["type"].label = "Type*"
         self.fields["peer_reviewed"].label = "Peer Reviewed*"
         self.fields["keywords"].label = "Keywords*"
@@ -281,8 +282,11 @@ class VenueForm(ModelForm):
     def clean_publisher(self):
         return self.cleaned_data["publisher"]
 
-    def clean_publication_date(self):
-        return self.cleaned_data["publication_date"]
+    def clean_publication_year(self):
+        return self.cleaned_data["publication_year"]
+
+    def clean_publication_month(self):
+        return self.cleaned_data["publication_month"]
 
     def clean_type(self):
         return self.cleaned_data["type"]
@@ -301,7 +305,8 @@ class VenueForm(ModelForm):
         fields = [
             "name",
             "publisher",
-            "publication_date",
+            "publication_year",
+            "publication_month",
             "type",
             "peer_reviewed",
             "keywords",

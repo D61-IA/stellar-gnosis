@@ -26,7 +26,11 @@
         </h3>
     </div>
     <div class="card-body">
-    <p>Publication Date: {{ venue.publication_date }}</p>
+        {% if venue.publication_month %}
+            <p>Publication Date: {{ venue.publication_month }}, {{ venue.publication_year }}</p>
+        {% else %}
+            <p>Publication Date: {{ venue.publication_year }}</p>
+        {% endif %}
     {% if venue.keywords %}
     <p>Keywords: {{ venue.keywords }}</p>
     {% endif %}

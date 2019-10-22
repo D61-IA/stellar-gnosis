@@ -8,12 +8,11 @@
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-
         <form action="" method="post">
             {% csrf_token %}
-            <div class="form-group form-inline justify-content-center">
-                {{ form }}
-            </div>
+            {% for field in form %}
+            {{ field }}
+            {% endfor %}
             <br>
             <input type="submit" class="btn btn-primary btn-lg" value="Search Venues"/>
         </form>
@@ -29,7 +28,7 @@
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <p><a href="{{ venue.get_absolute_url }}">{{ venue.name }}</a></p>
-                <p>Published on {{ venue.publication_date }} by {{ venue.publisher }}</p>
+                <p>Published in {{ venue.publication_year }} by {{ venue.publisher }}</p>
             </li>
         </ul>
         {% endfor %}

@@ -1838,7 +1838,8 @@ def dataset_update(request, id):
 # Venue Views
 #
 def venues(request):
-    all_venues = Venue.nodes.order_by("-publication_date")[:50]
+    all_venues = Venue.objects.all()
+    # all_venues = Venue.nodes.order_by("-publication_date")[:50]
 
     message = None
     if request.method == "POST":
@@ -1847,32 +1848,18 @@ def venues(request):
             # search the db for the venue
             # if venue found, then link with paper and go back to paper view
             # if not, ask the user to create a new venue
-            english_stopwords = stopwords.words("english")
-            venue_name = form.cleaned_data["venue_name"].lower()
-            venue_publication_year = form.cleaned_data["venue_publication_year"]
-            # TO DO: should probably check that data is 4 digits...
-            venue_name_tokens = [
-                w for w in venue_name.split(" ") if not w in english_stopwords
-            ]
-            venue_query = (
-                    "(?i).*" + "+.*".join("(" + w + ")" for w in venue_name_tokens) + "+.*"
-            )
-            query = (
-                    "MATCH (v:Venue) WHERE v.publication_date =~ '"
-                    + venue_publication_year[0:4]
-                    + ".*' AND v.name =~ { venue_query } RETURN v"
-            )
-            results, meta = db.cypher_query(
-                query,
-                dict(
-                    venue_publication_year=venue_publication_year[0:4],
-                    venue_query=venue_query,
-                ),
-            )
-            if len(results) > 0:
-                venues = [Venue.inflate(row[0]) for row in results]
-                print("Found {} venues that match".format(len(venues)))
-                return render(request, "venues.html", {"venues": venues, 'form': form, "message": message})
+            venue_name = form.cleaned_data["keywords"].lower()
+            # venue_publication_year = form.cleaned_data["venue_publication_year"]
+
+            print(f"Searching for venue using keywords {venue_name}")
+
+            venues_found = Venue.objects.annotate(
+                 search=SearchVector('name', 'keywords')
+            ).filter(search=SearchQuery(venue_name, search_type='plain'))
+
+            if venues_found.count() > 0:
+                print("Found {} venues that match".format(venues_found.count()))
+                return render(request, "venues.html", {"venues": venues_found, "form": form, "message": message})
             else:
                 # render new Venue form with the searched name as
                 message = "No matching venues found"
@@ -1887,33 +1874,20 @@ def venues(request):
 def venue_detail(request, id):
     papers_published_at_venue = None
     # Retrieve the paper from the database
-    query = "MATCH (a:Venue) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        # There should be only one results because ID should be unique. Here we check that at
-        # least one result has been returned and take the first result as the correct match.
-        # Now, it should not happen that len(results) > 1 since IDs are meant to be unique.
-        # For the MVP we are going to ignore the latter case and just continue but ultimately,
-        # we should be checking for > 1 and failing gracefully.
-        all_venues = [Venue.inflate(row[0]) for row in results]
-        venue = all_venues[0]
-    else:  # go back to the venue index page
-        return render(
-            request,
-            "venues.html",
-            {"venues": Venue.nodes.all(), "num_venues": len(Venue.nodes.all())},
-        )
-
+    try:
+        venue = Venue.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("venues_index"))
     #
     # TO DO: Retrieve all papers published at this venue and list them
     #
-    query = "MATCH (p:Paper)-[r:was_published_at]->(v:Venue) where id(v)={id} return p"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        papers_published_at_venue = [Paper.inflate(row[0]) for row in results]
-        print("Number of papers published at this venue {}".format(len(papers_published_at_venue)))
-        for p in papers_published_at_venue:
-            print("Title: {}".format(p.title))
+    # query = "MATCH (p:Paper)-[r:was_published_at]->(v:Venue) where id(v)={id} return p"
+    # results, meta = db.cypher_query(query, dict(id=id))
+    # if len(results) > 0:
+    #     papers_published_at_venue = [Paper.inflate(row[0]) for row in results]
+    #     print("Number of papers published at this venue {}".format(len(papers_published_at_venue)))
+    #     for p in papers_published_at_venue:
+    #         print("Title: {}".format(p.title))
 
     request.session["last-viewed-venue"] = id
     return render(request, "venue_detail.html", {"venue": venue, "papers": papers_published_at_venue})
@@ -1925,37 +1899,24 @@ def venue_find(request):
     :param request:
     :return:
     """
+    message = None
     if request.method == "POST":
         form = SearchVenuesForm(request.POST)
         if form.is_valid():
             # search the db for the venue
             # if venue found, then link with paper and go back to paper view
             # if not, ask the user to create a new venue
-            english_stopwords = stopwords.words("english")
             venue_name = form.cleaned_data["venue_name"].lower()
             venue_publication_year = form.cleaned_data["venue_publication_year"]
-            # TO DO: should probably check that data is 4 digits...
-            venue_name_tokens = [
-                w for w in venue_name.split(" ") if not w in english_stopwords
-            ]
-            venue_query = (
-                    "(?i).*" + "+.*".join("(" + w + ")" for w in venue_name_tokens) + "+.*"
-            )
-            query = (
-                    "MATCH (v:Venue) WHERE v.publication_date =~ '"
-                    + venue_publication_year[0:4]
-                    + ".*' AND v.name =~ { venue_query } RETURN v"
-            )
-            results, meta = db.cypher_query(
-                query,
-                dict(
-                    venue_publication_year=venue_publication_year[0:4],
-                    venue_query=venue_query,
-                ),
-            )
-            if len(results) > 0:
-                venues = [Venue.inflate(row[0]) for row in results]
-                print("Found {} venues that match".format(len(venues)))
+
+            print(f"Searching for venue using keywords {venue_name} and year {venue_publication_year}")
+
+            venues_found = Venue.objects.annotate(
+                 search=SearchVector('name', 'keywords')
+            ).filter(search=SearchQuery(venue_name, search_type='plain'))
+
+            if venues_found.count() > 0:
+                print("Found {} venues that match".format(venues_found.count()))
                 return render(request, "venues.html", {"venues": venues})
             else:
                 # render new Venue form with the searched name as
@@ -1970,12 +1931,10 @@ def venue_find(request):
 
 @login_required
 def venue_create(request):
-    user = request.user
 
     if request.method == "POST":
         venue = Venue()
-        venue.created_by = user.id
-        venue.created_by = user.id
+        venue.created_by = request.user
         form = VenueForm(instance=venue, data=request.POST)
         if form.is_valid():
             form.save()
@@ -1989,55 +1948,47 @@ def venue_create(request):
 # should limit access to admin users only!!
 @staff_member_required
 def venue_delete(request, id):
-    print("WARNING: Deleting venue id {} and all related edges".format(id))
 
-    # Cypher query to delete the paper node
-    query = "MATCH (v:Venue) WHERE ID(v)={id} DETACH DELETE v"
-    results, meta = db.cypher_query(query, dict(id=id))
+    print("WARNING: Deleting venue id {} and all related edges".format(id))
+    try:
+        venue = Venue.objects.get(pk=id)
+        venue.delete()
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("venues_index"))
 
     return HttpResponseRedirect(reverse("venues_index"))
 
 
 @login_required
 def venue_update(request, id):
-    # retrieve paper by ID
-    # https://github.com/neo4j-contrib/neomodel/issues/199
-    query = "MATCH (a:Venue) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        venues = [Venue.inflate(row[0]) for row in results]
-        venue = venues[0]
-    else:
-        venue = Venue()
+
+    try:
+        venue = Venue.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("venues_index"))
 
     # if this is POST request then process the Form data
     if request.method == "POST":
         form = VenueForm(request.POST)
         if form.is_valid():
             venue.name = form.cleaned_data["name"]
-            venue.publication_date = form.cleaned_data["publication_date"]
+            venue.publication_year = form.cleaned_data["publication_year"]
+            venue.publication_month = form.cleaned_data["publication_month"]
             venue.type = form.cleaned_data["type"]
             venue.publisher = form.cleaned_data["publisher"]
             venue.keywords = form.cleaned_data["keywords"]
             venue.peer_reviewed = form.cleaned_data["peer_reviewed"]
             venue.website = form.cleaned_data["website"]
             venue.save()
-
-            return HttpResponseRedirect(reverse("venues_index"))
+            return HttpResponseRedirect(reverse("venue_detail", kwargs={"id": id}))
     # GET request
     else:
-        query = "MATCH (a:Venue) WHERE ID(a)={id} RETURN a"
-        results, meta = db.cypher_query(query, dict(id=id))
-        if len(results) > 0:
-            venues = [Venue.inflate(row[0]) for row in results]
-            venue = venues[0]
-        else:
-            venue = Venue()
         form = VenueForm(
             initial={
                 "name": venue.name,
                 "type": venue.type,
-                "publication_date": venue.publication_date,
+                "publication_year": venue.publication_year,
+                "publication_month": venue.publication_month,
                 "publisher": venue.publisher,
                 "keywords": venue.keywords,
                 "peer_reviewed": venue.peer_reviewed,
