@@ -1937,7 +1937,16 @@ def venue_create(request):
         venue.created_by = request.user
         form = VenueForm(instance=venue, data=request.POST)
         if form.is_valid():
-            form.save()
+            # check if venue already in database and do not add it if so.
+            venue_name = form.clean_name()
+            venue_year = form.clean_publication_year()
+            venue_year = int(venue_year)
+            other_venues = Venue.objects.filter(name__iexact=venue_name, publication_year=venue_year)
+            if other_venues.count() == 0:
+                print("Found no other matching venues")
+                form.save()
+            else:
+                print(f"Found {other_venues.count()} matching venues.")
             return HttpResponseRedirect(reverse("venues_index"))
     else:  # GET
         form = VenueForm()
