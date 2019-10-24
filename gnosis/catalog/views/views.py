@@ -1587,7 +1587,7 @@ def _person_find(person_name, exact_match=False):
 # Dataset Views
 #
 def datasets(request):
-    all_datasets = Dataset.nodes.order_by("-publication_date")[:50]
+    all_datasets = None # Dataset.nodes.order_by("-publication_date")[:50]
 
     message = None
     if request.method == "POST":
@@ -1780,8 +1780,8 @@ def dataset_update(request, id):
             dataset.name = form.cleaned_data["name"]
             dataset.keywords = form.cleaned_data["keywords"]
             dataset.description = form.cleaned_data["description"]
-            dataset.publication_date = form.cleaned_data["publication_date"]
-            dataset.source_type = form.cleaned_data["source_type"]
+            #dataset.publication_date = form.cleaned_data["publication_date"]
+            # dataset.source_type = form.cleaned_data["source_type"]
             dataset.website = form.cleaned_data["website"]
             dataset.save()
 
@@ -1800,7 +1800,7 @@ def dataset_update(request, id):
                 "name": dataset.name,
                 "keywords": dataset.keywords,
                 "description": dataset.description,
-                "publication_date": dataset.publication_date,
+                #"publication_date": dataset.publication_date,
                 "source_type": dataset.source_type,
                 "website": dataset.website,
             }
@@ -1979,104 +1979,8 @@ def venue_update(request, id):
 #
 @login_required
 def build(request):
-    try:
-        d1 = Dataset()
-        d1.name = "Yelp"
-        d1.source_type = "N"
-        d1.save()
-
-        v1 = Venue()
-        v1.name = "Neural Information Processing Systems"
-        v1.publication_date = date(2017, 12, 15)
-        v1.type = "C"
-        v1.publisher = "NIPS Foundation"
-        v1.keywords = "machine learning, machine learning, computational neuroscience"
-        v1.website = "https://nips.cc"
-        v1.peer_reviewed = "Y"
-        v1.save()
-
-        v2 = Venue()
-        v2.name = "International Conference on Machine Learning"
-        v2.publication_date = date(2016, 5, 24)
-        v2.type = "C"
-        v2.publisher = "International Machine Learning Society (IMLS)"
-        v2.keywords = "machine learning, computer science"
-        v2.peer_reviewed = "Y"
-        v2.website = "https://icml.cc/2016/"
-        v2.save()
-
-        p1 = Paper()
-        p1.title = "The best paper in the world."
-        p1.abstract = "Abstract goes here"
-        p1.keywords = "computer science, machine learning, graphs"
-        p1.save()
-
-        p1.evaluates_on.connect(d1)
-        p1.was_published_at.connect(v1)
-
-        p2 = Paper()
-        p2.title = "The second best paper in the world."
-        p2.abstract = "Abstract goes here"
-        p2.keywords = "statistics, robust methods"
-        p2.save()
-
-        p2.cites.connect(p1)
-        p2.was_published_at.connect(v2)
-
-        p3 = Paper()
-        p3.title = "I wish I could write a paper with a great title."
-        p3.abstract = "Abstract goes here"
-        p3.keywords = "machine learning, neural networks, convolutional neural networks"
-        p3.save()
-
-        p3.cites.connect(p1)
-        p3.was_published_at.connect(v1)
-
-        a1 = Person()
-        a1.first_name = "Pantelis"
-        a1.last_name = "Elinas"
-        a1.save()
-
-        a1.authors.connect(p1)
-
-        a2 = Person()
-        a2.first_name = "Ke"
-        a2.last_name = "Sun"
-        a2.save()
-
-        a2.authors.connect(p1)
-        a2.authors.connect(p2)
-
-        a3 = Person()
-        a3.first_name = "Bill"
-        a3.last_name = "Gates"
-        a3.save()
-
-        a3.authors.connect(p3)
-        a3.advisor_of.connect(a1)
-
-        a4 = Person()
-        a4.first_name = "Steve"
-        a4.last_name = "Jobs"
-        a4.save()
-
-        a4.authors.connect(p2)
-        a4.authors.connect(p3)
-
-        a4.co_authors_with.connect(a3)
-
-        c1 = Comment()
-        c1.author = "Pantelis Elinas"
-        c1.text = "This paper is flawless"
-        c1.save()
-
-        c1.discusses.connect(p1)
-
-    except Exception:
-        pass
-
-    num_papers = len(Paper.nodes.all())
-    num_people = len(Person.nodes.all())
+    num_papers = Paper.objects.all().count()
+    num_people = Person.objects.all().count()
 
     return render(
         request, "build.html", {"num_papers": num_papers, "num_people": num_people}

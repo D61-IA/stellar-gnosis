@@ -216,8 +216,9 @@ class DatasetForm(ModelForm):
         self.fields["name"].label = "Name*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["description"].label = "Description*"
-        self.fields["source_type"].label = "Type*"
-        self.fields["publication_date"].label = "Publication Date (yyyy-mm-dd)"
+        self.fields["type"].label = "Type*"
+        self.fields["publication_year"].label = "Publication Year"
+        self.fields["publication_month"].label = "Publication Month"
         self.fields["website"].label = "Website"
 
         for visible in self.visible_fields():
@@ -236,11 +237,14 @@ class DatasetForm(ModelForm):
     def clean_description(self):
         return self.cleaned_data["description"]
 
-    def clean_source_type(self):
-        return self.cleaned_data["source_type"]
+    def clean_type(self):
+        return self.cleaned_data["type"]
 
-    def clean_publication_date(self):
-        return self.cleaned_data["publication_date"]
+    def clean_publication_year(self):
+        return self.cleaned_data["publication_year"]
+
+    def clean_publication_month(self):
+        return self.cleaned_data["publication_month"]
 
     def clean_website(self):
         return self.cleaned_data["website"]
@@ -251,8 +255,9 @@ class DatasetForm(ModelForm):
             "name",
             "keywords",
             "description",
-            "source_type",
-            "publication_date",
+            "type",
+            "publication_year",
+            "publication_month",
             "website",
         ]
 

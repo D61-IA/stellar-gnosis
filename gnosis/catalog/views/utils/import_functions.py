@@ -1,38 +1,5 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
-from catalog.models import Paper, Person, Dataset, Venue, Comment, Code
-from catalog.models import ReadingGroup, ReadingGroupEntry
-from catalog.models import Collection, CollectionEntry
 from urllib.request import urlopen, Request
-from catalog.forms import (
-    PaperForm,
-    DatasetForm,
-    VenueForm,
-    CommentForm,
-    PaperImportForm,
-)
-from catalog.forms import (
-    SearchVenuesForm,
-    SearchPapersForm,
-    SearchPeopleForm,
-    SearchDatasetsForm,
-    SearchCodesForm,
-    PaperConnectionForm,
-)
-from django.urls import reverse
-from django.http import HttpResponseRedirect
-from neomodel import db
-from datetime import date
-from nltk.corpus import stopwords
-from urllib.request import urlopen, Request
-from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
-from django.contrib import messages
-#from catalog.views.views_codes import _code_find
-import re
-
 
 
 def analysis_url(url) :

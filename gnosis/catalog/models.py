@@ -9,46 +9,6 @@ from neomodel import StringProperty, DateTimeProperty, DateProperty, UniqueIdPro
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-class Dataset(DjangoNode):
-
-    uid = UniqueIdProperty()
-    created = DateTimeProperty(default=datetime.now())
-    created_by = IntegerProperty()  # The uid of the user who created this node
-
-    # These are always required
-    name = StringProperty(required=True)
-    # keywords that describe the dataset
-    keywords = StringProperty(required=True)
-    # A brief description of the dataset
-    description = StringProperty(required=True)
-    # The date of publication.
-    publication_date = DateProperty(required=False)
-
-    # data_types = {'N': 'Network', 'I': 'Image(s)', 'V': 'Video(s)', 'M': 'Mix'}
-    data_types = (('N', 'Network'),
-                  ('I', 'Image(s)'),
-                  ('V', 'Video(s)'),
-                  ('M', 'Mix'),)
-    source_type = StringProperty(choices=data_types)
-    website = StringProperty()
-
-    # We should be able to link a dataset to a paper if the dataset was
-    # published as part of the evaluation for a new algorithm. We note
-    # that the Paper model already includes a link of type 'published'
-    # so a dataset list or detail view should provide a link to add a
-    # 'published' edge between a dataset and a paper.
-
-    class Meta:
-        app_label = 'catalog'
-        ordering = ['name', 'type']
-
-    def __str__(self):
-        return '{}'.format(self.name)
-
-    def get_absolute_url(self):
-        return reverse('dataset_detail', args=[self.id])
-
-
 ###########################################
 #                                         #
 # These are models for the SQL database   #
@@ -251,6 +211,59 @@ class Person(models.Model):
 
     def get_absolute_url(self):
         return reverse('person_detail', args=[self.id])
+
+
+class Dataset(models.Model):
+
+    months = [(calendar.month_name[month], calendar.month_name[month]) for month in range(1, 13)]
+
+    # These are always required
+    name = models.CharField(max_length=300, blank=False)  # StringProperty(required=True)
+    # keywords that describe the dataset
+    keywords = models.CharField(max_length=300, blank=False)  # StringProperty(required=True)
+    # A brief description of the dataset
+    description = models.TextField(blank=False, null=False)  # StringProperty(required=True)
+    # The date of publication.
+    publication_year = models.SmallIntegerField(blank=False,
+                                                validators=[MaxValueValidator(2020),
+                                                            MinValueValidator(1900)])
+    publication_month = models.CharField(max_length=25, blank=False, choices=months)
+
+    # data_types = {'N': 'Network', 'I': 'Image(s)', 'V': 'Video(s)', 'M': 'Mix'}
+    data_types = (('Network', 'Network'),
+                  ('Image(s)', 'Image(s)'),
+                  ('Video(s)', 'Video(s)'),
+                  ('Audio', 'Audio'),
+                  ('Biology', 'Biology'),
+                  ('Chemistry', 'Chemistry'),
+                  ('Astronomy', 'Astronomy'),
+                  ('Physics', 'Physics'),
+                  ('Other', 'Other'), )
+
+    type = models.CharField(max_length=50, choices=data_types, blank=False)
+    website = models.CharField(max_length=300, blank=False )
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+    created_by = models.ForeignKey(to=User,
+                                   on_delete=models.SET_NULL,  # CASCADE,
+                                   null=True)
+
+    # A Paper can evaluate on zero or more datasets.
+    # We can add a paper to a dataset by calling
+    # dataset.papers.add(paper)
+    # I can retrieve all papers evaluating on a dataset using
+    # dataset.papers.all()
+    # papers = models.ManyToManyField(Paper)
+    class Meta:
+        app_label = 'catalog'
+        ordering = ['name', 'publication_year', 'type']
+
+    def __str__(self):
+        return '{}'.format(self.name)
+
+    def get_absolute_url(self):
+        return reverse('dataset_detail', args=[self.id])
 
 
 class ReadingGroup(models.Model):
