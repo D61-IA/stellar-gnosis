@@ -48,11 +48,62 @@ class Dataset(DjangoNode):
     def get_absolute_url(self):
         return reverse('dataset_detail', args=[self.id])
 
+
 ###########################################
 #                                         #
 # These are models for the SQL database   #
 #                                         #
 ###########################################
+class Venue(models.Model):
+
+    venue_types = (('Journal', 'Journal'),
+                   ('Conference', 'Conference'),
+                   ('Workshop', 'Workshop'),
+                   ('Open Source', 'Open Source'),
+                   ('Tech Report', 'Tech Report'),
+                   ('Other', 'Other'),)
+
+    review_types = (('Yes', 'Yes'),
+                    ('No', 'No'),)
+
+    venue_months = [(calendar.month_name[month], calendar.month_name[month]) for month in range(1, 13)]
+
+    # These are always required
+    name = models.CharField(max_length=250, blank=False)
+    # publication_date = models.DateField()
+
+    publication_year = models.SmallIntegerField(blank=False,
+                                                validators=[MaxValueValidator(2020),
+                                                            MinValueValidator(1900)])
+    publication_month = models.CharField(max_length=25, blank=False, choices=venue_months)
+
+    type = models.CharField(max_length=50, choices=venue_types, blank=False)
+    publisher = models.CharField(max_length=250, blank=True)
+    keywords = models.CharField(max_length=250, blank=False)
+
+    peer_reviewed = models.CharField(max_length=15, choices=review_types, blank=False)
+    website = models.CharField(max_length=300, blank=True)
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+    created_by = models.ForeignKey(to=User,
+                                   on_delete=models.SET_NULL,
+                                   related_name="venue",
+                                   null=True)
+
+    # Relationships
+    # A Venue publishes zero or more papers so there is a one to many relationship between venue and paper
+    # since a paper can only be published in a single venue.
+
+    class Meta:
+        app_label = 'catalog'
+        ordering = ['name', 'publication_year', 'publication_month', 'type']
+
+    def __str__(self):
+        return '{} by {}, {}'.format(self.name, self.publisher, self.publication_year)
+
+    def get_absolute_url(self):
+        return reverse('venue_detail', args=[self.id])
 
 
 class Paper(models.Model):
@@ -71,6 +122,12 @@ class Paper(models.Model):
                                    on_delete=models.SET_NULL,
                                    related_name="papers_added",
                                    null=True)
+
+    was_published_at = models.ForeignKey(to=Venue,
+                                         on_delete=models.SET_NULL,
+                                         blank=True,
+                                         null=True)
+
 
     # Relationships/Edges
     # A Paper has a ManyToMany relationship with Person. We can access all the people associated with a paper,
@@ -194,58 +251,6 @@ class Person(models.Model):
 
     def get_absolute_url(self):
         return reverse('person_detail', args=[self.id])
-
-
-class Venue(models.Model):
-
-    venue_types = (('Journal', 'Journal'),
-                   ('Conference', 'Conference'),
-                   ('Workshop', 'Workshop'),
-                   ('Open Source', 'Open Source'),
-                   ('Tech Report', 'Tech Report'),
-                   ('Other', 'Other'),)
-
-    review_types = (('Yes', 'Yes'),
-                    ('No', 'No'),)
-
-    venue_months = [(calendar.month_name[month], calendar.month_name[month]) for month in range(1, 13)]
-
-    # These are always required
-    name = models.CharField(max_length=250, blank=False)
-    # publication_date = models.DateField()
-
-    publication_year = models.SmallIntegerField(blank=False,
-                                                validators=[MaxValueValidator(2020),
-                                                            MinValueValidator(1900)])
-    publication_month = models.CharField(max_length=25, blank=False, choices=venue_months)
-
-    type = models.CharField(max_length=50, choices=venue_types, blank=False)
-    publisher = models.CharField(max_length=250, blank=True)
-    keywords = models.CharField(max_length=250, blank=False)
-
-    peer_reviewed = models.CharField(max_length=15, choices=review_types, blank=False)
-    website = models.CharField(max_length=300, blank=True)
-
-    created_at = models.DateField(auto_now_add=True, auto_now=False)
-    updated_at = models.DateField(null=True)
-    created_by = models.ForeignKey(to=User,
-                                   on_delete=models.SET_NULL,
-                                   related_name="venue",
-                                   null=True)
-
-    # Relationships
-    # A Venue publishes zero or more papers so there is a one to many relationship between venue and paper
-    # since a paper can only be published in a single venue.
-
-    class Meta:
-        app_label = 'catalog'
-        ordering = ['name', 'publication_year', 'publication_month', 'type']
-
-    def __str__(self):
-        return '{} by {} on {}'.format(self.name, self.publisher, self.publication_date)
-
-    def get_absolute_url(self):
-        return reverse('venue_detail', args=[self.id])
 
 
 class ReadingGroup(models.Model):

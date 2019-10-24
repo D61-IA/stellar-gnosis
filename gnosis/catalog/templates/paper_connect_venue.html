@@ -18,8 +18,13 @@
     {% if venues %}
     <h4>These are the venues that matched your query</h4>
     <ul class="list-group">
-        {% for venue in venues %}
-        <li class="list-group-item mt-1"><a href="{{ venue.get_absolute_url }}">{{ venue.name }}</a></li>
+        {% for venue, venue_connect_url in venues %}
+        <li class="list-group-item mt-1">
+            <a href="{{ venue.get_absolute_url }}">{{ venue.name }}, {{ venue.publication_year }}</a>
+            {% if user.is_authenticated %}
+            <a class="btn btn-warning float-right" href={{ venue_connect_url }}>Connect</a>
+            {% endif %}
+        </li>
         {% endfor %}
     </ul>
     {% endif %}

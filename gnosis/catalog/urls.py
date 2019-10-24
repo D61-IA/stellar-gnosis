@@ -14,6 +14,7 @@ urlpatterns += [
     path('paper/<int:id>/update', views.paper_update, name='paper_update'),
     path('paper/<int:id>/delete', views.paper_delete, name='paper_delete'),
     path('paper/<int:id>/connect/venue', views.paper_connect_venue, name='paper_connect_venue'),
+    path('paper/<int:id>/connect/venue/<int:vid>', views.paper_connect_venue_selected, name='paper_connect_venue_selected'),
     path('paper/<int:id>/connect/author', views.paper_connect_author, name='paper_connect_author'),
     path('paper/<int:id>/connect/author/<int:aid>', views.paper_connect_author_selected, name='paper_connect_author_selected'),
     path('paper/<int:id>/connect/paper', views.paper_connect_paper, name='paper_connect_paper'),

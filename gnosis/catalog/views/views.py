@@ -235,7 +235,7 @@ def paper_detail(request, id):
     #     venue = venues[0]
     # else:
     #     venue = None
-    venue = None
+    venue = paper.was_published_at
 
     request.session["last-viewed-paper"] = id
 
@@ -518,6 +518,22 @@ def paper_find(request):
 
 
 @login_required
+def paper_connect_venue_selected(request, id, vid):
+
+    try:
+        paper = Paper.objects.get(pk=id)
+        venue = Venue.objects.get(pk=vid)
+        venue.paper_set.add(paper)
+        # paper.was_published_at = venue
+        messages.add_message(request, messages.INFO, "Linked with venue.")
+    except ObjectDoesNotExist:
+        print("Paper or venue not found in DB.")
+        messages.add_message(request, messages.INFO, "Link to venue failed!")
+
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
+
+
+@login_required
 def paper_connect_venue(request, id):
     if request.method == "POST":
         form = SearchVenuesForm(request.POST)
@@ -525,75 +541,34 @@ def paper_connect_venue(request, id):
             # search the db for the venue
             # if venue found, then link with paper and go back to paper view
             # if not, ask the user to create a new venue
-            english_stopwords = stopwords.words("english")
-            venue_name = form.cleaned_data["venue_name"].lower()
-            venue_publication_year = form.cleaned_data["venue_publication_year"]
-            # TO DO: should probably check that data is 4 digits...
-            venue_name_tokens = [
-                w for w in venue_name.split(" ") if not w in english_stopwords
-            ]
-            venue_query = (
-                    "(?i).*" + "+.*".join("(" + w + ")" for w in venue_name_tokens) + "+.*"
-            )
-            query = (
-                    "MATCH (v:Venue) WHERE v.publication_date =~ '"
-                    + venue_publication_year[0:4]
-                    + ".*' AND v.name =~ { venue_query } RETURN v"
-            )
-            results, meta = db.cypher_query(
-                query,
-                dict(
-                    venue_publication_year=venue_publication_year[0:4],
-                    venue_query=venue_query,
-                ),
-            )
-            if len(results) > 0:
-                venues = [Venue.inflate(row[0]) for row in results]
-                print("Found {} venues that match".format(len(venues)))
-                for v in venues:
-                    print("\t{}".format(v))
+            keywords = form.cleaned_data["keywords"].lower()
 
-                if len(results) > 1:
-                    # ask the user to select one of them
-                    return render(
-                        request,
-                        "paper_connect_venue.html",
-                        {
-                            "form": form,
-                            "venues": venues,
-                            "message": "Found more than one matching venues. Please narrow your search",
-                        },
+            venues_found = Venue.objects.annotate(
+                 search=SearchVector('name', 'keywords')
+            ).filter(search=SearchQuery(keywords, search_type='plain'))
+
+            print(venues_found)
+
+            if venues_found.count() > 0:
+                # for rid in relationship_ids:
+                venue_connect_urls = [
+                    reverse(
+                        "paper_connect_venue_selected",
+                        kwargs={"id": id, "vid": venue.id},
                     )
-                else:
-                    venue = venues[0]
-                    print("Selected Venue: {}".format(venue))
+                    for venue in venues_found
+                ]
+                print("venue connect urls")
+                print(venue_connect_urls)
 
-                # retrieve the paper
-                query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-                results, meta = db.cypher_query(query, dict(id=id))
-                if len(results) > 0:
-                    all_papers = [Paper.inflate(row[0]) for row in results]
-                    paper = all_papers[0]
-                    print("Found paper: {}".format(paper.title))
-                    # check if the paper is connect with a venue; if yes, the remove link to
-                    # venue before adding link to the new venue
-                    query = "MATCH (p:Paper)-[r:was_published_at]->(v:Venue) where id(p)={id} return v"
-                    results, meta = db.cypher_query(query, dict(id=id))
-                    if len(results) > 0:
-                        venues = [Venue.inflate(row[0]) for row in results]
-                        for v in venues:
-                            print("Disconnecting from: {}".format(v))
-                            paper.was_published_at.disconnect(v)
-                            paper.save()
-                else:
-                    print("Could not find paper!")
-                    # should not get here since we started from the actual paper...but what if we do end up here?
-                    pass  # Should raise an exception but for now just pass
-                # we have a venue and a paper, so connect them.
-                print("Citation link not found, adding it!")
-                messages.add_message(request, messages.INFO, "Link to venue added!")
-                paper.was_published_at.connect(venue)
-                return redirect("paper_detail", id=paper.id)
+                venues = zip(venues_found, venue_connect_urls)
+
+                # ask the user to select one of them
+                return render(
+                    request,
+                    "paper_connect_venue.html",
+                    {"form": form, "venues": venues, "message": ""},
+                )
             else:
                 # render new Venue form with the searched name as
                 message = "No matching venues found"
@@ -1878,19 +1853,11 @@ def venue_detail(request, id):
         venue = Venue.objects.get(pk=id)
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("venues_index"))
-    #
-    # TO DO: Retrieve all papers published at this venue and list them
-    #
-    # query = "MATCH (p:Paper)-[r:was_published_at]->(v:Venue) where id(v)={id} return p"
-    # results, meta = db.cypher_query(query, dict(id=id))
-    # if len(results) > 0:
-    #     papers_published_at_venue = [Paper.inflate(row[0]) for row in results]
-    #     print("Number of papers published at this venue {}".format(len(papers_published_at_venue)))
-    #     for p in papers_published_at_venue:
-    #         print("Title: {}".format(p.title))
+
+    print(f"Papers published at this venue {venue.paper_set.all()}")
 
     request.session["last-viewed-venue"] = id
-    return render(request, "venue_detail.html", {"venue": venue, "papers": papers_published_at_venue})
+    return render(request, "venue_detail.html", {"venue": venue, "papers": venue.paper_set.all()})
 
 
 def venue_find(request):
