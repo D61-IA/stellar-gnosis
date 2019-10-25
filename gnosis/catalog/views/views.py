@@ -33,55 +33,11 @@ from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
 from django.contrib import messages
-# from catalog.views.views_codes import _code_find
 import re
 
 
 #
 # Paper Views
-#
-def get_paper_authors(paper):
-    query = "MATCH (:Paper {title: {paper_title}})<--(a:Person) RETURN a"
-    results, meta = db.cypher_query(query, dict(paper_title=paper.title))
-    if len(results) > 0:
-        authors = [Person.inflate(row[0]) for row in results]
-    else:
-        authors = []
-    # pdb.set_trace()
-    authors = [
-        "{}. {}".format(author.first_name[0], author.last_name) for author in authors
-    ]
-
-    return authors
-
-
-def _get_paper_codes(paper):
-    query = "MATCH (:Paper {title: {paper_title}})<--(c:Code) RETURN c"
-    results, meta = db.cypher_query(query, dict(paper_title=paper.title))
-    if len(results) > 0:
-        codes = [Code.inflate(row[0]) for row in results]
-    else:
-        codes = []
-    # pdb.set_trace()
-    # authors = ['{}. {}'.format(author.first_name[0], author.last_name) for author in authors]
-
-    return codes
-
-
-def get_paper_venue(paper):
-    query = "MATCH (:Paper {title: {paper_title}})--(v:Venue) RETURN v"
-    results, meta = db.cypher_query(query, dict(paper_title=paper.title))
-    if len(results) == 1:  # there should only be one venue associated with a paper
-        venue = [Venue.inflate(row[0]) for row in results][0]
-    else:
-        venue = None
-    # pdb.set_trace()
-    if venue is not None:
-        return "{}, {}".format(venue.name, venue.publication_date)
-    else:
-        return ""
-
-
 def papers(request):
     # Retrieve the papers ordered by newest addition to DB first.
     # limit to maximum 50 papers until we get pagination to work.
@@ -182,18 +138,6 @@ def paper_delete(request, id):
 
     return HttpResponseRedirect(reverse("papers_index"))
 
-
-def _get_paper_by_id(id):
-    # Retrieve the paper from the database
-    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    paper = None
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper = all_papers[0]
-    return paper
-
-
 def paper_detail(request, id):
     # Retrieve the paper from the database
     try:
@@ -247,219 +191,186 @@ def paper_detail(request, id):
     )
 
 
-def _get_node_ego_network(id, paper_title):
-    """
-    Returns a json formatted string of the nodes ego network
-    :param id:
-    :return:
-    """
-    # query for everything that points to the paper
-    query_all_in = "MATCH (s:Paper {title: {paper_title}}) <-[relationship_type]- (p) RETURN p, " \
-                   "Type(relationship_type) "
-
-    # query for everything the paper points to
-    query_all_out = "MATCH (s:Paper {title: {paper_title}}) -[relationship_type]-> (p) RETURN p, " \
-                    "Type(relationship_type) "
-
-    results_all_in, meta = db.cypher_query(query_all_in, dict(paper_title=paper_title))
-
-    results_all_out, meta = db.cypher_query(query_all_out, dict(paper_title=paper_title))
-
-    print("Results out are: ", results_all_out)
-
-    print("Results in are: ", results_all_in)
-
-    ego_json = "{{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}'}} }}".format(
-        id, paper_title, reverse("paper_detail", kwargs={"id": id}), 'Paper', 'origin'
-    )
-
-    node_temp = ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
-    rela_temp = ",{{data: {{ id: '{}{}{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
-
-    # Assort nodes and store them in arrays accordingly
-    # 'out' refers to being from the paper to the object
-    if len(results_all_out) > 0:
-        # line property for out
-        line = "solid"
-
-        for row in results_all_out:
-            new_rela = row[1].replace("_", " ")
-
-            for label in row[0].labels:
-
-                if label == 'Paper':
-                    tp = Paper.inflate(row[0])
-
-                    # adding paper node
-                    ego_json += node_temp.format(
-                        tp.id, tp.title, reverse("paper_detail", kwargs={"id": tp.id}), 'Paper', new_rela
-                    )
-
-                    # adding relationship with paper node
-                    ego_json += rela_temp.format(
-                        id, '-', tp.id, new_rela, id, tp.id, line
-                    )
-
-                if label == 'Person':
-                    tpe = Person.inflate(row[0])
-                    middleName = ''
-                    # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
-                    if tpe.middle_name is not None:
-                        middleNames = tpe.middle_name[1:-1].split(', ')
-                        print(middleNames)
-                        # concatenate middle names to get 'mn1 mn2 ...'
-                        for i in range(len(middleNames)):
-                            middleName = middleName + " " + middleNames[i][1:-1]
-
-                    # When middle names have "'", like 'D'Angelo'
-                    middleName = middleName.replace("'", r"\'")
-
-                    ego_json += ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', " \
-                                "type: '{}', " \
-                                "label: '{}'}} }}".format(
-                        tpe.id, tpe.first_name, middleName, tpe.last_name,
-                        reverse("person_detail", kwargs={"id": tpe.id}), 'Person', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        id, "-", tpe.id, new_rela, id, tpe.id, line
-                    )
-
-                if label == 'Venue':
-                    tv = Venue.inflate(row[0])
-
-                    ego_json += node_temp.format(
-                        tv.id, tv.name, reverse("venue_detail", kwargs={"id": tv.id}), 'Venue', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        id, '-', tv.id, new_rela, id, tv.id, line
-                    )
-
-                if label == 'Dataset':
-                    td = Dataset.inflate(row[0])
-                    ego_json += node_temp.format(
-                        td.id, td.name, reverse("dataset_detail", kwargs={"id": td.id}), 'Dataset', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        id, '-', td.id, new_rela, id, td.id, line
-                    )
-
-                if label == 'Code':
-                    tc = Code.inflate(row[0])
-                    ego_json += node_temp.format(
-                        tc.id, 'Code', reverse("code_detail", kwargs={"id": tc.id}), 'Code', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        id, '-', tc.id, new_rela, id, tc.id, line
-                    )
-
-    if len(results_all_in) > 0:
-        line = "dashed"
-
-        # configure in nodes
-        for row in results_all_in:
-            new_rela = row[1].replace("_", " ")
-
-            for label in row[0].labels:
-                if label == 'Paper':
-                    tp = Paper.inflate(row[0])
-                    ego_json += node_temp.format(
-                        tp.id, tp.title, reverse("paper_detail", kwargs={"id": tp.id}), 'Paper', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        tp.id, '-', id, new_rela, tp.id, id, line
-                    )
-
-                if label == 'Person':
-                    tpe = Person.inflate(row[0])
-                    middleName = ""
-                    # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
-                    if tpe.middle_name is not None:
-                        middleNames = tpe.middle_name[1:-1].split(', ')
-                        # concatenate middle names to get 'mn1 mn2 ...'
-                        for i in range(len(middleNames)):
-
-                            middleName = middleName + " " + middleNames[i][1:-1]
-
-                    middleName = middleName.replace("'", r"\'")
-                    ego_json += ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', " \
-                                "type: '{}', " \
-                                "label: '{}'}} }}".format(
-                        tpe.id, tpe.first_name, middleName, tpe.last_name,
-                        reverse("person_detail", kwargs={"id": tpe.id}), 'Person', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        tpe.id, "-", id, new_rela, tpe.id, id, line
-                    )
-
-                if label == 'Venue':
-                    tv = Venue.inflate(row[0])
-                    ego_json += node_temp.format(
-                        tv.id, tv.name, reverse("venue_detail", kwargs={"id": tv.id}), 'Venue', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        tv.id, "-", id, new_rela, tv.id, id, line
-                    )
-                if label == 'Dataset':
-                    td = Dataset.inflate(row[0])
-                    ego_json += node_temp.format(
-                        td.id, td.name, reverse("dataset_detail", kwargs={"id": td.id}), 'Dataset', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        td.id, "-", id, new_rela, td.id, id, line
-                    )
-
-                if label == 'Code':
-                    tc = Code.inflate(row[0])
-                    ego_json += node_temp.format(
-                        tc.id, 'Code', reverse("code_detail", kwargs={"id": tc.id}), 'Code', new_rela
-                    )
-
-                    ego_json += rela_temp.format(
-                        tc.id, "-", id, new_rela, tc.id, id, line
-                    )
-
-    return "[" + ego_json + "]"
-
-
-# def paper_find(request):
-#     message = None
-#     if request.method == "POST":
-#         form = SearchPapersForm(request.POST)
-#         print("Received POST request")
-#         if form.is_valid():
-#             english_stopwords = stopwords.words("english")
-#             paper_title = form.cleaned_data["paper_title"].lower()
-#             paper_title_tokens = [
-#                 w for w in paper_title.split(" ") if not w in english_stopwords
-#             ]
-#             paper_query = (
-#                     "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
-#             )
-#             query = (
-#                 "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
-#             )
-#             print("Cypher query string {}".format(query))
-#             results, meta = db.cypher_query(query, dict(paper_query=paper_query))
-#             if len(results) > 0:
-#                 print("Found {} matching papers".format(len(results)))
-#                 papers = [Paper.inflate(row[0]) for row in results]
-#                 return render(request, "papers_index.html", {"papers": papers, "form": form, "message": message})
-#             else:
-#                 message = "No results found. Please try again!"
+# def _get_node_ego_network(id, paper_title):
+#     """
+#     Returns a json formatted string of the nodes ego network
+#     :param id:
+#     :return:
+#     """
+#     # query for everything that points to the paper
+#     query_all_in = "MATCH (s:Paper {title: {paper_title}}) <-[relationship_type]- (p) RETURN p, " \
+#                    "Type(relationship_type) "
 #
-#     elif request.method == "GET":
-#         print("Received GET request")
-#         form = SearchPapersForm()
+#     # query for everything the paper points to
+#     query_all_out = "MATCH (s:Paper {title: {paper_title}}) -[relationship_type]-> (p) RETURN p, " \
+#                     "Type(relationship_type) "
 #
-#     return render(request, "papers_index.html", {"form": form, "message": message})
+#     results_all_in, meta = db.cypher_query(query_all_in, dict(paper_title=paper_title))
+#
+#     results_all_out, meta = db.cypher_query(query_all_out, dict(paper_title=paper_title))
+#
+#     print("Results out are: ", results_all_out)
+#
+#     print("Results in are: ", results_all_in)
+#
+#     ego_json = "{{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}'}} }}".format(
+#         id, paper_title, reverse("paper_detail", kwargs={"id": id}), 'Paper', 'origin'
+#     )
+#
+#     node_temp = ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+#     rela_temp = ",{{data: {{ id: '{}{}{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+#
+#     # Assort nodes and store them in arrays accordingly
+#     # 'out' refers to being from the paper to the object
+#     if len(results_all_out) > 0:
+#         # line property for out
+#         line = "solid"
+#
+#         for row in results_all_out:
+#             new_rela = row[1].replace("_", " ")
+#
+#             for label in row[0].labels:
+#
+#                 if label == 'Paper':
+#                     tp = Paper.inflate(row[0])
+#
+#                     # adding paper node
+#                     ego_json += node_temp.format(
+#                         tp.id, tp.title, reverse("paper_detail", kwargs={"id": tp.id}), 'Paper', new_rela
+#                     )
+#
+#                     # adding relationship with paper node
+#                     ego_json += rela_temp.format(
+#                         id, '-', tp.id, new_rela, id, tp.id, line
+#                     )
+#
+#                 if label == 'Person':
+#                     tpe = Person.inflate(row[0])
+#                     middleName = ''
+#                     # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
+#                     if tpe.middle_name is not None:
+#                         middleNames = tpe.middle_name[1:-1].split(', ')
+#                         print(middleNames)
+#                         # concatenate middle names to get 'mn1 mn2 ...'
+#                         for i in range(len(middleNames)):
+#                             middleName = middleName + " " + middleNames[i][1:-1]
+#
+#                     # When middle names have "'", like 'D'Angelo'
+#                     middleName = middleName.replace("'", r"\'")
+#
+#                     ego_json += ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', " \
+#                                 "type: '{}', " \
+#                                 "label: '{}'}} }}".format(
+#                         tpe.id, tpe.first_name, middleName, tpe.last_name,
+#                         reverse("person_detail", kwargs={"id": tpe.id}), 'Person', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         id, "-", tpe.id, new_rela, id, tpe.id, line
+#                     )
+#
+#                 if label == 'Venue':
+#                     tv = Venue.inflate(row[0])
+#
+#                     ego_json += node_temp.format(
+#                         tv.id, tv.name, reverse("venue_detail", kwargs={"id": tv.id}), 'Venue', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         id, '-', tv.id, new_rela, id, tv.id, line
+#                     )
+#
+#                 if label == 'Dataset':
+#                     td = Dataset.inflate(row[0])
+#                     ego_json += node_temp.format(
+#                         td.id, td.name, reverse("dataset_detail", kwargs={"id": td.id}), 'Dataset', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         id, '-', td.id, new_rela, id, td.id, line
+#                     )
+#
+#                 if label == 'Code':
+#                     tc = Code.inflate(row[0])
+#                     ego_json += node_temp.format(
+#                         tc.id, 'Code', reverse("code_detail", kwargs={"id": tc.id}), 'Code', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         id, '-', tc.id, new_rela, id, tc.id, line
+#                     )
+#
+#     if len(results_all_in) > 0:
+#         line = "dashed"
+#
+#         # configure in nodes
+#         for row in results_all_in:
+#             new_rela = row[1].replace("_", " ")
+#
+#             for label in row[0].labels:
+#                 if label == 'Paper':
+#                     tp = Paper.inflate(row[0])
+#                     ego_json += node_temp.format(
+#                         tp.id, tp.title, reverse("paper_detail", kwargs={"id": tp.id}), 'Paper', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         tp.id, '-', id, new_rela, tp.id, id, line
+#                     )
+#
+#                 if label == 'Person':
+#                     tpe = Person.inflate(row[0])
+#                     middleName = ""
+#                     # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
+#                     if tpe.middle_name is not None:
+#                         middleNames = tpe.middle_name[1:-1].split(', ')
+#                         # concatenate middle names to get 'mn1 mn2 ...'
+#                         for i in range(len(middleNames)):
+#
+#                             middleName = middleName + " " + middleNames[i][1:-1]
+#
+#                     middleName = middleName.replace("'", r"\'")
+#                     ego_json += ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', " \
+#                                 "type: '{}', " \
+#                                 "label: '{}'}} }}".format(
+#                         tpe.id, tpe.first_name, middleName, tpe.last_name,
+#                         reverse("person_detail", kwargs={"id": tpe.id}), 'Person', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         tpe.id, "-", id, new_rela, tpe.id, id, line
+#                     )
+#
+#                 if label == 'Venue':
+#                     tv = Venue.inflate(row[0])
+#                     ego_json += node_temp.format(
+#                         tv.id, tv.name, reverse("venue_detail", kwargs={"id": tv.id}), 'Venue', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         tv.id, "-", id, new_rela, tv.id, id, line
+#                     )
+#                 if label == 'Dataset':
+#                     td = Dataset.inflate(row[0])
+#                     ego_json += node_temp.format(
+#                         td.id, td.name, reverse("dataset_detail", kwargs={"id": td.id}), 'Dataset', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         td.id, "-", id, new_rela, td.id, id, line
+#                     )
+#
+#                 if label == 'Code':
+#                     tc = Code.inflate(row[0])
+#                     ego_json += node_temp.format(
+#                         tc.id, 'Code', reverse("code_detail", kwargs={"id": tc.id}), 'Code', new_rela
+#                     )
+#
+#                     ego_json += rela_temp.format(
+#                         tc.id, "-", id, new_rela, tc.id, id, line
+#                     )
+#
+#     return "[" + ego_json + "]"
 
 def paper_find(request):
     message = None
@@ -475,24 +386,6 @@ def paper_find(request):
             #     search=SearchVector('title')
             # ).filter(search=SearchQuery(paper_title, search_type='plain'))
             print(papers)
-            #
-            # paper_title_tokens = [
-            #     w for w in paper_title.split(" ") if not w in english_stopwords
-            # ]
-            # paper_query = (
-            #         "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
-            # )
-            # query = (
-            #     "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
-            # )
-            # print("Cypher query string {}".format(query))
-            # results, meta = db.cypher_query(query, dict(paper_query=paper_query))
-            # if len(results) > 0:
-            #     print("Found {} matching papers".format(len(results)))
-            #     papers = [Paper.inflate(row[0]) for row in results]
-            #     return render(request, "papers_index.html", {"papers": papers, "form": form, "message": message})
-            # else:
-            #     message = "No results found. Please try again!"
             if papers:
                 return render(request, "papers_index.html", {"papers": papers, "form": form, "message": message})
             else:
@@ -514,7 +407,6 @@ def paper_connect_venue_selected(request, id, vid):
         paper = Paper.objects.get(pk=id)
         venue = Venue.objects.get(pk=vid)
         venue.paper_set.add(paper)
-        # paper.was_published_at = venue
         messages.add_message(request, messages.INFO, "Linked with venue.")
     except ObjectDoesNotExist:
         print("Paper or venue not found in DB.")
@@ -530,7 +422,6 @@ def paper_connect_venue(request, id):
         if form.is_valid():
             # search the db for the venue
             # if venue found, then link with paper and go back to paper view
-            # if not, ask the user to create a new venue
             keywords = form.cleaned_data["keywords"].lower()
 
             venues_found = Venue.objects.annotate(
@@ -540,7 +431,6 @@ def paper_connect_venue(request, id):
             print(venues_found)
 
             if venues_found.count() > 0:
-                # for rid in relationship_ids:
                 venue_connect_urls = [
                     reverse(
                         "paper_connect_venue_selected",
@@ -585,7 +475,6 @@ def paper_add_to_collection_selected(request, id, cid):
     except ObjectDoesNotExist:
         return Http404
 
-    # collection = get_object_or_404(Collection, pk=cid)
     print("Found collection {}".format(collection))
 
     if collection.owner == request.user:
@@ -597,7 +486,6 @@ def paper_add_to_collection_selected(request, id, cid):
             c_entry = CollectionEntry()
             c_entry.collection = collection
             c_entry.paper = paper
-            # c_entry.paper_title = paper.title
             c_entry.save()
             message = "Paper added to collection {}".format(collection.name)
     else:
@@ -668,7 +556,6 @@ def paper_add_to_group(request, id):
     # Get all reading groups that this person has created
     # Note: This should be extended to allow user to propose
     #       papers to group they belong to as well.
-    # groups = ReadingGroup.objects.filter(owner=request.user.id)
     groups = ReadingGroup.objects.all()
 
     group_urls = [
@@ -711,17 +598,13 @@ def paper_connect_author(request, id):
         if form.is_valid():
             # search the db for the person
             # if the person is found, then link with paper and go back to paper view
-            # if not, ask the user to create a new person
             name = form.cleaned_data["person_name"]
             # Search for people matching the name
-            # Should I split name before searching?
             people_found = Person.objects.annotate(
                  search=SearchVector('first_name', 'last_name', 'middle_name')
             ).filter(search=SearchQuery(name, search_type='plain'))
 
             print(people_found)
-
-            # people_found = _person_find(name)
 
             if people_found is not None:
                 print("Found {} people that match".format(len(people_found)))
@@ -733,7 +616,6 @@ def paper_connect_author(request, id):
                     )
 
                 if people_found.count() > 0:
-                    # for rid in relationship_ids:
                     author_connect_urls = [
                         reverse(
                             "paper_connect_author_selected",
@@ -864,57 +746,6 @@ def paper_connect_paper(request, id):
                         "paper_connect_paper.html",
                         {"form": form, "papers": papers, "message": ""},
                     )
-            # if len(papers_found) > 1:
-            #     return render(
-            #         request,
-            #         "paper_connect_paper.html",
-            #         {
-            #             "form": form,
-            #             "papers": papers_found,
-            #             "message": "Found more than one matching papers. Please narrow your search",
-            #         },
-            #     )
-            # else:
-            #     paper_target = papers_found[0]  # one person found
-            #     print("Selected paper: {}".format(paper.title))
-
-            # retrieve the paper
-            # query = "MATCH (a) WHERE ID(a)={id} RETURN a"
-            # results, meta = db.cypher_query(query, dict(id=id))
-            # if len(results) > 0:
-            #     all_papers = [Paper.inflate(row[0]) for row in results]
-            #     paper_source = all_papers[
-            #         0
-            #     ]  # since we search by id only one paper should have been returned.
-            #     print("Found paper: {}".format(paper_source.title))
-            #     # check if the papers are already connected with a cites link; if yes, then
-            #     # do nothing. Otherwise, add the link.
-            #     query = "MATCH (q:Paper)<-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} return p"
-            #     results, meta = db.cypher_query(
-            #         query,
-            #         dict(source_id=paper_source.id, target_id=paper_target.id),
-            #     )
-            #     if len(results) == 0:
-            #         # papers are not linked so add the edge
-            #         print("Connection link not found, adding it!")
-            #         if paper_connected == 'cites':
-            #             paper_source.cites.connect(paper_target)
-            #         elif paper_connected == 'uses':
-            #             paper_source.uses.connect(paper_target)
-            #         elif paper_connected == 'extends':
-            #             paper_source.extends.connect(paper_target)
-            #         messages.add_message(request, messages.INFO, "Connection Added!")
-            #     else:
-            #         print("Connection link found not adding it!")
-            #         messages.add_message(
-            #             request, messages.INFO, "Connection Already Exists!"
-            #         )
-            # else:
-            #     print("Could not find paper!")
-            #     messages.add_message(
-            #         request, messages.INFO, "Could not find paper!"
-            #     )
-            # return redirect("paper_detail", id=id)
             else:
                 message = "No matching papers found"
 
@@ -1150,48 +981,6 @@ def _find_paper(query_string):
     return papers_found
 
 
-# def _add_author(author, paper=None):
-#     """
-#     Adds author to the DB if author does not already exist and links to paper
-#     as author if paper is not None
-#     :param author:
-#     :param paper:
-#     """
-#     link_with_paper = False
-#     p = None
-#     people_found = _person_find(author, exact_match=True)
-#     author_name = author.strip().split(" ")
-#     if people_found is None:  # not in DB
-#         print("Author {} not in DB".format(author))
-#         p = Person()
-#         p.first_name = author_name[0]
-#         if len(author_name) > 2:  # has middle name(s)
-#             p.middle_name = author_name[1:-1]
-#         else:
-#             p.middle_name = None
-#         p.last_name = author_name[-1]
-#         # print("**** Person {} ***".format(p))
-#         p.save()  # save to DB
-#         link_with_paper = True
-#     elif len(people_found) == 1:
-#         # Exactly one person found. Check if name is an exact match.
-#         p = people_found[0]
-#         # NOTE: The problem with this simple check is that if two people have
-#         # the same name then the wrong person will be linked to the paper.
-#         if p.first_name == author_name[0] and p.last_name == author_name[-1]:
-#             if len(author_name) > 2:
-#                 if p.middle_name == author_name[1:-1]:
-#                     link_with_paper = True
-#             else:
-#                 link_with_paper = True
-#     else:
-#         print("Person with similar but not exactly the same name is already in DB.")
-#
-#     if link_with_paper and paper is not None:
-#         print("Adding authors link to paper {}".format(paper.title[:50]))
-#         # link author with paper
-#         p.authors.connect(paper)
-
 def _add_author(author, paper=None):
     """
     Adds author to the DB if author does not already exist and links to paper
@@ -1200,11 +989,7 @@ def _add_author(author, paper=None):
     :param paper:
     """
     link_with_paper = False
-    # p = None
-    # people_found = _person_find(author, exact_match=True)
     author_name = author.strip().split(" ")
-    # for a in author_name:
-    #     print(type(a))
 
     if len(author_name) > 2:
         people_found = Person.objects.filter(first_name=author_name[0],
@@ -1452,6 +1237,7 @@ def get_download_link(bs4obj, source_website, url):
         download_link = None
     return download_link
 
+
 def get_paper_info(url, source_website):
     """
     Extract paper information, title, abstract, and authors, from source website
@@ -1544,33 +1330,6 @@ def paper_create_from_url(request):
         form = PaperImportForm()
 
     return render(request, "paper_form.html", {"form": form})
-
-
-def _person_find(person_name, exact_match=False):
-    """
-    Searches the DB for a person whose name matches the given name
-    :param person_name:
-    :return:
-    """
-    person_name = person_name.lower()
-    person_name_tokens = [w for w in person_name.split()]
-    if exact_match:
-        if len(person_name_tokens) > 2:
-            query = "MATCH (p:Person) WHERE  LOWER(p.last_name) IN { person_tokens } AND LOWER(p.first_name) IN { person_tokens } AND LOWER(p.middle_name) IN { person_tokens } RETURN p LIMIT 20"
-        else:
-            query = "MATCH (p:Person) WHERE  LOWER(p.last_name) IN { person_tokens } AND LOWER(p.first_name) IN { person_tokens } RETURN p LIMIT 20"
-    else:
-        query = "MATCH (p:Person) WHERE  LOWER(p.last_name) IN { person_tokens } OR LOWER(p.first_name) IN { person_tokens } OR LOWER(p.middle_name) IN { person_tokens } RETURN p LIMIT 20"
-
-    results, meta = db.cypher_query(query, dict(person_tokens=person_name_tokens))
-
-    if len(results) > 0:
-        print("Found {} matching people".format(len(results)))
-        people = [Person.inflate(row[0]) for row in results]
-        return people
-    else:
-        return None
-
 
 #
 # Venue Views
