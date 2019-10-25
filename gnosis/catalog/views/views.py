@@ -640,21 +640,24 @@ def paper_add_to_collection(request, id):
 
 @login_required
 def paper_add_to_group_selected(request, id, gid):
-    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper = all_papers[0]
-    else:  # go back to the paper index page
-        raise Http404
+    try:
+        paper = Paper.objects.get(pk=id)
+        group = ReadingGroup.objects.get(pk=gid)
+    except ObjectDoesNotExist:
+        return Http404
 
-    group = get_object_or_404(ReadingGroup, pk=gid)
-    group_entry = ReadingGroupEntry()
-    group_entry.reading_group = group
-    group_entry.proposed_by = request.user
-    group_entry.paper_id = id
-    group_entry.paper_title = paper.title
-    group_entry.save()
+    print("Found group {}".format(group))
+    paper_in_group = group.papers.filter(paper=paper)
+    if paper_in_group:
+        # message = "Paper already exists in group {}".format(group.name)
+        print(f"Paper {paper} already exists in group {group}")
+    else:
+        group_entry = ReadingGroupEntry()
+        group_entry.reading_group = group
+        group_entry.proposed_by = request.user
+        group_entry.paper = paper
+        group_entry.save()
+        print(f"Added paper {paper} to group {group}.")
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 

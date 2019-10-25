@@ -96,37 +96,6 @@ def collection_entry_remove(request, id, eid):
     return HttpResponseRedirect(reverse("collection_detail", kwargs={"id": id}))
 
 
-# @login_required
-# def group_entry_update(request, id, eid):
-#
-#     group = get_object_or_404(ReadingGroup, pk=id)
-#     group_entry = get_object_or_404(ReadingGroupEntry, pk=eid)
-#
-#     if request.user.id == group.owner.id:
-#         # if this is POST request then process the Form data
-#         if request.method == "POST":
-#             form = GroupEntryForm(request.POST)
-#             if form.is_valid():
-#                 group_entry.date_discussed = form.cleaned_data["date_discussed"]
-#                 print("Date to be discussed {}".format(group_entry.date_discussed))
-#                 group_entry.save()
-#
-#                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
-#         # GET request
-#         else:
-#             form = GroupEntryForm(
-#                 initial={
-#                     "date_discussed": group_entry.date_discussed,
-#                 }
-#             )
-#     else:
-#         print("You are not the owner.")
-#         return HttpResponseRedirect(reverse("groups_index"))
-#
-#     return render(request, "group_entry_update.html", {"form": form,
-#                                                        "group": group,
-#                                                        "group_entry": group_entry})
-
 # should limit access to admin users only!!
 # @staff_member_required
 @login_required

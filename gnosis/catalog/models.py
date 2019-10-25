@@ -306,12 +306,19 @@ class ReadingGroupEntry(models.Model):
                                       on_delete=models.CASCADE,
                                       related_name="papers")  # ReadingGroup.papers()
 
-    paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
-    paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+    # paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
+    # paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+    paper = models.ForeignKey(to=Paper,
+                              on_delete=models.CASCADE,
+                              related_name="groups",
+                              null=False,
+                              blank=False)  # Paper.groups()
+
     proposed_by = models.ForeignKey(to=User,
                                     on_delete=models.SET_NULL,
                                     related_name="papers",
                                     null=True)  # User.papers()
+
     date_discussed = models.DateField(null=True, blank=True)
     date_proposed = models.DateField(auto_now_add=True, auto_now=False)
 
@@ -362,7 +369,6 @@ class CollectionEntry(models.Model):
                                    on_delete=models.CASCADE,
                                    related_name="papers")  # Collection.papers()
 
-    # A paper in the Neo4j DB
     paper = models.ForeignKey(to=Paper,
                               on_delete=models.CASCADE,
                               related_name="collections")  # Paper.collections()

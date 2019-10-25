@@ -10,12 +10,8 @@ from datetime import date
 
 
 def groups(request):
-
-    all_groups = ReadingGroup.objects.all()  # filter(owner=request.user)
-
-    # all_groups = ReadingGroup.objects.all()
-
-    message = 'Hello'
+    all_groups = ReadingGroup.objects.all().order_by('-created_at')
+    message = ''
 
     return render(
         request, "groups.html", {"groups": all_groups, "message": message}
@@ -30,6 +26,7 @@ def group_detail(request, id):
 
     print(papers_proposed)
     print(papers_discussed)
+
     today = date.today()
 
     return render(request, "group_detail.html", {"group": group,
@@ -134,12 +131,12 @@ def group_delete(request, id):
 
     group = get_object_or_404(ReadingGroup, pk=id)
     if group:
-            if group.owner == request.user:
-                print("Found group")
-                group.delete()
-                print("   ==> Deleted group.")
-            else:
-                print("Group does not belong to user.")
+        if group.owner == request.user:
+            print("Found group")
+            group.delete()
+            print("   ==> Deleted group.")
+        else:
+            print("Group does not belong to user.")
 
     return HttpResponseRedirect(reverse("groups_index"))
 

@@ -47,10 +47,10 @@
                 {% if papers_discussed %}
                 {% paginate papers_discussed %}
                 <ul class="list-group list-group-flush">
-                    {% for paper in papers_discussed %}
-                    {% if paper.date_discussed %}
-                    <li class="list-group-item">{% if paper.date_discussed >= today %}<span class="badge badge-info">Upcoming</span> {% endif %}<a href="{% url 'paper_detail' paper.paper_id %}">{{ paper.paper_title }}</a>
-                        discussed on {{ paper.date_discussed }} and proposed on {{ paper.date_proposed }} by {{ paper.proposed_by }}
+                    {% for paper_entry in papers_discussed %}
+                    {% if paper_entry.date_discussed %}
+                    <li class="list-group-item">{% if paper_entry.date_discussed >= today %}<span class="badge badge-info">Upcoming</span> {% endif %}<a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                        discussed on {{ paper_entry.date_discussed }} and proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
                     </li>
                     {% endif %}
                     {% endfor %}
@@ -79,17 +79,17 @@
                 {% if papers_proposed %}
                 {% paginate papers_proposed %}
                 <ul class="list-group list-group-flush">
-                    {% for paper in papers_proposed %}
+                    {% for paper_entry in papers_proposed %}
                     {% if not paper.date_discussed %}
                     <li class="list-group-item">
                         <div class="d-flex flex-row">
-                            <div class="mr-auto p-2"><a href="{% url 'paper_detail' paper.paper_id %}">{{ paper.paper_title }}</a>
-                        proposed on {{ paper.date_proposed}} by {{ paper.proposed_by }}.</div>
+                            <div class="mr-auto p-2"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                        proposed on {{ paper_entry.date_proposed}} by {{ paper_entry.proposed_by }}.</div>
                         {% if user.id == group.owner.id %}
                             <div class="p-2">
-                                <a class="btn btn-sm btn-primary"  href="{% url 'group_entry_update' paper.reading_group.id paper.id %}">Discuss</a></div>
+                                <a class="btn btn-sm btn-primary"  href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a></div>
                             <div class="p-2">
-                                <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_remove' paper.reading_group.id paper.id %}">Remove</a>
+                                <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_remove' paper_entry.reading_group.id paper_entry.id %}">Remove</a>
                             </div>
                         {% endif %}
                         </div>
