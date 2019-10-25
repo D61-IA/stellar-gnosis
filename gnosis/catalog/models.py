@@ -103,6 +103,7 @@ class Paper(models.Model):
     # was_published_at = RelationshipTo("Venue", "was_published_at")
     # published = RelationshipTo("Dataset", "published")
 
+
     class Meta:
         app_label = 'catalog'
         ordering = ["title", "-created_at"]  # title is A-Z and published is from newest to oldest
@@ -253,7 +254,7 @@ class Dataset(models.Model):
     # dataset.papers.add(paper)
     # I can retrieve all papers evaluating on a dataset using
     # dataset.papers.all()
-    # papers = models.ManyToManyField(Paper)
+    papers = models.ManyToManyField(Paper)
 
     class Meta:
         app_label = 'catalog'
@@ -362,14 +363,17 @@ class CollectionEntry(models.Model):
                                    related_name="papers")  # Collection.papers()
 
     # A paper in the Neo4j DB
-    paper_id = models.IntegerField(null=False, blank=False)
-    # The paper title to avoid extra DB calls
-    paper_title = models.TextField(null=False, blank=False)
+    paper = models.ForeignKey(to=Paper,
+                              on_delete=models.CASCADE,
+                              related_name="collections")  # Paper.collections()
 
+    # paper_id = models.IntegerField(null=False, blank=False)
+    # The paper title to avoid extra DB calls
+    # paper_title = models.TextField(null=False, blank=False)
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     def get_absolute_url(self):
         return reverse('collection_detail', args=[str[self.id]])
 
     def __str__(self):
-        return str(self.paper_id)
+        return str(self.paper.title)

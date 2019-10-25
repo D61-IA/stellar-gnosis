@@ -31,7 +31,7 @@
         <ul class="list-group">
             <li class="list-group-item mt-1">
 
-                <p><a href="{{ dataset.get_absolute_url }}">{{ dataset.name }}</a></p>
+                <p><a href="{{ dataset.get_absolute_url }}">{{ dataset.name }}, {{ dataset.publication_year }}</a></p>
                 <p>{{ dataset.description|truncatewords:25 }}</p>
             </li>
         </ul>

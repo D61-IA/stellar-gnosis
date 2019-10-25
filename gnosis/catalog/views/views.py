@@ -208,7 +208,7 @@ def paper_detail(request, id):
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
     # ToDo: Improve this code to correctly handle middle names that are more than one word.
-    authors_set = paper.person_set.all()  #", ".join(authors)
+    authors_set = paper.person_set.all()
     authors = []
     for author in authors_set:
         author_name = str(author)  # author.first_name[0]+'. '+author.middle_name
@@ -218,23 +218,12 @@ def paper_detail(request, id):
         else:
             authors.append(author_name[0][0]+'. '+author_name[1])
     authors = ', '.join(authors)
-    # print("**** Authors ****")
-    # print(authors)
+
 
     comments = paper.comment_set.all()
-    # print("**** Comments ****")
-    # print(comments)
-
     codes = paper.code_set.all()
-
-    # Retrieve venue where paper was published.
-    # query = "MATCH (:Paper {title: {paper_title}})-->(v:Venue) RETURN v"
-    # results, meta = db.cypher_query(query, dict(paper_title=paper.title))
-    # if len(results) > 0:
-    #     venues = [Venue.inflate(row[0]) for row in results]
-    #     venue = venues[0]
-    # else:
-    #     venue = None
+    datasets = paper.dataset_set.all()
+    print(datasets)
     venue = paper.was_published_at
 
     request.session["last-viewed-paper"] = id
@@ -251,6 +240,7 @@ def paper_detail(request, id):
             "authors": authors,
             "comments": comments,
             "codes": codes,
+            "datasets": datasets,
             "num_comments": comments.count(),
             "ego_network": ego_network_json,
         },
@@ -588,27 +578,26 @@ def paper_connect_venue(request, id):
 def paper_add_to_collection_selected(request, id, cid):
     message = None
     print("In paper_add_to_collection_selected")
-    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper = all_papers[0]
-    else:
-        raise Http404
 
-    collection = get_object_or_404(Collection, pk=cid)
+    try:
+        paper = Paper.objects.get(pk=id)
+        collection = Collection.objects.get(pk=cid)
+    except ObjectDoesNotExist:
+        return Http404
+
+    # collection = get_object_or_404(Collection, pk=cid)
     print("Found collection {}".format(collection))
 
     if collection.owner == request.user:
         # check if paper already exists in collection.
-        paper_in_collection = collection.papers.filter(paper_id=paper.id)
+        paper_in_collection = collection.papers.filter(paper=paper)
         if paper_in_collection:
             message = "Paper already exists in collection {}".format(collection.name)
         else:
             c_entry = CollectionEntry()
             c_entry.collection = collection
-            c_entry.paper_id = id
-            c_entry.paper_title = paper.title
+            c_entry.paper = paper
+            # c_entry.paper_title = paper.title
             c_entry.save()
             message = "Paper added to collection {}".format(collection.name)
     else:
@@ -937,6 +926,21 @@ def paper_connect_paper(request, id):
 
 
 @login_required
+def paper_connect_dataset_selected(request, id, did):
+
+    try:
+        paper = Paper.objects.get(pk=id)
+        dataset = Dataset.objects.get(pk=did)
+        dataset.papers.add(paper)
+        messages.add_message(request, messages.INFO, "Linked with dataset.")
+    except ObjectDoesNotExist:
+        print("Dataset or paper not found in DB.")
+        messages.add_message(request, messages.INFO, "Link to dataset failed!")
+
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
+
+
+@login_required
 def paper_connect_dataset(request, id):
     """
     View function for connecting a paper with a dataset.
@@ -945,64 +949,46 @@ def paper_connect_dataset(request, id):
     :param id:
     :return:
     """
+    message = "No matching datasets found."
     if request.method == "POST":
         form = SearchDatasetsForm(request.POST)
         if form.is_valid():
             # search the db for the dataset
             # if the dataset is found, then link with paper and go back to paper view
-            # if not, ask the user to create a new dataset
-            dataset_query_name = form.cleaned_data["name"]
             dataset_query_keywords = form.cleaned_data["keywords"]
-            datasets_found = _dataset_find(dataset_query_name, dataset_query_keywords)
 
-            if len(datasets_found) > 0:  # found more than one matching dataset
-                print("Found {} datasets that match".format(len(datasets_found)))
+            print(f"Searching for dataset using keywords {dataset_query_keywords}")
+
+            datasets_found = Dataset.objects.annotate(
+                search=SearchVector('keywords', 'name')
+            ).filter(search=SearchQuery(dataset_query_keywords, search_type='plain'))
+
+            print(datasets_found)
+
+            if datasets_found is not None:  # found more than one matching dataset
+                print("Found {} datasets that match".format(datasets_found.count()))
                 for dataset in datasets_found:
                     print("\t{}".format(dataset.name))
 
-                if len(datasets_found) > 1:
+                if datasets_found.count() > 0:
+                    # for rid in relationship_ids:
+                    datasets_connect_urls = [
+                        reverse(
+                            "paper_connect_dataset_selected",
+                            kwargs={"id": id, "did": dataset.id},
+                        )
+                        for dataset in datasets_found
+                    ]
+                    print(datasets_connect_urls)
+
+                    datasets = zip(datasets_found, datasets_connect_urls)
+
+                    # ask the user to select one of them
                     return render(
                         request,
                         "paper_connect_dataset.html",
-                        {
-                            "form": form,
-                            "datasets": datasets_found,
-                            "message": "Found more than one matching datasets. Please narrow your search",
-                        },
+                        {"form": form, "datasets": datasets, "message": ""},
                     )
-                else:
-                    dataset_target = datasets_found[0]  # one person found
-                    print("Selected dataset: {}".format(dataset_target.name))
-
-                # retrieve the paper
-                query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-                results, meta = db.cypher_query(query, dict(id=id))
-                if len(results) > 0:
-                    all_papers = [Paper.inflate(row[0]) for row in results]
-                    paper_source = all_papers[
-                        0
-                    ]  # since we search by id only one paper should have been returned.
-                    print("Found paper: {}".format(paper_source.title))
-                    # check if the papers are already connected with a cites link; if yes, then
-                    # do nothing. Otherwise, add the link.
-                    query = "MATCH (d:Dataset)<-[r:evaluates_on]-(p:Paper) where id(p)={id} and id(d)={dataset_id} return p"
-                    results, meta = db.cypher_query(
-                        query, dict(id=id, dataset_id=dataset_target.id)
-                    )
-                    if len(results) == 0:
-                        # dataset is not linked with paper so add the edge
-                        paper_source.evaluates_on.connect(dataset_target)
-                        messages.add_message(
-                            request, messages.INFO, "Link to dataset added!"
-                        )
-                    else:
-                        messages.add_message(
-                            request, messages.INFO, "Link to dataset already exists!"
-                        )
-                else:
-                    print("Could not find paper!")
-                return redirect("paper_detail", id=id)
-
             else:
                 message = "No matching datasets found"
 

@@ -66,10 +66,11 @@ def dataset_detail(request, id):
     #
     # TO DO: Retrieve and list all papers that evaluate on this dataset.
     #
+    papers = dataset.papers.all()  # the list of papers that evaluate on this dataset
 
     request.session["last-viewed-dataset"] = id
 
-    return render(request, "dataset_detail.html", {"dataset": dataset})
+    return render(request, "dataset_detail.html", {"dataset": dataset, "papers": papers})
 
 
 # def dataset_find(request):
@@ -111,7 +112,13 @@ def dataset_create(request):
         dataset.created_by = user
         form = DatasetForm(instance=dataset, data=request.POST)
         if form.is_valid():
-            form.save()
+            other_datasets = Dataset.objects.filter(name__iexact=form.clean_name(),
+                                                    publication_year=int(form.clean_publication_year()))
+            if other_datasets.count() == 0:
+                print("Found no other matching venues")
+                form.save()
+            else:
+                print(f"Found {other_datasets.count()} matching venues.")
             return HttpResponseRedirect(reverse("datasets_index"))
     else:  # GET
         form = DatasetForm()
