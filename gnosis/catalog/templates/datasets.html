@@ -7,18 +7,18 @@
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-        <br/>
+
         <form action="" method="post">
             {% csrf_token %}
-            <div class="form-group form-inline justify-content-center">
-                {{ form }}
-            </div>
+            {% for field in form %}
+            {{ field }}
+            {% endfor %}
             <br/>
             <input type="submit" class="btn btn-primary btn-lg" value="Search Datasets"/>
         </form>
     </div>
-    <br>
 </div>
+
 
 {% if datasets %}
 <div class="card shadow-sm mt-3">

@@ -26,12 +26,16 @@
         <small>Keywords: {{ dataset.keywords }}</small>
     </p>
     <p class="text-right">
-        <small>Publication Date: {{ dataset.publication_date }}</small>
+        {% if dataset.publication_month %}
+        <small>Publication Date: {{ dataset.publication_month }}, {{ dataset.publication_year }}</small>
+        {% else %}
+        <small>Publication Date: {{ dataset.publication_year }}</small>
+        {% endif %}
     </p>
 
     <p><strong>Description:</strong> {{ dataset.description }}</p>
 
-    <p>Type: {{dataset.source_type}}</p>
+    <p>Type: {{dataset.type}}</p>
     </div>
 </div>
 

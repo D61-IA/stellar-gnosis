@@ -218,18 +218,17 @@ class Dataset(models.Model):
     months = [(calendar.month_name[month], calendar.month_name[month]) for month in range(1, 13)]
 
     # These are always required
-    name = models.CharField(max_length=300, blank=False)  # StringProperty(required=True)
+    name = models.CharField(max_length=300, blank=False)
     # keywords that describe the dataset
-    keywords = models.CharField(max_length=300, blank=False)  # StringProperty(required=True)
+    keywords = models.CharField(max_length=300, blank=False)
     # A brief description of the dataset
-    description = models.TextField(blank=False, null=False)  # StringProperty(required=True)
+    description = models.TextField(blank=False, null=False)
     # The date of publication.
     publication_year = models.SmallIntegerField(blank=False,
                                                 validators=[MaxValueValidator(2020),
                                                             MinValueValidator(1900)])
-    publication_month = models.CharField(max_length=25, blank=False, choices=months)
+    publication_month = models.CharField(max_length=25, blank=True, choices=months)
 
-    # data_types = {'N': 'Network', 'I': 'Image(s)', 'V': 'Video(s)', 'M': 'Mix'}
     data_types = (('Network', 'Network'),
                   ('Image(s)', 'Image(s)'),
                   ('Video(s)', 'Video(s)'),
@@ -241,7 +240,7 @@ class Dataset(models.Model):
                   ('Other', 'Other'), )
 
     type = models.CharField(max_length=50, choices=data_types, blank=False)
-    website = models.CharField(max_length=300, blank=False )
+    website = models.CharField(max_length=300, blank=False)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
@@ -255,6 +254,7 @@ class Dataset(models.Model):
     # I can retrieve all papers evaluating on a dataset using
     # dataset.papers.all()
     # papers = models.ManyToManyField(Paper)
+
     class Meta:
         app_label = 'catalog'
         ordering = ['name', 'publication_year', 'type']

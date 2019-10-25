@@ -14,9 +14,7 @@ from django.http import HttpResponseRedirect
 # Code Views
 #
 def codes(request):
-    # all_codes = Code.nodes.all()
     all_codes = Code.objects.all()
-    # all_codes = Code.nodes.order_by("-created")[:50]
 
     message = None
     if request.method == "POST":

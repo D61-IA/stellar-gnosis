@@ -18,38 +18,19 @@ class SearchVenuesForm(Form):
     def clean_keywords(self):
         return self.cleaned_data["keywords"]
 
-    # keywords = forms.CharField(required=True, widget=forms.TextInput(attrs={"size": 60}))
-    keywords = forms.CharField(required=True )
-    # venue_name = forms.CharField(required=True)
-    # venue_publication_year = forms.CharField(required=True)
+    keywords = forms.CharField(required=True)
 
 
 class SearchDatasetsForm(Form):
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
-
-        self.fields["name"].label = "Name"
-        self.fields[
-            "keywords"
-        ].label = "Keyword (single keyword, e.g. network, computer vision)"
-
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-
-    def clean_name(self):
-        return self.cleaned_data["name"]
 
     def clean_keywords(self):
         return self.cleaned_data["keywords"]
 
-    # one of them is required but we are going to enforce this in the
-    # view code because we don't know at this stage which one of the
-    # two the user will specify and we want to give her the option to
-    # search by dataset name or keywords or both.
-    name = forms.CharField(required=False, widget=forms.TextInput(attrs={"size": 20}))
-    keywords = forms.CharField(
-        required=False, widget=forms.TextInput(attrs={"size": 40})
-    )
+    keywords = forms.CharField(required=True,)
 
 
 class SearchPapersForm(Form):
@@ -88,6 +69,7 @@ class PaperConnectionForm(Form):
 class SearchPeopleForm(Form):
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
+
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
 
@@ -217,9 +199,9 @@ class DatasetForm(ModelForm):
         self.fields["keywords"].label = "Keywords*"
         self.fields["description"].label = "Description*"
         self.fields["type"].label = "Type*"
-        self.fields["publication_year"].label = "Publication Year"
+        self.fields["publication_year"].label = "Publication Year*"
         self.fields["publication_month"].label = "Publication Month"
-        self.fields["website"].label = "Website"
+        self.fields["website"].label = "Website*"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
