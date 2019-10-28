@@ -26,9 +26,6 @@ from catalog.forms import (
 )
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from neomodel import db
-from datetime import date
-from nltk.corpus import stopwords
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
@@ -51,7 +48,6 @@ def papers(request):
         form = SearchPapersForm(request.POST)
         print("papers: Received POST request")
         if form.is_valid():
-            # english_stopwords = stopwords.words("english")
             paper_title = form.cleaned_data["paper_title"].lower()
             print(f"Searching for paper using keywords {paper_title}")
             papers = Paper.objects.annotate(
@@ -376,7 +372,6 @@ def paper_find(request):
         form = SearchPapersForm(request.POST)
         print("paper_find: Received POST request")
         if form.is_valid():
-            english_stopwords = stopwords.words("english")
             paper_title = form.cleaned_data["paper_title"].lower()
             print(f"Searching for paper using keywords {paper_title}")
             papers = Paper.objects.filter(title__contains=paper_title)
@@ -825,22 +820,11 @@ def paper_connect_dataset(request, id):
 
 @login_required
 def paper_connect_code_selected(request, id, cid):
-    # query = "MATCH (p:Paper), (c:Code) WHERE ID(p)={id} AND ID(c)={cid} MERGE (c)-[r:implements]->(p) RETURN r"
-    # results, meta = db.cypher_query(query, dict(id=id, cid=cid))
 
-    try:
-        paper = Paper.objects.get(pk=id)
-        code = Code.objects.get(pk=cid)
-        code.papers.add(paper)
-        messages.add_message(request, messages.INFO, "Linked with code repo.")
-    except ObjectDoesNotExist:
-        print("Code or paper not found in DB.")
-        messages.add_message(request, messages.INFO, "Link to code repo failed!")
-
-    # if len(results) > 0:
-    #     messages.add_message(request, messages.INFO, "Linked with code repo.")
-    # else:
-    #     messages.add_message(request, messages.INFO, "Link to code repo failed!")
+    paper = get_object_or_404(Paper, pk=id)
+    code = get_object_or_404(Code, pk=cid)
+    code.papers.add(paper)
+    messages.add_message(request, messages.INFO, "Linked with code repo.")
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
@@ -939,32 +923,6 @@ def paper_update(request, id):
         )
 
     return render(request, "paper_update.html", {"form": form, "paper": paper})
-
-
-def _find_paper(query_string):
-    """
-    Helper method to query the DB for a paper based on its title.
-    :param query_string: The query string, e.g., title of paper to search for
-    :return: <list> List of papers that match the query or empty list if none match.
-    """
-    papers_found = []
-
-    english_stopwords = stopwords.words("english")
-    paper_title = query_string.lower()
-    paper_title_tokens = [
-        w for w in paper_title.split(" ") if not w in english_stopwords
-    ]
-    paper_query = (
-            "(?i).*" + "+.*".join("(" + w + ")" for w in paper_title_tokens) + "+.*"
-    )
-    query = "MATCH (p:Paper) WHERE  p.title =~ { paper_query } RETURN p LIMIT 25"
-    print("Cypher query string {}".format(query))
-    results, meta = db.cypher_query(query, dict(paper_query=paper_query))
-
-    if len(results) > 0:
-        papers_found = [Paper.inflate(row[0]) for row in results]
-
-    return papers_found
 
 
 def _add_author(author, paper=None):

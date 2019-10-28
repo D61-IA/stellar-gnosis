@@ -4,7 +4,6 @@ from django.shortcuts import render, get_object_or_404
 from catalog.models import Collection, CollectionEntry
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-
 from catalog.forms import CollectionForm
 
 
