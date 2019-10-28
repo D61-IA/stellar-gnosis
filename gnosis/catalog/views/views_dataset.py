@@ -159,7 +159,7 @@ def dataset_update(request, id):
             dataset.description = form.cleaned_data["description"]
             dataset.publication_year = form.cleaned_data["publication_year"]
             dataset.publication_month = form.cleaned_data["publication_month"]
-            dataset.type = form.cleaned_data["type"]
+            dataset.dataset_type = form.cleaned_data["dataset_type"]
             dataset.website = form.cleaned_data["website"]
             dataset.save()
             return HttpResponseRedirect(reverse("dataset_detail", kwargs={"id": id}))
@@ -172,7 +172,7 @@ def dataset_update(request, id):
                 "description": dataset.description,
                 "publication_year": dataset.publication_year,
                 "publication_month": dataset.publication_month,
-                "type": dataset.type,
+                "dataset_type": dataset.dataset_type,
                 "website": dataset.website,
             }
         )

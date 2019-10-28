@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from catalog.models import Paper, Person, Dataset, Venue, Comment, Code
+from catalog.models import Paper, PaperRelationshipType, Person, Dataset, Venue, Comment, Code
 from catalog.models import ReadingGroup, ReadingGroupEntry
 from catalog.models import Collection, CollectionEntry
 from catalog.views.utils.import_functions import *
@@ -138,16 +138,15 @@ def paper_delete(request, id):
 
     return HttpResponseRedirect(reverse("papers_index"))
 
+
 def paper_detail(request, id):
     # Retrieve the paper from the database
-    try:
-        paper = Paper.objects.get(pk=id)
-    except ObjectDoesNotExist:
-        return render(request,
-                      "papers.html",
-                      {"papers": Paper.objects.all(),
-                       "num_papers": 0},
-                      )
+    paper = get_object_or_404(Paper, pk=id)
+
+    print(f"Paper 'from' relationships {paper.papers.all()}")
+    for paper_to in paper.papers.all():
+        rel_model = PaperRelationshipType.objects.get(paper_from=paper, paper_to=paper_to)
+        print(f"{rel_model.relationship_type}")
 
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
@@ -162,7 +161,6 @@ def paper_detail(request, id):
         else:
             authors.append(author_name[0][0]+'. '+author_name[1])
     authors = ', '.join(authors)
-
 
     comments = paper.comment_set.all()
     codes = paper.code_set.all()
@@ -650,55 +648,37 @@ def paper_connect_author(request, id):
 
 @login_required
 def paper_connect_paper_selected(request, id, pid):
-    query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=id))
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper_source = all_papers[
-            0
-        ]  # since we search by id only one paper should have been returned.
-        print("Found source paper: {}".format(paper_source.title))
-        query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
-        results, meta = db.cypher_query(query, dict(id=pid))
-        if len(results) > 0:
-            all_papers = [Paper.inflate(row[0]) for row in results]
-            paper_target = all_papers[
-                0
-            ]  # since we search by id only one paper should have been returned.
-            print("Found target paper: {}".format(paper_target.title))
 
-            # check if the papers are already connected with a cites link; if yes, then
-            # do nothing. Otherwise, add the link.
-            query = "MATCH (q:Paper)-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} return p"
-            results, meta = db.cypher_query(
-                query,
-                dict(source_id=id, target_id=pid),
-            )
-            if len(results) > 0:
-                # papers already linked. So remove the link before adding the new one.
-                print("Connection link found! Will delete the old one first.")
-                query = "MATCH (q:Paper)-[r]-(p:Paper) where id(p)={source_id} and id(q)={target_id} DELETE r"
-                results, meta = db.cypher_query(
-                    query,
-                    dict(source_id=id, target_id=pid),
-                )
-            print("Adding the new relationship.")
-            # add the new link
-            link_type = request.session["link_type"]
-            # papers are not linked so add the edge
-            print("Connection link not found, adding it!")
-            if link_type == 'cites':
-                paper_source.cites.connect(paper_target)
-            elif link_type == 'uses':
-                paper_source.uses.connect(paper_target)
-            elif link_type == 'extends':
-                paper_source.extends.connect(paper_target)
-            messages.add_message(request, messages.INFO, "Connection Added!")
-    else:
-        print("Could not find paper!")
-        messages.add_message(
-            request, messages.INFO, "Could not find paper!"
-        )
+    paper_from = get_object_or_404(Paper, pk=id)
+    paper_to = get_object_or_404(Paper, pk=pid)
+
+    print(f"paper_from: {paper_from}")
+    print(f"paper_to: {paper_to}")
+
+    # Check if a relationship between the two papers exists.
+    # If it does, delete it before adding a new relationship.
+    edges = PaperRelationshipType(paper_from=paper_from, paper_to=paper_to)
+    if edges:
+        # Found existing relationship so remove it.
+        print(f"Found {edges} existing relationships and will delete them.")
+        paper_from.papers.remove(paper_to)
+
+    # We have the two Paper objects.
+    # Add the relationship between them.
+    print("Adding the new relationship.")
+    # add the new link
+    # TODO: Check if the link exists, does it add it again?
+    # TODO: Two papers should only be linked by one type of relationship so check if one exists, delete, and create
+    # a new one.
+    link_type = request.session["link_type"]
+    print(f"link_type: {link_type}")
+    edge = PaperRelationshipType(paper_from=paper_from,
+                                 paper_to=paper_to,
+                                 relationship_type=link_type)
+    edge.save()
+    print(edge)
+    messages.add_message(request, messages.INFO, "Connection Added!")
+
     return redirect("paper_detail", id=id)
 
 
@@ -718,15 +698,19 @@ def paper_connect_paper(request, id):
             # if the person is found, then link with paper and go back to paper view
             # if not, ask the user to create a new person
             paper_title_query = form.cleaned_data["paper_title"]
-            papers_found = _find_paper(paper_title_query)
-            paper_connected = form.cleaned_data["paper_connection"]
+            print(f"Searching for paper using keywords {paper_title_query}")
+            papers_found = Paper.objects.annotate(
+                 search=SearchVector('title')
+            ).filter(search=SearchQuery(paper_title_query, search_type='plain'))
+            print(papers_found)
 
-            if len(papers_found) > 0:  # found more than one matching papers
+            paper_relationship = form.cleaned_data["paper_connection"]
+
+            if papers_found.count() > 0:  # found more than one matching papers
                 print("Found {} papers that match".format(len(papers_found)))
                 for paper in papers_found:
                     print("\t{}".format(paper.title))
 
-                    # for rid in relationship_ids:
                     paper_connect_urls = [
                         reverse(
                             "paper_connect_paper_selected",
@@ -738,8 +722,10 @@ def paper_connect_paper(request, id):
                     print(paper_connect_urls)
 
                     papers = zip(papers_found, paper_connect_urls)
-
-                    request.session["link_type"] = paper_connected
+                    #
+                    # TODO: pass the relationship type in a better way than through a session variable.
+                    #
+                    request.session["link_type"] = paper_relationship
                     # ask the user to select one of them
                     return render(
                         request,
@@ -1472,7 +1458,7 @@ def venue_update(request, id):
             venue.name = form.cleaned_data["name"]
             venue.publication_year = form.cleaned_data["publication_year"]
             venue.publication_month = form.cleaned_data["publication_month"]
-            venue.type = form.cleaned_data["type"]
+            venue.venue_type = form.cleaned_data["venue_type"]
             venue.publisher = form.cleaned_data["publisher"]
             venue.keywords = form.cleaned_data["keywords"]
             venue.peer_reviewed = form.cleaned_data["peer_reviewed"]
@@ -1484,7 +1470,7 @@ def venue_update(request, id):
         form = VenueForm(
             initial={
                 "name": venue.name,
-                "type": venue.type,
+                "venue_type": venue.venue_type,
                 "publication_year": venue.publication_year,
                 "publication_month": venue.publication_month,
                 "publisher": venue.publisher,

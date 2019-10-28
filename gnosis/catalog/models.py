@@ -1,11 +1,8 @@
 import calendar
-from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
-from django_neomodel import DjangoNode
 from django.urls import reverse
-from neomodel import StringProperty, DateTimeProperty, DateProperty, UniqueIdProperty, \
-    IntegerProperty
+import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
@@ -37,7 +34,7 @@ class Venue(models.Model):
                                                             MinValueValidator(1900)])
     publication_month = models.CharField(max_length=25, blank=False, choices=venue_months)
 
-    type = models.CharField(max_length=50, choices=venue_types, blank=False)
+    venue_type = models.CharField(max_length=50, choices=venue_types, blank=False)
     publisher = models.CharField(max_length=250, blank=True)
     keywords = models.CharField(max_length=250, blank=False)
 
@@ -57,7 +54,7 @@ class Venue(models.Model):
 
     class Meta:
         app_label = 'catalog'
-        ordering = ['name', 'publication_year', 'publication_month', 'type']
+        ordering = ['name', 'publication_year', 'publication_month', 'venue_type']
 
     def __str__(self):
         return '{} by {}, {}'.format(self.name, self.publisher, self.publication_year)
@@ -88,21 +85,21 @@ class Paper(models.Model):
                                          blank=True,
                                          null=True)
 
+    # relationships with other papers using a "through" model to denote the
+    # type of relationship, one of cites, extends, uses. A paper can have 0 or more
+    # relationships with other papers.
+    # The relationship is not symmetric.
+    papers = models.ManyToManyField("self",
+                                    through='PaperRelationshipType',
+                                    through_fields=('paper_from', 'paper_to'),
+                                    symmetrical=False,
+                                    blank=True)
 
     # Relationships/Edges
     # A Paper has a ManyToMany relationship with Person. We can access all the people associated with a paper,
     # using paper.person_set.all()
     # I can associate a paper with a person using
     # paper.person_set.add(person)
-
-    # Links
-    # cites = RelationshipTo("Paper", "cites")
-    # uses = RelationshipTo("Paper", "uses")
-    # extends = RelationshipTo("Paper", "extends")
-    # evaluates_on = RelationshipTo("Dataset", "evaluates_on")
-    # was_published_at = RelationshipTo("Venue", "was_published_at")
-    # published = RelationshipTo("Dataset", "published")
-
 
     class Meta:
         app_label = 'catalog'
@@ -117,6 +114,31 @@ class Paper(models.Model):
 
     def get_absolute_url(self):
         return reverse('paper_detail', args=[self.id])
+
+
+class PaperRelationshipType(models.Model):
+
+    edge_types = (('cites', 'cites'),
+                  ('uses', 'uses'),
+                  ('extends', 'extends'),
+                  )
+
+    # The type of relationship
+    relationship_type = models.CharField(max_length=25,
+                                         choices=edge_types,
+                                         blank=False,
+                                         null=False)
+
+    created_at = models.DateField(default=datetime.date.today)
+    updated_at = models.DateField(null=True)
+
+    paper_from = models.ForeignKey(Paper,
+                                   related_name="paper_from",
+                                   on_delete=models.CASCADE)
+
+    paper_to = models.ForeignKey(Paper,
+                                 related_name="paper_to",
+                                 on_delete=models.CASCADE)
 
 
 class Code(models.Model):
@@ -240,7 +262,7 @@ class Dataset(models.Model):
                   ('Physics', 'Physics'),
                   ('Other', 'Other'), )
 
-    type = models.CharField(max_length=50, choices=data_types, blank=False)
+    dataset_type = models.CharField(max_length=50, choices=data_types, blank=False)
     website = models.CharField(max_length=300, blank=False)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
@@ -258,7 +280,7 @@ class Dataset(models.Model):
 
     class Meta:
         app_label = 'catalog'
-        ordering = ['name', 'publication_year', 'type']
+        ordering = ['name', 'publication_year', 'dataset_type']
 
     def __str__(self):
         return '{}'.format(self.name)

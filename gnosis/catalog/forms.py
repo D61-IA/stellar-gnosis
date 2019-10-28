@@ -198,7 +198,7 @@ class DatasetForm(ModelForm):
         self.fields["name"].label = "Name*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["description"].label = "Description*"
-        self.fields["type"].label = "Type*"
+        self.fields["dataset_type"].label = "Type*"
         self.fields["publication_year"].label = "Publication Year*"
         self.fields["publication_month"].label = "Publication Month"
         self.fields["website"].label = "Website*"
@@ -219,8 +219,8 @@ class DatasetForm(ModelForm):
     def clean_description(self):
         return self.cleaned_data["description"]
 
-    def clean_type(self):
-        return self.cleaned_data["type"]
+    def clean_dataset_type(self):
+        return self.cleaned_data["dataset_type"]
 
     def clean_publication_year(self):
         return self.cleaned_data["publication_year"]
@@ -237,7 +237,7 @@ class DatasetForm(ModelForm):
             "name",
             "keywords",
             "description",
-            "type",
+            "dataset_type",
             "publication_year",
             "publication_month",
             "website",
@@ -253,7 +253,7 @@ class VenueForm(ModelForm):
         # self.fields['publication_date'].help_text = 'YYYY-MM-DD'
         self.fields["publication_year"].label = "Publication Year (yyyy)*"
         self.fields["publication_month"].label = "Publication Month (mm)*"
-        self.fields["type"].label = "Type*"
+        self.fields["venue_type"].label = "Type*"
         self.fields["peer_reviewed"].label = "Peer Reviewed*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["website"].label = "Website"
@@ -275,8 +275,8 @@ class VenueForm(ModelForm):
     def clean_publication_month(self):
         return self.cleaned_data["publication_month"]
 
-    def clean_type(self):
-        return self.cleaned_data["type"]
+    def clean_venue_type(self):
+        return self.cleaned_data["venue_type"]
 
     def clean_peer_reviewed(self):
         return self.cleaned_data["peer_reviewed"]
@@ -294,7 +294,7 @@ class VenueForm(ModelForm):
             "publisher",
             "publication_year",
             "publication_month",
-            "type",
+            "venue_type",
             "peer_reviewed",
             "keywords",
             "website",
