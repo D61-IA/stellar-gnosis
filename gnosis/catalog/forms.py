@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm, Form
-from .models import Paper, Person, Dataset, Venue, Comment, Code, FlaggedComment
+from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from .models import ReadingGroup, ReadingGroupEntry
 from .models import Collection, CollectionEntry
 from django.utils.safestring import mark_safe
@@ -578,5 +578,5 @@ class FlaggedCommentForm(ModelForm):
         return self.cleaned_data["description"]
 
     class Meta:
-        model = FlaggedComment
+        model = CommentFlag
         fields = ['violation', 'description']

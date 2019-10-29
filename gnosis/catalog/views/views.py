@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
-from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, FlaggedComment
+from django.http import Http404, HttpResponseBadRequest
+from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag, HiddenComment
 from notes.forms import NoteForm
 from notes.models import Note
 from catalog.models import ReadingGroup, ReadingGroupEntry
@@ -12,6 +13,8 @@ from bookmark.models import Bookmark, BookmarkEntry
 from datetime import datetime
 import json
 from catalog.views.utils.import_functions import *
+
+from catalog.views.utils.classes import UserComment
 
 from catalog.forms import (
     PaperForm,
@@ -336,8 +339,8 @@ def _get_paper_by_id(id):
         paper = all_papers[0]
     return paper
 
-
 def paper_detail(request, id):
+
     # Retrieve the paper from the database
     query = "MATCH (a:Paper) WHERE ID(a)={id} RETURN a"
     results, meta = db.cypher_query(query, dict(id=id))
@@ -350,8 +353,6 @@ def paper_detail(request, id):
             "papers.html",
             {"papers": Paper.nodes.all(), "num_papers": len(Paper.nodes.all())},
         )
-
-    print("ids are:", id, paper.id)
 
     # Retrieve all notes that created by the current user and on current paper.
     notes = []
@@ -368,12 +369,39 @@ def paper_detail(request, id):
     query = "MATCH (:Paper {title: {paper_title}})<--(c:Comment) RETURN c"
 
     results, meta = db.cypher_query(query, dict(paper_title=paper.title))
+
     if len(results) > 0:
         comments = [Comment.inflate(row[0]) for row in results]
         num_comments = len(comments)
     else:
         comments = []
         num_comments = 0
+
+    user = request.user
+    filtered_comments = []
+
+    # One cannot have hidden and flagged comments of the same id
+    # Get all hidden comments
+    if user.is_authenticated:
+        hidden_comments = user.hidden_flags.all()
+        hidden_comment_ids = []
+        for comment in hidden_comments:
+            hidden_comment_ids.append(comment.comment_id)
+
+        # Get all flagged comments
+        flags = user.comment_flags.all()
+        flagged_comment_ids = []
+        for flag in flags:
+            flagged_comment_ids.append(flag.comment_id)
+
+        for c in comments:
+            if c.id in hidden_comment_ids:
+                user_comment = UserComment(c, True, False)
+            elif c.id in flagged_comment_ids:
+                user_comment = UserComment(c, True, True)
+            else:
+                user_comment = UserComment(c, False, False)
+            filtered_comments.append(user_comment)
 
     # Retrieve the code repos that implement the algorithm(s) in this paper
     codes = _get_paper_codes(paper)
@@ -416,35 +444,7 @@ def paper_detail(request, id):
     except:
         bookmarked = False
 
-    user = request.user
-    # if a flagging form is submitted
-    if request.method == "POST":
-        comment_id = request.POST.get("comment_id", None)
-
-        flagged_comment = FlaggedComment()
-        flagged_comment.proposed_by = user
-
-        form = FlaggedCommentForm(instance=flagged_comment, data=request.POST)
-
-        # check if comment_id exists
-        if comment_id is not None:
-            flagged_comment.comment_id = comment_id
-            is_valid = form.is_valid()
-
-            if is_valid:
-                form.save()
-                if not request.is_ajax():
-                    print("comment flag form saved successfully!!")
-                    return HttpResponseRedirect(reverse("paper_detail", kwargs={'id': id}))
-
-            # if the received request is ajax
-            # return a json object for ajax requests containing form validity
-            if request.is_ajax():
-                data = {'is_valid': is_valid}
-                print("ajax request received!")
-                return JsonResponse(data)
-    else:
-        form = FlaggedCommentForm()
+    form = FlaggedCommentForm()
 
     print("ego_network_json: {}".format(ego_network_json))
 
@@ -486,6 +486,7 @@ def paper_detail(request, id):
             "authors": authors,
             "notes": notes,
             "comments": comments,
+            "filtered_comments": filtered_comments,
             "codes": codes,
             "num_notes": num_notes,
             "num_comments": num_comments,
@@ -1505,212 +1506,15 @@ def paper_create(request):
     return render(request, "paper_form.html", {"form": form, "message": message})
 
 
-def get_authors(bs4obj, source_website):
-    """
-    Extract authors from the source website
-    :param bs4obj, source_website；
-    :return: None or a string with comma separated author names from first to last name
-    """
-    if source_website == "arxiv":
-        return get_authors_from_arxiv(bs4obj)
-    elif source_website == 'nips':
-        return get_authors_from_nips(bs4obj)
-    elif source_website == "jmlr":
-        return get_authors_from_jmlr(bs4obj)
-    elif source_website == "pmlr":
-        return get_authors_from_pmlr(bs4obj)
-    elif source_website == "ieee":
-        return get_authors_from_IEEE(bs4obj)
-    elif source_website == "acm":
-        return get_authors_from_ACM(bs4obj)
-    # if source website is not supported or the autherlist is none , return none
-    return None
-
-
-def get_title(bs4obj, source_website):
-    """
-    Extract paper title from the source web.
-    :param bs4obj:
-    :return:
-    """
-    if source_website == "arxiv":
-        titleList = bs4obj.findAll("h1", {"class": "title"})
-    elif source_website == 'nips':
-        titleList = bs4obj.findAll("title")
-    elif source_website == "jmlr":
-        titleList = bs4obj.findAll("h2")
-    elif source_website == "pmlr":
-        title = bs4obj.find("title").get_text()
-        return title
-    elif source_website == "ieee":
-        title = bs4obj.find("title").get_text()
-        i = title.find("- IEEE")
-        if i != -1:
-            title = title[0:i]
-        return title
-    elif source_website == "acm":
-        titleList = bs4obj.find("meta", {"name": "citation_title"})
-        title = str(titleList)
-        start = title.find('"')
-        end = title.find('"', start + 1)
-        title = title[start + 1:end]
-        if title == "Non":
-            return None
-        return title
-    else:
-        titleList = []
-    # check the validity of the abstracted titlelist
-    if titleList:
-        if len(titleList) == 0:
-            return None
-        else:
-            if len(titleList) > 1:
-                print("WARNING: Found more than one title. Returning the first one.")
-            # return " ".join(titleList[0].get_text().split()[1:])
-            title_text = titleList[0].get_text()
-            if title_text.startswith("Title:"):
-                return title_text[6:]
-            else:
-                return title_text
-    return None
-
-
-def get_abstract(bs4obj, source_website):
-    """
-    Extract paper abstract from the source website.
-    :param bs4obj, source_website:
-    :return:
-    """
-    if source_website == "arxiv":
-        abstract = bs4obj.find("blockquote", {"class": "abstract"})
-        if abstract is not None:
-            abstract = " ".join(abstract.get_text().split(" ")[1:])
-    elif source_website == 'nips':
-        abstract = bs4obj.find("p", {"class": "abstract"})
-        if abstract is not None:
-            abstract = abstract.get_text()
-    elif source_website == "jmlr":
-        abstract = get_abstract_from_jmlr(bs4obj)
-    elif source_website == "pmlr":
-        abstract = bs4obj.find("div", {"id": "abstract"}).get_text().strip()
-    elif source_website == "ieee":
-        abstract = get_abstract_from_IEEE(bs4obj)
-    elif source_website == "acm":
-        abstract = get_abstract_from_ACM(bs4obj)
-    else:
-        abstract = None
-    # want to remove all the leading and ending white space and line breakers in the abstract
-    if abstract is not None:
-        abstract = abstract.strip()
-        if source_website != "arxiv":
-            abstract = abstract.replace('\r', '').replace('\n', '')
-        else:
-            abstract = abstract.replace('\n', ' ')
-    return abstract
-
-
-def get_venue(bs4obj):
-    """
-    Extract publication venue from arXiv.org paper page.
-    :param bs4obj:
-    :return:
-    """
-    venue = bs4obj.find("td", {"class": "tablecell comments mathjax"})
-    if venue is not None:
-        venue = venue.get_text().split(";")[0]
-    return venue
-
-
-# this function is used to find the download_link for a paper from IEEE
-
-def get_download_link(bs4obj, source_website, url):
-    """
-    Extract download link from paper page1
-    :param bs4obj:
-    return: download link of paper
-    """
-    if url.endswith("/"):
-        url = url[:-1]
-    if source_website == "arxiv":
-        download_link = url.replace("/abs/", "/pdf/", 1) + ".pdf"
-    elif source_website == "nips":
-        download_link = url + ".pdf"
-    elif source_website == "jmlr":
-        download_link = bs4obj.find(href=re.compile("pdf"))['href']
-        print(download_link)
-        if download_link.startswith("/papers/"):
-            download_link = "http://www.jmlr.org" + download_link
-    elif source_website == "pmlr":
-        download_link = bs4obj.find("a", string="Download PDF")['href']
-    elif source_website == "ieee":
-        download_link = get_ddl_from_IEEE(bs4obj)
-    elif source_website == "acm":
-        download_link = bs4obj.find("meta", {"name": "citation_pdf_url"})
-        download_link = str(download_link)
-        start = download_link.find('"')
-        end = download_link.find('"', start + 1)
-        download_link = download_link[start + 1:end]
-        return download_link
-    else:
-        download_link = None
-    return download_link
-
-
-def get_paper_info(url, source_website):
-    """
-    Extract paper information, title, abstract, and authors, from source website
-    paper page.
-    :param url, source_website:
-    :return:
-    """
-    try:
-        # html = urlopen("http://pythonscraping.com/pages/page1.html")
-        url_copy = url
-        if source_website == "acm":
-            headers = {"User-Agent": "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
-            url = Request(url, headers=headers)
-        html = urlopen(url)
-    except HTTPError as e:
-        print(e)
-    except URLError as e:
-        print(e)
-        print("The server could not be found.")
-    else:
-        bs4obj = BeautifulSoup(html, features="html.parser")
-        if source_website == "ieee":
-            if check_valid_paper_type_ieee(bs4obj) == False:
-                return None, None, None, None
-        if source_website == "acm":
-            url = ""
-            if bs4obj.find("a", {"title": "Buy this Book"}) or bs4obj.find("a", {"ACM Magazines"}) \
-                    or bs4obj.find_all("meta", {"name": "citation_conference_title"}):
-                return None, None, None, None
-        # Now, we can access individual element in the page
-        authors = get_authors(bs4obj, source_website)
-        title = get_title(bs4obj, source_website)
-        abstract = get_abstract(bs4obj, source_website)
-        download_link = ""
-        if authors and title and abstract:
-            download_link = get_download_link(bs4obj, source_website, url)
-        if download_link == "Non":
-            download_link = url_copy
-        # venue = get_venue(bs4obj)
-        return title, authors, abstract, download_link
-
-    return None, None, None, None
-
-
 @login_required
 def paper_create_from_url(request):
     user = request.user
-
     if request.method == "POST":
         # create the paper from the extracted data and send to
         # paper_form.html asking the user to verify
         print("{}".format(request.POST["url"]))
         # get the data from arxiv
         url = request.POST["url"]
-
         validity, source_website, url = analysis_url(url)
         # return error message if the website is not supported
         if validity == False:
@@ -1724,6 +1528,7 @@ def paper_create_from_url(request):
         # server, then we will return an error message and redirect to paper_form.html.
         title, authors, abstract, download_link = get_paper_info(url, source_website)
         if title is None or authors is None or abstract is None:
+            print("missing information for paper")
             form = PaperImportForm()
             return render(
                 request,
@@ -2576,6 +2381,50 @@ def comment_delete(request, id):
         comment.delete()
         del request.session["last-viewed-paper"]
     return redirect("paper_detail", id=paper_id)
+
+
+@login_required()
+def comment_hide(request, id):
+    user = request.user
+    if request.is_ajax():
+        if id is not None:
+            hidden_comment = HiddenComment(comment_id=id, proposed_by=user)
+            hidden_comment.save()
+            data = {'is_valid': True}
+        else:
+            data = {'is_valid': False}
+        print("ajax request received!")
+        return JsonResponse(data)
+    else:
+        if id is not None:
+            hidden_comment = HiddenComment(comment_id=id, proposed_by=user)
+            hidden_comment.save()
+
+        paper_id = request.session["last-viewed-paper"]
+        return redirect("paper_detail", id=paper_id)
+
+
+@login_required()
+def comment_unhide(request, id):
+    user = request.user
+    if request.is_ajax():
+        data = {'is_valid': False}
+        if id is not None:
+            hidden_comment = user.hidden_flags.get(comment_id=id)
+            if hidden_comment is not None:
+                hidden_comment.delete()
+                data = {'is_valid': True}
+
+        print("ajax request received!")
+        return JsonResponse(data)
+    else:
+        if id is not None:
+            hidden_comment = user.hidden_flags.get(comment_id=id)
+            if hidden_comment is not None:
+                hidden_comment.delete()
+
+        paper_id = request.session["last-viewed-paper"]
+        return redirect("paper_detail", id=paper_id)
 
 #
 # Utility Views (admin required)
