@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 
 from catalog.models import ReadingGroup, ReadingGroupEntry
 from catalog.models import Collection, CollectionEntry
-from catalog.models import FlaggedComment
+from catalog.models import CommentFlag
 
 from neomodel import db
 from catalog.models import Comment
@@ -34,7 +34,7 @@ def delete_comment(modeladmin, request, queryset):
         results, meta = db.cypher_query(query, dict(id=obj.comment_id))
 
         # delete flags about the same comment
-        FlaggedComment.objects.filter(comment_id=obj.comment_id).delete()
+        CommentFlag.objects.filter(comment_id=obj.comment_id).delete()
 
 
 delete_comment.short_description = "Delete marked COMMENTS and their flags"
@@ -43,7 +43,7 @@ delete_comment.short_description = "Delete marked COMMENTS and their flags"
 def delete_flags(modeladmin, request, queryset):
     for obj in queryset:
         # delete flags about the same comment
-        FlaggedComment.objects.filter(comment_id=obj.comment_id).delete()
+        CommentFlag.objects.filter(comment_id=obj.comment_id).delete()
 
 
 delete_flags.short_description = "Delete all FLAGS about the marked comments"
@@ -65,11 +65,11 @@ class FlaggedCommentAdmin(admin.ModelAdmin):
             obj.delete()
 
             # delete flags about the same comment
-            FlaggedComment.objects.filter(comment_id=obj.comment_id).delete()
+            CommentFlag.objects.filter(comment_id=obj.comment_id).delete()
             return HttpResponseRedirect(reverse('admin:catalog_flaggedcomment_changelist'))
 
         if "_delete-flags" in request.POST:
-            FlaggedComment.objects.filter(comment_id=obj.comment_id).delete()
+            CommentFlag.objects.filter(comment_id=obj.comment_id).delete()
             return HttpResponseRedirect(reverse('admin:catalog_flaggedcomment_changelist'))
 
         return super().response_change(request, obj)
@@ -92,4 +92,4 @@ class FlaggedCommentAdmin(admin.ModelAdmin):
     get_comment.short_description = 'Comment'
 
 
-admin.site.register(FlaggedComment, FlaggedCommentAdmin)
+admin.site.register(CommentFlag, FlaggedCommentAdmin)

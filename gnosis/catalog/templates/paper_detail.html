@@ -125,8 +125,7 @@
 
                     <div>
                         <div>Connect with:
-                            <a
-                                    href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
+                            <a href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
                             || <a href="{% url 'paper_connect_venue' paper.id %}">Venue</a> ||
                             <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
                             <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
@@ -161,8 +160,7 @@
     {% endif %}
 
     <div class="card mt-3 shadow-sm">
-        <div id="ego-header" class="card-header" onclick="collapse_toggle('ego-graph-content', this)"
-             style="display: flex; flex-direction: row; justify-content: space-between">
+        <div id="ego-header" class="card-header">
             <h4>Ego-graph</h4>
 
             <i class="material-icons drop_indicator">
@@ -285,47 +283,142 @@
                         {% if num_comments > 0 %}
                             <ul class="list-group list-group-flush">
                             {% paginate comments %}
-                            {% for comment in comments %}
-                                <li class="list-group-item shadow-sm mt-1">
-                                    <div style="float: right; text-align: right;">
-                                        <i class="material-icons more_vert" onclick="toggle_more(this)">
-                                            more_vert
-                                        </i>
-                                        <div class="popup" hidden>
-                                            <div class="more_menu">
-                                                {% if user.is_authenticated %}
-                                                    <div class="opt_container"
-                                                         onclick="open_flag_dialog({{ comment.id }})">
-                                                        <i class="material-icons menu_item">
-                                                            outlined_flag
-                                                        </i>
-                                                        <span class="menu_item">Report</span>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="opt_container">
-                                                        <a class="icon_link"
-                                                           href="{% url 'login' %}?next={{ request.path }}"
-                                                           style="text-decoration: none; color: black">
+                            {% for comment in filtered_comments %}
+                                {% if comment.is_hidden %}
+                                    {% if comment.is_flagged %}
+                                        <li id="reported_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
+                                            <div class="even-vert-center">
+                                                <span>You have reported this comment.</span>
+                                                <a class="btn btn-primary async_unreport"
+                                                   href="{% url 'comment_flag_remove' comment.id %}"
+                                                   data-commentid="{{ comment.id }}"
+                                                   role="button">Undo</a>
+                                            </div>
+                                        </li>
+                                        <li id="hidden_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1"
+                                            hidden>
+                                            <div class="even-vert-center">
+                                                <span>Comment hidden.</span>
+                                                <a class="btn btn-primary async_unhide"
+                                                   href="{% url 'comment_unhide' comment.id %}"
+                                                   data-commentid="{{ comment.id }}"
+                                                   role="button">Undo</a>
+                                            </div>
+                                        </li>
+                                    {% else %}
+                                        <li id="reported_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1"
+                                            hidden>
+                                            <div class="even-vert-center">
+                                                <span>You have reported this comment.</span>
+                                                <a class="btn btn-primary async_unreport"
+                                                   href="{% url 'comment_flag_remove' comment.id %}"
+                                                   data-commentid="{{ comment.id }}"
+                                                   role="button">Undo</a>
+                                            </div>
+                                        </li>
+                                        <li id="hidden_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
+                                            <div class="even-vert-center">
+                                                <span>Comment hidden.</span>
+                                                <a class="btn btn-primary async_unhide"
+                                                   href="{% url 'comment_unhide' comment.id %}"
+                                                   data-commentid="{{ comment.id }}"
+                                                   role="button">Undo</a>
+                                            </div>
+                                        </li>
+                                    {% endif %}
+
+                                    <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1" hidden>
+                                        {% if comment.created_by != user.id %}
+                                            <div style="float: right; text-align: right;">
+                                                <i class="material-icons more_vert">
+                                                    more_vert
+                                                </i>
+                                                <div class="popup" hidden>
+                                                    <div class="more_menu box_shadow">
+                                                        <div class="opt_container open_flag_dialog"
+                                                             data-url="{% url 'comment_flag_create' comment.id %}"
+                                                             data-commentid="{{ comment.id }}">
                                                             <i class="material-icons menu_item">
                                                                 outlined_flag
                                                             </i>
                                                             <span class="menu_item">Report</span>
-                                                        </a>
+                                                        </div>
                                                     </div>
-                                                {% endif %}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <p><strong>{{ comment.author }}</strong>
-
-                                        <small class="ml-3 text-muted">{{ comment.publication_date|naturaltime }}</small>
-                                        {% if comment.created_by == user.id %}
-                                            <a class="ml-5" href="{% url 'comment_update' comment.id %}">Edit</a>
-                                            <a class="ml-5" href="{% url 'comment_delete' comment.id %}"> Delete</a>
                                         {% endif %}
-                                    </p>
-                                    <p>{{ comment.text }}</p>
-                                </li>
+                                        <p><strong>{{ comment.author }}</strong>
+
+                                            <small class="ml-3 text-muted">{{ comment.publication_date|naturaltime }}</small>
+                                            {% if comment.created_by == user.id %}
+                                                <a class="ml-5" href="{% url 'comment_update' comment.id %}">Edit</a>
+                                                <a class="ml-5" href="{% url 'comment_delete' comment.id %}"> Delete</a>
+                                            {% else %}
+                                                <a class="ml-5 async_hide"
+                                                   href="{% url 'comment_hide' comment.id %}"
+                                                   data-commentid="{{ comment.id }}">Hide</a>
+                                            {% endif %}
+                                        </p>
+                                        <p>{{ comment.text }}</p>
+                                    </li>
+
+                                {% else %}
+                                    <li id="reported_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1"
+                                        hidden>
+                                        <div class="even-vert-center">
+                                            <span>You have reported this comment.</span>
+                                            <a class="btn btn-primary async_unreport"
+                                               href="{% url 'comment_flag_remove' comment.id %}"
+                                               data-commentid="{{ comment.id }}"
+                                               role="button">Undo</a>
+                                        </div>
+                                    </li>
+
+                                    <li id="hidden_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1" hidden>
+                                        <div class="even-vert-center">
+                                            <span>Comment hidden.</span>
+                                            <a class="btn btn-primary async_unhide"
+                                               href="{% url 'comment_unhide' comment.id %}"
+                                               data-commentid="{{ comment.id }}"
+                                               role="button">Undo</a>
+                                        </div>
+                                    </li>
+
+                                    <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
+                                        {% if comment.created_by != user.id %}
+                                            <div style="float: right; text-align: right;">
+                                                <i class="material-icons more_vert">
+                                                    more_vert
+                                                </i>
+                                                <div class="popup" hidden>
+                                                    <div class="more_menu box_shadow">
+                                                        <div class="opt_container open_flag_dialog"
+                                                             data-url="{% url 'comment_flag_create' comment.id %}"
+                                                             data-commentid={{ comment.id }}>
+                                                            <i class="material-icons menu_item">
+                                                                outlined_flag
+                                                            </i>
+                                                            <span class="menu_item">Report</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <p><strong>{{ comment.author }}</strong>
+
+                                            <small class="ml-3 text-muted">{{ comment.publication_date|naturaltime }}</small>
+                                            {% if comment.created_by == user.id %}
+                                                <a class="ml-5" href="{% url 'comment_update' comment.id %}">Edit</a>
+                                                <a class="ml-5" href="{% url 'comment_delete' comment.id %}">Delete</a>
+                                            {% else %}
+                                                <a class="ml-5 async_hide"
+                                                   href="{% url 'comment_hide' comment.id %}"
+                                                   data-commentid="{{ comment.id }}">Hide</a>
+                                            {% endif %}
+                                        </p>
+                                        <p>{{ comment.text }}</p>
+                                    </li>
+                                {% endif %}
                             {% endfor %}
                             {% get_pages %}
                             <ul class="pagination justify-content-center" style="margin:20px 0">
@@ -409,8 +502,11 @@
                     </div>
                 </div>
                 {#        if the user is not login#}
+                {#                <a href="{% url 'django_registration_register' %}">register a new#}
+                {#                    account!</a>#}
             {% else %}
-                <h4 class="mt-2 mb-2">Sign up or <a href="{% url 'login' %}?next={{ request.path }}">login</a> to leave
+                <h4 class="mt-2 mb-2"><a href="{% url 'django_registration_register' %}?next={{ request.path }}">Sign
+                    up</a> or <a href="{% url 'login' %}?next={{ request.path }}">login</a> to leave
                     a
                     comment</h4>
                 {% if num_comments > 0 %}
@@ -418,38 +514,23 @@
                         {% for comment in comments %}
                             <li class="list-group-item shadow-sm mt-1">
                                 <div style="float: right; text-align: right;">
-                                    <i class="material-icons more_vert" onclick="toggle_more(this)">
+                                    <i class="material-icons more_vert">
                                         more_vert
                                     </i>
                                     <div class="popup" hidden>
-                                        <div class="more_menu">
-                                            {% if user.is_authenticated %}
-                                                <div class="opt_container" onclick="open_flag_dialog({{ comment.id }})">
-                                                    <i class="material-icons menu_item">
-                                                        outlined_flag
-                                                    </i>
-                                                    <span class="menu_item">Report</span>
-                                                </div>
-                                            {% else %}
-                                                <div class="opt_container">
-                                                    <a class="icon_link"
-                                                       href="{% url 'login' %}?next={{ request.path }}"
-                                                       style="text-decoration: none; color: black">
-                                                        <i class="material-icons menu_item">
-                                                            outlined_flag
-                                                        </i>
-                                                        <span class="menu_item">Report</span>
-                                                    </a>
-                                                </div>
-                                            {% endif %}
+                                        <div class="more_menu box_shadow">
+                                            <a class="opt_container icon_link"
+                                               href="{% url 'login' %}?next={{ request.path }}">
+                                                <i class="material-icons menu_item">
+                                                    outlined_flag
+                                                </i>
+                                                <span class="menu_item">Report</span>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                                 <p><strong>{{ comment.author }}</strong>
                                     <small class="ml-3 text-muted">{{ comment.publication_date|date:"F d, Y" }}</small>
-                                    {% if comment.created_by == user.id %}
-                                        <a class="ml-3" href="{% url 'comment_update' comment.id %}">Edit</a>
-                                    {% endif %}
                                 </p>
                                 <p>{{ comment.text }}</p>
                             </li>
@@ -462,7 +543,7 @@
 
     <!-- start-flagging -->
     <div id="flag_form_container" class="cover popup" hidden>
-        <div id="flag_dialog">
+        <div id="flag_form_dialog" class="box_shadow">
             <form id="flag_form" action="" method="post">
                 {% csrf_token %}
                 <table class="w-75">
@@ -476,7 +557,6 @@
                         {% if field.help_text %}
                             {{ field.help_text }}
                         {% endif %}
-
                         {% for error in field.errors %}
                             {{ error }}
                         {% endfor %}
@@ -503,7 +583,6 @@
     <!-- end-flagging -->
 
     {% load static %}
-    <script src="{% static "js/flagging.js" %}"></script>
 
     <script type="text/javascript">
 
@@ -658,6 +737,7 @@
     </script>
 
     <script src="{% static "js/ego_graph.js" %}"></script>
+    <script src="{% static "js/flagging.js" %}"></script>
 
     <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
     <script src="{% static "js/endorsement-bookmark.js" %}"></script>

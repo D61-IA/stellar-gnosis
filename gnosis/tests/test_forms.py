@@ -552,10 +552,42 @@ class CodeFormTest(TestCase):
 
 
 class FlagFormTest(TestCase):
+
     def test_fields(self):
         form = FlaggedCommentForm()
         self.assertEquals(form.fields["violation"].label, "Violation")
         self.assertEquals(form.fields["description"].label, "Description")
+
+    def test_violation_exceed_length(self):
+        data = {
+            "violation": "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "
+            "(The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, comes from a line in section 1.10.32.",
+            "description": "test description"
+        }
+        form = FlaggedCommentForm(data)
+        self.assertFalse(form.is_valid())
+
+    def test_violation_outside_choice_field(self):
+        data = {
+            "violation": "This is not a choice",
+            "description": "test description"
+        }
+        form = FlaggedCommentForm(data)
+        self.assertFalse(form.is_valid())
+
+    def test_unfilled_required_description_field(self):
+        data = {
+            "violation": "Child abuse"
+        }
+        form = FlaggedCommentForm(data)
+        self.assertFalse(form.is_valid())
+
+    def test_unfilled_required_violation_field(self):
+        data = {
+            "description": "test description"
+        }
+        form = FlaggedCommentForm(data)
+        self.assertFalse(form.is_valid())
 
     def test_clean_description(self):
         data = {

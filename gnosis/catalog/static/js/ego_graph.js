@@ -28,21 +28,6 @@ function toggle_relas() {
     }
 }
 
-// /************** show/hide graph add-ons **************/
-// var hide_opt = false;
-//
-// function toggle_options() {
-//     hide_opt = !hide_opt;
-//     if (hide_opt) {
-//         $(".graph-adder").hide(300);
-//         $("#menu-button").text("Show").attr("title", "Show add-ons");
-//
-//     } else {
-//         $(".graph-adder").show(300);
-//         $("#menu-button").text("Hide").attr("title", "Hide add-ons");
-//     }
-// }
-
 // collection of all elements (nodes + edges) in the graph currently
 var collection = cy.elements();
 
@@ -100,23 +85,25 @@ function show_cites(label, type) {
 // stores state of the collapse target
 var hidden = false;
 
-function collapse_toggle(ele, that) {
+var ego_header = $('#ego-header');
+
+$(ego_header).click(function () {
     hidden = !hidden;
     if (hidden) {
-        $(that).children('.drop_indicator').text('arrow_drop_down');
-        $('#' + ele).hide(200);
+        $(this).children('.drop_indicator').text('arrow_drop_down');
+        $('#ego-graph-content').hide(200);
 
     } else {
-        $(that).children('.drop_indicator').text('arrow_drop_up');
-        $('#' + ele).show(200);
+        $(this).children('.drop_indicator').text('arrow_drop_up');
+        $('#ego-graph-content').show(200);
 
     }
-}
+});
 
 // collapse initially if device width is < 600
 // device widths reference: https://www.w3schools.com/css/css_rwd_mediaqueries.asp
-if ($(window).width() < 600){
-    collapse_toggle('ego-graph-content', $('#ego-header'));
+if ($(window).width() < 600) {
+    $(ego_header).click()
 }
 
 /************** tooltip **************/
@@ -195,3 +182,5 @@ cy.on('click', 'node', function (evt) {
         edge.style('opacity', 1);
 
     });
+
+// attach functions to events

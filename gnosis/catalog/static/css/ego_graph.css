@@ -49,6 +49,12 @@
     background-color: ghostwhite;
 }
 
+#ego-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between
+}
+
 .flex_layout_row {
     display: flex;
     flex-direction: row;
