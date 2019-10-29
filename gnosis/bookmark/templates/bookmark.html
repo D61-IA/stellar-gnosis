@@ -7,6 +7,17 @@
         <h4>Bookmarks</h4>
 
     </div>
+
+    <form class="input-group mb-3" action="{% url 'search_bookmarks' %}" method="post">
+        {% csrf_token %}
+      <input name="keyword1" type="text" class="form-control" placeholder="Search Bookmarks">
+      <div class="input-group-append">
+        <input class="btn btn-outline-secondary" value="Search" type="submit" id="button-addon2">
+      </div>
+    </form>
+
+
+
     <div class="card-body">
         {% if papers %}
         {% paginate papers %}
@@ -38,7 +49,7 @@
             <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
         {% else %}
-        <p class="font-heavy-light font-italic">This bookmark doesn't have any paper yet.</p>
+        <p class="font-heavy-light font-italic">No matched bookmarks found</p>
         {% endif %}
         </ul>
     </div>

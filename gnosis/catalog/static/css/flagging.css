@@ -1,6 +1,20 @@
 /* style more icon and its container */
-.more_menu {
+.box_shadow {
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
+.even-vert-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.icon_link {
+    display: block;
+    color: black;
+}
+
+.more_menu {
     border-width: 1px;
 }
 
@@ -25,6 +39,8 @@
 
 .opt_container:hover {
     cursor: pointer;
+    text-decoration: none;
+    color: black;
     background-color: lightgray;
 }
 
@@ -40,17 +56,15 @@
 
 }
 
-#flag_dialog {
+#flag_form_dialog {
     position: fixed;
     background-color: white;
     padding: 20px;
     top: 50%;
     left: 50%;
-    margin-left: -181.5px;      /* form width/2.0 */
-    margin-top: -239px;     /* form height/2.0 */
+    margin-left: -181.5px; /* form width/2.0 */
+    margin-top: -239px; /* form height/2.0 */
     z-index: 3000;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
-
 }
 
 /* style flag dialog */
@@ -62,7 +76,6 @@
     margin-left: -200px;
     margin-top: -69px;
     z-index: 3000;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
 }
 
 .form_button {

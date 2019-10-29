@@ -71,6 +71,8 @@ urlpatterns += [
     path('comment/<int:id>/', views.comment_detail, name='comment_detail'),
     path('comment/<int:id>/update', views.comment_update, name='comment_update'),
     path('comment/<int:id>/delete', views.comment_delete, name='comment_delete'),
+    path('comment/<int:id>/hide', views.comment_hide, name='comment_hide'),
+    path('comment/<int:id>/unhide', views.comment_unhide, name='comment_unhide'),
 ]
 
 # for updating/creating a new Code node
@@ -119,4 +121,9 @@ urlpatterns += [
     path('bookmarks/paper/<int:pid>/remove', bookmark_entry_remove, name='bookmark_entry_remove'),
     path('bookmarks/<int:pid>/remove', bookmark_entry_remove_from_view, name='bookmark_entry_remove_from_view'),
 
+]
+
+urlpatterns += [
+    path('flags/comment/<int:comment_id>/create', views.cflag_create, name='comment_flag_create'),
+    path('flags/comment/<int:comment_id>/remove', views.cflag_remove, name='comment_flag_remove'),
 ]

@@ -130,6 +130,16 @@ class PaperImport(TestCase):
             "https://dl.acm.org/sig.cfm?id=SP1280",     # sepeical event
             "https://dl.acm.org/citation.cfm?id=2345396" ,  # proceeding
             "https://dl.acm.org/citation.cfm?id=1996010" ,  # proceeding
+            # cvf urls
+            "http://openaccess.thecvf.com/ICCV2017.py", # paper list
+            "http://openaccess.thecvf.com/menu.py", # conference List
+            "http://openaccess.thecvf.com/CVPR2019_workshops/menu.py", # workshop list
+            # spg urls
+            "https://link.springer.com/chapter/10.1007/978-981-13-5790-9_10", # charpter from a boook
+            "https://link.springer.com/book/10.1007/978-3-030-11009-3", #conference proceedings
+            # robotics proceedings
+            "http://www.roboticsproceedings.org/rss14/authors.html", #author list
+            "http://www.roboticsproceedings.org/rss13/index.html", #content list
             ]
         for url in invalid_urls:
             request.POST["url"] = url
@@ -174,6 +184,18 @@ class PaperImport(TestCase):
             "https://dl.acm.org/citation.cfm?id=3239571",   # article
             "https://dl.acm.org/citation.cfm?id=2804405",   # article
             "https://dl.acm.org/citation.cfm?id=2907069",   # article
+            # cvf papers
+            "http://openaccess.thecvf.com/content_cvpr_2014/html/Liu_Weakly_Supervised_Multiclass_2014_CVPR_paper.html", #paper from CVPR 2014
+            "http://openaccess.thecvf.com/content_ECCV_2018/html/Kaiyue_Pang_Deep_Factorised_Inverse-Sketching_ECCV_2018_paper.html", #paper from ECCV 2018
+            "http://openaccess.thecvf.com/content_iccv_2013/html/Wang_Image_Co-segmentation_via_2013_ICCV_paper.html", # paper from ICCV 2013
+            "http://openaccess.thecvf.com/content_CVPRW_2019/html/BIC/Laibacher_M2U-Net_Effective_and_Efficient_Retinal_Vessel_Segmentation_for_Real-World_Applications_CVPRW_2019_paper.html", # paper from workshops
+            # springerLink papers
+            "https://link.springer.com/article/10.1007/s10994-019-05799-x" , # Article
+            "https://link.springer.com/chapter/10.1007/978-3-030-01246-5_11", # conference paper
+            # robotics proceedings paper_source
+            "http://www.roboticsproceedings.org/rss12/p02.html", # volume 12
+            "http://www.roboticsproceedings.org/rss01/p10.html", # volume 1
+            "http://www.roboticsproceedings.org/rss09/p01.html", # volume 9
             ]
         for url in valid_urls:
             request.POST["url"] = url
