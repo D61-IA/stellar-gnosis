@@ -15,8 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL', 'bolt://neo4j:GnosisTest00@localhost:7687')
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -49,13 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_neomodel',
     'django_registration',
     'el_pagination',
     'catalog.apps.CatalogConfig',
     'bookmark.apps.BookmarkConfig',
     'home.apps.HomeConfig',
-    'django_nose',
     'recaptcha',
     'captcha',
     'django.contrib.humanize',
@@ -163,14 +159,14 @@ LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Tell nose to measure coverage on the 'catalogue' app
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=catalog',
-    '--cover-html',
-]
+# NOSE_ARGS = [
+#     '--with-coverage',
+#     '--cover-package=catalog',
+#     '--cover-html',
+# ]
 
 # Add notes app
 INSTALLED_APPS += ['notes.apps.NotesConfig', ]
