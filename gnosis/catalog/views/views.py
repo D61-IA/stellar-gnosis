@@ -1,13 +1,21 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from catalog.models import Paper, PaperRelationshipType, Person, Dataset, Venue, Comment, Code
+from django.http import Http404, HttpResponseBadRequest
+from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag #, HiddenComment
+from notes.forms import NoteForm
+from notes.models import Note
 from catalog.models import ReadingGroup, ReadingGroupEntry
 from catalog.models import Collection, CollectionEntry
+from catalog.models import EndorsementEntry
+from bookmark.models import Bookmark, BookmarkEntry
 from catalog.views.utils.import_functions import *
+from catalog.views.utils.classes import UserComment
 
 from catalog.forms import (
     PaperForm,
@@ -15,22 +23,29 @@ from catalog.forms import (
     VenueForm,
     CommentForm,
     PaperImportForm,
+    FlaggedCommentForm,
 )
 from catalog.forms import (
+    SearchAllForm,
     SearchVenuesForm,
     SearchPapersForm,
     SearchPeopleForm,
     SearchDatasetsForm,
     SearchCodesForm,
-    PaperConnectionForm,
+    PaperConnectionForm
 )
+
+
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
+from neomodel import db
+from nltk.corpus import stopwords
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
 from django.contrib import messages
 import re
+
 
 
 #
@@ -134,8 +149,8 @@ def paper_delete(request, id):
 
     return HttpResponseRedirect(reverse("papers_index"))
 
-
 def paper_detail(request, id):
+
     # Retrieve the paper from the database
     paper = get_object_or_404(Paper, pk=id)
 
@@ -143,6 +158,12 @@ def paper_detail(request, id):
     for paper_to in paper.papers.all():
         rel_model = PaperRelationshipType.objects.get(paper_from=paper, paper_to=paper_to)
         print(f"{rel_model.relationship_type}")
+
+    # Retrieve all notes that created by the current user and on current paper.
+    notes = []
+    if request.user.is_authenticated:
+        notes = Note.objects.filter(paper_id=id, created_by=request.user)
+    num_notes = len(notes)
 
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
@@ -211,8 +232,10 @@ def paper_detail(request, id):
 #         id, paper_title, reverse("paper_detail", kwargs={"id": id}), 'Paper', 'origin'
 #     )
 #
+#     # type refers to what node type the object is associated with.
+#     # label refers to the text on the object.
 #     node_temp = ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
-#     rela_temp = ",{{data: {{ id: '{}{}{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+#     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
 #
 #     # Assort nodes and store them in arrays accordingly
 #     # 'out' refers to being from the paper to the object
@@ -235,7 +258,7 @@ def paper_detail(request, id):
 #
 #                     # adding relationship with paper node
 #                     ego_json += rela_temp.format(
-#                         id, '-', tp.id, new_rela, id, tp.id, line
+#                         id, '-', tp.id, 'Paper', new_rela, id, tp.id, line
 #                     )
 #
 #                 if label == 'Person':
@@ -260,7 +283,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         id, "-", tpe.id, new_rela, id, tpe.id, line
+#                         id, "-", tpe.id, 'Person', new_rela, id, tpe.id, line
 #                     )
 #
 #                 if label == 'Venue':
@@ -271,7 +294,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         id, '-', tv.id, new_rela, id, tv.id, line
+#                         id, '-', tv.id, 'Venue', new_rela, id, tv.id, line
 #                     )
 #
 #                 if label == 'Dataset':
@@ -281,7 +304,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         id, '-', td.id, new_rela, id, td.id, line
+#                         id, '-', td.id, 'Dataset', new_rela, id, td.id, line
 #                     )
 #
 #                 if label == 'Code':
@@ -291,7 +314,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         id, '-', tc.id, new_rela, id, tc.id, line
+#                         id, '-', tc.id, 'Code', new_rela, id, tc.id, line
 #                     )
 #
 #     if len(results_all_in) > 0:
@@ -309,7 +332,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         tp.id, '-', id, new_rela, tp.id, id, line
+#                         tp.id, '-', id, 'Paper', new_rela, tp.id, id, line
 #                     )
 #
 #                 if label == 'Person':
@@ -320,7 +343,6 @@ def paper_detail(request, id):
 #                         middleNames = tpe.middle_name[1:-1].split(', ')
 #                         # concatenate middle names to get 'mn1 mn2 ...'
 #                         for i in range(len(middleNames)):
-#
 #                             middleName = middleName + " " + middleNames[i][1:-1]
 #
 #                     middleName = middleName.replace("'", r"\'")
@@ -332,7 +354,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         tpe.id, "-", id, new_rela, tpe.id, id, line
+#                         tpe.id, "-", id, 'Person', new_rela, tpe.id, id, line
 #                     )
 #
 #                 if label == 'Venue':
@@ -342,7 +364,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         tv.id, "-", id, new_rela, tv.id, id, line
+#                         tv.id, "-", id, 'Venue', new_rela, tv.id, id, line
 #                     )
 #                 if label == 'Dataset':
 #                     td = Dataset.inflate(row[0])
@@ -351,7 +373,7 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         td.id, "-", id, new_rela, td.id, id, line
+#                         td.id, "-", id, 'Dataset', new_rela, td.id, id, line
 #                     )
 #
 #                 if label == 'Code':
@@ -361,10 +383,11 @@ def paper_detail(request, id):
 #                     )
 #
 #                     ego_json += rela_temp.format(
-#                         tc.id, "-", id, new_rela, tc.id, id, line
+#                         tc.id, "-", id, 'Code', new_rela, tc.id, id, line
 #                     )
 #
 #     return "[" + ego_json + "]"
+
 
 def paper_find(request):
     message = None
@@ -517,6 +540,41 @@ def paper_add_to_collection(request, id):
         "paper_add_to_collection.html",
         {"collections": all_collections, "message": message},
     )
+
+
+@login_required
+def paper_add_to_bookmark(request, pid):
+    """input:
+    pid: paper id
+    """
+    print("In paper_add_to_bookmark")
+    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
+    results, meta = db.cypher_query(query, dict(id=pid))
+    if len(results) > 0:
+        all_papers = [Paper.inflate(row[0]) for row in results]
+        paper = all_papers[0]
+    else:
+        raise Http404
+
+    try:
+        bookmark = Bookmark.objects.filter(owner=request.user)[0]
+    except:
+        bookmark = Bookmark()
+        bookmark.owner = request.user
+        bookmark.save()
+
+    # if this is POST request then add the entry
+    if request.method == "POST":
+        try:
+            x = bookmark.papers.filter(paper_id=pid)[0]
+        except:
+            print("  ==> creating entry")
+            bookmark_entry = BookmarkEntry()
+            bookmark_entry.paper_id = pid
+            bookmark_entry.paper_title = paper.title
+            bookmark_entry.bookmark = bookmark
+            bookmark_entry.save()
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": pid, }))
 
 
 @login_required
@@ -1034,210 +1092,16 @@ def paper_create(request):
     return render(request, "paper_form.html", {"form": form, "message": message})
 
 
-def get_authors(bs4obj, source_website):
-    """
-    Extract authors from the source website
-    :param bs4obj, source_website；
-    :return: None or a string with comma separated author names from first to last name
-    """
-    if source_website == "arxiv":
-        return get_authors_from_arxiv(bs4obj)
-    elif source_website == 'nips':
-        return get_authors_from_nips(bs4obj)
-    elif source_website == "jmlr":
-        return get_authors_from_jmlr(bs4obj)
-    elif source_website == "ieee":
-        return get_authors_from_IEEE(bs4obj)
-    elif source_website == "acm":
-        return get_authors_from_ACM(bs4obj)
-    # if source website is not supported or the autherlist is none , return none
-    return None
-
-
-def get_title(bs4obj, source_website):
-    """
-    Extract paper title from the source web.
-    :param bs4obj:
-    :return:
-    """
-    if source_website == "arxiv":
-        titleList = bs4obj.findAll("h1", {"class": "title"})
-    elif source_website == 'nips':
-        titleList = bs4obj.findAll("title")
-    elif source_website == "jmlr":
-        titleList = bs4obj.findAll("h2")
-    elif source_website == "ieee":
-        title = bs4obj.find("title").get_text()
-        i = title.find("- IEEE")
-        if i != -1:
-            title = title[0:i]
-        return title
-    elif source_website == "acm":
-        titleList = bs4obj.find("meta", {"name": "citation_title"})
-        title = str(titleList)
-        start = title.find('"')
-        end = title.find('"', start + 1)
-        title = title[start + 1:end]
-        if title == "Non":
-            return None
-        return title
-    else:
-        titleList = []
-    # check the validity of the abstracted titlelist
-    if titleList:
-        if len(titleList) == 0:
-            return None
-        else:
-            if len(titleList) > 1:
-                print("WARNING: Found more than one title. Returning the first one.")
-            # return " ".join(titleList[0].get_text().split()[1:])
-            title_text = titleList[0].get_text()
-            if title_text.startswith("Title:"):
-                return title_text[6:]
-            else:
-                return title_text
-    return None
-
-def get_abstract(bs4obj, source_website):
-    """
-    Extract paper abstract from the source website.
-    :param bs4obj, source_website:
-    :return:
-    """
-    if source_website == "arxiv":
-        abstract = bs4obj.find("blockquote", {"class": "abstract"})
-        if abstract is not None:
-            abstract = " ".join(abstract.get_text().split(" ")[1:])
-    elif source_website == 'nips':
-        abstract = bs4obj.find("p", {"class": "abstract"})
-        if abstract is not None:
-            abstract = abstract.get_text()
-    elif source_website == "jmlr":
-        abstract = bs4obj.find("p", {"class": "abstract"})
-        if abstract is not None:
-            abstract = abstract.get_text()
-        else:
-            # for some papers from JMLR , the abstract is stored without a tag,so this will find the abstract
-            abstract = bs4obj.find("h3")
-            if abstract is not None:
-                abstract = abstract.next_sibling
-    elif source_website == "ieee":
-        abstract = get_abstract_from_IEEE(bs4obj)
-    elif source_website == "acm":
-        abstract = get_abstract_from_ACM(bs4obj)
-    else:
-        abstract = None
-    # want to remove all the leading and ending white space and line breakers in the abstract
-    if abstract is not None:
-        abstract = abstract.strip()
-        if source_website != "arxiv":
-            abstract = abstract.replace('\r', '').replace('\n', '')
-        else:
-            abstract = abstract.replace('\n', ' ')
-    return abstract
-
-
-def get_venue(bs4obj):
-    """
-    Extract publication venue from arXiv.org paper page.
-    :param bs4obj:
-    :return:
-    """
-    venue = bs4obj.find("td", {"class": "tablecell comments mathjax"})
-    if venue is not None:
-        venue = venue.get_text().split(";")[0]
-    return venue
-
-
-# this function is used to find the download_link for a paper from IEEE
-
-def get_download_link(bs4obj, source_website, url):
-    """
-    Extract download link from paper page1
-    :param bs4obj:
-    return: download link of paper
-    """
-    if url.endswith("/"):
-        url = url[:-1]
-    if source_website == "arxiv":
-        download_link = url.replace("/abs/", "/pdf/", 1) + ".pdf"
-    elif source_website == "nips":
-        download_link = url + ".pdf"
-    elif source_website == "jmlr":
-        download_link = bs4obj.find(href=re.compile("pdf"))['href']
-        print(download_link)
-        if download_link.startswith("/papers/"):
-            download_link = "http://www.jmlr.org" + download_link
-    elif source_website == "ieee":
-        download_link = get_ddl_from_IEEE(bs4obj)
-    elif source_website == "acm":
-        download_link = bs4obj.find("meta", {"name": "citation_pdf_url"})
-        download_link = str(download_link)
-        start = download_link.find('"')
-        end = download_link.find('"', start + 1)
-        download_link = download_link[start + 1:end]
-        return download_link
-    else:
-        download_link = None
-    return download_link
-
-
-def get_paper_info(url, source_website):
-    """
-    Extract paper information, title, abstract, and authors, from source website
-    paper page.
-    :param url, source_website:
-    :return:
-    """
-    try:
-        # html = urlopen("http://pythonscraping.com/pages/page1.html")
-        url_copy = url
-        if source_website == "acm":
-            headers = {"User-Agent": "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
-            url = Request(url, headers=headers)
-        html = urlopen(url)
-    except HTTPError as e:
-        print(e)
-    except URLError as e:
-        print(e)
-        print("The server could not be found.")
-    else:
-        bs4obj = BeautifulSoup(html, features="html.parser")
-        if source_website == "ieee":
-            if check_valid_paper_type_ieee(bs4obj) == False:
-                return None, None, None, None
-        if source_website == "acm":
-            url = ""
-            if bs4obj.find("a", {"title": "Buy this Book"}) or bs4obj.find("a", {"ACM Magazines"}) \
-                    or bs4obj.find_all("meta", {"name": "citation_conference_title"}):
-                return None, None, None, None
-        # Now, we can access individual element in the page
-        authors = get_authors(bs4obj, source_website)
-        title = get_title(bs4obj, source_website)
-        abstract = get_abstract(bs4obj, source_website)
-        download_link = ""
-        if authors and title and abstract:
-            download_link = get_download_link(bs4obj, source_website, url)
-        if download_link == "Non":
-            download_link = url_copy
-        # venue = get_venue(bs4obj)
-        return title, authors, abstract, download_link
-
-    return None, None, None, None
-
-
 @login_required
 def paper_create_from_url(request):
     user = request.user
-
     if request.method == "POST":
         # create the paper from the extracted data and send to
         # paper_form.html asking the user to verify
         print("{}".format(request.POST["url"]))
         # get the data from arxiv
         url = request.POST["url"]
-
-        validity,source_website,url = analysis_url(url)
+        validity, source_website, url = analysis_url(url)
         # return error message if the website is not supported
         if validity == False:
             form = PaperImportForm()
@@ -1250,6 +1114,7 @@ def paper_create_from_url(request):
         # server, then we will return an error message and redirect to paper_form.html.
         title, authors, abstract, download_link = get_paper_info(url, source_website)
         if title is None or authors is None or abstract is None:
+            print("missing information for paper")
             form = PaperImportForm()
             return render(
                 request,
@@ -1280,11 +1145,12 @@ def paper_create_from_url(request):
 #
 def venues(request):
     all_venues = Venue.objects.all()
-    # all_venues = Venue.nodes.order_by("-publication_date")[:50]
 
     message = None
-    if request.method == "POST":
+
+    if request.method == 'POST':
         form = SearchVenuesForm(request.POST)
+        print("Received POST request")
         if form.is_valid():
             # search the db for the venue
             # if venue found, then link with paper and go back to paper view
@@ -1302,12 +1168,12 @@ def venues(request):
                 print("Found {} venues that match".format(venues_found.count()))
                 return render(request, "venues.html", {"venues": venues_found, "form": form, "message": message})
             else:
-                # render new Venue form with the searched name as
-                message = "No matching venues found"
+                message = "No results found. Please try again!"
 
     if request.method == "GET":
-        form = SearchVenuesForm()
+        form = SearchAllForm()
         message = None
+        form.fields['search_type'].initial = 'venues'
 
     return render(request, "venues.html", {"venues": all_venues, "form": form, "message": message})
 
@@ -1439,6 +1305,8 @@ def venue_update(request, id):
         )
 
     return render(request, "venue_update.html", {"form": form, "venue": venue})
+
+
 
 #
 # Utility Views (admin required)

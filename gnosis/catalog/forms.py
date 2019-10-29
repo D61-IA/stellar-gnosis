@@ -1,14 +1,72 @@
 from django import forms
 from django.forms import ModelForm, Form
-from .models import Paper, Person, Dataset, Venue, Comment, Code
+from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from .models import ReadingGroup, ReadingGroupEntry
 from .models import Collection, CollectionEntry
 from django.utils.safestring import mark_safe
+
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox, ReCaptchaV2Invisible, ReCaptchaV3
+
+from gnosis.settings import RECAPTCHA_PRIVATE_KEY_INV, RECAPTCHA_PUBLIC_KEY_INV, RECAPTCHA_PUBLIC_KEY_V3, RECAPTCHA_PRIVATE_KEY_V3
 
 
 #
 # Search forms
 #
+
+class SearchForm(Form):
+    FILTER_CHOICES = (
+        ('all', 'All'),
+        ('papers', 'Papers'),
+        ('people', 'People'),
+        ('datasets', 'Datasets'),
+        ('venues', 'Venues'),
+        ('codes', 'Codes'),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(Form, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
+    def clean_search_keywords(self):
+        return self.cleaned_data["search_keywords"]
+
+    search_keywords = forms.CharField(required=True)
+    search_filter = forms.CharField(label='', widget=forms.Select(choices=FILTER_CHOICES))
+
+
+class SearchAllForm(Form):
+    def __init__(self, *args, **kwargs):
+        super(Form, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+        #self.fields['search_type'].initial = 'all'
+
+    def clean_search_type(self):
+        return self.cleaned_data["search_type"]
+
+    def clean_search_keywords(self):
+        return self.cleaned_data["search_keywords"]
+
+    SELECT_CHOICES = (
+        ('all', 'All'),
+        ('papers', 'Papers'),
+        ('people', 'People'),
+        ('venues', 'Venues'),
+        ('datasets', 'Datasets'),
+        ('codes', 'Codes'),
+    )
+
+
+    search_type = forms.ChoiceField(widget=forms.Select(), choices=SELECT_CHOICES, initial='all', required=True)
+    search_keywords = forms.CharField(required=True)
+    #search_type.initial = 'papers'
+    def get_search_type(self):
+        return self.search_type
+
+
 class SearchVenuesForm(Form):
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
@@ -20,7 +78,6 @@ class SearchVenuesForm(Form):
 
     keywords = forms.CharField(required=True)
 
-
 class SearchDatasetsForm(Form):
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
@@ -31,7 +88,6 @@ class SearchDatasetsForm(Form):
         return self.cleaned_data["keywords"]
 
     keywords = forms.CharField(required=True,)
-
 
 class SearchPapersForm(Form):
     def __init__(self, *args, **kwargs):
@@ -77,7 +133,6 @@ class SearchPeopleForm(Form):
         return self.cleaned_data["person_name"]
 
     person_name = forms.CharField(required=True)
-
 
 class SearchCodesForm(Form):
     def __init__(self, *args, **kwargs):
@@ -144,9 +199,9 @@ class PaperImportForm(Form):
         return self.cleaned_data["url"]
 
     url = forms.CharField(
-    # the label will now appear in two lines break at the br label
+        # the label will now appear in two lines break at the br label
         # label= mark_safe("Source URL, e.g., https://arxiv.org/abs/1607.00653* <br /> Currently supported websites: arXiv.org, papers.nips.cc, www.jmlr.org/papers <br /> for papers from JMLR, please provide link of the abstract([abs]) page "),
-        label= mark_safe("Source URL*"),
+        label=mark_safe("Source URL*"),
         max_length=200,
         widget=forms.TextInput(attrs={"size": 60}),
     )
@@ -308,10 +363,11 @@ class CommentForm(ModelForm):
         self.fields["text"].widget = forms.Textarea()
         self.fields["text"].widget.attrs.update({"rows": "5"})
         self.fields["text"].label = ""
+        self.fields['text'].widget.attrs.update({'id': 'comment_text'})
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:35em"})
+            visible.field.widget.attrs.update({"style": "width:100%"})
             print(visible.field.widget.attrs.items())
 
     def clean_text(self):
@@ -321,11 +377,43 @@ class CommentForm(ModelForm):
         return self.cleaned_data["publication_date"]
 
     # def clean_author(self):
-    #     return self.cleaned_data['author']
+    #      return self.cleaned_data['author']
+
+    # recaptcha checkbox, by default it uses checkbox keys at settings.py
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV2Checkbox(
+            attrs={
+                'data-callback': 'dataCallback',
+                'data-expired-callback': 'dataExpiredCallback',
+                'data-error-callback': 'dataErrorCallback'
+            }
+        ),
+        label=''
+    )
+
+    # recaptcha invisible
+    # captcha = ReCaptchaField(
+    #     public_key=RECAPTCHA_PUBLIC_KEY_INV,
+    #     private_key=RECAPTCHA_PRIVATE_KEY_INV,
+    #     widget=ReCaptchaV2Invisible,
+    #     label=''
+    # )
+
+    # recaptcha v3
+    # captcha = ReCaptchaField(
+    #     public_key=RECAPTCHA_PUBLIC_KEY_V3,
+    #     private_key=RECAPTCHA_PRIVATE_KEY_V3,
+    #     widget=ReCaptchaV3(
+    #         attrs={
+    #             'required_score': 0.5,
+    #         }
+    #     ),
+    #     label=''
+    # )
 
     class Meta:
         model = Comment
-        fields = ["text"]
+        fields = ['text']
 
 
 class CodeForm(ModelForm):
@@ -453,3 +541,33 @@ class CollectionForm(ModelForm):
     class Meta:
         model = Collection
         fields = ["name", "description", "keywords"]
+
+
+class FlaggedCommentForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+
+        VIOLATION_CHOICES = [
+            ('unwanted commercial content or spam', 'Unwanted commercial content or spam'),
+            ('pornography or sexually explicit material', 'Pornography or sexually explicit material'),
+            ('child abuse', 'Child abuse'),
+            ('hate speech or graphic violence', 'Hate speech or graphic violence'),
+            ('harassment or bullying', 'Harassment or bullying')
+        ]
+
+        self.fields["description"].widget = forms.Textarea()
+        self.fields["description"].widget.attrs.update({"rows": "5"})
+        self.fields["violation"] = forms.ChoiceField(choices=VIOLATION_CHOICES, widget=forms.RadioSelect())
+
+        self.fields["description"].label = "Description"
+        self.fields["violation"].label = "Violation"
+
+    def clean_violation(self):
+        return self.cleaned_data["violation"]
+
+    def clean_description(self):
+        return self.cleaned_data["description"]
+
+    class Meta:
+        model = CommentFlag
+        fields = ['violation', 'description']

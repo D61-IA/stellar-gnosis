@@ -14,14 +14,16 @@
             {{ field }}
             {% endfor %}
             <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search Venues"/>
+           <div>
+              <input type="submit" class="btn btn-primary" value="Search"/>
+          </div>
         </form>
     </div>
 </div>
 
 {% if venues %}
 <div class="card shadow-sm mt-3">
-    {% paginate venues %}
+     {% paginate venues %}
     <div class="card-header"><h4>Venues</h4></div>
     <div class="card-body">
         {% for venue in venues %}
@@ -32,6 +34,7 @@
             </li>
         </ul>
         {% endfor %}
+    </div>
 
         {% get_pages %}
         <!-- Center-aligned -->
@@ -50,8 +53,9 @@
             <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
         </ul>
-    </div>
+
 </div>
 {% endif %}
+
 
 {% endblock %}

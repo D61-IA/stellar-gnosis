@@ -2,55 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
 from catalog.models import Person, Paper
+from django.shortcuts import render
 from catalog.forms import PersonForm
 from catalog.forms import SearchPeopleForm
+from catalog.views.utils.import_functions import *
+
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from neomodel import db
-from django.shortcuts import redirect
-from django.contrib import messages
-
-
-# def person_find(request):
-#     """
-#     Searching for a person in the DB.
-#
-#     :param request:
-#     :return:
-#     """
-#     print("Calling person_find")
-#     people_found_ids = []
-#     message = None
-#     storage = messages.get_messages(request=request)
-#     for request_message in storage:
-#         people_found_ids = request_message.message
-#         print("IDs of people found: {}".format(people_found_ids))
-#         people_found_ids = people_found_ids.split(",")
-#         break
-#
-#     people = []
-#     if len(people_found_ids) > 0:
-#         people = Person.nodes.filter(uid__in=people_found_ids)
-#         print("Retrieved {} people from the database".format(len(people)))
-#
-#     if request.method == "POST":
-#         form = SearchPeopleForm(request.POST)
-#         print("Received POST request")
-#         if form.is_valid():
-#
-#             people = _person_find(form.cleaned_data["person_name"])
-#             if people is not None:
-#                 return render(request, "person_find.html", {"people": people, "form": form, "message": message})
-#             else:
-#                 message = "No results found. Please try again!"
-#
-#     elif request.method == "GET":
-#         print("Received GET request")
-#         form = SearchPeopleForm()
-#
-#     return render(request, "person_find.html", {"people": people, "form": form, "message": message})
 
 
 #
@@ -60,7 +19,8 @@ def persons(request):
     # people = Person.objects.all()[:100]  # nodes.order_by("-created")[:50]
     people = Person.objects.order_by("-created_at")[:100]  # nodes.order_by("-created")[:50]
     message = None
-    if request.method == "POST":
+
+    if request.method == 'POST':
         form = SearchPeopleForm(request.POST)
         print("Received POST request")
         if form.is_valid():
@@ -80,6 +40,9 @@ def persons(request):
     elif request.method == "GET":
         print("Received GET request")
         form = SearchPeopleForm()
+        form.fields['search_type'].initial = 'people'
+
+    print(message);
 
     return render(
         request, "people.html", {"people": people, "form": form, "message": message}

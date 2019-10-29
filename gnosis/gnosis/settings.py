@@ -28,8 +28,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 SESSION_SAVE_EVERY_REQUEST = True
+
+# keys for reCaptcha v2 checkbox
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', '6Ld6z7IUAAAAAC-qA5q5CC58YJx8Td_g6wPJs_Pk')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', '6Ld6z7IUAAAAAPgCXtYcOjFMKo4CSx_WY2YAxIaC')
+
+RECAPTCHA_PUBLIC_KEY_INV = os.environ.get('RECAPTCHA_PUBLIC_KEY_INV', '6LdbXLQUAAAAAGynHciK-BML9CthUvtrUm_Aim24')
+RECAPTCHA_PRIVATE_KEY_INV = os.environ.get('RECAPTCHA_PRIVATE_KEY_INV', '6LdbXLQUAAAAACLkjt-f0tZ0mY1aXR6jghMg2tBw')
+
+RECAPTCHA_PUBLIC_KEY_V3 = os.environ.get('RECAPTCHA_PUBLIC_KEY_V3', '6LfdR7UUAAAAAC9WK09i_tRLtNQq4aIaIQjWQ-4i')
+RECAPTCHA_PRIVATE_KEY_V3 = os.environ.get('RECAPTCHA_PRIVATE_KEY_V3', '6LfdR7UUAAAAACkwrd0ae-3kkNWnRFgFcuU0m3Rv')
 
 # Application definition
 
@@ -44,8 +53,12 @@ INSTALLED_APPS = [
     'django_registration',
     'el_pagination',
     'catalog.apps.CatalogConfig',
+    'bookmark.apps.BookmarkConfig',
     'home.apps.HomeConfig',
     'django_nose',
+    'recaptcha',
+    'captcha',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request', ## For EL-pagination
+                'django.template.context_processors.request',  ## For EL-pagination
             ],
         },
     },
@@ -120,7 +133,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -134,11 +146,11 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
@@ -159,3 +171,6 @@ NOSE_ARGS = [
     '--cover-package=catalog',
     '--cover-html',
 ]
+
+# Add notes app
+INSTALLED_APPS += ['notes.apps.NotesConfig', ]

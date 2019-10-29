@@ -1,30 +1,72 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-<div class="mt-5">
 
-    <h4>People that match your query</h4>
+{% load el_pagination_tags %}
 
-    {% load el_pagination_tags %}
+<div class="card shadow-sm mt-3">
+    <div class="card-body text-center">
+        {% if message %}
+        <p class="bg-info">{{ message }}</p>
+        {% endif %}
+        <form action="" method="post">
+            {% csrf_token %}
+           <div class="row row-no-gutters">
+                <div class="col-2" style="padding-right: 0px">
+                    {{ form.search_type }}
+                </div>
+                <div class="col-10" style="padding-left: 0px">
+                    {{ form.search_keywords }}
+                </div>
+            </div>
+            <br>
+           <div>
+              <input type="submit" class="btn btn-primary" value="Search"/>
+          </div>
+        </form>
+    </div>
+</div>
 
-    {% if people %}
-    {% paginate people %}
+{% if person_results %}
+<div class=" card shadow-sm mt-3">
+    <div class="card-header"><h4>People that match your query</h4></div>
+    {% paginate person_results %}
+    <div class="card-body">
+        {% for person in person_results %}
 
-    <ul class="list-group">
-        {% for person in people %}
-        <li class="list-item-group mt-1">
-            <a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.middle_name }} {{ person.last_name
-                }}</a>
-        </li>
+        <ul class="list-group">
+            <li class="list-group-item mt-1">
+                {% if person.middle_name %}
+                <p><a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.middle_name }}
+                    {{ person.last_name }}</a>
+                </p>
+                {% else %}
+                <p><a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.last_name }}</a></p>
+                {% endif %}
+            </li>
+        </ul>
         {% endfor %}
-    </ul>
+    </div>
+
 
     {% get_pages %}
-    Showing entries
-    {{ pages.current_start_index }}-{{ pages.current_end_index }} of
-    {{ pages.total_count }}.
-    {# Just print pages to render the Digg-style pagination. #}
-    {{ pages.get_rendered }}
-    {% endif %}
+        <!-- Center-aligned -->
+        <ul class="pagination justify-content-center" style="margin:20px 0">
+            {% if not pages.current.is_first %}
+            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+            {% endif %}
+            {% for page in pages %}
+            {% if page.is_current %}
+            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if not pages.current.is_last %}
+            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+            {% endif %}
+        </ul>
 </div>
+
+{% endif %}
 {% endblock %}

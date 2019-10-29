@@ -9,22 +9,28 @@
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-
-        <form action="" method="post">
+       <form action="" method="post">
             {% csrf_token %}
-            {% for field in form %}
-            {{ field }}
-            {% endfor %}
-            <br/>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search Codes"/>
+           <div class="row row-no-gutters">
+                <div class="col-2" style="padding-right: 0px">
+                    {{ form.search_type }}
+                </div>
+                <div class="col-10" style="padding-left: 0px">
+                    {{ form.search_keywords }}
+                </div>
+            </div>
+            <br>
+           <div>
+              <input type="submit" class="btn btn-primary" value="Search"/>
+          </div>
         </form>
     </div>
 </div>
 
 {% if codes %}
-{% paginate codes %}
 <div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>Codes</h4></div>
+    <div class="card-header"><h4>New Codes</h4></div>
+    {% paginate codes %}
     <div class="card-body">
         {% for code in codes %}
         <ul class="list-group">
@@ -37,7 +43,7 @@
             </li>
         </ul>
         {% endfor %}
-
+    </div>
         {% get_pages %}
         <!-- Center-aligned -->
         <ul class="pagination justify-content-center" style="margin:20px 0">
@@ -55,7 +61,7 @@
             <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
         </ul>
-    </div>
+
 </div>
 {% endif %}
 

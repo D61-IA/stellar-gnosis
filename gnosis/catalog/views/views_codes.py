@@ -6,8 +6,9 @@ from django.shortcuts import render
 from catalog.models import Code
 from catalog.forms import CodeForm
 from catalog.forms import SearchCodesForm
+
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 
 
 #
@@ -17,7 +18,8 @@ def codes(request):
     all_codes = Code.objects.all()
 
     message = None
-    if request.method == "POST":
+
+    if request.method == 'POST':
         form = SearchCodesForm(request.POST)
         print("Received POST request")
         if form.is_valid():
@@ -34,9 +36,13 @@ def codes(request):
                 return render(request, "codes.html", {"codes": codes, "form": form, "message": ""})
             else:
                 message = "No results found. Please try again!"
+
+        print(message);
+
     elif request.method == "GET":
         print("Received GET request")
         form = SearchCodesForm()
+        form.fields['search_type'].initial = 'codes'
 
     return render(
         request, "codes.html", {"codes": all_codes, "form": form, "message": message}

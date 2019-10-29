@@ -1,0 +1,48 @@
+{% extends "gnosis_theme.html" %}
+{% block content %}
+{% load el_pagination_tags %}
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header">
+        <h4>Notes</h4>
+
+    </div>
+    <div class="card-body">
+        {% if num_notes != 0 %}
+        {% paginate notes_info %}
+        {% for note_info in notes_info %}
+        <ul class="list-group">
+            <li class="list-group-item mt-1">
+                <div class="mr-auto p-2">
+                    <p>{{ note_info.0.note_content }}</p>
+                    <p> Posted on {{ note_info.0.updated_at }} </p>
+                    <p> On {{ note_info.1 }} <a href="{% url 'paper_detail' note_info.0.paper_id %}">View</a></p>
+
+                </div>
+            </li>
+        </ul>
+        {% endfor %}
+
+        {% get_pages %}
+        <!-- Center-aligned -->
+        <ul class="pagination justify-content-center" style="margin:20px 0">
+            {% if not pages.current.is_first %}
+            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+            {% endif %}
+            {% for page in pages %}
+            {% if page.is_current %}
+            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if not pages.current.is_last %}
+            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+            {% endif %}
+        {% else %}
+        <p class="font-heavy-light font-italic">You have not post any notes yet.</p>
+        {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

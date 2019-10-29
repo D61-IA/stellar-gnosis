@@ -1,24 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
-from catalog.models import Paper, Comment
+from catalog.models import Paper, Comment, # HiddenComment
 from catalog.views.utils.import_functions import *
-
 from catalog.forms import CommentForm
-
-
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from datetime import date
-from nltk.corpus import stopwords
-from urllib.request import urlopen, Request
-from urllib.error import HTTPError, URLError
-from bs4 import BeautifulSoup
-from django.contrib import messages
-import re
 
 
 #
@@ -113,3 +101,46 @@ def comment_update(request, id):
         )
 
     return render(request, "comment_update.html", {"form": form, "comment": comment})
+
+# @login_required()
+# def comment_hide(request, id):
+#     user = request.user
+#     if request.is_ajax():
+#         if id is not None:
+#             hidden_comment = HiddenComment(comment_id=id, proposed_by=user)
+#             hidden_comment.save()
+#             data = {'is_valid': True}
+#         else:
+#             data = {'is_valid': False}
+#         print("ajax request received!")
+#         return JsonResponse(data)
+#     else:
+#         if id is not None:
+#             hidden_comment = HiddenComment(comment_id=id, proposed_by=user)
+#             hidden_comment.save()
+#
+#         paper_id = request.session["last-viewed-paper"]
+#         return redirect("paper_detail", id=paper_id)
+#
+#
+# @login_required()
+# def comment_unhide(request, id):
+#     user = request.user
+#     if request.is_ajax():
+#         data = {'is_valid': False}
+#         if id is not None:
+#             hidden_comment = user.hidden_flags.get(comment_id=id)
+#             if hidden_comment is not None:
+#                 hidden_comment.delete()
+#                 data = {'is_valid': True}
+#
+#         print("ajax request received!")
+#         return JsonResponse(data)
+#     else:
+#         if id is not None:
+#             hidden_comment = user.hidden_flags.get(comment_id=id)
+#             if hidden_comment is not None:
+#                 hidden_comment.delete()
+#
+#         paper_id = request.session["last-viewed-paper"]
+#         return redirect("paper_detail", id=paper_id)

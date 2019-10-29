@@ -2,39 +2,63 @@
 
 {% block content %}
 
-<div class="card shadow-sm text-center mt-3">
-    <div class="card-body">
-        <form action="" method="post">
+{% load el_pagination_tags %}
+
+<div class="card shadow-sm mt-3">
+    <div class="card-body text-center">
+        {% if message %}
+        <p class="bg-info">{{ message }}</p>
+        {% endif %}
+       <form action="" method="post">
             {% csrf_token %}
-            {% for field in form %}
-            {{ field }}
-            {% endfor %}
+            <div class="row row-no-gutters">
+                <div class="col-2" style="padding-right: 0px">
+                    {{ form.search_type }}
+                </div>
+                <div class="col-10" style="padding-left: 0px">
+                    {{ form.search_keywords }}
+                </div>
+            </div>
             <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
+           <div>
+              <input type="submit" class="btn btn-primary" value="Search"/>
+          </div>
         </form>
     </div>
 </div>
 
+{% if paper_results %}
 <div class=" card shadow-sm mt-3">
-    <div class="card-header">
-        <h4>Papers that match your query</h4>
-    </div>
+    <div class="card-header"><h4>Papers that match your query </h4></div>
+
+    {% paginate paper_results %}
     <div class="card-body">
-        {% if papers %}
-        {% for paper in papers %}
+        {% for paper in paper_results %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>
             </li>
         </ul>
         {% endfor %}
-        {% endif %}
-
-        {% if message %}
-        <div class="mt-5">
-            <p class="bg-info">{{ message }}</p>
-        </div>
-        {% endif %}
     </div>
+
+    {% get_pages %}
+        <!-- Center-aligned -->
+        <ul class="pagination justify-content-center" style="margin:20px 0">
+            {% if not pages.current.is_first %}
+            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+            {% endif %}
+            {% for page in pages %}
+            {% if page.is_current %}
+            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if not pages.current.is_last %}
+            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+            {% endif %}
+        </ul>
 </div>
+{% endif %}
 {% endblock %}

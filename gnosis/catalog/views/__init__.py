@@ -5,3 +5,5 @@ from catalog.views.views_group import *
 from catalog.views.views_collection import *
 from catalog.views.views_comment import *
 from catalog.views.views_dataset import *
+from catalog.views.views_endorsement import *
+from catalog.views.views_flagging import *

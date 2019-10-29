@@ -19,7 +19,6 @@ class Venue(models.Model):
                    ('Open Source', 'Open Source'),
                    ('Tech Report', 'Tech Report'),
                    ('Other', 'Other'),)
-
     review_types = (('Yes', 'Yes'),
                     ('No', 'No'),)
 
@@ -197,7 +196,6 @@ class Comment(models.Model):
     def get_absolute_url(self):
         return reverse('comment_detail', args=[self.id])
 
-
 class Person(models.Model):
 
     # These are always required
@@ -287,6 +285,48 @@ class Dataset(models.Model):
 
     def get_absolute_url(self):
         return reverse('dataset_detail', args=[self.id])
+
+    #
+    # These are models for the SQL database
+    #
+
+
+class CommentFlag(models.Model):
+    comment_id = models.IntegerField(null=False, blank=False)  # id of the flagged comment
+
+    violation = models.CharField(max_length=100)
+    description = models.TextField()
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+
+    # user who flags the item
+    proposed_by = models.ForeignKey(to=User,
+                                    on_delete=models.CASCADE,
+                                    related_name="comment_flags")
+
+    class Meta:
+        ordering = ['violation', '-created_at']
+        verbose_name = "comment flag"
+
+    # Methods
+    def get_absolute_url(self):
+        return reverse('paper_detail', args=[str(self.id)])
+
+    def __str__(self):
+        return self.description
+
+
+# class HiddenComment(models.Model):
+#     comment_id = models.IntegerField(null=False, blank=False)
+#     proposed_by = models.ForeignKey(to=User,
+#                                     on_delete=models.CASCADE,
+#                                     related_name="hidden_flags")
+#
+#     class Meta:
+#         ordering = ['proposed_by', 'comment_id']
+#         verbose_name = "hidden flag"
+#
+#     def __str__(self):
+#         return "comment id: " + str(self.comment_id)
 
 
 class ReadingGroup(models.Model):
@@ -401,7 +441,31 @@ class CollectionEntry(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     def get_absolute_url(self):
-        return reverse('collection_detail', args=[str[self.id]])
+        return reverse('collection_detail', args=[str(self.id)])
 
     def __str__(self):
-        return str(self.paper.title)
+        return str(self.paper)
+
+
+class EndorsementEntry(models.Model):
+    """An entry, that is user, in an endorsement for a paper"""
+
+    # Fields
+    paper_id = models.IntegerField(null=False, blank=False)
+    paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+
+    user = models.ForeignKey(to=User,
+                             on_delete=models.CASCADE,
+                             related_name="endorsements")
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+
+    # Metadata
+    class Meta:
+        ordering = ['-created_at']
+
+    def get_absolute_url(self):
+        return reverse('paper_detail', args=[str(self.id)])
+
+    def __str__(self):
+        return str(self.user) + ' endorse ' + str(self.paper_title)

@@ -1,13 +1,12 @@
 {% extends "gnosis_theme.html" %}
-
 {% block content %}
+{% load el_pagination_tags %}
 
 <div class="card shadow-sm mt-3">
     <div class="card-body text-center">
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-
         <form action="" method="post">
             {% csrf_token %}
             {% for field in form %}
@@ -22,20 +21,18 @@
 
 {% if datasets %}
 <div class="card shadow-sm mt-3">
-    {% load el_pagination_tags %}
     {% paginate datasets %}
     <div class="card-header"><h4>Datasets</h4></div>
     <div class="card-body">
-
         {% for dataset in datasets %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
-
                 <p><a href="{{ dataset.get_absolute_url }}">{{ dataset.name }}, {{ dataset.publication_year }}</a></p>
                 <p>{{ dataset.description|truncatewords:25 }}</p>
             </li>
         </ul>
         {% endfor %}
+    </div>
 
         {% get_pages %}
         <!-- Center-aligned -->
@@ -54,8 +51,7 @@
             <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
             {% endif %}
         </ul>
-    </div>
+
 </div>
 {% endif %}
-
 {% endblock %}
