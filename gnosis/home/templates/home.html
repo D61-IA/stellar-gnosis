@@ -11,6 +11,8 @@
         <h4>If you are new here then why not <a href="{% url 'django_registration_register' %}">register a new
             account!</a></h4>
         {% endif %}
+
+<!--        <p class="text-right">Statistics: We have {{ num_papers }} papers and {{ num_people }} people in our DB</p>-->
     </div>
 </div>
 
@@ -31,29 +33,10 @@
             <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
         </form>
     </div>
-
-    <div class="card shadow-sm mt-3">
-        <div class="card-body text-center">
-            {% if message %}
-                <p class="bg-info">{{ message }}</p>
-            {% endif %}
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="row row-no-gutters">
-                    <div class="col-2" style="padding-right: 0px">
-                        {{ form.search_type }}
-                    </div>
-                    <div class="col-10" style="padding-left: 0px">
-                        {{ form.search_keywords }}
-
-                    </div>
-                </div>
-                <br>
-                <div>
-                    <input type="submit" class="btn btn-primary" value="Search"/>
-                </div>
-            </form>
-        </div>
+</div>
+<div class="card shadow-sm mt-3">
+    <div class="card-header">
+        <h4>Recently added papers</h4>
     </div>
     <div class="card-body">
         {% for paper in papers %}
@@ -63,42 +46,15 @@
                 <p>{{ paper.abstract|truncatewords:50 }}</p>
             </li>
         </ul>
-
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                <div class="card-body">
-                    {% for paper, authors in papers %}
-                        <ul class="list-group">
-                            <li class="list-group-item mt-1">
-                                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
-                                <p>{{ authors }}</p>
-                                <p>{{ paper.abstract|truncatewords:50 }}</p>
-                            </li>
-                        </ul>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="card-body">
-                    {% for author in recent_authors %}
-                        <ul class=" list-group">
-                            <li class="list-group-item mt-1">
-                                <h4><a href="{{ paper.get_absolute_url }}">{{ author }}</a></h4>
-                            </li>
-                        </ul>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
+</div>
 
-    {% if user.is_superuser %}
-        <div class="card shadow-sm mt-3">
-            <div class="card-header"><strong>Admin Functions</strong></div>
-            <div class="card-body"><a href="{% url 'build_db' %}">Populate test DB</a></div>
-        </div>
-    {% endif %}
-
+{% if user.is_superuser %}
+<div class="card shadow-sm mt-3">
+    <div class="card-header"><strong>Admin Functions</strong></div>
+    <div class="card-body"><a href="{% url 'build_db' %}">Populate test DB</a></div>
+</div>
+{% endif %}
 
 {% endblock %}

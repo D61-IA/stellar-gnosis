@@ -5,8 +5,7 @@ from django.http import Http404
 from catalog.models import EndorsementEntry
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from catalog.views.views import _get_paper_by_id
-from datetime import date
+#from catalog.views.views import _get_paper_by_id
 #
 # Endorsement views
 #
@@ -31,7 +30,7 @@ def endorsement_create(request, paper_id):
             endorsement_entry = EndorsementEntry()
             endorsement_entry.user = user
             endorsement_entry.paper_id = paper_id
-            endorsement_entry.paper_title = _get_paper_by_id(paper_id).title
+            endorsement_entry.paper_title = ""  # _get_paper_by_id(paper_id).title
             endorsement_entry.save()
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": paper_id}))

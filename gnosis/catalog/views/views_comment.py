@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from catalog.models import Paper, Comment, # HiddenComment
+from catalog.models import Paper, Comment # HiddenComment
 from catalog.views.utils.import_functions import *
 from catalog.forms import CommentForm
 from django.urls import reverse

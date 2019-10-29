@@ -39,13 +39,9 @@ from catalog.forms import (
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from neomodel import db
-from nltk.corpus import stopwords
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
-from bs4 import BeautifulSoup
 from django.contrib import messages
-import re
-
 
 
 #
@@ -1140,6 +1136,7 @@ def paper_create_from_url(request):
 
     return render(request, "paper_form.html", {"form": form})
 
+
 #
 # Venue Views
 #
@@ -1171,9 +1168,8 @@ def venues(request):
                 message = "No results found. Please try again!"
 
     if request.method == "GET":
-        form = SearchAllForm()
+        form = SearchVenuesForm()
         message = None
-        form.fields['search_type'].initial = 'venues'
 
     return render(request, "venues.html", {"venues": all_venues, "form": form, "message": message})
 

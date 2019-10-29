@@ -4,36 +4,30 @@
 
 {% load el_pagination_tags %}
 
-<div class="card shadow-sm mt-3">
-    <div class="card-body text-center">
+<div class="card shadow-sm text-center mt-3">
+    <div class="card-body">
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-       <form action="" method="post">
+
+        <form action="" method="post">
             {% csrf_token %}
-            <div class="row row-no-gutters">
-                <div class="col-2" style="padding-right: 0px">
-                    {{ form.search_type }}
-                </div>
-                <div class="col-10" style="padding-left: 0px">
-                    {{ form.search_keywords }}
-                </div>
-            </div>
+            {% for field in form %}
+            {{ field }}
+            {% endfor %}
             <br>
-           <div>
-              <input type="submit" class="btn btn-primary" value="Search"/>
-          </div>
+            <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
         </form>
     </div>
 </div>
 
-{% if paper_results %}
+{% if papers %}
 <div class=" card shadow-sm mt-3">
     <div class="card-header"><h4>Papers that match your query </h4></div>
 
-    {% paginate paper_results %}
+    {% paginate papers %}
     <div class="card-body">
-        {% for paper in paper_results %}
+        {% for paper in papers %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>

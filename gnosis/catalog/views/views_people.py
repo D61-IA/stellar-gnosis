@@ -16,7 +16,6 @@ from django.http import HttpResponseRedirect
 # Person Views
 #
 def persons(request):
-    # people = Person.objects.all()[:100]  # nodes.order_by("-created")[:50]
     people = Person.objects.order_by("-created_at")[:100]  # nodes.order_by("-created")[:50]
     message = None
 
@@ -40,9 +39,6 @@ def persons(request):
     elif request.method == "GET":
         print("Received GET request")
         form = SearchPeopleForm()
-        form.fields['search_type'].initial = 'people'
-
-    print(message);
 
     return render(
         request, "people.html", {"people": people, "form": form, "message": message}
@@ -51,7 +47,6 @@ def persons(request):
 
 def person_detail(request, id):
     # Retrieve the paper from the database
-    papers_authored = []
     try:
         person = Person.objects.get(pk=id)
     except ObjectDoesNotExist:
