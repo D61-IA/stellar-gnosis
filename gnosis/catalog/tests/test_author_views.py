@@ -60,12 +60,31 @@ class PersonViewsTestCase(TestCase):
 
         # You have to be logged in to access the delete view.
         # However, only an admin can delete and object so we should be redirected to the admin login page
-        # self.assertEqual(response.status_code, 302)
-        # self.assertEqual(response['Location'], target_url)
-
         self.assertRedirects(response,
                              expected_url=target_url,
                              status_code=302,
                              target_status_code=200,)
 
         self.client.logout()
+
+    def test_person_create(self):
+        """Only logged in users can create a new person object"""
+
+        target_url = "/accounts/login/?next=/catalog/person/create/"
+
+        response = self.client.get(reverse("person_create"))
+
+        # We should be redirected to the account login page
+        self.assertRedirects(response,
+                             expected_url=target_url,
+                             status_code=302,
+                             target_status_code=200,)
+
+        # Login the test user
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get(reverse("person_create"))
+        # Since we are logged in, we should receive a 200 response
+        self.assertEqual(response.status_code, 200)
+
+
