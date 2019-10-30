@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
+from catalog.models import Paper
 from django.urls import reverse
 
 
@@ -10,8 +11,8 @@ class Bookmark(models.Model):
     """A Bookmark model"""
 
     # Fields
-
     updated_at = models.DateField(null=True)
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     owner = models.ForeignKey(to=User,
                               on_delete=models.CASCADE,
@@ -30,8 +31,12 @@ class BookmarkEntry(models.Model):
                                    on_delete=models.CASCADE,
                                    related_name="papers")  # Bookmark.papers()
 
-    paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
-    paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+    paper = models.ForeignKey(to=Paper,
+                              on_delete=models.CASCADE,
+                              related_name="bookmarks")  # Paper.bookmarks()
+
+    # paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
+    # paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
