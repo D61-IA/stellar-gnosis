@@ -9,20 +9,13 @@
         {% if message %}
         <p class="bg-info">{{ message }}</p>
         {% endif %}
-       <form action="" method="post">
+        <form action="" method="post">
             {% csrf_token %}
-           <div class="row row-no-gutters">
-                <div class="col-2" style="padding-right: 0px">
-                    {{ form.search_type }}
-                </div>
-                <div class="col-10" style="padding-left: 0px">
-                    {{ form.search_keywords }}
-                </div>
-            </div>
-            <br>
-           <div>
-              <input type="submit" class="btn btn-primary" value="Search"/>
-          </div>
+            {% for field in form %}
+            {{ field }}
+            {% endfor %}
+            <br/>
+            <input type="submit" class="btn btn-primary btn-lg" value="Search Datasets"/>
         </form>
     </div>
 </div>

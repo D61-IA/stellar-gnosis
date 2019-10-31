@@ -42,7 +42,6 @@ def codes(request):
     elif request.method == "GET":
         print("Received GET request")
         form = SearchCodesForm()
-        form.fields['search_type'].initial = 'codes'
 
     return render(
         request, "codes.html", {"codes": all_codes, "form": form, "message": message}
