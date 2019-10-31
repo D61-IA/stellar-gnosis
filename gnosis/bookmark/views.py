@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from .models import Bookmark, BookmarkEntry
+from .models import Bookmark
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from nltk.corpus import stopwords
@@ -9,23 +9,9 @@ from nltk.corpus import stopwords
 @login_required
 def bookmarks(request):
 
-    bookmark = Bookmark.objects.filter(owner=request.user)
+    all_bookmarks = Bookmark.objects.filter(owner=request.user)
 
-    if not bookmark:
-        user_bookmark = Bookmark()
-        user_bookmark.owner = request.user
-        user_bookmark.save()
-    else:
-        user_bookmark = bookmark[0]
-
-    if user_bookmark.owner == request.user:
-        papers = user_bookmark.papers.order_by("-created_at")
-
-        return render(
-            request, "bookmark.html", {"bookmark": user_bookmark, "papers": papers}
-        )
-
-    return HttpResponseRedirect(reverse("bookmark"))
+    return render(request, "bookmarks.html", {"bookmarks": all_bookmarks})
 
 
 @login_required

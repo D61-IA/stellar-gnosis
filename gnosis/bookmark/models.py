@@ -14,34 +14,15 @@ class Bookmark(models.Model):
     updated_at = models.DateField(null=True)
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
-    owner = models.ForeignKey(to=User,
-                              on_delete=models.CASCADE,
-                              related_name="bookmarks")
-
-    # Methods
-    def get_absolute_url(self):
-        return reverse('bookmark_detail', args=[str(self.id)])
-
-
-class BookmarkEntry(models.Model):
-    """An entry, that is paper or code."""
-
-    # Fields
-    bookmark = models.ForeignKey(to=Bookmark,
-                                   on_delete=models.CASCADE,
-                                   related_name="papers")  # Bookmark.papers()
-
     paper = models.ForeignKey(to=Paper,
                               on_delete=models.CASCADE,
                               related_name="bookmarks")  # Paper.bookmarks()
 
-    # paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
-    # paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+    owner = models.ForeignKey(to=User,
+                              on_delete=models.CASCADE,
+                              related_name="bookmarks")  # User.bookmarks()
 
-    created_at = models.DateField(auto_now_add=True, auto_now=False)
-
+    # Methods
     def get_absolute_url(self):
-        return reverse('bookmark_detail', args=[str(self.id)])
+        return reverse('bookmarks')
 
-    def __str__(self):
-        return str(self.paper_id)

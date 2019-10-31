@@ -448,16 +448,17 @@ class CollectionEntry(models.Model):
         return str(self.paper)
 
 
-class EndorsementEntry(models.Model):
+class Endorsement(models.Model):
     """An entry, that is user, in an endorsement for a paper"""
 
     # Fields
-    paper_id = models.IntegerField(null=False, blank=False)
-    paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
+    paper = models.ForeignKey(to=Paper,
+                              on_delete=models.CASCADE,
+                              related_name="endorsements")  # Paper.bookmarks()
 
     user = models.ForeignKey(to=User,
                              on_delete=models.CASCADE,
-                             related_name="endorsements")
+                             related_name="endorsements")  # User.endorsements()
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
@@ -466,7 +467,7 @@ class EndorsementEntry(models.Model):
         ordering = ['-created_at']
 
     def get_absolute_url(self):
-        return reverse('paper_detail', args=[str(self.id)])
+        return reverse('endorsements')
 
     def __str__(self):
         return str(self.user) + ' endorse ' + str(self.paper_title)

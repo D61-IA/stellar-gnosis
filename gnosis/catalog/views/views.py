@@ -7,13 +7,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from catalog.models import Paper, PaperRelationshipType, Person, Dataset, Venue, Comment, Code
 from django.http import Http404, HttpResponseBadRequest
-from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag #, HiddenComment
+from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from notes.forms import NoteForm
 from notes.models import Note
 from catalog.models import ReadingGroup, ReadingGroupEntry
 from catalog.models import Collection, CollectionEntry
-from catalog.models import EndorsementEntry
-from bookmark.models import Bookmark, BookmarkEntry
+from bookmark.models import Bookmark
 from catalog.views.utils.import_functions import *
 from catalog.views.utils.classes import UserComment
 
@@ -144,6 +143,7 @@ def paper_delete(request, id):
     paper.delete()
 
     return HttpResponseRedirect(reverse("papers_index"))
+
 
 def paper_detail(request, id):
 
@@ -565,11 +565,11 @@ def paper_add_to_bookmark(request, pid):
             x = bookmark.papers.filter(paper_id=pid)[0]
         except:
             print("  ==> creating entry")
-            bookmark_entry = BookmarkEntry()
-            bookmark_entry.paper_id = pid
-            bookmark_entry.paper_title = paper.title
-            bookmark_entry.bookmark = bookmark
-            bookmark_entry.save()
+            # bookmark_entry = BookmarkEntry()
+            # bookmark_entry.paper_id = pid
+            # bookmark_entry.paper_title = paper.title
+            # bookmark_entry.bookmark = bookmark
+            # bookmark_entry.save()
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": pid, }))
 
 
