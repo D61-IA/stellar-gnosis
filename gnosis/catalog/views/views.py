@@ -175,7 +175,6 @@ def paper_detail(request, id):
             authors.append(author_name[0][0]+'. '+author_name[1])
     authors = ', '.join(authors)
 
-    comments = paper.comment_set.all()
     codes = paper.code_set.all()
     datasets = paper.dataset_set.all()
     print(datasets)
@@ -184,6 +183,29 @@ def paper_detail(request, id):
     request.session["last-viewed-paper"] = id
 
     ego_network_json = []  #_get_node_ego_network(paper.id, paper.title)
+
+    # Comment / Note form
+    note_form = NoteForm()
+    comment_form = CommentForm()
+    if request.method == "POST":
+        # success = False
+        if 'comment_form' in request.POST:
+            comment = Comment(created_by=request.user, paper=paper)
+            comment_form = CommentForm(instance=comment, data=request.POST)
+            if comment_form.is_valid():
+                comment_form.save()
+                # Create a new empty form for display
+                comment_form = CommentForm()
+            # comment.discusses.connect(paper)
+            # success = True
+        elif 'note_form' in request.POST:
+            note = Note(created_by=request.user, paper_id=paper.id)
+            note_form = NoteForm(instance=note, data=request.POST)
+            if note_form.is_valid():
+                note_form.save()
+                note_form = NoteForm()
+
+    comments = paper.comment_set.all()
 
     # print("ego_network_json: {}".format(ego_network_json))
     return render(
@@ -196,6 +218,8 @@ def paper_detail(request, id):
             "comments": comments,
             "codes": codes,
             "datasets": datasets,
+            "noteform": note_form,
+            "commentform": comment_form,
             "num_comments": comments.count(),
             "ego_network": ego_network_json,
         },

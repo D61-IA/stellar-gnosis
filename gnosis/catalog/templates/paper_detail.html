@@ -227,7 +227,7 @@
 
 
     <div class="card shadow-sm mt-5">
-        {#    Comments / Notes heading#}
+        {#    Comments / Notes heading #}
         <div class="card-header">
             {% if user.is_authenticated %}
                 <h3>Comments / Notes</h3>
@@ -264,112 +264,27 @@
                         </div>
                         <br/>
                         {#                    show comments#}
-                        {% if num_comments > 0 %}
+                        {% if comments %}
                             <ul class="list-group list-group-flush">
                             {% paginate comments %}
-                            {% for comment in filtered_comments %}
-                                {% if comment.is_hidden %}
+                            {% for comment in comments %}
+
+                                <li class="list-group-item shadow-sm mt-1">
+                                   <p><strong>{{ comment.created_by }}</strong> said on
+                                    {{ comment.created_at|date:"F d, Y" }}</p>
                                     {% if comment.is_flagged %}
-                                        <li id="reported_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
-                                            <div class="even-vert-center">
-                                                <span>You have reported this comment.</span>
-                                                <a class="btn btn-primary async_unreport"
-                                                   href="{% url 'comment_flag_remove' comment.id %}"
-                                                   data-commentid="{{ comment.id }}"
-                                                   role="button">Undo</a>
-                                            </div>
-                                        </li>
-                                        <li id="hidden_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1"
-                                            hidden>
-                                            <div class="even-vert-center">
-                                                <span>Comment hidden.</span>
-                                                <a class="btn btn-primary async_unhide"
-                                                   href="{% url 'comment_unhide' comment.id %}"
-                                                   data-commentid="{{ comment.id }}"
-                                                   role="button">Undo</a>
-                                            </div>
-                                        </li>
+                                        <p>Comment is being held for moderation</p>
                                     {% else %}
-                                        <li id="reported_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1"
-                                            hidden>
-                                            <div class="even-vert-center">
-                                                <span>You have reported this comment.</span>
-                                                <a class="btn btn-primary async_unreport"
-                                                   href="{% url 'comment_flag_remove' comment.id %}"
-                                                   data-commentid="{{ comment.id }}"
-                                                   role="button">Undo</a>
-                                            </div>
-                                        </li>
-                                        <li id="hidden_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
-                                            <div class="even-vert-center">
-                                                <span>Comment hidden.</span>
-                                                <a class="btn btn-primary async_unhide"
-                                                   href="{% url 'comment_unhide' comment.id %}"
-                                                   data-commentid="{{ comment.id }}"
-                                                   role="button">Undo</a>
-                                            </div>
-                                        </li>
-                                    {% endif %}
-
-                                    <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1" hidden>
-                                        {% if comment.created_by != user.id %}
-                                            <div style="float: right; text-align: right;">
-                                                <i class="material-icons more_vert">
-                                                    more_vert
-                                                </i>
-                                                <div class="popup" hidden>
-                                                    <div class="more_menu box_shadow">
-                                                        <div class="opt_container open_flag_dialog"
-                                                             data-url="{% url 'comment_flag_create' comment.id %}"
-                                                             data-commentid="{{ comment.id }}">
-                                                            <i class="material-icons menu_item">
-                                                                outlined_flag
-                                                            </i>
-                                                            <span class="menu_item">Report</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                        <p><strong>{{ comment.author }}</strong>
-
-                                            <small class="ml-3 text-muted">{{ comment.publication_date|naturaltime }}</small>
-                                            {% if comment.created_by == user.id %}
-                                                <a class="ml-5" href="{% url 'comment_update' comment.id %}">Edit</a>
-                                                <a class="ml-5" href="{% url 'comment_delete' comment.id %}"> Delete</a>
-                                            {% else %}
-                                                <a class="ml-5 async_hide"
-                                                   href="{% url 'comment_hide' comment.id %}"
-                                                   data-commentid="{{ comment.id }}">Hide</a>
-                                            {% endif %}
-                                        </p>
                                         <p>{{ comment.text }}</p>
-                                    </li>
+                                    {% endif %}
+                                    {% if comment.created_by == user %}
+                                        <a href="{% url 'comment_update' comment.id %}">Edit</a>
+                                    {% endif %}
+                                </li>
 
-                                {% else %}
-                                    <li id="reported_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1"
-                                        hidden>
-                                        <div class="even-vert-center">
-                                            <span>You have reported this comment.</span>
-                                            <a class="btn btn-primary async_unreport"
-                                               href="{% url 'comment_flag_remove' comment.id %}"
-                                               data-commentid="{{ comment.id }}"
-                                               role="button">Undo</a>
-                                        </div>
-                                    </li>
-
-                                    <li id="hidden_cmt_{{ comment.id }}" class="list-group-item shadow-sm mt-1" hidden>
-                                        <div class="even-vert-center">
-                                            <span>Comment hidden.</span>
-                                            <a class="btn btn-primary async_unhide"
-                                               href="{% url 'comment_unhide' comment.id %}"
-                                               data-commentid="{{ comment.id }}"
-                                               role="button">Undo</a>
-                                        </div>
-                                    </li>
-
+                                {% if 0 %}
                                     <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
-                                        {% if comment.created_by != user.id %}
+                                        {% if comment.created_by != user %}
                                             <div style="float: right; text-align: right;">
                                                 <i class="material-icons more_vert">
                                                     more_vert
@@ -388,16 +303,10 @@
                                                 </div>
                                             </div>
                                         {% endif %}
-                                        <p><strong>{{ comment.author }}</strong>
-
-                                            <small class="ml-3 text-muted">{{ comment.publication_date|naturaltime }}</small>
-                                            {% if comment.created_by == user.id %}
+                                        <p><strong>{{ comment.created_by }}</strong>
+                                            <small class="ml-3 text-muted">{{ comment.created_at }}</small>
+                                            {% if comment.created_by == user %}
                                                 <a class="ml-5" href="{% url 'comment_update' comment.id %}">Edit</a>
-                                                <a class="ml-5" href="{% url 'comment_delete' comment.id %}">Delete</a>
-                                            {% else %}
-                                                <a class="ml-5 async_hide"
-                                                   href="{% url 'comment_hide' comment.id %}"
-                                                   data-commentid="{{ comment.id }}">Hide</a>
                                             {% endif %}
                                         </p>
                                         <p>{{ comment.text }}</p>
@@ -491,9 +400,8 @@
             {% else %}
                 <h4 class="mt-2 mb-2"><a href="{% url 'django_registration_register' %}?next={{ request.path }}">Sign
                     up</a> or <a href="{% url 'login' %}?next={{ request.path }}">login</a> to leave
-                    a
-                    comment</h4>
-                {% if num_comments > 0 %}
+                    a comment</h4>
+                {% if comments %}
                     <ul class="list-group list-group-flush">
                         {% for comment in comments %}
                             <li class="list-group-item shadow-sm mt-1">
@@ -513,8 +421,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p><strong>{{ comment.author }}</strong>
-                                    <small class="ml-3 text-muted">{{ comment.publication_date|date:"F d, Y" }}</small>
+                                <p><strong>{{ comment.created_by }}</strong>
+                                    <small class="ml-3 text-muted">{{ comment.created_at|date:"F d, Y" }}</small>
                                 </p>
                                 <p>{{ comment.text }}</p>
                             </li>

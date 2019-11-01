@@ -180,6 +180,9 @@ class Comment(models.Model):
                                    on_delete=models.CASCADE,  # deleting a user deletes all her comments.
                                    related_name="author")
 
+    is_flagged = models.BooleanField(default=False)
+    is_hidden = models.BooleanField(default=False)
+
     # a paper can have many comments from several users.
     # The below creates a one-to-many relationship between the Paper and Comment models
     paper = models.ForeignKey(Paper,
