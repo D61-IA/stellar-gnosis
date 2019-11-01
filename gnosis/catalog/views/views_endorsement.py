@@ -13,9 +13,10 @@ from django.http import HttpResponseRedirect
 @login_required
 def endorsements(request):
 
-    endorsement = request.user.endorsements.order_by('-created_at')
+    all_endorsements = Endorsement.objects.filter(user=request.user).order_by('-created_at')
 
-    return render(request, "endorsement.html", {"papers": endorsement, })
+    print(all_endorsements)
+    return render(request, "endorsement.html", {"endorsements": all_endorsements, })
 
 
 @login_required
@@ -25,14 +26,29 @@ def endorsement_create(request, id):
     paper = get_object_or_404(Paper, pk=id)
 
     if request.method == "POST":
-        e = Endorsement.objects.filter(paper=paper).filter(user=user)
+        e = Endorsement.objects.filter(paper=paper, user=user)
         if not e:
-            endorsement_entry = Endorsement()
-            endorsement_entry.user = user
-            endorsement_entry.paper = paper
-            endorsement_entry.save()
+            print("Adding Endorsement.")
+            e = Endorsement(user=user, paper=paper)
+            e.save()
+        else:
+            print("Endorsement deleted.")
+            e.delete()
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
+
+
+@login_required
+def endorsement_delete(request, id):
+
+    user = request.user
+    paper = get_object_or_404(Paper, pk=id)
+    e = Endorsement.objects.filter(user=user, paper=paper)
+
+    if e:
+        e.delete()
+
+    return HttpResponseRedirect(reverse("endorsements"))
 
 
 @login_required

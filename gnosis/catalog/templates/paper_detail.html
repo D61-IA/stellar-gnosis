@@ -12,58 +12,42 @@
                     {% if user.is_authenticated %}
                         <div id="endorsement">
                             {% if not endorsed %}
-                                <form id="e_create" action="{% url 'endorsement_create' paper_id=paper.id %}"
+                                <form id="e_create" action="{% url 'endorsement_create' id=paper.id %}"
                                       method="post">
                                     {% csrf_token %}
                                     <button name="endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#e_create', '#endorsement')"><img
-                                            src="https://img.icons8.com/ultraviolet/30/000000/blunt-bulb.png"
-                                    >{{ num_endorsements }}</button>
+                            background: none;" onclick="endorsement_bookmark_fun('#e_create', '#endorsement')">E</button>
                                 </form>
 
 
                             {% else %}
-                                <form id="e_undo" action="{% url 'endorsement_undo' paper_id=paper.id %}" method="post">
+                                <form id="e_undo" action="{% url 'endorsement_undo' id=paper.id %}" method="post">
                                     {% csrf_token %}
                                     <button name="undo_endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#e_undo', '#endorsement')"><img
-                                            src="https://img.icons8.com/officel/30/000000/blunt-bulb.png">{{ num_endorsements }}
+                            background: none;" onclick="endorsement_bookmark_fun('#e_undo', '#endorsement')">E
                                     </button>
                                 </form>
                             {% endif %}
                         </div>
 
                         <div id="bookmark">
-                            {% if not bookmarked %}
-                                <form id="b_create" action="{% url 'paper_add_to_bookmark' pid=paper.id %}"
-                                      method="post">
+                                <form id="b_create" action="{% url 'paper_bookmark' id=paper.id %}" method="post">
                                     {% csrf_token %}
-                                    <button name="add_bookmark_button" value="endorse" style="border: none;outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#b_create', '#bookmark')"><img
-                                            src="https://img.icons8.com/ios/30/000000/add-bookmark.png"></button>
+                                    <button name="bookmark" value="B" style="border: none; outline: none !important;
+                            background: none;" onclick="endorsement_bookmark_fun('#b_create', '#bookmark')">B</button>
                                 </form>
-                            {% else %}
-                                <form id="b_undo" action="{% url 'bookmark_entry_remove' pid=paper.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button name="undo_bookmark" value="endorse" style="border: none;outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#b_undo', '#bookmark')"><img
-                                            src="https://img.icons8.com/ios-filled/30/000000/remove-bookmark.png">
-                                    </button>
-                                </form>
-                            {% endif %}
                         </div>
                     {% else %}
                         <form action="{% url 'login' %}?next={{ request.path }}" method="post">
                             {% csrf_token %}
                             <button name="endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;"><img
-                                    src="https://img.icons8.com/ultraviolet/30/000000/blunt-bulb.png">{{ num_endorsements }}
+                            background: none;">E
                             </button>
                         </form>
                         <form action="{% url 'login' %}?next={{ request.path }}" method="post">
                             {% csrf_token %}
-                            <button name="endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;"><img src="https://img.icons8.com/ios/30/000000/add-bookmark.png">
+                            <button name="bookmark" value="bookmark" style="border: none; outline: none !important;
+                            background: none;">B
                             </button>
                         </form>
                     {% endif %}

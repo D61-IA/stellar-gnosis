@@ -470,4 +470,4 @@ class Endorsement(models.Model):
         return reverse('endorsements')
 
     def __str__(self):
-        return str(self.user) + ' endorse ' + str(self.paper_title)
+        return str(self.user) + ' endorse ' + str(self.paper.title)

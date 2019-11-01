@@ -8,14 +8,14 @@
 
     </div>
     <div class="card-body">
-        {% if papers %}
-        {% paginate papers %}
-        {% for paper in papers %}
+        {% if endorsements %}
+        {% paginate endorsements %}
+        {% for endorsement in endorsements %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <div class="d-flex flex-row">
-                    <div class="mr-auto p-2"><a href="{% url 'paper_detail' paper.paper_id %}">{{ paper.paper_title }}</a></div>
-                    <div class="p-2"><a href="{% url 'endorsement_undo_from_view' paper.paper_id %}" class="btn btn-outline-danger btn-sm" role="button">Remove</a></div>
+                    <div class="mr-auto p-2"><a href="{% url 'paper_detail' endorsement.paper.id %}">{{ endorsement.paper.title }}</a></div>
+                    <div class="p-2"><a href="{% url 'endorsement_delete' endorsement.paper.id %}" class="btn btn-outline-danger btn-sm" role="button">Remove</a></div>
                 </div>
             </li>
         </ul>

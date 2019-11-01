@@ -539,38 +539,25 @@ def paper_add_to_collection(request, id):
 
 
 @login_required
-def paper_add_to_bookmark(request, pid):
+def paper_bookmark(request, id):
     """input:
     pid: paper id
     """
-    print("In paper_add_to_bookmark")
-    query = "MATCH (a) WHERE ID(a)={id} RETURN a"
-    results, meta = db.cypher_query(query, dict(id=pid))
-    if len(results) > 0:
-        all_papers = [Paper.inflate(row[0]) for row in results]
-        paper = all_papers[0]
-    else:
-        raise Http404
-
-    try:
-        bookmark = Bookmark.objects.filter(owner=request.user)[0]
-    except:
-        bookmark = Bookmark()
-        bookmark.owner = request.user
-        bookmark.save()
-
-    # if this is POST request then add the entry
     if request.method == "POST":
-        try:
-            x = bookmark.papers.filter(paper_id=pid)[0]
-        except:
-            print("  ==> creating entry")
-            # bookmark_entry = BookmarkEntry()
-            # bookmark_entry.paper_id = pid
-            # bookmark_entry.paper_title = paper.title
-            # bookmark_entry.bookmark = bookmark
-            # bookmark_entry.save()
-    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": pid, }))
+        paper = get_object_or_404(Paper, pk=id)
+        # Check if the bookmarks already exist
+        bookmark = Bookmark.objects.filter(owner=request.user, paper=paper)
+        if not bookmark:
+            print(f"Bookmarking paper {paper}")
+            bookmark = Bookmark(owner=request.user, paper=paper)
+            bookmark.save()
+        else:
+            print("Bookmark already exists so deleting it.")
+            bookmark.delete()
+    else:
+        print("GET request")
+
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id, }))
 
 
 @login_required

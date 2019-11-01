@@ -4,8 +4,7 @@
 
 <div class="card shadow-sm mt-3">
     <div class="card-header">
-        <h4>Bookmarks</h4>
-
+        <h4>Your Bookmarked Papers</h4>
     </div>
 
     <form class="input-group mb-3" action="{% url 'search_bookmarks' %}" method="post">
@@ -16,17 +15,15 @@
       </div>
     </form>
 
-
-
     <div class="card-body">
-        {% if papers %}
-        {% paginate papers %}
-        {% for paper in papers %}
+        {% if bookmarks %}
+        {% paginate bookmarks %}
+        {% for bookmark in bookmarks %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <div class="d-flex flex-row">
-                    <div class="mr-auto p-2"><a href="{% url 'paper_detail' paper.paper_id %}">{{ paper.paper_title }}</a></div>
-                    <div class="p-2"><a href="{% url 'bookmark_entry_remove_from_view' paper.paper_id %}" class="btn btn-outline-danger btn-sm" role="button">Remove</a></div>
+                    <div class="mr-auto p-2"><a href="{% url 'paper_detail' bookmark.paper.id %}">{{ bookmark.paper.title }}</a></div>
+                    <div class="p-2"><a href="{% url 'bookmark_delete' bookmark.id %}" class="btn btn-outline-danger btn-sm" role="button">Remove</a></div>
                 </div>
             </li>
         </ul>
