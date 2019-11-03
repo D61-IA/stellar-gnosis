@@ -342,7 +342,7 @@
                     <div class="tab-pane fade" id="navnote" role="tabpanel" aria-labelledby="nav-note-tab">
                         <div class="mt-2">
                             {#                            note form#}
-                            <form action="" method="post">
+                            <form action="{% url 'paper_add_note' paper.id %}" method="post">
                                 {% csrf_token %}
                                 {{ noteform }}
                                 <input type="submit" name="note_form" class="btn btn-info mt-3 btn-md"
@@ -352,16 +352,16 @@
                             </form>
                         </div>
                         <br/>
-                        {% if num_notes > 0 %}
+                        {% if notes %}
                             <ul class="list-group list-group-flush">
                                 {% paginate notes %}
                                 {% for note in notes %}
                                     <li class="list-group-item shadow-sm mt-1">
                                         <p>{{ note.note_content }}</p>
                                         <p>Date:
-                                            <small class="ml-0 pr-5 text-muted">{{ note.created_at|naturaltime }}</small>
+                                            <small class="ml-0 pr-5 text-muted">{{ note.created_at }}</small>
                                             Modified:
-                                            <small class="ml-0 text-muted">{{ note.updated_at|naturaltime }}</small>
+                                            <small class="ml-0 text-muted">{{ note.updated_at }}</small>
                                             <a class="ml-5" href="{% url 'note_update' note.id %}">Edit</a>
                                             <a class="ml-5" href="{% url 'note_delete' note.id %}"> Delete</a>
                                         </p>

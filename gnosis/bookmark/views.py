@@ -1,10 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from .models import Bookmark
-#from catalog.models import Paper
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from nltk.corpus import stopwords
 
 
 @login_required
@@ -32,13 +30,13 @@ def bookmark_delete(request, id):
 def search_bookmarks(request):
     keyword = request.POST.get("keyword1", "")
     # pre-process query
-    english_stopwords = stopwords.words("english")
-    if len(keyword) > 1:
-        search_keywords_tokens = [
-            w for w in keyword.split(" ") if w not in english_stopwords
-        ]
-    else:
-        search_keywords_tokens = [keyword]
+    #english_stopwords = stopwords.words("english")
+    #if len(keyword) > 1:
+    #    search_keywords_tokens = [
+    #        w for w in keyword.split(" ") if w not in english_stopwords
+    #    ]
+    #else:
+    #    search_keywords_tokens = [keyword]
     bookmark = Bookmark.objects.filter(owner=request.user)[0]
     print("  ==> bookmark found")
     # rank the query results

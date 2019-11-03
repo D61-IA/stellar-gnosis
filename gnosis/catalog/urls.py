@@ -34,6 +34,7 @@ urlpatterns += [
     path('paper/<int:id>/collection/add', views.paper_add_to_collection, name='paper_add_to_collection'),
     path('paper/<int:id>/collection/add/<int:cid>', views.paper_add_to_collection_selected, name='paper_add_to_collection_selected'),
     path('paper/<int:id>/bookmark', views.paper_bookmark, name='paper_bookmark'),
+    path('paper/<int:id>/add/note/', views.paper_add_note, name='paper_add_note'),
 ]
 
 # for updating/creating a new Person node
