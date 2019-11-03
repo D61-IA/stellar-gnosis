@@ -37,7 +37,6 @@ from catalog.forms import (
 
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from neomodel import db
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from django.contrib import messages
@@ -158,8 +157,7 @@ def paper_detail(request, id):
     # Retrieve all notes that created by the current user and on current paper.
     notes = []
     if request.user.is_authenticated:
-        notes = Note.objects.filter(paper_id=id, created_by=request.user)
-    num_notes = len(notes)
+        notes = Note.objects.filter(paper=paper, created_by=request.user)
 
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
@@ -219,6 +217,7 @@ def paper_detail(request, id):
             "codes": codes,
             "datasets": datasets,
             "noteform": note_form,
+            "notes": notes,
             "commentform": comment_form,
             "num_comments": comments.count(),
             "ego_network": ego_network_json,
@@ -583,6 +582,27 @@ def paper_bookmark(request, id):
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id, }))
 
+@login_required
+def paper_add_note(request, id):
+    """
+    Adds a note to a paper.
+    """
+    print(f"In paper_add_note for paper with id={id}")
+    paper = get_object_or_404(Paper, pk=id)
+
+    if request.method == "POST":
+        note = Note()
+        note.created_by = request.user
+        note.paper = paper
+        form = NoteForm(instance=note, data=request.POST)
+        if form.is_valid():
+            # add link from new comment to paper
+            form.save()
+            return redirect("paper_detail", id=paper.id)
+    else:  # GET
+        form = CommentForm()
+
+    return render(request, "note_form.html", {"form": form})
 
 @login_required
 def paper_add_to_group_selected(request, id, gid):

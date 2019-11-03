@@ -22,7 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6pph^ipk8sow@%nw)s!l@klg4q8lnar2k6k$&e=26pqrm(zg^a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+print(f"GNOSIS_DEBUG={os.environ.get('GNOSIS_DEBUG', False)}")
+DEBUG = os.environ.get('GNOSIS_DEBUG', False)
 
 ALLOWED_HOSTS = []
 
@@ -91,7 +92,6 @@ WSGI_APPLICATION = 'gnosis.wsgi.application'
 # Increase this number when in production.
 EL_PAGINATION_PER_PAGE = 3
 
-# Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
     'default': {
@@ -100,7 +100,7 @@ DATABASES = {
         'USER': 'gnosisuser',      # gnosis
         'PASSWORD': 'gnosis',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': os.environ.get('GNOSIS_DB_PORT', 5432),  #'5433',
     }
 }
 

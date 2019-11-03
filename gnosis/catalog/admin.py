@@ -5,7 +5,6 @@ from catalog.models import ReadingGroup, ReadingGroupEntry
 from catalog.models import Collection, CollectionEntry, Endorsement
 from catalog.models import CommentFlag
 
-from neomodel import db
 from catalog.models import Comment
 
 from django.urls import reverse
