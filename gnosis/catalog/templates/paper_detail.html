@@ -270,6 +270,18 @@
                             {% for comment in comments %}
 
                                 <li class="list-group-item shadow-sm mt-1">
+                                    {% if comment.created_by != user %}
+                                        <div style="float: right; text-align: right;">
+                                                <div class="opt_container open_flag_dialog"
+                                                             data-url="{% url 'comment_flag_create' comment.id %}"
+                                                             data-commentid={{ comment.id }}>
+                                                    <i class="material-icons menu_item">
+                                                                outlined_flag
+                                                    </i>
+                                                </div>
+                                        </div>
+                                    {% endif %}
+
                                    <p><strong>{{ comment.created_by }}</strong> said on
                                     {{ comment.created_at|date:"F d, Y" }}</p>
                                     {% if comment.is_flagged %}
@@ -282,36 +294,6 @@
                                     {% endif %}
                                 </li>
 
-                                {% if 0 %}
-                                    <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
-                                        {% if comment.created_by != user %}
-                                            <div style="float: right; text-align: right;">
-                                                <i class="material-icons more_vert">
-                                                    more_vert
-                                                </i>
-                                                <div class="popup" hidden>
-                                                    <div class="more_menu box_shadow">
-                                                        <div class="opt_container open_flag_dialog"
-                                                             data-url="{% url 'comment_flag_create' comment.id %}"
-                                                             data-commentid={{ comment.id }}>
-                                                            <i class="material-icons menu_item">
-                                                                outlined_flag
-                                                            </i>
-                                                            <span class="menu_item">Report</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                        <p><strong>{{ comment.created_by }}</strong>
-                                            <small class="ml-3 text-muted">{{ comment.created_at }}</small>
-                                            {% if comment.created_by == user %}
-                                                <a class="ml-5" href="{% url 'comment_update' comment.id %}">Edit</a>
-                                            {% endif %}
-                                        </p>
-                                        <p>{{ comment.text }}</p>
-                                    </li>
-                                {% endif %}
                             {% endfor %}
                             {% get_pages %}
                             <ul class="pagination justify-content-center" style="margin:20px 0">
@@ -405,26 +387,14 @@
                     <ul class="list-group list-group-flush">
                         {% for comment in comments %}
                             <li class="list-group-item shadow-sm mt-1">
-                                <div style="float: right; text-align: right;">
-                                    <i class="material-icons more_vert">
-                                        more_vert
-                                    </i>
-                                    <div class="popup" hidden>
-                                        <div class="more_menu box_shadow">
-                                            <a class="opt_container icon_link"
-                                               href="{% url 'login' %}?next={{ request.path }}">
-                                                <i class="material-icons menu_item">
-                                                    outlined_flag
-                                                </i>
-                                                <span class="menu_item">Report</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
                                 <p><strong>{{ comment.created_by }}</strong>
                                     <small class="ml-3 text-muted">{{ comment.created_at|date:"F d, Y" }}</small>
                                 </p>
-                                <p>{{ comment.text }}</p>
+                                {% if comment.is_flagged %}
+                                    <p>Comment is being held for moderation</p>
+                                {% else %}
+                                    <p>{{ comment.text }}</p>
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </ul>
