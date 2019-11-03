@@ -48,17 +48,6 @@ def note_delete(request, id):
 
 @login_required
 def note_index(request):
-    notes_info = []
-    
     notes = Note.objects.filter(created_by=request.user).order_by('-updated_at')
 
-    for note in notes:
-        print(note.note_content)
-        paper_id = note.paper.id
-        notes_info += [(note, note.paper)]
-        print("Paper id are: ", paper_id)
-            
-
-    num_notes = notes.count()
-
-    return render(request, "notes/note_index.html", {"notes": notes, "num_notes": num_notes, "notes_info": notes_info}, )
+    return render(request, "notes/note_index.html", {"notes": notes}, )

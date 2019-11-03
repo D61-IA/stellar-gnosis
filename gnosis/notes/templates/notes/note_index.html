@@ -8,15 +8,15 @@
 
     </div>
     <div class="card-body">
-        {% if num_notes != 0 %}
-        {% paginate notes_info %}
-        {% for note_info in notes_info %}
+        {% if notes %}
+        {% paginate notes %}
+        {% for note in notes %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <div class="mr-auto p-2">
-                    <p>{{ note_info.0.note_content }}</p>
-                    <p> Posted on {{ note_info.0.updated_at }} </p>
-                    <p> On {{ note_info.1 }} <a href="{% url 'paper_detail' note_info.0.paper_id %}">View</a></p>
+                    <p>{{ note.note_content }}</p>
+                    <p> Posted on {{ note.updated_at }} </p>
+                    <p> On {{ note.paper.title }} <a href="{% url 'paper_detail' note.paper.id %}">View</a></p>
 
                 </div>
             </li>
