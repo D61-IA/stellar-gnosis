@@ -338,12 +338,9 @@ class ReadingGroup(models.Model):
 
     # Fields
     name = models.CharField(max_length=100,
-                            help_text="Enter a name for your group.",
                             blank=False)
-    description = models.TextField(help_text="Enter a description.",
-                                   blank=False)
+    description = models.TextField(blank=False)
     keywords = models.CharField(max_length=100,
-                                help_text="Keywords describing the group.",
                                 blank=False)
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)

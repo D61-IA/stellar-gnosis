@@ -2,14 +2,14 @@
 
 {% block content %}
 
-<div class="mt-5">
-    <h3>Updating paper</h3>
-    <h5>Original title: {{ paper.title }}</h5>
-    <div class="mt-5">
-
+<div class="card shadow-sm mt-5">
+    <div class="card-header">
+        <h3>Updating paper with original title: {{ paper.title }}</h3>
+    </div>
+    <div class="card-body">
         <form action="" method="post">
             {% csrf_token %}
-            <table class="w-75">
+            <table class="w-100">
             {{ form }}
                 </table>
             <br/>
