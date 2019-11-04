@@ -248,7 +248,8 @@ def _get_paper_paper_network(main_paper, ego_json):
     )
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
 
-    papers_out = main_paper.papers.all()  #
+    # papers_out = main_paper.papers.all()  #
+    papers_out = PaperRelationshipType.objects.filter(paper_from=main_paper)
     papers_in = PaperRelationshipType.objects.filter(paper_to=main_paper)
 
     print(f"papers_out: {papers_out}")
@@ -258,13 +259,14 @@ def _get_paper_paper_network(main_paper, ego_json):
     # 'out' refers to being from the paper to the object
     # line property for out
     line = "solid"
-    for paper in papers_out:
+    for paper_out in papers_out:
+        paper=paper_out.paper_to
         ego_json += node_temp.format(
             paper.id,
             paper.title,
             reverse("paper_detail", kwargs={"id": paper.id}),
             "Paper",
-            "cites",  # this needs to be replaced with actual relationship type
+            paper_out.relationship_type,
         )
         # adding relationship with paper node
         ego_json += rela_temp.format(
@@ -272,7 +274,7 @@ def _get_paper_paper_network(main_paper, ego_json):
             "-",
             paper.id,
             "Paper",
-            "cites",  # this needs to be replaced with actual relationship type
+            paper_out.relationship_type,
             main_paper.id,
             paper.id,
             line,
@@ -286,7 +288,7 @@ def _get_paper_paper_network(main_paper, ego_json):
             paper.title,
             reverse("paper_detail", kwargs={"id": paper.id}),
             "Paper",
-            "cites",  # this needs to be replaced with actual relationship type
+            paper_in.relationship_type,
         )
         # adding relationship with paper node
         ego_json += rela_temp.format(
@@ -294,7 +296,7 @@ def _get_paper_paper_network(main_paper, ego_json):
             "-",
             paper.id,
             "Paper",
-            "cites",  # this needs to be replaced with actual relationship type
+            paper_in.relationship_type, 
             paper.id,
             main_paper.id,
             line,
@@ -787,30 +789,30 @@ def paper_connect_paper_selected(request, id, pid):
 
     print(f"paper_from: {paper_from}")
     print(f"paper_to: {paper_to}")
+    
+    if paper_from == paper_to:
+        messages.add_message(request, messages.INFO, "You cannot connect a paper with itself.")
+    else:
+        # Check if a relationship between the two papers exists.
+        # If it does, delete it before adding a new relationship.
+        edges = PaperRelationshipType(paper_from=paper_from, paper_to=paper_to)
+        if edges:
+            # Found existing relationship so remove it.
+            print(f"Found {edges} existing relationships and will delete them.")
+            paper_from.papers.remove(paper_to)
 
-    # Check if a relationship between the two papers exists.
-    # If it does, delete it before adding a new relationship.
-    edges = PaperRelationshipType(paper_from=paper_from, paper_to=paper_to)
-    if edges:
-        # Found existing relationship so remove it.
-        print(f"Found {edges} existing relationships and will delete them.")
-        paper_from.papers.remove(paper_to)
-
-    # We have the two Paper objects.
-    # Add the relationship between them.
-    print("Adding the new relationship.")
-    # add the new link
-    # TODO: Check if the link exists, does it add it again?
-    # TODO: Two papers should only be linked by one type of relationship so check if one exists, delete, and create
-    # a new one.
-    link_type = request.session["link_type"]
-    print(f"link_type: {link_type}")
-    edge = PaperRelationshipType(
-        paper_from=paper_from, paper_to=paper_to, relationship_type=link_type
-    )
-    edge.save()
-    print(edge)
-    messages.add_message(request, messages.INFO, "Connection Added!")
+        # We have the two Paper objects.
+        # Add the relationship between them.
+        print("Adding the new relationship.")
+        # add the new link
+        link_type = request.session["link_type"]
+        print(f"link_type: {link_type}")
+        edge = PaperRelationshipType(
+            paper_from=paper_from, paper_to=paper_to, relationship_type=link_type
+        )
+        edge.save()
+        print(edge)
+        messages.add_message(request, messages.INFO, "Connection Added!")
 
     return redirect("paper_detail", id=id)
 
