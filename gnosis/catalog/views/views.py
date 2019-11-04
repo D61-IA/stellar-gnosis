@@ -239,21 +239,7 @@ def paper_detail(request, id):
     )
 
 
-def _get_node_ego_network(id, paper_title):
-    """
-     Returns a json formatted string of the nodes ego network
-     :param id:
-     :return:
-    """
-    paper = get_object_or_404(Paper, pk=id)
-    # query for everything that points to the paper
-    papers_out = paper.papers.all()  #
-    #paper_in = []
-    print(f"papers_out {papers_out}")
-
-    ego_json = "{{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}'}} }}".format(
-        id, paper.title, reverse("paper_detail", kwargs={"id": id}), "Paper", "origin"
-    )
+def _get_paper_paper_network(main_paper, ego_json):
 
     # type refers to what node type the object is associated with.
     # label refers to the text on the object.
@@ -262,31 +248,96 @@ def _get_node_ego_network(id, paper_title):
     )
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
 
+    papers_out = main_paper.papers.all()  #
+    # paper_in = []
+    print(f"papers_out {papers_out}")
+
     # Sort nodes and store them in arrays accordingly
     # 'out' refers to being from the paper to the object
-    if papers_out:
-        # line property for out
-        line = "solid"
-        for paper in papers_out:
-            ego_json += node_temp.format(
-                paper.id,
-                paper.title,
-                reverse("paper_detail", kwargs={"id": paper.id}),
-                "Paper",
-                "cites",  # this needs to be replaced with actual relationship type
-            )
-            # adding relationship with paper node
-            ego_json += rela_temp.format(
-                id,
-                "-",
-                paper.id,
-                "Paper",
-                "cites",
-                id,  # this needs to be replaced with actual relationship type
-                paper.id,
-                line,
-            )
+    # line property for out
+    line = "solid"
+    for paper in papers_out:
+        ego_json += node_temp.format(
+            paper.id,
+            paper.title,
+            reverse("paper_detail", kwargs={"id": paper.id}),
+            "Paper",
+            "cites",  # this needs to be replaced with actual relationship type
+        )
+        # adding relationship with paper node
+        ego_json += rela_temp.format(
+            main_paper.id,
+            "-",
+            paper.id,
+            "Paper",
+            "cites",   # this needs to be replaced with actual relationship type
+            main_paper.id,
+            paper.id,
+            line,
+        )
+
+    return ego_json
+
+
+def _get_paper_author_network(main_paper, ego_json ):
+    rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+    author_str = ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', type: '{}', label: '{}'}} }}"
+    # query for everything that points to the paper
+    paper_authors = main_paper.person_set.all()
+    print(f"paper authors {paper_authors}")
+
+    line = "dashed"
+    for author in paper_authors:
+        # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
+        if author.middle_name is not None:
+            middle_name = author.middle_name[1:-1].split(", ")
+            print(middle_name)
+            # concatenate middle names to get 'mn1 mn2 ...'
+            # for i in range(len(middle_name)):
+            #     middle_name = middle_name + " " + middle_name[i][1:-1]
+            #     # When middle names have "'", like 'D'Angelo'
+            #     middleName = middleName.replace("'", r"\'")
+        ego_json += author_str.format(
+            author.id,
+            author.first_name,
+            '',  #author.middle_name,
+            author.last_name,
+            reverse("person_detail", kwargs={"id": author.id}),
+            "Person",
+            "authors",
+        )
+        ego_json += rela_temp.format(
+            id, "-", author.id, "Person", "authors", author.id, main_paper.id, line
+        )
+
+    return ego_json
+
+
+def _get_node_ego_network(id, paper_title):
+    """
+     Returns a json formatted string of the nodes ego network
+     :param id:
+     :return:
+    """
+    paper = get_object_or_404(Paper, pk=id)
+
+    ego_json = "{{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}'}} }}".format(
+        id, paper.title, reverse("paper_detail", kwargs={"id": id}), "Paper", "origin"
+    )
+
+    ego_json = _get_paper_paper_network(main_paper=paper, ego_json=ego_json)
+
+    # type refers to what node type the object is associated with.
+    # label refers to the text on the object.
+    rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+    author_str = ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', type: '{}', label: '{}'}} }}"
+
+    ego_json = _get_paper_author_network(paper, ego_json)
+
+    print("Final ego_json: {}".format(ego_json))
+
     return "[" + ego_json + "]"
+
 
 #         for row in results_all_out:
 #             new_rela = row[1].replace("_", " ")
