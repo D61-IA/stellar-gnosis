@@ -249,8 +249,10 @@ def _get_paper_paper_network(main_paper, ego_json):
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
 
     papers_out = main_paper.papers.all()  #
-    # paper_in = []
-    print(f"papers_out {papers_out}")
+    papers_in = PaperRelationshipType.objects.filter(paper_to=main_paper)
+
+    print(f"papers_out: {papers_out}")
+    print(f"paper_in: {papers_in}")
 
     # Sort nodes and store them in arrays accordingly
     # 'out' refers to being from the paper to the object
@@ -275,6 +277,29 @@ def _get_paper_paper_network(main_paper, ego_json):
             paper.id,
             line,
         )
+
+    line = 'dashed'
+    for paper_in in papers_in:
+        paper = paper_in.paper_from
+        ego_json += node_temp.format(
+            paper.id,
+            paper.title,
+            reverse("paper_detail", kwargs={"id": paper.id}),
+            "Paper",
+            "cites",  # this needs to be replaced with actual relationship type
+        )
+        # adding relationship with paper node
+        ego_json += rela_temp.format(
+            main_paper.id,
+            "-",
+            paper.id,
+            "Paper",
+            "cites",  # this needs to be replaced with actual relationship type
+            paper.id,
+            main_paper.id,
+            line,
+        )
+
 
     return ego_json
 
