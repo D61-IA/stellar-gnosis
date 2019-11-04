@@ -270,7 +270,7 @@ def _get_paper_paper_network(main_paper, ego_json):
             "-",
             paper.id,
             "Paper",
-            "cites",   # this needs to be replaced with actual relationship type
+            "cites",  # this needs to be replaced with actual relationship type
             main_paper.id,
             paper.id,
             line,
@@ -279,7 +279,16 @@ def _get_paper_paper_network(main_paper, ego_json):
     return ego_json
 
 
-def _get_paper_author_network(main_paper, ego_json ):
+def _get_paper_author_network(main_paper, ego_json, offset=101):
+    """
+
+    :param main_paper:
+    :param ego_json:
+    :param offset: This is a massive hack to avoid papers and authors having the same ID. It can still happen with the
+    offset but for now it helps. I really need to have a look at this again.
+    
+    :return:
+    """
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
     author_str = ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', type: '{}', label: '{}'}} }}"
     # query for everything that points to the paper
@@ -289,25 +298,30 @@ def _get_paper_author_network(main_paper, ego_json ):
     line = "dashed"
     for author in paper_authors:
         # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
+        middle_name = ""
         if author.middle_name is not None:
-            middle_name = author.middle_name[1:-1].split(", ")
-            print(middle_name)
-            # concatenate middle names to get 'mn1 mn2 ...'
-            # for i in range(len(middle_name)):
-            #     middle_name = middle_name + " " + middle_name[i][1:-1]
-            #     # When middle names have "'", like 'D'Angelo'
-            #     middleName = middleName.replace("'", r"\'")
+            middle_name = author.middle_name.replace("'", r"\'")
+            middle_name = middle_name.replace("[", r"")
+            middle_name = middle_name.replace("]", r"")
+
         ego_json += author_str.format(
-            author.id,
+            author.id + offset,
             author.first_name,
-            '',  #author.middle_name,
+            middle_name,
             author.last_name,
             reverse("person_detail", kwargs={"id": author.id}),
             "Person",
             "authors",
         )
         ego_json += rela_temp.format(
-            id, "-", author.id, "Person", "authors", author.id, main_paper.id, line
+            main_paper.id,
+            "-",
+            author.id + offset,
+            "Person",
+            "authors",
+            author.id + offset,
+            main_paper.id,
+            line,
         )
 
     return ego_json
