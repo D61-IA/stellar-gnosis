@@ -5,7 +5,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from catalog.models import Paper, PaperRelationshipType, Person, Dataset, Venue, Comment, Code
+from catalog.models import (
+    Paper,
+    PaperRelationshipType,
+    Person,
+    Dataset,
+    Venue,
+    Comment,
+    Code,
+)
 from django.http import Http404, HttpResponseBadRequest
 from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from notes.forms import NoteForm
@@ -31,7 +39,7 @@ from catalog.forms import (
     SearchPeopleForm,
     SearchDatasetsForm,
     SearchCodesForm,
-    PaperConnectionForm
+    PaperConnectionForm,
 )
 
 
@@ -59,14 +67,18 @@ def papers(request):
         if form.is_valid():
             paper_title = form.cleaned_data["paper_title"].lower()
             print(f"Searching for paper using keywords {paper_title}")
-            papers = Paper.objects.annotate(
-                 search=SearchVector('title')
-            ).filter(search=SearchQuery(paper_title, search_type='plain'))
+            papers = Paper.objects.annotate(search=SearchVector("title")).filter(
+                search=SearchQuery(paper_title, search_type="plain")
+            )
 
             print(papers)
 
             if papers:
-                return render(request, "paper_results.html", {"papers": papers, "form": form, "message": ""})
+                return render(
+                    request,
+                    "paper_results.html",
+                    {"papers": papers, "form": form, "message": ""},
+                )
             else:
                 message = "No results found. Please try again!"
 
@@ -75,13 +87,7 @@ def papers(request):
         form = SearchPapersForm()
 
     return render(
-        request,
-        "papers.html",
-        {
-            "papers": all_papers,
-            "form": form,
-            "message": message,
-        },
+        request, "papers.html", {"papers": all_papers, "form": form, "message": message}
     )
 
 
@@ -109,7 +115,11 @@ def paper_authors(request, id):
 
     authors = zip(authors, delete_urls)
 
-    return render(request, "paper_authors.html", {"authors": authors, "paper": paper, "number_of_authors": num_authors})
+    return render(
+        request,
+        "paper_authors.html",
+        {"authors": authors, "paper": paper, "number_of_authors": num_authors},
+    )
 
 
 # should limit access to admin users only!!
@@ -151,7 +161,9 @@ def paper_detail(request, id):
 
     print(f"Paper 'from' relationships {paper.papers.all()}")
     for paper_to in paper.papers.all():
-        rel_model = PaperRelationshipType.objects.get(paper_from=paper, paper_to=paper_to)
+        rel_model = PaperRelationshipType.objects.get(
+            paper_from=paper, paper_to=paper_to
+        )
         print(f"{rel_model.relationship_type}")
 
     # Retrieve all notes that created by the current user and on current paper.
@@ -168,10 +180,12 @@ def paper_detail(request, id):
         author_name = str(author)  # author.first_name[0]+'. '+author.middle_name
         author_name = author_name.split()
         if len(author_name) > 2:
-            authors.append(author_name[0][0]+'. '+author_name[1][0]+'. '+author_name[2])
+            authors.append(
+                author_name[0][0] + ". " + author_name[1][0] + ". " + author_name[2]
+            )
         else:
-            authors.append(author_name[0][0]+'. '+author_name[1])
-    authors = ', '.join(authors)
+            authors.append(author_name[0][0] + ". " + author_name[1])
+    authors = ", ".join(authors)
 
     codes = paper.code_set.all()
     datasets = paper.dataset_set.all()
@@ -180,14 +194,14 @@ def paper_detail(request, id):
 
     request.session["last-viewed-paper"] = id
 
-    ego_network_json = []  #_get_node_ego_network(paper.id, paper.title)
+    ego_network_json = _get_node_ego_network(paper.id, paper.title)
 
     # Comment / Note form
     note_form = NoteForm()
     comment_form = CommentForm()
     if request.method == "POST":
         # success = False
-        if 'comment_form' in request.POST:
+        if "comment_form" in request.POST:
             comment = Comment(created_by=request.user, paper=paper)
             comment_form = CommentForm(instance=comment, data=request.POST)
             if comment_form.is_valid():
@@ -196,7 +210,7 @@ def paper_detail(request, id):
                 comment_form = CommentForm()
             # comment.discusses.connect(paper)
             # success = True
-        elif 'note_form' in request.POST:
+        elif "note_form" in request.POST:
             note = Note(created_by=request.user, paper_id=paper.id)
             note_form = NoteForm(instance=note, data=request.POST)
             if note_form.is_valid():
@@ -225,43 +239,55 @@ def paper_detail(request, id):
     )
 
 
-# def _get_node_ego_network(id, paper_title):
-#     """
-#     Returns a json formatted string of the nodes ego network
-#     :param id:
-#     :return:
-#     """
-#     # query for everything that points to the paper
-#     query_all_in = "MATCH (s:Paper {title: {paper_title}}) <-[relationship_type]- (p) RETURN p, " \
-#                    "Type(relationship_type) "
-#
-#     # query for everything the paper points to
-#     query_all_out = "MATCH (s:Paper {title: {paper_title}}) -[relationship_type]-> (p) RETURN p, " \
-#                     "Type(relationship_type) "
-#
-#     results_all_in, meta = db.cypher_query(query_all_in, dict(paper_title=paper_title))
-#
-#     results_all_out, meta = db.cypher_query(query_all_out, dict(paper_title=paper_title))
-#
-#     print("Results out are: ", results_all_out)
-#
-#     print("Results in are: ", results_all_in)
-#
-#     ego_json = "{{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}'}} }}".format(
-#         id, paper_title, reverse("paper_detail", kwargs={"id": id}), 'Paper', 'origin'
-#     )
-#
-#     # type refers to what node type the object is associated with.
-#     # label refers to the text on the object.
-#     node_temp = ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
-#     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
-#
-#     # Assort nodes and store them in arrays accordingly
-#     # 'out' refers to being from the paper to the object
-#     if len(results_all_out) > 0:
-#         # line property for out
-#         line = "solid"
-#
+def _get_node_ego_network(id, paper_title):
+    """
+     Returns a json formatted string of the nodes ego network
+     :param id:
+     :return:
+    """
+    paper = get_object_or_404(Paper, pk=id)
+    # query for everything that points to the paper
+    papers_out = paper.papers.all()  #
+    #paper_in = []
+    print(f"papers_out {papers_out}")
+
+    ego_json = "{{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}'}} }}".format(
+        id, paper.title, reverse("paper_detail", kwargs={"id": id}), "Paper", "origin"
+    )
+
+    # type refers to what node type the object is associated with.
+    # label refers to the text on the object.
+    node_temp = (
+        ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+    )
+    rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+
+    # Sort nodes and store them in arrays accordingly
+    # 'out' refers to being from the paper to the object
+    if papers_out:
+        # line property for out
+        line = "solid"
+        for paper in papers_out:
+            ego_json += node_temp.format(
+                paper.id,
+                paper.title,
+                reverse("paper_detail", kwargs={"id": paper.id}),
+                "Paper",
+                "cites",  # this needs to be replaced with actual relationship type
+            )
+            # adding relationship with paper node
+            ego_json += rela_temp.format(
+                id,
+                "-",
+                paper.id,
+                "Paper",
+                "cites",
+                id,  # this needs to be replaced with actual relationship type
+                paper.id,
+                line,
+            )
+    return "[" + ego_json + "]"
+
 #         for row in results_all_out:
 #             new_rela = row[1].replace("_", " ")
 #
@@ -405,7 +431,6 @@ def paper_detail(request, id):
 #                         tc.id, "-", id, 'Code', new_rela, tc.id, id, line
 #                     )
 #
-#     return "[" + ego_json + "]"
 
 
 def paper_find(request):
@@ -422,7 +447,11 @@ def paper_find(request):
             # ).filter(search=SearchQuery(paper_title, search_type='plain'))
             print(papers)
             if papers:
-                return render(request, "papers_index.html", {"papers": papers, "form": form, "message": message})
+                return render(
+                    request,
+                    "papers_index.html",
+                    {"papers": papers, "form": form, "message": message},
+                )
             else:
                 message = "No results found. Please try again!"
         else:
@@ -460,8 +489,8 @@ def paper_connect_venue(request, id):
             keywords = form.cleaned_data["keywords"].lower()
 
             venues_found = Venue.objects.annotate(
-                 search=SearchVector('name', 'keywords')
-            ).filter(search=SearchQuery(keywords, search_type='plain'))
+                search=SearchVector("name", "keywords")
+            ).filter(search=SearchQuery(keywords, search_type="plain"))
 
             print(venues_found)
 
@@ -529,7 +558,7 @@ def paper_add_to_collection_selected(request, id, cid):
     print(message)
     messages.add_message(request, messages.INFO, message)
 
-    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id, }))
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
 
 @login_required
@@ -580,7 +609,8 @@ def paper_bookmark(request, id):
     else:
         print("GET request")
 
-    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id, }))
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
+
 
 @login_required
 def paper_add_note(request, id):
@@ -603,6 +633,7 @@ def paper_add_note(request, id):
         form = CommentForm()
 
     return render(request, "note_form.html", {"form": form})
+
 
 @login_required
 def paper_add_to_group_selected(request, id, gid):
@@ -637,19 +668,14 @@ def paper_add_to_group(request, id):
     groups = ReadingGroup.objects.all()
 
     group_urls = [
-        reverse(
-            "paper_add_to_group_selected",
-            kwargs={"id": id, "gid": group.id},
-        )
+        reverse("paper_add_to_group_selected", kwargs={"id": id, "gid": group.id})
         for group in groups
     ]
 
     all_groups = zip(groups, group_urls)
 
     return render(
-        request,
-        "paper_add_to_group.html",
-        {"groups": all_groups, "message": message},
+        request, "paper_add_to_group.html", {"groups": all_groups, "message": message}
     )
 
 
@@ -670,7 +696,7 @@ def paper_connect_author_selected(request, id, aid):
 
 @login_required
 def paper_connect_author(request, id):
-    message = ''
+    message = ""
     if request.method == "POST":
         form = SearchPeopleForm(request.POST)
         if form.is_valid():
@@ -679,8 +705,8 @@ def paper_connect_author(request, id):
             name = form.cleaned_data["person_name"]
             # Search for people matching the name
             people_found = Person.objects.annotate(
-                 search=SearchVector('first_name', 'last_name', 'middle_name')
-            ).filter(search=SearchQuery(name, search_type='plain'))
+                search=SearchVector("first_name", "last_name", "middle_name")
+            ).filter(search=SearchQuery(name, search_type="plain"))
 
             print(people_found)
 
@@ -752,9 +778,9 @@ def paper_connect_paper_selected(request, id, pid):
     # a new one.
     link_type = request.session["link_type"]
     print(f"link_type: {link_type}")
-    edge = PaperRelationshipType(paper_from=paper_from,
-                                 paper_to=paper_to,
-                                 relationship_type=link_type)
+    edge = PaperRelationshipType(
+        paper_from=paper_from, paper_to=paper_to, relationship_type=link_type
+    )
     edge.save()
     print(edge)
     messages.add_message(request, messages.INFO, "Connection Added!")
@@ -779,9 +805,9 @@ def paper_connect_paper(request, id):
             # if not, ask the user to create a new person
             paper_title_query = form.cleaned_data["paper_title"]
             print(f"Searching for paper using keywords {paper_title_query}")
-            papers_found = Paper.objects.annotate(
-                 search=SearchVector('title')
-            ).filter(search=SearchQuery(paper_title_query, search_type='plain'))
+            papers_found = Paper.objects.annotate(search=SearchVector("title")).filter(
+                search=SearchQuery(paper_title_query, search_type="plain")
+            )
             print(papers_found)
 
             paper_relationship = form.cleaned_data["paper_connection"]
@@ -860,8 +886,8 @@ def paper_connect_dataset(request, id):
             print(f"Searching for dataset using keywords {dataset_query_keywords}")
 
             datasets_found = Dataset.objects.annotate(
-                search=SearchVector('keywords', 'name')
-            ).filter(search=SearchQuery(dataset_query_keywords, search_type='plain'))
+                search=SearchVector("keywords", "name")
+            ).filter(search=SearchQuery(dataset_query_keywords, search_type="plain"))
 
             print(datasets_found)
 
@@ -931,9 +957,9 @@ def paper_connect_code(request, id):
             # if the person is found, then link with paper and go back to paper view
             # if not, ask the user to create a new person
             keywords = form.cleaned_data["keywords"]
-            codes_found = Code.objects.annotate(
-                 search=SearchVector('keywords',)
-            ).filter(search=SearchQuery(keywords, search_type='plain'))
+            codes_found = Code.objects.annotate(search=SearchVector("keywords")).filter(
+                search=SearchQuery(keywords, search_type="plain")
+            )
 
             print(codes_found)
 
@@ -1021,11 +1047,15 @@ def _add_author(author, paper=None):
     author_name = author.strip().split(" ")
 
     if len(author_name) > 2:
-        people_found = Person.objects.filter(first_name=author_name[0],
-                                             middle_name=author_name[1],
-                                             last_name=author_name[2])
+        people_found = Person.objects.filter(
+            first_name=author_name[0],
+            middle_name=author_name[1],
+            last_name=author_name[2],
+        )
     else:
-        people_found = Person.objects.filter(first_name=author_name[0], last_name=author_name[1])
+        people_found = Person.objects.filter(
+            first_name=author_name[0], last_name=author_name[1]
+        )
 
     print("**** People matching query {} ****".format(author_name))
     print(people_found)
@@ -1111,7 +1141,12 @@ def paper_create(request):
             download_link = request.session["download_link"]
 
             form = PaperForm(
-                initial={"title": title, "abstract": abstract, "download_link": download_link, "source_link": url}
+                initial={
+                    "title": title,
+                    "abstract": abstract,
+                    "download_link": download_link,
+                    "source_link": url,
+                }
             )
         else:
             form = PaperForm()
@@ -1176,7 +1211,7 @@ def venues(request):
 
     message = None
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SearchVenuesForm(request.POST)
         print("Received POST request")
         if form.is_valid():
@@ -1189,12 +1224,16 @@ def venues(request):
             print(f"Searching for venue using keywords {venue_name}")
 
             venues_found = Venue.objects.annotate(
-                 search=SearchVector('name', 'keywords')
-            ).filter(search=SearchQuery(venue_name, search_type='plain'))
+                search=SearchVector("name", "keywords")
+            ).filter(search=SearchQuery(venue_name, search_type="plain"))
 
             if venues_found.count() > 0:
                 print("Found {} venues that match".format(venues_found.count()))
-                return render(request, "venues.html", {"venues": venues_found, "form": form, "message": message})
+                return render(
+                    request,
+                    "venues.html",
+                    {"venues": venues_found, "form": form, "message": message},
+                )
             else:
                 message = "No results found. Please try again!"
 
@@ -1202,7 +1241,9 @@ def venues(request):
         form = SearchVenuesForm()
         message = None
 
-    return render(request, "venues.html", {"venues": all_venues, "form": form, "message": message})
+    return render(
+        request, "venues.html", {"venues": all_venues, "form": form, "message": message}
+    )
 
 
 def venue_detail(request, id):
@@ -1216,7 +1257,9 @@ def venue_detail(request, id):
     print(f"Papers published at this venue {venue.paper_set.all()}")
 
     request.session["last-viewed-venue"] = id
-    return render(request, "venue_detail.html", {"venue": venue, "papers": venue.paper_set.all()})
+    return render(
+        request, "venue_detail.html", {"venue": venue, "papers": venue.paper_set.all()}
+    )
 
 
 def venue_find(request):
@@ -1235,11 +1278,13 @@ def venue_find(request):
             venue_name = form.cleaned_data["venue_name"].lower()
             venue_publication_year = form.cleaned_data["venue_publication_year"]
 
-            print(f"Searching for venue using keywords {venue_name} and year {venue_publication_year}")
+            print(
+                f"Searching for venue using keywords {venue_name} and year {venue_publication_year}"
+            )
 
             venues_found = Venue.objects.annotate(
-                 search=SearchVector('name', 'keywords')
-            ).filter(search=SearchQuery(venue_name, search_type='plain'))
+                search=SearchVector("name", "keywords")
+            ).filter(search=SearchQuery(venue_name, search_type="plain"))
 
             if venues_found.count() > 0:
                 print("Found {} venues that match".format(venues_found.count()))
@@ -1267,7 +1312,9 @@ def venue_create(request):
             venue_name = form.clean_name()
             venue_year = form.clean_publication_year()
             venue_year = int(venue_year)
-            other_venues = Venue.objects.filter(name__iexact=venue_name, publication_year=venue_year)
+            other_venues = Venue.objects.filter(
+                name__iexact=venue_name, publication_year=venue_year
+            )
             if other_venues.count() == 0:
                 print("Found no other matching venues")
                 form.save()
@@ -1332,7 +1379,6 @@ def venue_update(request, id):
         )
 
     return render(request, "venue_update.html", {"form": form, "venue": venue})
-
 
 
 #

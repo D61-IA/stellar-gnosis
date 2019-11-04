@@ -213,7 +213,7 @@ class Person(models.Model):
     # We can add a paper to an author/person by calling
     # person.papers.add(paper)
     # I can retrieve all papers by a person using
-    # parson.papers.all()
+    # person.papers.all()
     papers = models.ManyToManyField(Paper)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
