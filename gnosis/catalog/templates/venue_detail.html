@@ -13,7 +13,7 @@
             <p>{{ venue.name}}</p>
             {% endif %}
             {% if user.is_authenticated %}
-            {% if user.is_superuser or user.id == venue.created_by %}
+            {% if user.is_superuser or user == venue.created_by %}
             <p>
                 <small>
                     <a href="{% url 'venue_update' venue.id %}" class="btn btn-danger btn-sm" role="button">

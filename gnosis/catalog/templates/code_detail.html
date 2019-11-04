@@ -9,7 +9,7 @@
         <h3>
             <a href={{ code.website }} target="_blank">{{ code.website }}</a>
             {% if user.is_authenticated %}
-            {% if user.is_superuser or user.id == code.created_by %}
+            {% if user.is_superuser or user == code.created_by %}
             <p>
                 <a href="{% url 'code_update' code.id %}" class="btn btn-danger btn-sm" role="" button>
                     Edit

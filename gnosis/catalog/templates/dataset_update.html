@@ -2,16 +2,21 @@
 
 {% block content %}
 
- <h2>Update {{ dataset.name }}</h2>
+<div class="card shadow-sm mt-5">
+    <div class="card-header">
+        <h2>Update <i>{{ dataset.name }}</i></h2>
+    </div>
 
-
- <form action="" method="post">
-     {% csrf_token %}
-     <table>
-         {{ form }}
-     </table>
-     <br/>
-     <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit" />
- </form>
-
+    <div class="card-body">
+         <form action="" method="post">
+             {% csrf_token %}
+             <table>
+                 {{ form }}
+             </table>
+             <br/>
+             <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit" />
+         </form>
+        <p><br/>*required</p>
+    </div>
+</div>
 {% endblock %}
