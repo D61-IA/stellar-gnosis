@@ -194,7 +194,7 @@ def paper_detail(request, id):
 
     request.session["last-viewed-paper"] = id
 
-    ego_network_json = _get_node_ego_network(paper.id, paper.title)
+    ego_network_json = _get_node_ego_network(paper.id)
 
     # Comment / Note form
     note_form = NoteForm()
@@ -327,175 +327,112 @@ def _get_paper_author_network(main_paper, ego_json, offset=101):
     return ego_json
 
 
-def _get_node_ego_network(id, paper_title):
+def _get_paper_venue_network(main_paper, ego_json, offset=50):
+
+    node_temp = (
+        ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+    )
+    rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+
+    venue = main_paper.was_published_at
+
+    if venue:
+        ego_json += node_temp.format(venue.id+offset,
+                                     venue.name,
+                                     reverse("venue_detail", kwargs={"id": venue.id}),
+                                     'Venue', 'was published at')
+
+        ego_json += rela_temp.format(main_paper.id,
+                                     '-',
+                                     venue.id+offset,
+                                     'Venue',
+                                     'was published at',
+                                     main_paper.id,
+                                     venue.id+offset,
+                                     'solid')
+
+    return ego_json
+
+
+def _get_paper_dataset_network(main_paper, ego_json, offset=150):
+
+    node_temp = (
+        ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+    )
+    rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+
+    datasets = main_paper.dataset_set.all()
+    print(f"Paper {main_paper} evaluates on datasets {datasets}.")
+
+    for dataset in datasets:
+        ego_json += node_temp.format(dataset.id+offset,
+                                     dataset.name,
+                                     reverse("dataset_detail", kwargs={"id": dataset.id}),
+                                     'Dataset',
+                                     'evaluates on')
+
+        ego_json += rela_temp.format(main_paper.id,
+                                     '-',
+                                     dataset.id+offset,
+                                     'Dataset',
+                                     'evaluates on',
+                                     main_paper.id,
+                                     dataset.id+offset, 'solid')
+
+    return ego_json
+
+
+def _get_paper_code_network(main_paper, ego_json, offset=200):
+
+    node_temp = (
+        ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+    )
+    rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
+
+    codes = main_paper.code_set.all()
+
+    for code in codes:
+        ego_json += node_temp.format(code.id+offset,
+                                     'Code',
+                                     reverse("code_detail", kwargs={"id": code.id}),
+                                     'Code',
+                                     'implements')
+        ego_json += rela_temp.format(main_paper.id,
+                                     '-',
+                                     code.id+offset,
+                                     'Code',
+                                     'implements',
+                                     code.id+offset,
+                                     main_paper.id,
+                                     'dashed')
+
+    return ego_json
+
+
+def _get_node_ego_network(id):
     """
      Returns a json formatted string of the nodes ego network
-     :param id:
+     :param id: The paper id/primary key
      :return:
     """
     paper = get_object_or_404(Paper, pk=id)
 
+    # The paper is the central node in the graph
     ego_json = "{{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}'}} }}".format(
         id, paper.title, reverse("paper_detail", kwargs={"id": id}), "Paper", "origin"
     )
 
+    # The paper-paper relationships.
+    # For now, only the outgoing edges are shown.
+    # ToDo: Update to include the incoming edges as well.
     ego_json = _get_paper_paper_network(main_paper=paper, ego_json=ego_json)
 
-    # type refers to what node type the object is associated with.
-    # label refers to the text on the object.
-    rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
-    author_str = ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', type: '{}', label: '{}'}} }}"
-
     ego_json = _get_paper_author_network(paper, ego_json)
-
-    print("Final ego_json: {}".format(ego_json))
+    ego_json = _get_paper_venue_network(paper, ego_json)
+    ego_json = _get_paper_dataset_network(paper, ego_json)
+    ego_json = _get_paper_code_network(paper, ego_json)
 
     return "[" + ego_json + "]"
-
-
-#         for row in results_all_out:
-#             new_rela = row[1].replace("_", " ")
-#
-#             for label in row[0].labels:
-#
-#                 if label == 'Paper':
-#                     tp = Paper.inflate(row[0])
-#
-#                     # adding paper node
-#                     ego_json += node_temp.format(
-#                         tp.id, tp.title, reverse("paper_detail", kwargs={"id": tp.id}), 'Paper', new_rela
-#                     )
-#
-#                     # adding relationship with paper node
-#                     ego_json += rela_temp.format(
-#                         id, '-', tp.id, 'Paper', new_rela, id, tp.id, line
-#                     )
-#
-#                 if label == 'Person':
-#                     tpe = Person.inflate(row[0])
-#                     middleName = ''
-#                     # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
-#                     if tpe.middle_name is not None:
-#                         middleNames = tpe.middle_name[1:-1].split(', ')
-#                         print(middleNames)
-#                         # concatenate middle names to get 'mn1 mn2 ...'
-#                         for i in range(len(middleNames)):
-#                             middleName = middleName + " " + middleNames[i][1:-1]
-#
-#                     # When middle names have "'", like 'D'Angelo'
-#                     middleName = middleName.replace("'", r"\'")
-#
-#                     ego_json += ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', " \
-#                                 "type: '{}', " \
-#                                 "label: '{}'}} }}".format(
-#                         tpe.id, tpe.first_name, middleName, tpe.last_name,
-#                         reverse("person_detail", kwargs={"id": tpe.id}), 'Person', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         id, "-", tpe.id, 'Person', new_rela, id, tpe.id, line
-#                     )
-#
-#                 if label == 'Venue':
-#                     tv = Venue.inflate(row[0])
-#
-#                     ego_json += node_temp.format(
-#                         tv.id, tv.name, reverse("venue_detail", kwargs={"id": tv.id}), 'Venue', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         id, '-', tv.id, 'Venue', new_rela, id, tv.id, line
-#                     )
-#
-#                 if label == 'Dataset':
-#                     td = Dataset.inflate(row[0])
-#                     ego_json += node_temp.format(
-#                         td.id, td.name, reverse("dataset_detail", kwargs={"id": td.id}), 'Dataset', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         id, '-', td.id, 'Dataset', new_rela, id, td.id, line
-#                     )
-#
-#                 if label == 'Code':
-#                     tc = Code.inflate(row[0])
-#                     ego_json += node_temp.format(
-#                         tc.id, 'Code', reverse("code_detail", kwargs={"id": tc.id}), 'Code', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         id, '-', tc.id, 'Code', new_rela, id, tc.id, line
-#                     )
-#
-#     if len(results_all_in) > 0:
-#         line = "dashed"
-#
-#         # configure in nodes
-#         for row in results_all_in:
-#             new_rela = row[1].replace("_", " ")
-#
-#             for label in row[0].labels:
-#                 if label == 'Paper':
-#                     tp = Paper.inflate(row[0])
-#                     ego_json += node_temp.format(
-#                         tp.id, tp.title, reverse("paper_detail", kwargs={"id": tp.id}), 'Paper', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         tp.id, '-', id, 'Paper', new_rela, tp.id, id, line
-#                     )
-#
-#                 if label == 'Person':
-#                     tpe = Person.inflate(row[0])
-#                     middleName = ""
-#                     # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
-#                     if tpe.middle_name is not None:
-#                         middleNames = tpe.middle_name[1:-1].split(', ')
-#                         # concatenate middle names to get 'mn1 mn2 ...'
-#                         for i in range(len(middleNames)):
-#                             middleName = middleName + " " + middleNames[i][1:-1]
-#
-#                     middleName = middleName.replace("'", r"\'")
-#                     ego_json += ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', " \
-#                                 "type: '{}', " \
-#                                 "label: '{}'}} }}".format(
-#                         tpe.id, tpe.first_name, middleName, tpe.last_name,
-#                         reverse("person_detail", kwargs={"id": tpe.id}), 'Person', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         tpe.id, "-", id, 'Person', new_rela, tpe.id, id, line
-#                     )
-#
-#                 if label == 'Venue':
-#                     tv = Venue.inflate(row[0])
-#                     ego_json += node_temp.format(
-#                         tv.id, tv.name, reverse("venue_detail", kwargs={"id": tv.id}), 'Venue', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         tv.id, "-", id, 'Venue', new_rela, tv.id, id, line
-#                     )
-#                 if label == 'Dataset':
-#                     td = Dataset.inflate(row[0])
-#                     ego_json += node_temp.format(
-#                         td.id, td.name, reverse("dataset_detail", kwargs={"id": td.id}), 'Dataset', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         td.id, "-", id, 'Dataset', new_rela, td.id, id, line
-#                     )
-#
-#                 if label == 'Code':
-#                     tc = Code.inflate(row[0])
-#                     ego_json += node_temp.format(
-#                         tc.id, 'Code', reverse("code_detail", kwargs={"id": tc.id}), 'Code', new_rela
-#                     )
-#
-#                     ego_json += rela_temp.format(
-#                         tc.id, "-", id, 'Code', new_rela, tc.id, id, line
-#                     )
-#
 
 
 def paper_find(request):
