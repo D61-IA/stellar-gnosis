@@ -238,6 +238,24 @@ class Person(models.Model):
         return reverse('person_detail', args=[self.id])
 
 
+class PaperAuthorRelationshipData(models.Model):
+    # The author order, 1st, 2nd, 3rd, etc.
+    order = models.SmallIntegerField(null=False,
+                                     blank=False,
+                                     default=1,
+                                     validators=[MaxValueValidator(40),  # allows up to 40 authors
+                                                 MinValueValidator(1)]  # minimum is at least a first author
+                                     )
+
+    paper = models.ForeignKey(Paper,
+                              related_name="paper",
+                              on_delete=models.CASCADE)
+
+    author = models.ForeignKey(Person,
+                               related_name="author",
+                               on_delete=models.CASCADE)
+
+
 class Dataset(models.Model):
 
     months = [(calendar.month_name[month], calendar.month_name[month]) for month in range(1, 13)]
