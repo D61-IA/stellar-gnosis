@@ -214,7 +214,11 @@ class Person(models.Model):
     # person.papers.add(paper)
     # I can retrieve all papers by a person using
     # person.papers.all()
-    papers = models.ManyToManyField(Paper)
+    papers = models.ManyToManyField(Paper,
+                                    through='PaperAuthorRelationshipData',
+#                                    through_fields=('paper', 'author'),
+                                    symmetrical=False,
+                                    blank=True)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
@@ -248,7 +252,7 @@ class PaperAuthorRelationshipData(models.Model):
                                      )
 
     paper = models.ForeignKey(Paper,
-                              related_name="paper",
+                              related_name="source_paper",
                               on_delete=models.CASCADE)
 
     author = models.ForeignKey(Person,

@@ -9,6 +9,7 @@ from catalog.models import (
     Paper,
     PaperRelationshipType,
     Person,
+    PaperAuthorRelationshipData,
     Dataset,
     Venue,
     Comment,
@@ -174,9 +175,14 @@ def paper_detail(request, id):
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
     # ToDo: Improve this code to correctly handle middle names that are more than one word.
-    authors_set = paper.person_set.all()
+    #authors_set = paper.person_set.all()
+
+    authors_set = PaperAuthorRelationshipData.objects.filter(paper=paper).order_by('order')
+    print(f"** Retrieved authors {authors_set}")
+
     authors = []
     for author in authors_set:
+        author = author.author
         author_name = str(author)  # author.first_name[0]+'. '+author.middle_name
         author_name = author_name.split()
         if len(author_name) > 2:
@@ -710,15 +716,18 @@ def paper_add_to_group(request, id):
 
 @login_required
 def paper_connect_author_selected(request, id, aid):
+    '''
+    ToDo: This method needs to be improved in order to allow the user to specify the author order.
+    :param request:
+    :param id:
+    :param aid:
+    :return:
+    '''
+    paper = get_object_or_404(Paper, pk=id)
+    author = get_object_or_404(Person, pk=aid)
 
-    try:
-        paper = Paper.objects.get(pk=id)
-        author = Person.objects.get(pk=aid)
-        author.papers.add(paper)
-        messages.add_message(request, messages.INFO, "Linked with author.")
-    except ObjectDoesNotExist:
-        print("Paper or author not found in DB.")
-        messages.add_message(request, messages.INFO, "Link to author failed!")
+    author.papers.add(paper)
+    messages.add_message(request, messages.INFO, "Linked with author.")
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
@@ -1065,7 +1074,7 @@ def paper_update(request, id):
     return render(request, "paper_update.html", {"form": form, "paper": paper})
 
 
-def _add_author(author, paper=None):
+def _add_author(author, paper=None, order=1):
     """
     Adds author to the DB if author does not already exist and links to paper
     as author if paper is not None
@@ -1120,7 +1129,8 @@ def _add_author(author, paper=None):
     if link_with_paper and paper is not None:
         print("Adding authors link to paper {}".format(paper.title[:50]))
         # link author with paper
-        p.papers.add(paper)
+        rel = PaperAuthorRelationshipData(paper=paper, author=p, order=order)
+        rel.save()
 
 
 @login_required
@@ -1150,9 +1160,11 @@ def paper_create(request):
                 # type edge.
                 if request.session.get("from_external", False):
                     paper_authors = request.session["external_authors"]
-                    for paper_author in reversed(paper_authors.split(",")):
+                    print(f"Received authors {paper_authors}")
+                    for order, paper_author in enumerate(paper_authors.split(",")):
                         print("Adding author {}".format(paper_author))
-                        _add_author(paper_author, paper)
+                        print(f"** Adding author {paper_author} with order {order+1}")
+                        _add_author(paper_author, paper, order+1)
 
                 request.session["from_external"] = False  # reset
                 # go back to paper index page.

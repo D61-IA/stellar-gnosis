@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from catalog.models import ReadingGroup, ReadingGroupEntry
 from catalog.models import Collection, CollectionEntry, Endorsement
 from catalog.models import CommentFlag
+from catalog.models import PaperAuthorRelationshipData
 
 from catalog.models import Comment
 
@@ -21,6 +22,7 @@ admin.site.register(ReadingGroupEntry)
 admin.site.register(Collection)
 admin.site.register(CollectionEntry)
 admin.site.register(Endorsement)
+admin.site.register(PaperAuthorRelationshipData)
 
 
 def delete_comment(modeladmin, request, queryset):
