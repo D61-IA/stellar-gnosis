@@ -789,30 +789,30 @@ def paper_connect_paper_selected(request, id, pid):
 
     print(f"paper_from: {paper_from}")
     print(f"paper_to: {paper_to}")
+    
+    if paper_from == paper_to:
+        messages.add_message(request, messages.INFO, "You cannot connect a paper with itself.")
+    else:
+        # Check if a relationship between the two papers exists.
+        # If it does, delete it before adding a new relationship.
+        edges = PaperRelationshipType(paper_from=paper_from, paper_to=paper_to)
+        if edges:
+            # Found existing relationship so remove it.
+            print(f"Found {edges} existing relationships and will delete them.")
+            paper_from.papers.remove(paper_to)
 
-    # Check if a relationship between the two papers exists.
-    # If it does, delete it before adding a new relationship.
-    edges = PaperRelationshipType(paper_from=paper_from, paper_to=paper_to)
-    if edges:
-        # Found existing relationship so remove it.
-        print(f"Found {edges} existing relationships and will delete them.")
-        paper_from.papers.remove(paper_to)
-
-    # We have the two Paper objects.
-    # Add the relationship between them.
-    print("Adding the new relationship.")
-    # add the new link
-    # TODO: Check if the link exists, does it add it again?
-    # TODO: Two papers should only be linked by one type of relationship so check if one exists, delete, and create
-    # a new one.
-    link_type = request.session["link_type"]
-    print(f"link_type: {link_type}")
-    edge = PaperRelationshipType(
-        paper_from=paper_from, paper_to=paper_to, relationship_type=link_type
-    )
-    edge.save()
-    print(edge)
-    messages.add_message(request, messages.INFO, "Connection Added!")
+        # We have the two Paper objects.
+        # Add the relationship between them.
+        print("Adding the new relationship.")
+        # add the new link
+        link_type = request.session["link_type"]
+        print(f"link_type: {link_type}")
+        edge = PaperRelationshipType(
+            paper_from=paper_from, paper_to=paper_to, relationship_type=link_type
+        )
+        edge.save()
+        print(edge)
+        messages.add_message(request, messages.INFO, "Connection Added!")
 
     return redirect("paper_detail", id=id)
 
