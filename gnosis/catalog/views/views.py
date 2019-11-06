@@ -1058,7 +1058,7 @@ def paper_update(request, id):
 
     # if this is POST request then process the Form data
     if request.method == "POST":
-        form = PaperUpdateForm(request.POST)
+        form = PaperForm(request.POST)
         if form.is_valid():
 
             # ToDo: Check that the paper does not exist in the database
@@ -1067,6 +1067,7 @@ def paper_update(request, id):
             paper.abstract = form.cleaned_data["abstract"]
             paper.keywords = form.cleaned_data["keywords"]
             paper.download_link = form.cleaned_data["download_link"]
+            paper.is_public = True
             paper.save()
 
             return HttpResponseRedirect(reverse("papers_index"))
@@ -1078,6 +1079,7 @@ def paper_update(request, id):
                 "abstract": paper.abstract,
                 "keywords": paper.keywords,
                 "download_link": paper.download_link,
+                "is_public": True,
             }
         )
 

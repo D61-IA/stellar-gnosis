@@ -184,7 +184,7 @@ class PaperForm(ModelForm):
 
     class Meta:
         model = Paper
-        fields = ["title", "abstract", "keywords", "download_link", "is_public"]
+        fields = ["title", "abstract", "keywords", "download_link"]
 
 
 class PaperUpdateForm(PaperForm):

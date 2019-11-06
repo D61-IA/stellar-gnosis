@@ -69,7 +69,7 @@ class Paper(models.Model):
     abstract = models.TextField(blank=False)
     keywords = models.CharField(max_length=125, blank=True)
     download_link = models.CharField(max_length=250, blank=False)
-    is_public = models.BooleanField(default=False, null=False, blank=False)
+    is_public = models.BooleanField(default=True, null=False, blank=False)
     # added source link for a paper to record the source website which the information of paper is collected
     source_link = models.CharField(max_length=250, blank=True)
 
