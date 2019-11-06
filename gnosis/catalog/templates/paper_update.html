@@ -4,7 +4,11 @@
 
 <div class="card shadow-sm mt-5">
     <div class="card-header">
-        <h3>Updating paper with original title: {{ paper.title }}</h3>
+        {% if paper.is_public %}
+        <h3><strong>Original title:</strong> {{ paper.title }}</h3>
+        {% else %}
+        <h3><strong>Original title:</strong> {{ paper.title }} <i>(Private)</i></h3>
+        {% endif %}
     </div>
     <div class="card-body">
         <form action="" method="post">

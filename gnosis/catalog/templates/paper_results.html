@@ -30,7 +30,11 @@
         {% for paper in papers %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
+                {% if paper.is_public %}
                 <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>
+                {% else %}
+                <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a> <i>(Private)</i>
+                {% endif %}
             </li>
         </ul>
         {% endfor %}

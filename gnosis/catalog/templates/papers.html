@@ -27,7 +27,11 @@
         {% for paper in papers %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
+                {% if paper.is_public %}
                 <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
+                {% else %}
+                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a> <i><small>(Private)</small></i></h4>
+                {% endif %}
                 <p>{{ paper.abstract|truncatewords:50 }}</p>
             </li>
         </ul>

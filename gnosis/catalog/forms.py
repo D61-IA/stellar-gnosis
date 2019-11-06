@@ -162,6 +162,7 @@ class PaperForm(ModelForm):
         self.fields["abstract"].label = "Abstract*"
         self.fields["keywords"].label = "Keywords"
         self.fields["download_link"].label = "Download Link*"
+        self.fields["is_public"].label = "Public"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
@@ -177,6 +178,28 @@ class PaperForm(ModelForm):
 
     def clean_download_link(self):
         return self.cleaned_data["download_link"]
+
+    def clean_is_public(self):
+        return self.cleaned_data["is_public"]
+
+    class Meta:
+        model = Paper
+        fields = ["title", "abstract", "keywords", "download_link", "is_public"]
+
+
+class PaperUpdateForm(PaperForm):
+    def __init__(self, *args, **kwargs):
+        super(PaperForm, self).__init__(*args, **kwargs)
+
+        self.fields["abstract"].widget = forms.Textarea()
+        self.fields["abstract"].widget.attrs.update({"rows": "8"})
+        self.fields["title"].label = "Title*"
+        self.fields["abstract"].label = "Abstract*"
+        self.fields["keywords"].label = "Keywords"
+        self.fields["download_link"].label = "Download Link*"
+
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
 
     class Meta:
         model = Paper
@@ -200,7 +223,6 @@ class PaperImportForm(Form):
 
     url = forms.CharField(
         # the label will now appear in two lines break at the br label
-        # label= mark_safe("Source URL, e.g., https://arxiv.org/abs/1607.00653* <br /> Currently supported websites: arXiv.org, papers.nips.cc, www.jmlr.org/papers <br /> for papers from JMLR, please provide link of the abstract([abs]) page "),
         label=mark_safe("Source URL*"),
         max_length=200,
         widget=forms.TextInput(attrs={"size": 60}),

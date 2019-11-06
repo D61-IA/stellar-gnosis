@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
+from itertools import chain
 from catalog.models import (
     Paper,
     PaperRelationshipType,
@@ -27,12 +28,14 @@ from catalog.views.utils.classes import UserComment
 
 from catalog.forms import (
     PaperForm,
+    PaperUpdateForm,
     DatasetForm,
     VenueForm,
     CommentForm,
     PaperImportForm,
     FlaggedCommentForm,
 )
+
 from catalog.forms import (
     SearchAllForm,
     SearchVenuesForm,
@@ -59,7 +62,10 @@ def papers(request):
     # However, even with pagination, we are going to want to limit
     # the number of papers retrieved for speed, especially when the
     # the DB grows large.
-    all_papers = Paper.objects.all()  # nodes.order_by("-created")[:50]
+    all_public_papers = Paper.objects.filter(is_public=True).order_by("-created_at")[:100]
+    all_private_papers = Paper.objects.filter(is_public=False, created_by=request.user).order_by("-created_at")[:100]
+
+    all_papers = list(chain(all_public_papers, all_private_papers))
 
     message = None
     if request.method == "POST":
@@ -68,11 +74,17 @@ def papers(request):
         if form.is_valid():
             paper_title = form.cleaned_data["paper_title"].lower()
             print(f"Searching for paper using keywords {paper_title}")
+            # ToDo: Here we should search all the public papers and also the private papers that belong to this user
+            # ToDo: only!
             papers = Paper.objects.annotate(search=SearchVector("title")).filter(
-                search=SearchQuery(paper_title, search_type="plain")
+                search=SearchQuery(paper_title, search_type="plain"), is_public=True,
             )
-
             print(papers)
+            private_papers = Paper.objects.annotate(search=SearchVector("title")).filter(
+                search=SearchQuery(paper_title, search_type="plain"), is_public=False, created_by=request.user,
+            )
+            print(private_papers)
+            papers = list(chain(papers, private_papers))
 
             if papers:
                 return render(
@@ -1041,18 +1053,16 @@ def paper_connect_code(request, id):
 
 @login_required
 def paper_update(request, id):
-    try:
-        paper_inst = Paper.objects.filter(pk=id)
-    except ObjectDoesNotExist:
-        return HttpResponseRedirect(reverse("papers_index"))
 
-    paper = paper_inst.first()
+    paper = get_object_or_404(Paper, pk=id)
 
     # if this is POST request then process the Form data
     if request.method == "POST":
-
-        form = PaperForm(request.POST)
+        form = PaperUpdateForm(request.POST)
         if form.is_valid():
+
+            # ToDo: Check that the paper does not exist in the database
+            #
             paper.title = form.cleaned_data["title"]
             paper.abstract = form.cleaned_data["abstract"]
             paper.keywords = form.cleaned_data["keywords"]
@@ -1062,7 +1072,7 @@ def paper_update(request, id):
             return HttpResponseRedirect(reverse("papers_index"))
     # GET request
     else:
-        form = PaperForm(
+        form = PaperUpdateForm(
             initial={
                 "title": paper.title,
                 "abstract": paper.abstract,
@@ -1146,9 +1156,14 @@ def paper_create(request):
         if form.is_valid():
             # Check if the paper already exists in DB
             # Exact match on title.
-            matching_papers = Paper.objects.filter(title=form.cleaned_data["title"])
-            if matching_papers.count() > 0:  # paper in DB already
+            matching_public_papers = Paper.objects.filter(title=form.cleaned_data["title"],
+                                                          is_public=True)
+            matching_private_papers = Paper.objects.filter(title=form.cleaned_data["title"],
+                                                           is_public=False, created_by=request.user)
+
+            if matching_public_papers.count() > 0 or matching_private_papers.count() > 0:  # paper in DB already
                 message = "Paper already exists in Gnosis!"
+                matching_papers = list(chain(matching_public_papers, matching_private_papers))
                 return render(
                     request,
                     "paper_results.html",
@@ -1180,6 +1195,7 @@ def paper_create(request):
             abstract = request.session["external_abstract"]
             url = request.session["external_url"]
             download_link = request.session["download_link"]
+            is_public = True
 
             form = PaperForm(
                 initial={
@@ -1187,6 +1203,7 @@ def paper_create(request):
                     "abstract": abstract,
                     "download_link": download_link,
                     "source_link": url,
+                    "is_public": is_public
                 }
             )
         else:
