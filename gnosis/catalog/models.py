@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 import datetime
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
 
 
 ###########################################
@@ -287,7 +287,7 @@ class Dataset(models.Model):
                   ('Other', 'Other'), )
 
     dataset_type = models.CharField(max_length=50, choices=data_types, blank=False)
-    website = models.CharField(max_length=300, blank=False)
+    website = models.CharField(max_length=2000, blank=False, validators=[URLValidator()])
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)

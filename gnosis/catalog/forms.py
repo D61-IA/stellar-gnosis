@@ -278,7 +278,7 @@ class DatasetForm(ModelForm):
         self.fields["dataset_type"].label = "Type*"
         self.fields["publication_year"].label = "Publication Year*"
         self.fields["publication_month"].label = "Publication Month"
-        self.fields["website"].label = "Website*"
+        self.fields["website"].label = "Website (include https://)*"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"

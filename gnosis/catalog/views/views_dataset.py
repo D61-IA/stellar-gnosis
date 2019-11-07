@@ -105,9 +105,7 @@ def dataset_create(request):
             other_datasets = Dataset.objects.filter(name__iexact=form.clean_name(),
                                                     publication_year=int(form.clean_publication_year()))
             if other_datasets.count() == 0:
-                print("Found no other matching venues")
-                if not dataset.website.startswith('http://') or not dataset.website.startswith('https://'):
-                    dataset.website = "http://"+dataset.website
+                print("Found no other matching datasets")
                 form.save()
             else:
                 print(f"Found {other_datasets.count()} matching venues.")
@@ -153,8 +151,7 @@ def dataset_update(request, id):
             dataset.publication_month = form.cleaned_data["publication_month"]
             dataset.dataset_type = form.cleaned_data["dataset_type"]
             dataset.website = form.cleaned_data["website"]
-            if not dataset.website.startswith('http://') or not dataset.website.startswith('https://'):
-                dataset.website = "http://"+dataset.website
+            print(f"dataset.website: {dataset.website}")
 
             dataset.save()
             return HttpResponseRedirect(reverse("dataset_detail", kwargs={"id": id}))
