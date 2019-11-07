@@ -718,6 +718,7 @@ def paper_add_to_group(request, id):
 
 
 @login_required
+@staff_member_required
 def paper_connect_author_selected(request, id, aid):
     '''
     ToDo: This method needs to be improved in order to allow the user to specify the author order.
@@ -736,6 +737,7 @@ def paper_connect_author_selected(request, id, aid):
 
 
 @login_required
+@staff_member_required
 def paper_connect_author(request, id):
     message = ""
     if request.method == "POST":

@@ -113,7 +113,9 @@
                         <div>Connect with:
                             <a href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
                             || <a href="{% url 'paper_connect_venue' paper.id %}">Venue</a> ||
+                            {% if user.is_superuser %}
                             <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
+                            {% endif %}
                             <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
                             <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>
                         </div>
