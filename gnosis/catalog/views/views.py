@@ -1043,6 +1043,7 @@ def paper_connect_code(request, id):
 
 
 @login_required
+@staff_member_required
 def paper_update(request, id):
 
     paper = get_object_or_404(Paper, pk=id)
