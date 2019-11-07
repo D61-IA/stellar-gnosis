@@ -14,11 +14,9 @@
         {% endif %}
         <p>
             {% if user.is_authenticated %}
-            {% if user.is_superuser or user == dataset.created_by %}
             <a href="{% url 'dataset_update' dataset.id %}" class="btn btn-danger btn-sm" role="button">
                 Edit
             </a>
-            {% endif %}
             {% endif %}
         </p>
     </h3>
@@ -40,7 +38,6 @@
 </div>
 
 {% if papers %}
-
 <div class="card shadow-sm mt-3">
     <div class="card-header"><h4>Papers</h4></div>
     <div class="card-body">

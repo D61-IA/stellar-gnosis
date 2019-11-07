@@ -2,13 +2,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from catalog.models import Dataset
 from catalog.forms import DatasetForm
 from catalog.forms import SearchDatasetsForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-
 
 #
 # Dataset Views
@@ -55,21 +54,12 @@ def datasets(request):
 def dataset_detail(request, id):
     # Retrieve the paper from the database
 
-    try:
-        dataset = Dataset.objects.get(pk=id)
-    except ObjectDoesNotExist:
-        return render(
-            request,
-            "datasets.html",
-            {"datasets": Dataset.objects.all(), "num_datasets": Dataset.objects.coutn()},
-        )
-    #
-    # TO DO: Retrieve and list all papers that evaluate on this dataset.
-    #
+    dataset = get_object_or_404(Dataset, pk=id)
+
+    # Retrieve and list all papers that evaluate on this dataset.
     papers = dataset.papers.all()  # the list of papers that evaluate on this dataset
 
-    request.session["last-viewed-dataset"] = id
-
+    # request.session["last-viewed-dataset"] = id
     return render(request, "dataset_detail.html", {"dataset": dataset, "papers": papers})
 
 
@@ -116,6 +106,8 @@ def dataset_create(request):
                                                     publication_year=int(form.clean_publication_year()))
             if other_datasets.count() == 0:
                 print("Found no other matching venues")
+                if not dataset.website.startswith('http://') or not dataset.website.startswith('https://'):
+                    dataset.website = "http://"+dataset.website
                 form.save()
             else:
                 print(f"Found {other_datasets.count()} matching venues.")
@@ -161,6 +153,9 @@ def dataset_update(request, id):
             dataset.publication_month = form.cleaned_data["publication_month"]
             dataset.dataset_type = form.cleaned_data["dataset_type"]
             dataset.website = form.cleaned_data["website"]
+            if not dataset.website.startswith('http://') or not dataset.website.startswith('https://'):
+                dataset.website = "http://"+dataset.website
+
             dataset.save()
             return HttpResponseRedirect(reverse("dataset_detail", kwargs={"id": id}))
     # GET request
