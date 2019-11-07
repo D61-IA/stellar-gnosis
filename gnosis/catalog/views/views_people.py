@@ -59,6 +59,7 @@ def person_detail(request, id):
 
 
 @login_required
+@staff_member_required
 def person_create(request):
 
     if request.method == "POST":
@@ -75,6 +76,7 @@ def person_create(request):
 
 
 @login_required
+@staff_member_required
 def person_update(request, id):
 
     try:
