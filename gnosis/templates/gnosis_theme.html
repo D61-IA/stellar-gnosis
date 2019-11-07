@@ -98,29 +98,18 @@
 <div class="container-fluid  max-width float-container" style="margin-top:30px ">
     <div class="row float-right" style="margin-right:30px">
         {% if user.is_authenticated %}
-            <div class="btn-group">
+           <div class="btn-group">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all papers">Papers&nbsp&nbsp</a>
                 <div class="btn-group">
-                    <a href="{% url 'paper_create' %}" class="btn btn-primary flex-item" role="button"
+                    <a href="{% url 'paper_create_from_url' %}" class="btn btn-primary flex-item" role="button"
                        title="Add new paper">+</a>
-                    <button type="button" class="btn btn-primary flex-item dropdown-toggle" data-toggle="dropdown"
-                            title="Add with URL">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="{% url 'paper_create_from_url' %}">from URL</a></li>
-                    </ul>
                 </div>
-            </div>
+           </div>
 
             <div class="btn-group ml-1">
                 <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all people">People&nbsp&nbsp</a>
-                <div class="btn-group">
-                    <a href="{% url 'person_create' %}" class="btn btn-primary flex-item" role="button"
-                       title="Add new person">+</a>
-                </div>
             </div>
 
             <div class="btn-group ml-1">
@@ -149,8 +138,6 @@
                        title="Add new code">+</a>
                 </div>
             </div>
-
-            <!--               </div>-->
         {% else %}
             <div class="btn-group">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
@@ -189,13 +176,6 @@
     <script>setButton();</script>
 
     <script src="{% static 'js/gnosis_theme.js' %}"></script>
-
-    <!--<div class="col-sm-2 sidenav">-->
-    <!--{% load static %}-->
-
-    <!--<img src="{% static "catalog/csiro-data61-logos.png" %}" alt="CSIRO and Data61 Logos">-->
-    <!--</div>-->
-    <!--    </div>-->
 </div>
 
 <!-- response dialog for flag report -->
