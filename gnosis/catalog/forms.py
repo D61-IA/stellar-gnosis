@@ -162,7 +162,7 @@ class PaperForm(ModelForm):
         self.fields["abstract"].label = "Abstract*"
         self.fields["keywords"].label = "Keywords"
         self.fields["download_link"].label = "Download Link*"
-        self.fields["is_public"].label = "Public"
+        # self.fields["is_public"].label = "Public"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
@@ -179,8 +179,8 @@ class PaperForm(ModelForm):
     def clean_download_link(self):
         return self.cleaned_data["download_link"]
 
-    def clean_is_public(self):
-        return self.cleaned_data["is_public"]
+    # def clean_is_public(self):
+    #    return self.cleaned_data["is_public"]
 
     class Meta:
         model = Paper

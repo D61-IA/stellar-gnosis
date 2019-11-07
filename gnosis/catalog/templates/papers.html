@@ -4,8 +4,10 @@
 
 <div class="card shadow-sm text-center mt-3">
     <div class="card-body">
-        {% if message %}
-        <p class="bg-info">{{ message }}</p>
+        {% if messages %}
+            {% for message in messages %}
+                <p class="bg-info">{{ message }}</p>
+            {% endfor %}
         {% endif %}
 
         <form action="" method="post">

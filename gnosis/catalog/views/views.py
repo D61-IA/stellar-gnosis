@@ -62,29 +62,19 @@ def papers(request):
     # However, even with pagination, we are going to want to limit
     # the number of papers retrieved for speed, especially when the
     # the DB grows large.
-    all_public_papers = Paper.objects.filter(is_public=True).order_by("-created_at")[:100]
-    all_private_papers = Paper.objects.filter(is_public=False, created_by=request.user).order_by("-created_at")[:100]
+    all_papers = Paper.objects.filter(is_public=True).order_by("-created_at")[:100]
 
-    all_papers = list(chain(all_public_papers, all_private_papers))
-
-    message = None
     if request.method == "POST":
         form = SearchPapersForm(request.POST)
         print("papers: Received POST request")
         if form.is_valid():
             paper_title = form.cleaned_data["paper_title"].lower()
             print(f"Searching for paper using keywords {paper_title}")
-            # ToDo: Here we should search all the public papers and also the private papers that belong to this user
-            # ToDo: only!
+
             papers = Paper.objects.annotate(search=SearchVector("title")).filter(
                 search=SearchQuery(paper_title, search_type="plain"), is_public=True,
             )
             print(papers)
-            private_papers = Paper.objects.annotate(search=SearchVector("title")).filter(
-                search=SearchQuery(paper_title, search_type="plain"), is_public=False, created_by=request.user,
-            )
-            print(private_papers)
-            papers = list(chain(papers, private_papers))
 
             if papers:
                 return render(
@@ -94,13 +84,14 @@ def papers(request):
                 )
             else:
                 message = "No results found. Please try again!"
+                messages.add_message(request, messages.INFO, message)        
 
     elif request.method == "GET":
         print("papers: Received GET request")
         form = SearchPapersForm()
 
     return render(
-        request, "papers.html", {"papers": all_papers, "form": form, "message": message}
+        request, "papers.html", {"papers": all_papers, "form": form}
     )
 
 
@@ -1148,8 +1139,7 @@ def _add_author(author, paper=None, order=1):
 @login_required
 def paper_create(request):
     user = request.user
-    print("In paper_create() view.")
-    message = ""
+
     if request.method == "POST":
         print("   POST")
         paper = Paper()
@@ -1158,19 +1148,12 @@ def paper_create(request):
         if form.is_valid():
             # Check if the paper already exists in DB
             # Exact match on title.
-            matching_public_papers = Paper.objects.filter(title=form.cleaned_data["title"],
-                                                          is_public=True)
-            matching_private_papers = Paper.objects.filter(title=form.cleaned_data["title"],
-                                                           is_public=False, created_by=request.user)
-
-            if matching_public_papers.count() > 0 or matching_private_papers.count() > 0:  # paper in DB already
+            matching_papers = Paper.objects.filter(title=form.cleaned_data["title"], is_public=True)
+   
+            if matching_papers.count() > 0:  # paper in DB already
                 message = "Paper already exists in Gnosis!"
-                matching_papers = list(chain(matching_public_papers, matching_private_papers))
-                return render(
-                    request,
-                    "paper_results.html",
-                    {"papers": matching_papers, "message": message},
-                )
+                messages.add_message(request, messages.INFO, message)
+                return HttpResponseRedirect(reverse("papers_index"))
             else:  # the paper is not in DB yet.
                 form.save()  # store
                 # Now, add the authors and link each author to the paper with an "authors"
@@ -1186,7 +1169,8 @@ def paper_create(request):
                 request.session["from_external"] = False  # reset
                 # go back to paper index page.
                 # Should this redirect to the page of the new paper just added?
-                return HttpResponseRedirect(reverse("papers_index"))
+                # return HttpResponseRedirect(reverse("papers_index"))
+                return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": paper.id}))
     else:  # GET
         print("   GET")
         # check if this is a redirect from paper_create_from_url
@@ -1211,8 +1195,7 @@ def paper_create(request):
         else:
             form = PaperForm()
 
-    return render(request, "paper_form.html", {"form": form, "message": message})
-
+    return render(request, "paper_form.html", {"form": form})
 
 @login_required
 def paper_create_from_url(request):
