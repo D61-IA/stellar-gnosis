@@ -8,7 +8,7 @@
     <div class="card-header">
         <h3>
             {% if venue.website %}
-            <p><a href={{ venue.website }}>{{ venue.name}}</a></p>
+            <p><a href={{ venue.website }} target="_blank">{{ venue.name}}</a></p>
             {% else %}
             <p>{{ venue.name}}</p>
             {% endif %}

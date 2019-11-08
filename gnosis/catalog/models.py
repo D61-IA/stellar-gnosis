@@ -38,7 +38,7 @@ class Venue(models.Model):
     keywords = models.CharField(max_length=250, blank=False)
 
     peer_reviewed = models.CharField(max_length=15, choices=review_types, blank=False)
-    website = models.CharField(max_length=300, blank=True)
+    website = models.CharField(max_length=2000, blank=False, validators=[URLValidator()])
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
