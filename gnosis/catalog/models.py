@@ -144,7 +144,7 @@ class PaperRelationshipType(models.Model):
 class Code(models.Model):
 
     description = models.TextField(blank=False)
-    website = models.CharField(max_length=225, blank=False)
+    website = models.CharField(max_length=2000, blank=False, validators=[URLValidator()])
     keywords = models.CharField(max_length=250, blank=False)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)

@@ -446,16 +446,13 @@ class CodeForm(ModelForm):
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
 
-        self.fields["website"].label = "Website*"
+        self.fields["website"].label = "Website (http:// or https://)*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["description"].label = "Description*"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
-
-        # print(type(self.fields['description'].widget))
-        # print(self.fields['description'].widget.attrs.items())
 
     def clean_keywords(self):
         return self.cleaned_data["keywords"]
