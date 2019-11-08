@@ -143,6 +143,7 @@ class PaperRelationshipType(models.Model):
 
 class Code(models.Model):
 
+    name = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField(blank=False)
     website = models.CharField(max_length=2000, blank=False, validators=[URLValidator()])
     keywords = models.CharField(max_length=250, blank=False)
@@ -162,10 +163,10 @@ class Code(models.Model):
 
     class Meta:
         app_label = 'catalog'
-        ordering = ['website', 'description', 'keywords']
+        ordering = ['name', 'website', 'description', 'keywords']
 
     def __str__(self):
-        return '{}'.format(self.website)
+        return '{}'.format(self.name)
 
     def get_absolute_url(self):
         return reverse('code_detail', args=[self.id])

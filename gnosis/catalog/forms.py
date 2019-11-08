@@ -445,7 +445,7 @@ class CodeForm(ModelForm):
         # more than one rows so we replace it with a Textarea widget.
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
-
+        self.fields["name"].label = "Name*"
         self.fields["website"].label = "Website (http:// or https://)*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["description"].label = "Description*"
@@ -465,7 +465,7 @@ class CodeForm(ModelForm):
 
     class Meta:
         model = Code
-        fields = ["website", "keywords", "description"]
+        fields = ["name", "website", "keywords", "description"]
 
 
 #

@@ -15,20 +15,20 @@
             {{ field }}
             {% endfor %}
             <br/>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search Datasets"/>
+            <input type="submit" class="btn btn-primary btn-lg" value="Search Codes"/>
         </form>
     </div>
 </div>
 
 {% if codes %}
 <div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>New Codes</h4></div>
+    <div class="card-header"><h4>Codes</h4></div>
     {% paginate codes %}
     <div class="card-body">
         {% for code in codes %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
-                <p><a href="{{ code.get_absolute_url }}">{{ code.website }}</a></p>
+                <p><a href="{{ code.get_absolute_url }}">{{ code.name }}</a></p>
                 <p>{{ code.description|truncatewords:25 }}</p>
                 <p class="text-right">
                     <small>Keywords: {{ code.keywords }}</small>

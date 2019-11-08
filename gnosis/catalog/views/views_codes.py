@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from catalog.models import Code
 from catalog.forms import CodeForm
 from catalog.forms import SearchCodesForm
@@ -30,7 +30,7 @@ def codes(request):
                 search=SearchVector('keywords')
             ).filter(search=SearchQuery(keywords, search_type='plain'))
 
-            print(codes)
+            # print(codes)
 
             if codes:
                 return render(request, "codes.html", {"codes": codes, "form": form, "message": ""})
@@ -58,7 +58,7 @@ def code_detail(request, id):
     #
     # TO DO: Retrieve and list all papers that evaluate on this dataset.
     #
-    request.session["last-viewed-code"] = id
+    # request.session["last-viewed-code"] = id
 
     return render(request, "code_detail.html", {"code": code, "papers": code.papers.all()})
 
@@ -125,6 +125,7 @@ def code_update(request, id):
     if request.method == "POST":
         form = CodeForm(request.POST)
         if form.is_valid():
+            code.name = form.cleaned_data["name"]
             code.keywords = form.cleaned_data["keywords"]
             code.description = form.cleaned_data["description"]
             code.website = form.cleaned_data["website"]
@@ -135,6 +136,7 @@ def code_update(request, id):
     else:
         form = CodeForm(
             initial={
+                "name": code.name,
                 "keywords": code.keywords,
                 "description": code.description,
                 "website": code.website,
@@ -148,10 +150,7 @@ def code_update(request, id):
 def code_delete(request, id):
     print("WARNING: Deleting code repo id {} and all related edges".format(id))
 
-    try:
-        code = Code.objects.get(pk=id)
-        code.delete()
-    except ObjectDoesNotExist:
-        print(f"Code object with id={id} not found. Redirecting to code index page.")
-
+    code = get_object_or_404(Code, pk=id)    
+    code.delete()
+    
     return HttpResponseRedirect(reverse("codes_index"))

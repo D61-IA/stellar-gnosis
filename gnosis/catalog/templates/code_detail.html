@@ -7,7 +7,7 @@
 <div class="card shadow-sm mt-5">
     <div class="card-header">
         <h3>
-            <a href={{ code.website }} target="_blank">{{ code.website }}</a>
+            <a href={{ code.website }} target="_blank">{{ code.name }}</a>
             {% if user.is_authenticated %}
             {% if user.is_superuser or user == code.created_by %}
             <p>
