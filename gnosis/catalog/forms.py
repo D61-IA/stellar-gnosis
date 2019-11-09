@@ -224,7 +224,7 @@ class PaperImportForm(Form):
     url = forms.CharField(
         # the label will now appear in two lines break at the br label
         label=mark_safe("Source URL*"),
-        max_length=200,
+        max_length=2000,
         widget=forms.TextInput(attrs={"size": 60}),
     )
 
