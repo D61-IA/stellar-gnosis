@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_registration',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
     'el_pagination',
     'catalog.apps.CatalogConfig',
     'bookmark.apps.BookmarkConfig',
@@ -145,12 +147,20 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-# After user login, she will be re-directed to home page instead of accounts/profile
+# After user login and logout, she will be re-directed to home page instead of accounts/profile
 LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 # This is for checking the password reset email when the email server is not configured
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+AUTHENTICATION_BACKENDS = ( 
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 # Add notes app
 INSTALLED_APPS += ['notes.apps.NotesConfig', ]
+
+# django-allauth config
+SITE_ID = 1

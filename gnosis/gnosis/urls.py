@@ -35,8 +35,9 @@ urlpatterns = [
 
 # for user authentication
 urlpatterns += [
-    url(r'^accounts/', include('django_registration.backends.one_step.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
+    # url(r'^accounts/', include('django_registration.backends.one_step.urls')),
+    # path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('allauth.urls')),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)
