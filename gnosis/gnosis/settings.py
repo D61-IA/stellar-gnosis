@@ -165,3 +165,6 @@ INSTALLED_APPS += ['notes.apps.NotesConfig', ]
 
 # django-allauth config
 SITE_ID = 1
+
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
