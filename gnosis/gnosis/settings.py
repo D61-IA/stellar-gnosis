@@ -166,5 +166,7 @@ INSTALLED_APPS += ['notes.apps.NotesConfig', ]
 # django-allauth config
 SITE_ID = 1
 
+ACCOUNT_EMAIL_REQUIRED = True 
+ACCOUNT_UNIQUE_EMAIL = True 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
