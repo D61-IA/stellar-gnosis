@@ -1,0 +1,33 @@
+{% extends "gnosis_theme.html" %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+<div class="card shadow-sm text-center mt-3">
+    {% if next %}
+    {% if user.is_authenticated %}
+    <div class="card-header">
+        <h3>Your account doesn't have access to this page. To proceed,
+            please login with an account that has access.</h3>
+    </div>
+    {% else %}
+    <div class="card-header">
+        <h3>Log in to your account.</h3>
+    </div>
+    {% endif %}
+    {% endif %}
+    <div class="card-body mt-3">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <p></p>            
+            <button class="btn btn-primary" type="submit">Sign Up</button>
+        </form>            
+        {% if form.errors %}
+        <p class=" label label-danger">
+            Your username and password didn't match. Please try again.
+        </p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
