@@ -13,6 +13,11 @@
                 {{ form|crispy }}
                 <button class="btn btn-danger" type="submit">Log Out</button>
             </form>
+            {% if messages %}
+            {% for message in messages %}
+                <p class="bg-info">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
     </div>
 
 </div>
