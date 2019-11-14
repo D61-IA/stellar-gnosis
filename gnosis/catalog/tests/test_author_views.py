@@ -36,7 +36,15 @@ class PersonViewsTestCase(TestCase):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(reverse("person_update", kwargs={'id': person.id}))
-        self.assertEqual(response.status_code, 200)
+        # Only an admin user can access the update view. A logged in user should be redirected
+        # to the login page.
+        target_url = f"/admin/login/?next=/catalog/person/{person.id}/update"
+        self.assertRedirects(response,
+                             expected_url=target_url,
+                             status_code=302,
+                             target_status_code=200,)
+
+        # self.assertEqual(response.status_code, 200)
 
         # Logout
         self.client.logout()
@@ -81,10 +89,17 @@ class PersonViewsTestCase(TestCase):
                              target_status_code=200,)
 
         # Login the test user
+        target_url = "/admin/login/?next=/catalog/person/create/"
+
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(reverse("person_create"))
+        # Only administrator can access the create view.
+        # Other users should be re-directed to login with a different account.
         # Since we are logged in, we should receive a 200 response
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response,
+                             expected_url=target_url,
+                             status_code=302,
+                             target_status_code=200,)
 
 
