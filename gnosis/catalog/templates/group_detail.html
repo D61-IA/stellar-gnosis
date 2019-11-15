@@ -28,6 +28,28 @@
 </div>
 
 
+
+<div class="card shadow-sm mt-5">
+    <div class="card-header">
+        <h3>Upcoming Papers</h3>
+    </div>
+        <div class="card-body">
+            {% if papers_discussed %}
+            <ul class="list-group list-group-flush">
+                {% for paper_entry in papers_discussed %}
+                {% if paper_entry.date_discussed %}
+                    {% if paper_entry.date_discussed >= today %}
+                    <li class="list-group-item">{{ paper_entry.date_discussed }} <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                            proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
+                    </li>
+                    {% endif %}
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+</div>
+
 <div class="card shadow-sm mt-5">
     <div class="card-header">
         <h3>Papers</h3>
@@ -49,9 +71,11 @@
                 <ul class="list-group list-group-flush">
                     {% for paper_entry in papers_discussed %}
                     {% if paper_entry.date_discussed %}
-                    <li class="list-group-item">{% if paper_entry.date_discussed >= today %}<span class="badge badge-info">Upcoming</span> {% endif %}<a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                        discussed on {{ paper_entry.date_discussed }} and proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
-                    </li>
+                        {% if paper_entry.date_discussed < today %}
+                        <li class="list-group-item"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                            discussed on {{ paper_entry.date_discussed }} and proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
+                        </li>
+                    {% endif %}
                     {% endif %}
                     {% endfor %}
                 </ul>
