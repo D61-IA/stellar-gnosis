@@ -7,7 +7,11 @@ from django.contrib.auth.models import User
 class PersonViewsTestCase(TestCase):
     def setUp(self):
         #
-        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.user = User.objects.create_user(username='testuser',
+                                             password='12345')
+        self.admin = User.objects.create_superuser(username='admin',
+                                                   password='abcdefg',
+                                                   email="admin@gnosis.stellargraph.io")
 
         Person.objects.create(first_name='Pantelis', last_name='Elinas', created_by=None)
         Person.objects.create(first_name='Fiona', middle_name='Anne', last_name='Elliott', created_by=self.user)
@@ -43,9 +47,6 @@ class PersonViewsTestCase(TestCase):
                              expected_url=target_url,
                              status_code=302,
                              target_status_code=200,)
-
-        # self.assertEqual(response.status_code, 200)
-
         # Logout
         self.client.logout()
 
@@ -68,6 +69,18 @@ class PersonViewsTestCase(TestCase):
 
         # You have to be logged in to access the delete view.
         # However, only an admin can delete and object so we should be redirected to the admin login page
+        self.assertRedirects(response,
+                             expected_url=target_url,
+                             status_code=302,
+                             target_status_code=200,)
+
+        self.client.logout()
+
+        # Create an admin/superuser and try again. Admins have access to the delete view
+        login = self.client.login(username='admin', password='abcdefg')
+        response = self.client.get(reverse("person_delete", kwargs={'id': person.id}))
+        # Calling delete redirects to the people index page
+        target_url = f"/catalog/persons/"
         self.assertRedirects(response,
                              expected_url=target_url,
                              status_code=302,
@@ -102,4 +115,12 @@ class PersonViewsTestCase(TestCase):
                              status_code=302,
                              target_status_code=200,)
 
+        self.client.logout()
+
+        # Create an admin/superuser and try again. Admins have access the create view
+        login = self.client.login(username='admin', password='abcdefg')
+        response = self.client.get(reverse("person_create"))
+        self.assertEqual(response.status_code, 200)
+
+        self.client.logout()
 
