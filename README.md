@@ -6,35 +6,19 @@
 ## Installation Instructions
 
 These instructions are a brief overview of the steps required to run the **Gnosis** Django application on a development
-server using Django's build in web server, the free version of Neo4j, and sqlite3.
+server using Django's build in web server, and Postgresql.
 
 **Gnosis** is a Python Django web application. You should install a suitable version of Python in 
 order to proceed. We have tested **Gnosis** with Python version 3.6.5 but any 3.6.* version should
 work. 
 
 These installation instructions are for Mac OS. The instructions for any popular Linux distributions should be very
-similar. We have not tested **Gnosis** on Windows 10.
+similar. We have not tested **Gnosis** on Windows 10, however, the software works well using an installation of
+Ubuntu 18.4 on WSL.
 
-### Install Neo4j
+### Install Postgresql
 
-Download and install the free desktop version of the Neo3j Graph database from [here](https://neo4j.com/download/).
-
-We have installed and tested Gnosis with the Neo4j community version 3.3.4 although newer version should
-work just as well.
-
-Let's assume that you have successfully installed Neo4j in the directory `/Neo4j/`. You can now start the neo4j server 
-by executing the command
-
-`/Neo4j/bin/neo4j start`
-
-If the database server starts without errors you should see the following message printed in the terminal,
-
-    Started neo4j (pid 23687). It is available at http://localhost:7474/
-    There may be a short delay until the server is ready.
-
-With your web browser, you can now access the Neo4j console by visiting http://localhost:7474/.
-
-**Important** When you first install Neo4j, you can create a user account and set a password. Remember these as you
+**Important** When you first install Postegresql, you can create a user account and set a password. Remember these as you
 will need them later in the instructions.
 
 ### Install Gnosis
@@ -55,19 +39,8 @@ Activate `gnosis-env` and install the library requirements using the following c
 
     pip install -r requirements.txt
 
-**Important:** As the next step you must apply a patch to the django-neomodel library. Locate
-the file `/site-packages/django_neomodel/__init__.py` and the method `get_choices(self, include_blank=True)`.
-
-Then replace the line,
-
-    choices=list(self.choices)if self.choices else []
-
-with the following,
-
-    choices=[(k, v)for k, v in self.choices.items()] if self.choices else []
-
 Locate the `settings.py` file in the directory `/Projects/stellar-gnosis/gnosis/gnosis/`. You need to set your
-Neo4j database password so that Django can access it. Find the line,
+database password so that Django can access it. Find the line,
 
     NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL', 'bolt://neo4j:GnosisTest00@localhost:7687')
 
@@ -80,9 +53,8 @@ values in `settings.py` if you want; in this case, you don't have to modify the 
 
 Change to the directory `/Projects/stellar-gnosis/gnosis/` where you can find the file `manage.py`.
 
-Prepare the Neo4j and sqlite3 databases by using the following commands,
+Prepare the database by using the following commands,
 
-    python manage.py install_labels
     python manage.py makemigrations
     python manage.py migrate
     
@@ -104,8 +76,7 @@ To run all the unit tests, use the following command (you must have Neo4j runnin
 
 You can also run only some of the tests using,
 
-    python manage.py test tests.test_model_paper
-     
+    python manage.py test catalog.tests 
 
 ## License
 
