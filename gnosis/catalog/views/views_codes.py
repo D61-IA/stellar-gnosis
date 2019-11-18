@@ -8,7 +8,7 @@ from catalog.forms import CodeForm
 from catalog.forms import SearchCodesForm
 
 from django.urls import reverse
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 
 
 #
@@ -29,8 +29,6 @@ def codes(request):
             codes = Code.objects.annotate(
                 search=SearchVector('keywords')
             ).filter(search=SearchQuery(keywords, search_type='plain'))
-
-            # print(codes)
 
             if codes:
                 return render(request, "codes.html", {"codes": codes, "form": form, "message": ""})
