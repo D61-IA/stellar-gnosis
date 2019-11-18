@@ -39,8 +39,17 @@
                 {% for paper_entry in papers_discussed %}
                 {% if paper_entry.date_discussed %}
                     {% if paper_entry.date_discussed >= today %}
-                    <li class="list-group-item">{{ paper_entry.date_discussed }} <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                            proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
+
+                    <li class="list-group-item">
+                        <div class="d-flex flex-row">
+                            <div class="mr-auto p-2">{{ paper_entry.date_discussed }} <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}</div>
+                            {% if user.id == group.owner.id %}
+                                <div class="p-2">
+                                    <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_unschedule' paper_entry.reading_group.id paper_entry.id %}">Unschedule</a>
+                                </div>
+                            {% endif %}
+                        </div>
                     </li>
                     {% endif %}
                 {% endif %}
