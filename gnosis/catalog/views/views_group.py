@@ -56,27 +56,33 @@ def group_create(request):
 def group_update(request, id):
 
     group = get_object_or_404(ReadingGroup, pk=id)
-    # if this is POST request then process the Form data
-    if request.method == "POST":
-        form = GroupForm(request.POST)
-        if form.is_valid():
-            group.name = form.cleaned_data["name"]
-            group.keywords = form.cleaned_data["keywords"]
-            group.description = form.cleaned_data["description"]
-            group.save()
 
-            return HttpResponseRedirect(reverse("groups_index"))
-    # GET request
-    else:
-        form = GroupForm(
-            initial={
-                "name": group.name,
-                "keywords": group.keywords,
-                "description": group.description,
-            }
-        )
+    if group.owner.id == request.user.id:
+        # if this is POST request then process the Form data
+        if request.method == "POST":
+            form = GroupForm(request.POST)
+            if form.is_valid():
+                group.name = form.cleaned_data["name"]
+                group.keywords = form.cleaned_data["keywords"]
+                group.description = form.cleaned_data["description"]
+                group.is_public = form.cleaned_data["is_public"]
+                group.save()
 
-    return render(request, "group_update.html", {"form": form, "group": group})
+                return HttpResponseRedirect(reverse("groups_index"))
+        # GET request
+        else:
+            form = GroupForm(
+                initial={
+                    "name": group.name,
+                    "keywords": group.keywords,
+                    "description": group.description,
+                    "is_public": group.is_public
+                }
+            )
+
+        return render(request, "group_update.html", {"form": form, "group": group})
+
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
 
 @login_required

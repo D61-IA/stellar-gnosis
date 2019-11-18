@@ -10,7 +10,7 @@
             {% if user.is_authenticated %}
             {% if user.is_superuser or user.id == group.owner.id %}
             <p>
-                <a href="{% url 'group_update' group.id %}" class="btn btn-danger btn-sm" role="" button>
+                <a href="{% url 'group_update' group.id %}" class="btn btn-danger btn-sm" role="button">
                     Edit
                 </a>
             </p>
@@ -28,7 +28,7 @@
 </div>
 
 
-
+{% if group.is_public %}
 <div class="card shadow-sm mt-5">
     <div class="card-header">
         <h3>Upcoming Papers</h3>
@@ -155,7 +155,9 @@
         <p></p>
     </div>
 </div>
-
+{% else %}
+<p>Private group. You need to request access to view.</p>
+{% endif %}
 
 {% if user.is_authenticated %}
 {% if user == group.owner %}

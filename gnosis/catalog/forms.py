@@ -485,6 +485,7 @@ class GroupForm(ModelForm):
         self.fields["keywords"].label = "Keywords*"
         self.fields["description"].label = "Description*"
         self.fields["name"].label = "Name*"
+        self.fields["is_public"].label = "Public*"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
@@ -501,7 +502,7 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = ReadingGroup
-        fields = ["name", "description", "keywords"]
+        fields = ["name", "description", "keywords", "is_public"]
 
 
 class GroupEntryForm(ModelForm):

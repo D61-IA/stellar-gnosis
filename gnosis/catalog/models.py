@@ -403,6 +403,7 @@ class ReadingGroup(models.Model):
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=False)
     keywords = models.CharField(max_length=100, blank=False)
+    is_public = models.BooleanField(default=False, blank=False, null=False)
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     owner = models.ForeignKey(
