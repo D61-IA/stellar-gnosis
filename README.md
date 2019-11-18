@@ -44,6 +44,12 @@ permissions,
     Posgres=# CREATE USER gnosisuser WITH PASSWORD 'gnosis';
     Posgres=# GRANT ALL PRIVILEGES ON DATABASE gnosistest TO gnosisuser;
     Posgres=# \q
+    
+**Note:** If running the unit tests fails with an error message saying that user cannot create database, then issue the
+following command to allow the test user to create temporary databases for testing,
+
+    Posgres=# ALTER USER gnosisuser CREATEDB;
+
 
 ### Install Gnosis
 
