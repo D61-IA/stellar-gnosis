@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from catalog.models import Paper, Comment # HiddenComment
+from catalog.models import Paper, Comment, CommentFlag
 from catalog.views.utils.import_functions import *
 from catalog.forms import CommentForm
 from django.urls import reverse
@@ -102,6 +102,51 @@ def comment_update(request, id):
 
     return render(request, "comment_update.html", {"form": form, "comment": comment})
 
+
+@staff_member_required
+def comment_restore(request, id):
+    """It restores a flagged comment making it visible to users again."""
+    comment = get_object_or_404(Comment, pk=id)
+
+    # Remove the entry from the CommentFlag table
+    flags = CommentFlag.objects.filter(comment=comment).all()
+
+    # Potentially (although not likely) more than one users may have flagged this comment. So, if we are restoring it,
+    # then we delete all rows in the CommentFlag table.
+    print(f"Found {flags.count()} flags for this comment.")
+
+    for flag in flags:
+        flag.delete()
+
+    # reset is_flagged to False so users can see the comment in the paper detail
+    comment.is_flagged = False
+    comment.save()
+
+    # Shall we return to the paper detail or the flagged comments index page?
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": comment.paper.id}))
+
+
+@staff_member_required
+def comment_delete(request, id):
+    comment = get_object_or_404(Comment, pk=id)
+    paper_id = comment.paper.id
+
+    print(f"Warning: Deleting comment: {comment}")
+    comment.delete()
+
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": paper_id}))
+
+
+@staff_member_required
+def flagged_comments(request):
+    """A view for all flagged comments that require moderation"""
+    comments = CommentFlag.objects.all()
+
+    return render(
+        request,
+        "flagged_comments.html",
+        {"comments": comments},
+    )
 
 
 # @login_required()

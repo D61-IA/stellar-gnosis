@@ -1,0 +1,21 @@
+{% extends "gnosis_theme.html" %}
+
+{% block content %}
+
+<div class="card shadow-sm mt-5">
+    <div class="card-header">
+        <h3>Flag comment</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post">
+            {% csrf_token %}
+            <table class="w-100">
+            {{ form }}
+            </table>
+            <br/>
+            <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

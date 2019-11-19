@@ -257,6 +257,11 @@
                     <li>
                         <a href="#">Contact</a>
                     </li>
+                    {% if user.is_authenticated and user.is_superuser %}
+                    <li>
+                        <a href="{% url 'flagged_comments_index' %}">Moderation</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
             <!-- Grid column -->
