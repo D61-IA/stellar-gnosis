@@ -5,7 +5,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from itertools import chain
 from catalog.models import (
     Paper,
     PaperRelationshipType,
@@ -14,6 +13,7 @@ from catalog.models import (
     Dataset,
     Venue,
     Comment,
+    CommentFlag,
     Code,
 )
 from django.http import Http404, HttpResponseBadRequest
@@ -1247,6 +1247,41 @@ def paper_create_from_url(request):
         form = PaperImportForm()
 
     return render(request, "paper_form.html", {"form": form})
+
+
+@login_required
+def paper_flag_comment(request, id, cid):
+
+    comment = get_object_or_404(Comment, pk=cid)
+
+    # Check that the same user has not flagged the exact same comment already
+    flagged = CommentFlag.objects.filter(proposed_by=request.user, comment=comment).all().count()
+
+    if flagged == 0:
+        # hasn't flagged this comment before
+        # if this is POST request then process the Form data
+        print("Comment has not been flagged before.")
+        comment_flag = CommentFlag()
+        if request.method == "POST":
+            print("POST")
+            form = FlaggedCommentForm(request.POST)
+            if form.is_valid():
+                comment_flag.description = form.cleaned_data["description"]
+                comment_flag.violation = form.cleaned_data["violation"]
+                comment_flag.comment = comment
+                comment_flag.proposed_by = request.user
+                comment_flag.save()
+                comment.is_flagged = True
+                comment.save()
+                return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
+        # GET request
+        else:
+            print("GET: new FlaggedCommentForm")
+            form = FlaggedCommentForm()
+
+            return render(request, "paper_flag_comment.html", {"form": form})
+
+    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
 
 #

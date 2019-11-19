@@ -351,24 +351,32 @@ class Dataset(models.Model):
     def get_absolute_url(self):
         return reverse("dataset_detail", args=[self.id])
 
-    #
-    # These are models for the SQL database
-    #
-
 
 class CommentFlag(models.Model):
-    comment_id = models.IntegerField(
-        null=False, blank=False
-    )  # id of the flagged comment
 
-    violation = models.CharField(max_length=100)
-    description = models.TextField()
-    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    violation_types = (
+        ("spam", "spam"),
+        ("offensive", "offensive"),
+        ("pornography", "pornography"),
+        ("extremist", "extremist"),
+        ("violence", "violence"),
+    )
 
-    # user who flags the item
+    comment = models.ForeignKey(
+        to=Comment, null=False, blank=False, on_delete=models.CASCADE
+    )
+    violation = models.CharField(
+        max_length=50, choices=violation_types, null=False, blank=False
+    )
+    # The user has to give a more detailed description.
+    description = models.TextField(null=False, blank=False)
+
+    # user who flagged the comment
     proposed_by = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name="comment_flags"
     )
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     class Meta:
         ordering = ["violation", "-created_at"]
@@ -376,7 +384,7 @@ class CommentFlag(models.Model):
 
     # Methods
     def get_absolute_url(self):
-        return reverse("paper_detail", args=[str(self.id)])
+        return reverse("comment_flag_detail", args=[str(self.id)])
 
     def __str__(self):
         return self.description
@@ -399,11 +407,12 @@ class CommentFlag(models.Model):
 # A ReadingGroup member for private groups
 class ReadingGroupMember(models.Model):
 
-    permissions = ( ('granted', 'granted', ),
-                     ('requested', 'requested',), 
-                     ('banned', 'banned',),
-                     ('none', 'none'),
-                     )
+    permissions = (
+        ("granted", "granted"),
+        ("requested", "requested"),
+        ("banned", "banned"),
+        ("none", "none"),
+    )
 
     # the user who is the member
     member = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)

@@ -102,6 +102,8 @@ def comment_update(request, id):
 
     return render(request, "comment_update.html", {"form": form, "comment": comment})
 
+
+
 # @login_required()
 # def comment_hide(request, id):
 #     user = request.user
