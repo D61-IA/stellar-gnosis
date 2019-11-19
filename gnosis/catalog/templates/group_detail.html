@@ -28,7 +28,7 @@
 </div>
 
 
-{% if group.is_public %}
+{% if group.is_public or user.id == group.owner.id  %}
 <div class="card shadow-sm mt-5">
     <div class="card-header">
         <h3>Upcoming Papers</h3>
