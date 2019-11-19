@@ -275,15 +275,15 @@
 
                                 <li class="list-group-item shadow-sm mt-1">
                                     {% if comment.created_by != user %}
-                                    <a href="{% url 'paper_flag_comment' paper.id comment.id %}">Flag</a>
                                         <div style="float: right; text-align: right;">
-                                                <div class="opt_container open_flag_dialog"
-                                                             data-url="{% url 'comment_flag_create' comment.id %}"
-                                                             data-commentid={{ comment.id }}>
-                                                    <i class="material-icons menu_item">
-                                                                outlined_flag
-                                                    </i>
-                                                </div>
+                                            <div>
+                                                <a href="{% url 'paper_flag_comment' paper.id comment.id %}">Flag</a>
+                                            </div>
+                                            <div class="opt_container open_flag_dialog"
+                                                 data-url="{% url 'comment_flag_create' comment.id %}"
+                                                 data-commentid={{ comment.id }}>
+                                                <i class="material-icons menu_item">outlined_flag</i>
+                                            </div>
                                         </div>
                                     {% endif %}
 
