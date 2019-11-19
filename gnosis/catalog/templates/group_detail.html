@@ -156,7 +156,14 @@
     </div>
 </div>
 {% else %}
-<p>Private group. You need to request access to view.</p>
+<div class="card text-left shadow-sm mb-5 mt-3">
+    <div class="card-header"><strong>Private Group</strong></div>
+    <div class="card-body">
+        This is a private groups. You need to request and be granted access to view.
+        <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
+    </div>
+</div>
+
 {% endif %}
 
 {% if user.is_authenticated %}

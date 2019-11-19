@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
-from catalog.models import ReadingGroup, ReadingGroupEntry
+from catalog.models import ReadingGroup, ReadingGroupEntry, ReadingGroupMember
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from catalog.forms import GroupForm, GroupEntryForm
@@ -16,6 +16,34 @@ def groups(request):
     return render(
         request, "groups.html", {"groups": all_groups, "message": message}
     )
+
+def group_join(request, id):
+    group = get_object_or_404(ReadingGroup, pk=id)
+
+    # if user does not have access to the group and the group is private, request it
+    if not group.is_public:
+        # check if the user is already in the list of members
+        member = group.members.filter(member=request.user).all()
+        if member.count()>0:
+            print(f"{request.user} has status {member[0].access_type} for this group")
+        else:
+            print(f"{request.user} requesting access to group.")
+            member = ReadingGroupMember(member=request.user, access_type="requested")
+            member.save()
+            group.members.add(member)            
+    # otherwise, do nothing
+
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
+def group_leave(request, id):
+    group = get_object_or_404(ReadingGroup, pk=id)
+
+    # if user is a member of the group and the group is private, then leave it
+
+    # otherwise, do nothing
+
+    
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
 
 def group_detail(request, id):

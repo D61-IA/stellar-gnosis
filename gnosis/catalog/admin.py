@@ -1,7 +1,7 @@
 from django.contrib import admin
 from catalog.models import Paper, Code, Comment, Person, Venue, Dataset
 from django.http import HttpResponseRedirect
-from catalog.models import ReadingGroup, ReadingGroupEntry
+from catalog.models import ReadingGroup, ReadingGroupEntry, ReadingGroupMember
 from catalog.models import Collection, CollectionEntry, Endorsement
 from catalog.models import CommentFlag
 from catalog.models import PaperAuthorRelationshipData
@@ -19,6 +19,7 @@ admin.site.register(Person)
 admin.site.register(Venue)
 admin.site.register(ReadingGroup)
 admin.site.register(ReadingGroupEntry)
+admin.site.register(ReadingGroupMember)
 admin.site.register(Collection)
 admin.site.register(CollectionEntry)
 admin.site.register(Endorsement)

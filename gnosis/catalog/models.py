@@ -396,6 +396,25 @@ class CommentFlag(models.Model):
 #         return "comment id: " + str(self.comment_id)
 
 
+# A ReadingGroup member for private groups
+class ReadingGroupMember(models.Model):
+
+    permissions = ( ('granted', 'granted', ),
+                     ('requested', 'requested',), 
+                     ('banned', 'banned',),
+                     ('none', 'none'),
+                     )
+
+    # the user who is the member
+    member = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
+    access_type = models.CharField(max_length=50, choices=permissions, blank=False)
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+
+    def __str__(self):
+        return str(self.member)
+
+
 class ReadingGroup(models.Model):
     """A ReadingGroup model"""
 
@@ -412,6 +431,9 @@ class ReadingGroup(models.Model):
         related_name="reading_groups",
         null=True,
     )
+    # For private groups, this is the list of users who have requested to join, having been granted access, or
+    # banned from the group.
+    members = models.ManyToManyField(ReadingGroupMember)
 
     # Metadata
     class Meta:
@@ -433,8 +455,6 @@ class ReadingGroupEntry(models.Model):
         to=ReadingGroup, on_delete=models.CASCADE, related_name="papers"
     )  # ReadingGroup.papers()
 
-    # paper_id = models.IntegerField(null=False, blank=False)  # A paper in the Neo4j DB
-    # paper_title = models.TextField(null=False, blank=False)  # The paper title to avoid extra DB calls
     paper = models.ForeignKey(
         to=Paper,
         on_delete=models.CASCADE,
@@ -451,10 +471,10 @@ class ReadingGroupEntry(models.Model):
     date_proposed = models.DateField(auto_now_add=True, auto_now=False)
 
     def get_absolute_url(self):
-        return reverse("group_detail", args=[str[self.id]])
+        return reverse("group_detail", args=[str(self.id)])
 
     def __str__(self):
-        return str(self.paper_id)
+        return str(self.paper.id)
 
 
 # Collections are private folders for user to organise their papers
