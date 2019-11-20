@@ -351,6 +351,18 @@ class Dataset(models.Model):
     def get_absolute_url(self):
         return reverse("dataset_detail", args=[self.id])
 
+class PaperDatasetRelationshipData(models.Model):
+    # Future proofing for when we want to store evaluation data published in a paper
+    # on a given dataset.
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+    updated_at = models.DateField(null=True)
+
+    from_paper = models.ForeignKey(
+        Paper, related_name="from_paper", on_delete=models.CASCADE
+    )
+
+    dataset = models.ForeignKey(Dataset, related_name="dataset", on_delete=models.CASCADE)
+
 
 class CommentFlag(models.Model):
 
