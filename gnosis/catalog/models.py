@@ -339,7 +339,12 @@ class Dataset(models.Model):
     # dataset.papers.add(paper)
     # I can retrieve all papers evaluating on a dataset using
     # dataset.papers.all()
-    papers = models.ManyToManyField(Paper)
+    #papers = models.ManyToManyField(Paper)
+
+    papers = models.ManyToManyField(
+        Paper, through="PaperDatasetRelationshipData", symmetrical=False, blank=True
+    )
+
 
     class Meta:
         app_label = "catalog"
