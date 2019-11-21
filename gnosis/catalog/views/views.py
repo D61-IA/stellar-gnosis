@@ -52,7 +52,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from django.contrib import messages
-
+from itertools import chain
 
 #
 # Paper Views
@@ -686,7 +686,7 @@ def paper_add_to_group_selected(request, id, gid):
     # If group is public then all good.
     # If the group is private then check if user is a member of this group.
     q_set = group.members.filter(member=request.user).all()
-    if group.is_public or (q_set.count()==1 and q_set.access_type=='granted'):
+    if group.owner==request.user or group.is_public or (q_set.count()==1 and q_set.access_type=='granted'):
         paper_in_group = group.papers.filter(paper=paper)
         if paper_in_group:
             # message = "Paper already exists in group {}".format(group.name)
@@ -708,9 +708,15 @@ def paper_add_to_group_selected(request, id, gid):
 def paper_add_to_group(request, id):
     message = None
     # Get all reading groups that this person has created
-    # Note: This should be extended to allow user to propose
-    #       papers to group they belong to as well.
-    groups = ReadingGroup.objects.all()
+
+    # The public reading groups
+    groups = ReadingGroup.objects.filter(is_public=True).all()
+    # The private reading groups the user has been granted access to.
+    # This excludes the user who owns/created the group!
+    groups_private = ReadingGroup.objects.filter(is_public=False, members__member=request.user, members__access_type='granted')
+    groups_owner = ReadingGroup.objects.filter(is_public=False, owner=request.user)
+    # Combine the Query sets
+    groups = list(chain(groups, groups_owner, groups_private))
 
     group_urls = [
         reverse("paper_add_to_group_selected", kwargs={"id": id, "gid": group.id})
