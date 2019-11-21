@@ -7,14 +7,23 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from catalog.forms import GroupForm, GroupEntryForm
 from datetime import date
+from itertools import chain
 
 
 def groups(request):
-    all_groups = ReadingGroup.objects.all().order_by('-created_at')
+    """Groups index view."""
+    my_groups = []
+    all_groups = ReadingGroup.objects.all().order_by('-created_at')[:50]
+    if request.user.is_authenticated:
+        my_groups = ReadingGroup.objects.filter(members__member=request.user, members__access_type='granted').all()
+        my_groups_owned = ReadingGroup.objects.filter(owner=request.user).all()
+        # Combine the Query sets
+        my_groups = list(chain(my_groups, my_groups_owned,))
+    
     message = ''
 
     return render(
-        request, "groups.html", {"groups": all_groups, "message": message}
+        request, "groups.html", {"groups": all_groups, "mygroups": my_groups, "message": message}
     )
 
 def group_join(request, id):

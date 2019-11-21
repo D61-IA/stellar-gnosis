@@ -9,37 +9,89 @@
     </div>
 
     <div class="card-body">
-        {% if groups %}
-        {% paginate groups %}
-        {% for group in groups %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
-                <p>{{ group.description }}</p>
-            </li>
-        </ul>
-        {% endfor %}
-
-        {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
-        {% else %}
-        There are no groups. <a href="{% url 'group_create' %}">Create a new Reading Group.</a>
-        {% endif %}
+        {#        Navigation bar in tag view, show the all-groups and my-groups tab depending on the login condition #}
+        <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" data-toggle="tab" href="#navallgroups">All Groups</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#navmygroups">My Groups</a>
+                </li>
+                {% endif %}
+              </ul>
+            <div class="tab-content">
+                {#            tab content of all-groups tab #}
+                <div class="container tab-pane active" id="navallgroups" >
+                    {#                    show the groups#}
+                    {% if groups %}
+                        {% paginate groups %}
+                        <ul class="list-group list-group-flush">
+                        {% for group in groups %}
+                            <li class="list-group-item mt-1">
+                                <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
+                                <p>{{ group.description }}</p>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        {% get_pages %}
+                        <!-- Center-aligned -->
+                        <ul class="pagination justify-content-center" style="margin:20px 0">
+                            {% if not pages.current.is_first %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+                            {% endif %}
+                            {% for page in pages %}
+                            {% if page.is_current %}
+                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if not pages.current.is_last %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        There are no groups. <a href="{% url 'group_create' %}">Create a new Reading Group.</a>
+                    {% endif %}
+                </div>
+                {#              tab content of my-groups tab#}
+                {% if user.is_authenticated %}
+                <div class="container tab-pane fade" id="navmygroups">
+                    {% if mygroups %}
+                        {% paginate mygroups %}
+                        <ul class="list-group list-group-flush">
+                            {% for group in mygroups %}
+                            <li class="list-group-item mt-1">
+                                <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
+                                <p>{{ group.description }}</p>
+                            </li>
+                        </ul>
+                        {% endfor %}
+                
+                        {% get_pages %}
+                        <!-- Center-aligned -->
+                        <ul class="pagination justify-content-center" style="margin:20px 0">
+                            {% if not pages.current.is_first %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+                            {% endif %}
+                            {% for page in pages %}
+                            {% if page.is_current %}
+                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if not pages.current.is_last %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        <p><h4><i>You have not joined any groups.</i></h4></p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
     </div>
 </div>
 {% endblock %}
