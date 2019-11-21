@@ -682,17 +682,24 @@ def paper_add_to_group_selected(request, id, gid):
         return Http404
 
     print("Found group {}".format(group))
-    paper_in_group = group.papers.filter(paper=paper)
-    if paper_in_group:
-        # message = "Paper already exists in group {}".format(group.name)
-        print(f"Paper {paper} already exists in group {group}")
+    # Check if the user has permission to propose a paper for this group.
+    # If group is public then all good.
+    # If the group is private then check if user is a member of this group.
+    q_set = group.members.filter(member=request.user).all()
+    if group.is_public or (q_set.count()==1 and q_set.access_type=='granted'):
+        paper_in_group = group.papers.filter(paper=paper)
+        if paper_in_group:
+            # message = "Paper already exists in group {}".format(group.name)
+            print(f"Paper {paper} already exists in group {group}")
+        else:
+            group_entry = ReadingGroupEntry()
+            group_entry.reading_group = group
+            group_entry.proposed_by = request.user
+            group_entry.paper = paper
+            group_entry.save()
+            print(f"Added paper {paper} to group {group}.")
     else:
-        group_entry = ReadingGroupEntry()
-        group_entry.reading_group = group
-        group_entry.proposed_by = request.user
-        group_entry.paper = paper
-        group_entry.save()
-        print(f"Added paper {paper} to group {group}.")
+        print("You don't have permission to propose papers for this group.")
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
