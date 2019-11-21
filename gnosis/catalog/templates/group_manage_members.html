@@ -1,0 +1,98 @@
+{% extends "gnosis_theme.html" %}
+{% block content %}
+{% load el_pagination_tags %}
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header">
+        <h4>Group Members</h4>
+    </div>
+
+    <div class="card-body">
+        {#        Navigation bar in tag view, show members who have joined and members who are asking to join the group #}
+        <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" data-toggle="tab" href="#navmembers">Members</a>
+                </li>
+                {% if not is_public %}
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#navapplicants">Applicants</a>
+                </li>
+                {% endif %}
+              </ul>
+            <div class="tab-content">
+                {#            tab content of members tab #}
+                <div class="container tab-pane active" id="navmembers" >
+                    {#                    show the members#}
+                    {% if members %}
+                        {% paginate members %}
+                        <ul class="list-group list-group-flush">
+                        {% for member in members %}
+                            <li class="list-group-item mt-1">
+                                <!-- We should link to the user's profile when available. -->
+                                <!-- <a href=""></a> -->
+                                <h4>{{ member }}</h4>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        {% get_pages %}
+                        <!-- Center-aligned -->
+                        <ul class="pagination justify-content-center" style="margin:20px 0">
+                            {% if not pages.current.is_first %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+                            {% endif %}
+                            {% for page in pages %}
+                            {% if page.is_current %}
+                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if not pages.current.is_last %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        <p><h4><i>No members.</i></h4></p>
+                    {% endif %}
+                </div>
+                {#              tab content of applicants tab#}
+                {% if not is_public %}
+                <div class="container tab-pane fade" id="navapplicants">
+                    {% if applicants %}
+                        {% paginate applicants %}
+                        <ul class="list-group list-group-flush">
+                            {% for applicant in applicants %}
+                            <li class="list-group-item mt-1">
+                                <!-- We should link to the user's profile when available. -->
+                                <!-- <a href=""></a> -->
+                                <h4>{{ applicant }}</h4>
+                            </li>
+                        </ul>
+                        {% endfor %}
+                
+                        {% get_pages %}
+                        <!-- Center-aligned -->
+                        <ul class="pagination justify-content-center" style="margin:20px 0">
+                            {% if not pages.current.is_first %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+                            {% endif %}
+                            {% for page in pages %}
+                            {% if page.is_current %}
+                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if not pages.current.is_last %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        <p><h4><i>No applicants</i></h4></p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+    </div>
+</div>
+{% endblock %}

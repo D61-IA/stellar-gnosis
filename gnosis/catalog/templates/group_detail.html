@@ -10,9 +10,12 @@
             {% if user.is_authenticated %}
             {% if user.is_superuser or user.id == group.owner.id %}
             <p>
-                <a href="{% url 'group_update' group.id %}" class="btn btn-danger btn-sm" role="button">
+                <a href="{% url 'group_update' group.id %}" class="btn btn-primary btn-sm" role="button">
                     Edit
                 </a>
+                <a href="{% url 'group_manage_members' group.id %}" class="btn btn-primary btn-sm" role="button">
+                        Manage Members
+                    </a>    
             </p>
             {% endif %}
             {% endif %}

@@ -26,6 +26,19 @@ def groups(request):
         request, "groups.html", {"groups": all_groups, "mygroups": my_groups, "message": message}
     )
 
+@login_required
+def group_manage_members(request, id):
+
+    group = get_object_or_404(ReadingGroup, pk=id)
+    if group.owner == request.user:
+        members = group.members.all()
+        print(f"members: {members}")
+        return render(
+           request, "group_manage_members.html", {"members": members, "applicants": members, "is_public": group.is_public }
+         )
+
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
 def group_join(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
 

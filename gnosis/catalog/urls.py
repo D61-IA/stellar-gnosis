@@ -98,6 +98,7 @@ urlpatterns += [
     path('group/<int:id>/update', views.group_update, name='group_update'),
     path('group/<int:id>/join', views.group_join, name='group_join'),
     path('group/<int:id>/leave', views.group_leave, name='group_leave'),
+    path('group/<int:id>/managemembers', views.group_manage_members, name='group_manage_members'),
     path('group/<int:id>/delete', views.group_delete, name='group_delete'),
     path('group/<int:id>/entry/<int:eid>/update', views.group_entry_update, name='group_entry_update'),
     path('group/<int:id>/entry/<int:eid>/remove', views.group_entry_remove, name='group_entry_remove'),
