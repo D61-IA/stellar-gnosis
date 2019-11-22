@@ -8,23 +8,29 @@
         <h3>
             {{ group.name }}
             {% if user.is_authenticated %}
-            {% if user.is_superuser or user.id == group.owner.id %}
-            <p>
-                <a href="{% url 'group_update' group.id %}" class="btn btn-primary btn-sm" role="button">
-                    Edit
-                </a>
-                <a href="{% url 'group_manage_members' group.id %}" class="btn btn-primary btn-sm" role="button">
-                        Manage Members
-                    </a>    
-            </p>
-            {% endif %}
+                {% if user.id == group.owner.id %}
+                <p>
+                    <a href="{% url 'group_update' group.id %}" class="btn btn-primary btn-sm" role="button">
+                        Edit
+                    </a>
+                    <a href="{% url 'group_manage_members' group.id %}" class="btn btn-primary btn-sm" role="button">
+                            Manage Members
+                        </a>    
+                </p>
+                {% elif is_member %}
+                    <p>
+                        <a href="{% url 'group_leave' group.id %}" class="btn btn-danger btn-sm" role="button">
+                            Leave
+                        </a>
+                    </p>    
+                {% endif %}
             {% endif %}
         </h3>
         created by {{ group.owner }} on {{ group.created_at }}
     </div>
     <div class="card-body">
         <p>{{ group.description }}</p>
-        <p class="text-right">
+        <p class="text-right">            
             <small>Keywords: {{ group.keywords }}</small>
         </p>
     </div>

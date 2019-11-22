@@ -121,9 +121,14 @@ def group_join(request, id):
 def group_leave(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
 
-    # if user is a member of the group and the group is private, then leave it
-
-    # otherwise, do nothing
+    # if user is a member of the group then leave it.
+    member = group.members.filter(member=request.user).all()
+    # check if the user is already in the list of members
+    if member.count() == 1:
+        print("((( Leaving the group )))")
+        member.delete()
+    else:
+        print("((( User is not a member of this group )))")
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
@@ -146,16 +151,14 @@ def group_detail(request, id):
     # Flag to indicate if the user is a member of this group, if the group is private
     is_member = False
     has_requested_access = False
-    if group.is_public:
-        is_member = True
-    else:
-        member = group.members.filter(member=request.user).all()
-        if member.count() == 1 :
-            print(f"{request.user} has status {member[0].access_type} for this group")
-            if member[0].access_type == 'granted':
-                is_member = True
-            elif member[0].access_type == 'requested':
-                has_requested_access = True
+
+    member = group.members.filter(member=request.user).all()
+    if member.count() == 1 :
+        print(f"{request.user} has status {member[0].access_type} for this group")
+        if member[0].access_type == 'granted':
+            is_member = True
+        elif member[0].access_type == 'requested':
+            has_requested_access = True
 
     return render(
         request,
