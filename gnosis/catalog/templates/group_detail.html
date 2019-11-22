@@ -158,6 +158,13 @@
         <p></p>
     </div>
 </div>
+{% elif has_requested_access %}
+<div class="card text-left shadow-sm mb-5 mt-3">
+        <div class="card-header"><strong>Private Group</strong></div>
+        <div class="card-body">
+            You have requested to join this group.
+        </div>
+    </div>    
 {% else %}
 <div class="card text-left shadow-sm mb-5 mt-3">
     <div class="card-header"><strong>Private Group</strong></div>

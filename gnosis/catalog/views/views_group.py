@@ -123,6 +123,7 @@ def group_detail(request, id):
 
     # Flag to indicate if the user is a member of this group, if the group is private
     is_member = False
+    has_requested_access = False
     if group.is_public:
         is_member = True
     else:
@@ -131,6 +132,8 @@ def group_detail(request, id):
             print(f"{request.user} has status {member[0].access_type} for this group")
             if member[0].access_type == 'granted':
                 is_member = True
+            elif member[0].access_type == 'requested':
+                has_requested_access = True
 
     return render(
         request,
@@ -140,6 +143,7 @@ def group_detail(request, id):
             "papers_proposed": papers_proposed,
             "papers_discussed": papers_discussed,
             "is_member": is_member,
+            "has_requested_access": has_requested_access,
             "today": today,
         },
     )
