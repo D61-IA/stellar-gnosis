@@ -6,6 +6,7 @@ from catalog.models import ReadingGroup, ReadingGroupEntry, ReadingGroupMember
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from catalog.forms import GroupForm, GroupEntryForm
+from django.contrib.auth.models import User
 from datetime import date
 from itertools import chain
 
@@ -47,9 +48,25 @@ def group_manage_members(request, id):
             {
                 "members": members,
                 "applicants": applicants,
-                "is_public": group.is_public,
+                # "is_public": group.is_public,
+                "group": group,
             },
         )
+
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
+
+@login_required
+def group_grant_access(request, id, aid):
+
+    group = get_object_or_404(ReadingGroup, pk=id)
+
+    if group.owner == request.user:
+        applicant = get_object_or_404(User, pk=aid)
+        # How do we change the applicant's status?
+        applicant = group.members.filter(member=applicant)
+        applicant.access_type = 'granted'
+        applicant.save()
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 

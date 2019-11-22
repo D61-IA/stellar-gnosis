@@ -13,7 +13,7 @@
                 <li class="nav-item">
                   <a class="nav-link active" data-toggle="tab" href="#navmembers">Members</a>
                 </li>
-                {% if not is_public %}
+                {% if not group.is_public %}
                 <li class="nav-item">
                   <a class="nav-link" data-toggle="tab" href="#navapplicants">Applicants</a>
                 </li>
@@ -56,7 +56,7 @@
                     {% endif %}
                 </div>
                 {#              tab content of applicants tab#}
-                {% if not is_public %}
+                {% if not group.is_public %}
                 <div class="container tab-pane fade" id="navapplicants">
                     {% if applicants %}
                         {% paginate applicants %}
@@ -64,8 +64,9 @@
                             {% for applicant in applicants %}
                             <li class="list-group-item mt-1">
                                 <!-- We should link to the user's profile when available. -->
-                                <!-- <a href=""></a> -->
                                 <h4>{{ applicant }}</h4>
+                                <a href="{% url 'group_grant_access' id=group.id aid=applicant.id %}" class="btn btn-primary btn-sm" role="button">Grant</a>
+                                <a href="" class="btn btn-danger btn-sm" role="button">Deny</a>
                             </li>
                         </ul>
                         {% endfor %}
