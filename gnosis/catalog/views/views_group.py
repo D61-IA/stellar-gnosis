@@ -76,6 +76,19 @@ def group_grant_access(request, id, aid):
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
+@login_required
+def group_deny_access(request, id, aid):
+
+    group = get_object_or_404(ReadingGroup, pk=id)
+
+    if group.owner == request.user:
+        applicant = get_object_or_404(User, pk=aid)
+        applicant_request_entry = group.members.filter(member=applicant).all()
+        if applicant_request_entry.count() == 1:                        
+            applicant_request_entry.delete()
+    
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
 
 def group_join(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
