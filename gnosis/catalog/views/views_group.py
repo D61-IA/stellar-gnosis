@@ -42,6 +42,7 @@ def group_manage_members(request, id):
         applicants = group.members.filter(access_type="requested").all()
 
         print(f"members: {members}")
+        print(f"members: {applicants}")
         return render(
             request,
             "group_manage_members.html",
@@ -64,9 +65,14 @@ def group_grant_access(request, id, aid):
     if group.owner == request.user:
         applicant = get_object_or_404(User, pk=aid)
         # How do we change the applicant's status?
-        applicant = group.members.filter(member=applicant)
-        applicant.access_type = 'granted'
-        applicant.save()
+        applicant_request_entry = group.members.filter(member=applicant).all()
+        if applicant_request_entry.count() == 1:                        
+            # I don't know if this is the best way to do this, but I will delete the existing entry
+            # with access_type set to 'requested' and add a new one with access_type 'granted'.
+            applicant_request_entry.delete()
+            member = ReadingGroupMember(member=applicant, access_type="granted")
+            member.save()
+            group.members.add(member)
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
@@ -115,6 +121,17 @@ def group_detail(request, id):
 
     today = date.today()
 
+    # Flag to indicate if the user is a member of this group, if the group is private
+    is_member = False
+    if group.is_public:
+        is_member = True
+    else:
+        member = group.members.filter(member=request.user).all()
+        if member.count() == 1 :
+            print(f"{request.user} has status {member[0].access_type} for this group")
+            if member[0].access_type == 'granted':
+                is_member = True
+
     return render(
         request,
         "group_detail.html",
@@ -122,6 +139,7 @@ def group_detail(request, id):
             "group": group,
             "papers_proposed": papers_proposed,
             "papers_discussed": papers_discussed,
+            "is_member": is_member,
             "today": today,
         },
     )
