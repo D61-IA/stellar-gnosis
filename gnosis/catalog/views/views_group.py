@@ -13,31 +13,46 @@ from itertools import chain
 def groups(request):
     """Groups index view."""
     my_groups = []
-    all_groups = ReadingGroup.objects.all().order_by('-created_at')[:50]
+    all_groups = ReadingGroup.objects.all().order_by("-created_at")[:50]
     if request.user.is_authenticated:
-        my_groups = ReadingGroup.objects.filter(members__member=request.user, members__access_type='granted').all()
+        my_groups = ReadingGroup.objects.filter(
+            members__member=request.user, members__access_type="granted"
+        ).all()
         my_groups_owned = ReadingGroup.objects.filter(owner=request.user).all()
         # Combine the Query sets
-        my_groups = list(chain(my_groups, my_groups_owned,))
-    
-    message = ''
+        my_groups = list(chain(my_groups, my_groups_owned))
+
+    message = ""
 
     return render(
-        request, "groups.html", {"groups": all_groups, "mygroups": my_groups, "message": message}
+        request,
+        "groups.html",
+        {"groups": all_groups, "mygroups": my_groups, "message": message},
     )
+
 
 @login_required
 def group_manage_members(request, id):
 
     group = get_object_or_404(ReadingGroup, pk=id)
+
     if group.owner == request.user:
-        members = group.members.all()
+        members = group.members.filter(access_type="granted").all()
+        applicants = group.members.filter(access_type="requested").all()
+
         print(f"members: {members}")
         return render(
-           request, "group_manage_members.html", {"members": members, "applicants": members, "is_public": group.is_public }
-         )
+            request,
+            "group_manage_members.html",
+            {
+                "members": members,
+                "applicants": applicants,
+                "is_public": group.is_public,
+            },
+        )
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
 
 def group_join(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
@@ -46,16 +61,17 @@ def group_join(request, id):
     if not group.is_public:
         # check if the user is already in the list of members
         member = group.members.filter(member=request.user).all()
-        if member.count()>0:
+        if member.count() > 0:
             print(f"{request.user} has status {member[0].access_type} for this group")
         else:
             print(f"{request.user} requesting access to group.")
             member = ReadingGroupMember(member=request.user, access_type="requested")
             member.save()
-            group.members.add(member)            
+            group.members.add(member)
     # otherwise, do nothing
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
 
 def group_leave(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
@@ -64,25 +80,34 @@ def group_leave(request, id):
 
     # otherwise, do nothing
 
-    
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
 
 def group_detail(request, id):
 
     group = get_object_or_404(ReadingGroup, pk=id)
-    papers_proposed = group.papers.filter(date_discussed=None).order_by('-date_proposed')
-    papers_discussed = group.papers.exclude(date_discussed=None).order_by('-date_discussed')
+    papers_proposed = group.papers.filter(date_discussed=None).order_by(
+        "-date_proposed"
+    )
+    papers_discussed = group.papers.exclude(date_discussed=None).order_by(
+        "-date_discussed"
+    )
 
     print(papers_proposed)
     print(papers_discussed)
 
     today = date.today()
 
-    return render(request, "group_detail.html", {"group": group,
-                                                 "papers_proposed": papers_proposed,
-                                                 "papers_discussed": papers_discussed,
-                                                 "today": today})
+    return render(
+        request,
+        "group_detail.html",
+        {
+            "group": group,
+            "papers_proposed": papers_proposed,
+            "papers_discussed": papers_discussed,
+            "today": today,
+        },
+    )
 
 
 @login_required
@@ -126,7 +151,7 @@ def group_update(request, id):
                     "name": group.name,
                     "keywords": group.keywords,
                     "description": group.description,
-                    "is_public": group.is_public
+                    "is_public": group.is_public,
                 }
             )
 
@@ -181,17 +206,17 @@ def group_entry_update(request, id, eid):
         # GET request
         else:
             form = GroupEntryForm(
-                initial={
-                    "date_discussed": group_entry.date_discussed,
-                }
+                initial={"date_discussed": group_entry.date_discussed}
             )
     else:
         print("You are not the owner.")
         return HttpResponseRedirect(reverse("groups_index"))
 
-    return render(request, "group_entry_update.html", {"form": form,
-                                                       "group": group,
-                                                       "group_entry": group_entry})
+    return render(
+        request,
+        "group_entry_update.html",
+        {"form": form, "group": group, "group_entry": group_entry},
+    )
 
 
 #
@@ -209,4 +234,3 @@ def group_delete(request, id):
             print("Group does not belong to user.")
 
     return HttpResponseRedirect(reverse("groups_index"))
-
