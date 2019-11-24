@@ -10,12 +10,12 @@
             {% if user.is_authenticated %}
                 {% if user.id == group.owner.id %}
                 <p>
-                    <a href="{% url 'group_update' group.id %}" class="btn btn-primary btn-sm" role="button">
-                        Edit
-                    </a>
-                    <a href="{% url 'group_manage_members' group.id %}" class="btn btn-primary btn-sm" role="button">
-                            Manage Members
-                        </a>    
+                    <a href="{% url 'group_update' group.id %}">
+                        <i class="material-icons">edit</i>
+                    </a>                    
+                    <a href="{% url 'group_manage_members' group.id %}">
+                        <i class="material-icons">group</i>
+                    </a>        
                 </p>
                 {% elif is_member %}
                     <p>
