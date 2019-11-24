@@ -86,12 +86,13 @@
                     class="btn btn-danger btn-sm" role="button">
                 Edit</a>{% endif %}
             </h5>
+            {% if paper.keywords %}
+                <h5 class="text-right">
+                    <small>keywords: {{ paper.keywords|truncatechars:75 }}</small>
+                </h5>
+            {% endif %}
 
-            <h5 class="text-right">
-                <small>keywords: {{ paper.keywords }}</small>
-            </h5>
-
-            <p><strong>Abstract:</strong> {{ paper.abstract }} </p>
+            <p><strong>Abstract:</strong> {{ paper.abstract|safe|linebreaks }} </p>
             {% if venue %}
                 <p>
                     <small><strong>Venue:</strong> {{ venue }}</small>
@@ -108,7 +109,6 @@
                 {% if not user.is_authenticated %}
                     <a href={% url 'login' %}>Endorse</a>{% endif %}
                 {% if user.is_authenticated %}
-
                     <div>
                         <div>Connect with:
                             <a href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
@@ -398,7 +398,7 @@
                                 {% if comment.is_flagged %}
                                     <p>Comment is being held for moderation</p>
                                 {% else %}
-                                    <p>{{ comment.text }}</p>
+                                    <p>{{ comment.text|safe|linebreaks }}</p>
                                 {% endif %}
                             </li>
                         {% endfor %}
