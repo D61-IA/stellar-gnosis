@@ -292,7 +292,7 @@
                                     {% if comment.is_flagged %}
                                         <p>Comment is being held for moderation</p>
                                     {% else %}
-                                        <p>{{ comment.text }}</p>
+                                        <p>{{ comment.text|safe|linebreaks }}</p>
                                     {% endif %}
                                     {% if comment.created_by == user %}
                                         <a href="{% url 'comment_update' comment.id %}">Edit</a>
@@ -344,7 +344,7 @@
                                 {% paginate notes %}
                                 {% for note in notes %}
                                     <li class="list-group-item shadow-sm mt-1">
-                                        <p>{{ note.note_content }}</p>
+                                        <p>{{ note.note_content|safe|linebreaks }}</p>
                                         <p>Date:
                                             <small class="ml-0 pr-5 text-muted">{{ note.created_at }}</small>
                                             Modified:
