@@ -482,7 +482,12 @@ class GroupForm(ModelForm):
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
 
+        self.fields["room"].widget = forms.Textarea()
+        self.fields["room"].widget.attrs.update({"rows": "1"})
+
         self.fields["keywords"].label = "Keywords*"
+        self.fields["videoconferencing"].label = "WebEx, Skype, etc."
+        self.fields["room"].lable="Room"
         self.fields["description"].label = "Description*"
         self.fields["name"].label = "Name*"
         self.fields["is_public"].label = "Public*"
@@ -490,6 +495,12 @@ class GroupForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
+
+    def clean_videoconferencing(self):
+        return self.cleaned_data["videoconferencing"]
+
+    def clean_room(self):
+        return self.cleaned_data["room"]
 
     def clean_keywords(self):
         return self.cleaned_data["keywords"]
@@ -502,7 +513,7 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = ReadingGroup
-        fields = ["name", "description", "keywords", "is_public"]
+        fields = ["name", "description", "keywords", "room", "is_public", "videoconferencing"]
 
 
 class GroupEntryForm(ModelForm):

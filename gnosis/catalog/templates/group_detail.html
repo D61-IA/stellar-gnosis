@@ -31,7 +31,7 @@
     <div class="card-body">
         <p>{{ group.description }}</p>
         <p class="text-right">            
-            <small>Keywords: {{ group.keywords }}</small>
+            <small>Keywords: {{ group.keywords|truncatechars:75 }}</small>
         </p>
     </div>
 </div>
@@ -77,6 +77,29 @@
             {% endif %}
     </div>
 </div>
+
+{% if group.videoconferencing  %}
+<div class="card shadow-sm mt-5">
+        <div class="card-header">
+            <h3>Video/Web Conference Details</h3>
+        </div>
+        <div class="card-body">
+        {{ group.videoconferencing|safe|linebreaks }}        
+        </div>
+    </div>    
+{% endif %}
+
+{% if group.room  %}
+<div class="card shadow-sm mt-5">
+        <div class="card-header">
+            <h3>Room</h3>
+        </div>
+        <div class="card-body">
+        {{ group.room|safe|linebreaks }}        
+        </div>
+    </div>    
+{% endif %}
+
 
 <div class="card shadow-sm mt-5">
     <div class="card-header">

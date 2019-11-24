@@ -205,6 +205,8 @@ def group_update(request, id):
                 group.keywords = form.cleaned_data["keywords"]
                 group.description = form.cleaned_data["description"]
                 group.is_public = form.cleaned_data["is_public"]
+                group.videoconferencing = form.clean_videoconferencing()
+                group.room = form.clean_room()
                 group.save()
 
                 return HttpResponseRedirect(reverse("groups_index"))
@@ -216,6 +218,8 @@ def group_update(request, id):
                     "keywords": group.keywords,
                     "description": group.description,
                     "is_public": group.is_public,
+                    "room": group.room, 
+                    "videoconferencing": group.videoconferencing,
                 }
             )
 
