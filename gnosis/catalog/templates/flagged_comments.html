@@ -10,7 +10,7 @@
             <div class="card-body">
                 {% for comment in comments %}
                     <ul class="list-group">
-                        <li id="flag_{{ comment.id }}" class="list-group-item mt-1">
+                        <li class="list-group-item mt-1">
                             <p><strong>Violation type:</strong> {{ comment.violation }}</p>
                             <p><strong>User description:</strong> {{ comment.description }}</p>
                             <p><strong>Comment:</strong> {{ comment.comment.text }}</p>
