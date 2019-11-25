@@ -228,6 +228,8 @@ def paper_detail(request, id):
 
     comments = paper.comment_set.all()
 
+    flag_form = FlaggedCommentForm()
+
     # print("ego_network_json: {}".format(ego_network_json))
     return render(
         request,
@@ -242,6 +244,7 @@ def paper_detail(request, id):
             "noteform": note_form,
             "notes": notes,
             "commentform": comment_form,
+            "flag_form": flag_form,
             "num_comments": comments.count(),
             "ego_network": ego_network_json,
         },
@@ -1286,7 +1289,14 @@ def paper_flag_comment(request, id, cid):
                 comment_flag.save()
                 comment.is_flagged = True
                 comment.save()
-                return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
+
+                data = {'is_valid': True}
+                print("responded!")
+                return JsonResponse(data)
+            else:
+                data = {'is_valid': False}
+                print("responded!")
+                return JsonResponse(data)
         # GET request
         else:
             print("GET: new FlaggedCommentForm")

@@ -23,25 +23,12 @@
     user-select: none;
 }
 
-.more_vert {
-    user-select: none;
-    color: darkgrey;
-}
-
-.more_vert:hover {
+.with_cursor {
     cursor: pointer;
-    color: black;
 }
 
-.opt_container {
-    padding: 10px;
-}
-
-.opt_container:hover {
-    cursor: pointer;
-    text-decoration: none;
-    color: black;
-    background-color: lightgray;
+.no_cursor {
+    cursor: auto !important;
 }
 
 /* covers entire page as a background to popup elements (e.g. dialogs) */
