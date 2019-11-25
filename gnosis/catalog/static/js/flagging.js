@@ -15,7 +15,7 @@ var comment_id;
 /************** opens flag dialog that contains flag form **************/
 
 $('.open_flag_dialog').click(function () {
-    if ($(this).attr('data-flagged') !== "True") {
+    if ($(this).has('not_flagged').length) {
         // get comment id of this event
         comment_id = $(this).attr('data-commentid');
         $this_comment = $('#cmt_thread_' + comment_id);

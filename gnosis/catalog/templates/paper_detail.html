@@ -282,11 +282,11 @@
                                                  data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
                                                  data-commentid={{ comment.id }} data-flagged={{ comment.is_flagged }}>
                                                 {% if comment.is_flagged %}
-                                                    <div class="no_cursor" data-toggle="tooltip" title="Flagged">
+                                                    <div class="flagged" data-toggle="tooltip" title="Flagged">
                                                         <i class="material-icons menu_item">flag</i>
                                                     </div>
                                                 {% else %}
-                                                    <div class="with_cursor" data-toggle="tooltip" title="Report">
+                                                    <div class="not_flagged" data-toggle="tooltip" title="Report">
                                                         <i class="material-icons menu_item">outlined_flag</i>
                                                     </div>
                                                 {% endif %}

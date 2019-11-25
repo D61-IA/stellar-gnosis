@@ -23,11 +23,11 @@
     user-select: none;
 }
 
-.with_cursor {
+.not_flagged{
     cursor: pointer;
 }
 
-.no_cursor {
+.flagged {
     cursor: auto !important;
 }
 
