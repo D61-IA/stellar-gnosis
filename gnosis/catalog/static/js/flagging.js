@@ -15,7 +15,7 @@ var comment_id;
 /************** opens flag dialog that contains flag form **************/
 
 $('.open_flag_dialog').click(function () {
-    if ($(this).has('not_flagged').length) {
+    if ($(this).has('.not_flagged').length) {
         // get comment id of this event
         comment_id = $(this).attr('data-commentid');
         $this_comment = $('#cmt_thread_' + comment_id);
@@ -53,7 +53,7 @@ form.submit(function (e) {
                     if ($this_comment != null) {
                         $this_comment.find('.comment_text').text('Comment is being held for moderation');
                         $this_comment.find('.material-icons').text('flag');
-                        $this_comment.find('.with_cursor').attr('class', 'no_cursor').attr('title', 'Flagged');
+                        $this_comment.find('.not_flagged').attr('class', 'flagged').attr('title', 'Flagged');
                     }
                     form.trigger('reset');
                     // close loader
