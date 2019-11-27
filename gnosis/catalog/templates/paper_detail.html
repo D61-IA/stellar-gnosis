@@ -278,7 +278,7 @@
                                 <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
                                     {% if comment.created_by != user %}
                                         <div style="float: right; text-align: right;">
-                                            <div class="open_flag_dialog"
+                                            <div class="open_flag_dialog popup_opener"
                                                  data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
                                                  data-commentid={{ comment.id }} data-flagged={{ comment.is_flagged }}>
                                                 {% if comment.is_flagged %}

@@ -1,7 +1,8 @@
 /************** click anywhere on page to cancel popups **************/
 $(document).click(function (e) {
     var $container = $(".popup");
-    var $target = $(".open_flag_dialog");
+    // element that triggers popup
+    var $target = $(".popup_opener");
     // if the target of the click isn't the container nor a descendant of the container.
     if (!$target.is(e.target) && $target.has(e.target).length === 0 && $container.has(e.target).length === 0) {
         $container.attr('hidden', true);
@@ -60,7 +61,8 @@ form.submit(function (e) {
                     $('#loader').attr('hidden', true);
                     $('#flag_response').attr('hidden', false);
                 } else {
-                    alert("Invalid form.")
+                    alert("Invalid form.");
+                    $('#loader').attr('hidden', true);
                 }
             },
             error: function (data) {

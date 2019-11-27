@@ -223,9 +223,10 @@ class Comment(models.Model):
         on_delete=models.CASCADE,  # deleting a paper deletes all associated comments
     )
 
+
     class Meta:
         app_label = "catalog"
-        ordering = ["created_at"]
+        ordering = ["-created_at"]
 
     def __str__(self):
         return "{}".format(self.text)
