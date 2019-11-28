@@ -290,9 +290,9 @@
                                    <p><strong>{{ comment.created_by }}</strong> said on
                                     {{ comment.created_at|date:"F d, Y" }}</p>
                                     {% if comment.is_flagged %}
-                                        <p>Comment is being held for moderation</p>
+                                        <p class="flagged">Comment is being held for moderation</p>
                                     {% else %}
-                                        <p>{{ comment.text }}</p>
+                                        <p class="not_flagged">{{ comment.text }}</p>
                                     {% endif %}
                                     {% if comment.created_by == user %}
                                         <a href="{% url 'comment_update' comment.id %}">Edit</a>
