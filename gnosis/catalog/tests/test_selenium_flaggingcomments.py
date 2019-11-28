@@ -5,47 +5,74 @@ from catalog.models import CommentFlag, Comment, Paper
 from catalog.forms import FlaggedCommentForm
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from django.contrib.auth.models import User
 
 
 class GoogleTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
+
+        # create temporary assets for testing
+        cls.usrname = 'testuser118'
+        cls.adminname = 'admin18'
+
+        cls.user = User.objects.create_user(username=cls.usrname, password="12345")
+
+        cls.admin = User.objects.create_superuser(username=cls.adminname,
+                                                   password='abcdefg',
+                                                   email="admin@gnosis.stellargraph.io")
+
+        cls.paper = Paper.objects.create(
+            title="Best paper in the world",
+            abstract="The nature of gravity.",
+            download_link="https://google.com",
+            created_by=cls.user,
+        )
+
+        cls.comment = Comment.objects.create(
+            text="testing comment",
+            created_by=cls.user,
+            is_flagged=False,
+            is_hidden=False,
+            paper=cls.paper
+        )
+
+        # set testing browser to Chrome
         cls.browser = webdriver.Chrome()
-        # login
-        cls.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/1/')
+        # login as admin
+        cls.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(cls.paper.id) + '/')
         username = cls.browser.find_element_by_id('id_login')
         username.clear()
-        username.send_keys('Gregg')
+        username.send_keys(cls.adminname)
 
         pwd = cls.browser.find_element_by_id('id_password')
         pwd.clear()
-        pwd.send_keys('testpassword')
+        pwd.send_keys('abcdefg')
 
         cls.browser.find_element_by_tag_name('form').submit()
 
-        cls.paper = Paper.objects.get(pk=1)
-        cls.comments = cls.paper.comment_set
-        cls.sorted_comments = cls.comments.order_by('-created_at')
         cls.comment_container = cls.browser.find_element_by_css_selector('ul.list-group')
-        cls.comment_items = cls.comment_container.find_elements_by_css_selector('li.list-group-item')
-        for item in cls.comment_items:
-            tmp = item.find_elements_by_class_name('open_flag_dialog')
-            flagged = item.find_elements_by_class_name('flagged')
-            if len(tmp) > 0 and len(flagged) == 0:
-                cls.first_comment = item
-                break
+        # there should be only one comment in this fictional paper
+        cls.first_comment = cls.comment_container.find_element_by_css_selector('li.list-group-item')
+
+    # remove temporary assets from DB
+    @classmethod
+    def tearDownClass(cls):
+        cls.user.delete()
+
+        cls.admin.delete()
+
+        cls.paper.delete()
+
+        cls.comment.delete()
 
 # the following tests are designed to test on comments that are yet flagged, make sure the page has such comments.
     # assert each comment has the correct flag status shown on the flag UI
     def testFlagUIs(self):
-        for i in range(len(self.comment_items)):
-            rst = len(self.comment_items[i].find_elements_by_class_name('flagged')) > 0
-            b = self.sorted_comments[i].is_flagged
+        text = self.first_comment.find_element_by_class_name('material-icons').text
+        self.assertEqual(text, 'outlined_flag')
 
-            self.assertEqual(rst, b)
-
-    # assert pop up flag form is unhidden when flag icon is clicked
+    # assert pop up flag form is shown when flag icon is clicked
     def testFlagClick(self):
         first_comment = self.first_comment
         if first_comment is not None:
@@ -122,46 +149,72 @@ class GoogleTestCase(unittest.TestCase):
 class FirefoxTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+
+        # create temporary assets for testing
+        cls.usrname = 'testuser119'
+        cls.adminname = 'admin19'
+
+        cls.user = User.objects.create_user(username=cls.usrname, password="12345")
+
+        cls.admin = User.objects.create_superuser(username=cls.adminname,
+                                                  password='abcdefg',
+                                                  email="admin@gnosis.stellargraph.io")
+
+        cls.paper = Paper.objects.create(
+            title="Best paper in the world",
+            abstract="The nature of gravity.",
+            download_link="https://google.com",
+            created_by=cls.user,
+        )
+
+        cls.comment = Comment.objects.create(
+            text="testing comment",
+            created_by=cls.user,
+            is_flagged=False,
+            is_hidden=False,
+            paper=cls.paper
+        )
+
+        # set testing browser to Chrome
         cls.browser = webdriver.Firefox()
-        # login
-        cls.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/1/')
+        # login as admin
+        cls.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(cls.paper.id) + '/')
         username = cls.browser.find_element_by_id('id_login')
         username.clear()
-        username.send_keys('Gregg')
+        username.send_keys(cls.adminname)
 
         pwd = cls.browser.find_element_by_id('id_password')
         pwd.clear()
-        pwd.send_keys('testpassword')
+        pwd.send_keys('abcdefg')
 
         cls.browser.find_element_by_tag_name('form').submit()
-
-        cls.paper = Paper.objects.get(pk=1)
-        cls.comments = cls.paper.comment_set
-        cls.sorted_comments = cls.comments.order_by('-created_at')
 
         # wait for Ajax response
         wait = WebDriverWait(cls.browser, 10)
         element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
 
         cls.comment_container = cls.browser.find_element_by_css_selector('ul.list-group')
-        cls.comment_items = cls.comment_container.find_elements_by_css_selector('li.list-group-item')
-        for item in cls.comment_items:
-            tmp = item.find_elements_by_class_name('open_flag_dialog')
-            flagged = item.find_elements_by_class_name('flagged')
-            if len(tmp) > 0 and len(flagged) == 0:
-                cls.first_comment = item
-                break
+        # there should be only one comment in this fictional paper
+        cls.first_comment = cls.comment_container.find_element_by_css_selector('li.list-group-item')
+
+    # remove temporary assets from DB
+    @classmethod
+    def tearDownClass(cls):
+        cls.user.delete()
+
+        cls.admin.delete()
+
+        cls.paper.delete()
+
+        cls.comment.delete()
 
     # the following tests are designed to test on comments that are yet flagged, make sure the page has such comments.
     # assert each comment has the correct flag status shown on the flag UI
     def testFlagUIs(self):
-        for i in range(len(self.comment_items)):
-            rst = len(self.comment_items[i].find_elements_by_class_name('flagged')) > 0
-            b = self.sorted_comments[i].is_flagged
+        text = self.first_comment.find_element_by_class_name('material-icons').text
+        self.assertEqual(text, 'outlined_flag')
 
-            self.assertEqual(rst, b)
-
-    # assert pop up flag form is unhidden when flag icon is clicked
+    # assert pop up flag form is shown when flag icon is clicked
     def testFlagClick(self):
         first_comment = self.first_comment
         if first_comment is not None:
