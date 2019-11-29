@@ -444,6 +444,16 @@ class ReadingGroupMember(models.Model):
 class ReadingGroup(models.Model):
     """A ReadingGroup model"""
 
+    days = (
+        ("Monday", "Monday"),
+        ("Tuesday", "Tuesday"),
+        ("Wednesday", "Wednesday"),
+        ("Thursday", "Thursday"),
+        ("Friday", "Friday"),
+        ("Saturday", "Saturday"),
+        ("Sunday", "Sunday")
+    )
+
     # Fields
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=False)
@@ -451,6 +461,11 @@ class ReadingGroup(models.Model):
     is_public = models.BooleanField(default=False, blank=False, null=False)
     videoconferencing = models.TextField(blank=True, null=True, default='')
     room = models.TextField(max_length=150, blank=True, null=True, default='')
+
+    day = models.CharField(max_length=9, choices=days, blank=False, default="M")
+    start_time = models.TimeField(blank=False, null=False)
+    end_time = models.TimeField(blank=False, null=False)
+
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     owner = models.ForeignKey(

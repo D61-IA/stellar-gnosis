@@ -485,6 +485,9 @@ class GroupForm(ModelForm):
         self.fields["room"].widget = forms.Textarea()
         self.fields["room"].widget.attrs.update({"rows": "1"})
 
+        self.fields["day"].label = "Day*"
+        self.fields["start_time"].label = "Start Time (HH/MM/SS)*"
+        self.fields["end_time"].label = "Finish Time (HH/MM/SS)*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["videoconferencing"].label = "WebEx, Skype, etc."
         self.fields["room"].lable="Room"
@@ -495,6 +498,26 @@ class GroupForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
+
+    def clean(self):
+        """Overriding in order to validate the start and finish times."""
+        cleaned_data = super().clean()
+        stime = cleaned_data.get("start_time")
+        etime = cleaned_data.get("end_time")
+
+        if etime < stime:
+            raise forms.ValidationError("Finish time must be later than start time.")
+
+        return cleaned_data
+
+    def clean_day(self):
+        return self.cleaned_data["day"]
+
+    def clean_start_time(self):
+        return self.cleaned_data["start_time"]
+
+    def clean_end_time(self):
+        return self.cleaned_data["end_time"]
 
     def clean_videoconferencing(self):
         return self.cleaned_data["videoconferencing"]
@@ -513,7 +536,8 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = ReadingGroup
-        fields = ["name", "description", "keywords", "room", "is_public", "videoconferencing"]
+        fields = ["name", "description", "keywords", "room",
+                  "day", "start_time", "end_time", "is_public", "videoconferencing"]
 
 
 class GroupEntryForm(ModelForm):
