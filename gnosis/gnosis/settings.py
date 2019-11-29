@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'recaptcha',
     'captcha',
     'django.contrib.humanize',
+    'django_countries',
 ]
 
 MIDDLEWARE = [
