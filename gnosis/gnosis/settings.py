@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'captcha',
     'django.contrib.humanize',
     'django_countries',
+    'timezone_field',
 ]
 
 MIDDLEWARE = [
