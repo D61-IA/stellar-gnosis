@@ -7,6 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, URLVali
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
+from timezone_field import TimeZoneField
 
 #
 def valid_code_website(value):
@@ -467,6 +468,11 @@ class ReadingGroup(models.Model):
     day = models.CharField(max_length=9, choices=days, blank=False, default="Monday")
     start_time = models.TimeField(blank=False, null=False)
     end_time = models.TimeField(blank=False, null=False)
+
+    timezone = TimeZoneField(default='Australia/Sydney',
+                             display_GMT_offset=True,
+                             null=False,
+                             blank=False)
 
     city = models.CharField(max_length=75,
                             default="Sydney",

@@ -4,7 +4,6 @@ from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from .models import ReadingGroup, ReadingGroupEntry
 from .models import Collection, CollectionEntry
 from django.utils.safestring import mark_safe
-
 from captcha.fields import ReCaptchaField
 from captcha.widgets import ReCaptchaV2Checkbox, ReCaptchaV2Invisible, ReCaptchaV3
 
@@ -490,6 +489,7 @@ class GroupForm(ModelForm):
         self.fields["day"].label = "Day*"
         self.fields["start_time"].label = "Start Time (HH/MM/SS)*"
         self.fields["end_time"].label = "Finish Time (HH/MM/SS)*"
+        self.fields["timezone"].label = "Timezone*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["videoconferencing"].label = "WebEx, Skype, etc."
         self.fields["room"].lable="Room"
@@ -511,6 +511,9 @@ class GroupForm(ModelForm):
             raise forms.ValidationError("Finish time must be later than start time.")
 
         return cleaned_data
+
+    def clean_timezone(self):
+        return self.cleaned_data["timezone"]
 
     def clean_country(self):
         return self.cleaned_data["country"]
@@ -545,7 +548,7 @@ class GroupForm(ModelForm):
     class Meta:
         model = ReadingGroup
         fields = ["name", "description", "keywords", "city", "country", "room",
-                  "day", "start_time", "end_time", "is_public", "videoconferencing"]
+                  "day", "timezone", "start_time", "end_time", "is_public", "videoconferencing"]
 
 
 class GroupEntryForm(ModelForm):

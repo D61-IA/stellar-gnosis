@@ -217,6 +217,7 @@ def group_update(request, id):
                 group.day = form.clean_day()
                 group.start_time = form.clean_start_time()
                 group.end_time = form.clean_end_time()
+                group.timezone = form.clean_timezone()
                 group.save()
 
                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
@@ -234,6 +235,7 @@ def group_update(request, id):
                     "day": group.day,
                     "start_time": group.start_time,
                     "end_time": group.end_time,
+                    "timezone": group.timezone,
                     "videoconferencing": group.videoconferencing,
                 }
             )
