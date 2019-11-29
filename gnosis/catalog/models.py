@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 import datetime
-from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator, RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
@@ -454,6 +454,8 @@ class ReadingGroup(models.Model):
         ("Sunday", "Sunday")
     )
 
+    city_validator = RegexValidator(r'^[a-zA-Z]*$', 'Only alphabetic characters are allowed.')
+
     # Fields
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=False)
@@ -462,11 +464,16 @@ class ReadingGroup(models.Model):
     videoconferencing = models.TextField(blank=True, null=True, default='')
     room = models.TextField(max_length=150, blank=True, null=True, default='')
 
-    day = models.CharField(max_length=9, choices=days, blank=False, default="M")
+    day = models.CharField(max_length=9, choices=days, blank=False, default="Monday")
     start_time = models.TimeField(blank=False, null=False)
     end_time = models.TimeField(blank=False, null=False)
 
-    #city = models.CharField(max_length=75, blank=True, null=True)
+    city = models.CharField(max_length=75,
+                            default="Sydney",
+                            blank=False,
+                            null=False,
+                            validators=[city_validator])
+
     country = CountryField(default='AU', blank=False, null=False)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
