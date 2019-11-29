@@ -4,5 +4,6 @@ django-el-pagination==3.2.4
 django-registration==3.0
 django-recaptcha==2.0.5
 psycopg2==2.8.4
+psycopg2-binary==2.8.4
 django-allauth==0.40.0
 django-crispy-forms==1.8.0
