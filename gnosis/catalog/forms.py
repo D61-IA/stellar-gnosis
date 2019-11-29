@@ -482,6 +482,7 @@ class GroupForm(ModelForm):
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
 
+        self.fields["country"].label = "Country*"
         self.fields["room"].widget = forms.Textarea()
         self.fields["room"].widget.attrs.update({"rows": "1"})
 
@@ -510,6 +511,9 @@ class GroupForm(ModelForm):
 
         return cleaned_data
 
+    def clean_country(self):
+        return self.cleaned_data["country"]
+
     def clean_day(self):
         return self.cleaned_data["day"]
 
@@ -536,7 +540,7 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = ReadingGroup
-        fields = ["name", "description", "keywords", "room",
+        fields = ["name", "description", "keywords", "country", "room",
                   "day", "start_time", "end_time", "is_public", "videoconferencing"]
 
 

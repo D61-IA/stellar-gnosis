@@ -90,6 +90,7 @@ def group_deny_access(request, id, aid):
     
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
+
 @login_required
 def group_join(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
@@ -210,6 +211,7 @@ def group_update(request, id):
                 group.description = form.cleaned_data["description"]
                 group.is_public = form.cleaned_data["is_public"]
                 group.videoconferencing = form.clean_videoconferencing()
+                group.country = form.clean_country()
                 group.room = form.clean_room()
                 group.day = form.clean_day()
                 group.start_time = form.clean_start_time()
@@ -217,7 +219,6 @@ def group_update(request, id):
                 group.save()
 
                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
-                # return HttpResponseRedirect(reverse("groups_index"))
         # GET request
         else:
             form = GroupForm(
@@ -226,6 +227,7 @@ def group_update(request, id):
                     "keywords": group.keywords,
                     "description": group.description,
                     "is_public": group.is_public,
+                    "country": group.country,
                     "room": group.room,
                     "day": group.day,
                     "start_time": group.start_time,

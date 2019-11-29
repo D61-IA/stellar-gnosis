@@ -31,7 +31,8 @@
     </div>
     <div class="card-body">
         <p>{{ group.description }}</p>
-        <p class="text-right">            
+        <p>Location: {{ group.country.name }}</p>
+        <p class="text-right">
             <small>Keywords: {{ group.keywords|truncatechars:75 }}</small>
         </p>
     </div>
