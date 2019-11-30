@@ -28,13 +28,13 @@ class ReadingGroupViewsTestCase(TestCase):
 
         # this is a public group
         self.ml_group_public = ReadingGroup.objects.create(name='ml public', description='Machine Learning journal club',
-                                                    keywords='machine learning', is_public=True, videoconferencing='',
+                                                    keywords='machine learning', is_public=True, videoconferencing='Dial 10101010',
                                                     room='R101', day='Tuesday', start_time=start_time, end_time=end_time,
                                                     address='11 Keith street, Dulwich Hill', city='Sydney', country='AU',
                                                     owner=self.admin)
         # this is a private group
         self.ml_group_private = ReadingGroup.objects.create(name='ml private', description='Machine Learning journal club',
-                                                    keywords='machine learning', is_public=False, videoconferencing='',
+                                                    keywords='machine learning', is_public=False, videoconferencing='Dial 12345678',
                                                     room='R101', day='Tuesday', start_time=start_time, end_time=end_time,
                                                     address='11 Keith street, Dulwich Hill', city='Sydney', country='AU',
                                                     owner=self.admin)
@@ -48,7 +48,7 @@ class ReadingGroupViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['groups'].count(), 2)
 
-    def test_code_delete(self):
+    def test_group_delete(self):
         """ Only a group owner can delete a ReadingGroup entry """
         response = self.client.get(reverse("group_delete", kwargs={'id': self.ml_group_private.id}))
 
@@ -114,23 +114,13 @@ class ReadingGroupViewsTestCase(TestCase):
         self.client.logout()
 
     def test_group_update(self):
-        """ Only the group owner if logged in can call update"""
-        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_private.id}))
-
-        # Anyone can access the detail view
-        self.assertEqual(response.status_code, 200)
-
-        # this is a private group, so the user, if not logged in and not a member, should not be able to 
-        # see all details.
-
-        # ToDo: Add some tests for this behavior here.
-
+        """ Only the group owner if logged in can call update"""        
         # User must be logged in to access the update view
         # The user should be redirected to login
         response = self.client.get(reverse("group_update", kwargs={'id': self.ml_group_private.id}))
         self.assertEqual(response.status_code, 302)
 
-        # Login the test user who is not the owner of this group. The test user should not have access to the udpate
+        # Login the test user who is not the owner of this group. The test user should not have access to the update
         # view for this group.
         login = self.client.login(username='testuser', password='12345')
 
@@ -165,10 +155,60 @@ class ReadingGroupViewsTestCase(TestCase):
         # Same holds for public groups if the user is not the owner.
         response = self.client.get(reverse("group_update", kwargs={'id': self.ml_group_public.id}))
         # Only the group owner can access the update view.
-        target_url = f"/catalog/group/{self.ml_group_public.id}"
         self.assertEqual(response.status_code, 200)
 
         # Logout user admin
         self.client.logout()
 
+    def test_group_detail(self):
+
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_private.id}))
+
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+
+        # this is a private group, so the user, if not logged in and not a member, should not be able to 
+        # see all details.
+        # ToDo: Add some tests for this behavior here.
+        self.assertNotContains(response, "Schedule")
+        self.assertNotContains(response, "Video/Web Conference Details")
+
+
+        # Login the test user who is not the owner of this group. The test user should not have access to the update
+        # view for this group.
+        login = self.client.login(username='testuser', password='12345')
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_private.id}))
+
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+
+        # this is a private group, so the user, if not logged in and not a member, should not be able to 
+        # see all details.
+        # ToDo: Add some tests for this behavior here.
+        self.assertNotContains(response, "Schedule")
+        self.assertNotContains(response, "Video/Web Conference Details")
+
+        # Logout user test
+        self.client.logout()
+
+        # admin is the owner of both the public and private groups, so admin should have access to the update
+        # views for each.
+        login = self.client.login(username='admin', password='abcdefg')
+
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_private.id}))
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, "Schedule")
+        self.assertContains(response, "Video/Web Conference Details")
+
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_public.id}))
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, "Schedule")
+        self.assertContains(response, "Video/Web Conference Details")
+
+        # Logout user admin
+        self.client.logout()
 
