@@ -74,7 +74,7 @@
                             {% if paper_entry.date_discussed >= today %}            
                                 <li class="list-group-item">
                                     <div class="d-flex flex-row">
-                                        <div class="mr-auto p-2">{{ paper_entry.date_discussed }} <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                        <div class="mr-auto p-2"><strong>{{ paper_entry.date_discussed }}</strong> <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
                                             proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
                                         </div>
                                         {% if user.id == group.owner.id %}
