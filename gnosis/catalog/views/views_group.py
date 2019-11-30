@@ -211,6 +211,7 @@ def group_update(request, id):
                 group.description = form.cleaned_data["description"]
                 group.is_public = form.cleaned_data["is_public"]
                 group.videoconferencing = form.clean_videoconferencing()
+                group.address = form.clean_address()
                 group.city = form.clean_city()
                 group.country = form.clean_country()
                 group.room = form.clean_room()
@@ -229,6 +230,7 @@ def group_update(request, id):
                     "keywords": group.keywords,
                     "description": group.description,
                     "is_public": group.is_public,
+                    "address": group.address, 
                     "city": group.city,
                     "country": group.country,
                     "room": group.room,

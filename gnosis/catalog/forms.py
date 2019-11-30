@@ -481,6 +481,10 @@ class GroupForm(ModelForm):
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
 
+        self.fields["address"].widget = forms.Textarea()
+        self.fields["address"].widget.attrs.update({"rows": "3"})
+
+        self.fields["address"].label = "Building/Street/Suburb/Postcode"
         self.fields["city"].label = "City*"
         self.fields["country"].label = "Country*"
         self.fields["room"].widget = forms.Textarea()
@@ -511,6 +515,9 @@ class GroupForm(ModelForm):
             raise forms.ValidationError("Finish time must be later than start time.")
 
         return cleaned_data
+
+    def clean_address(self):
+        return self.cleaned_data["address"]
 
     def clean_timezone(self):
         return self.cleaned_data["timezone"]
@@ -547,7 +554,7 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = ReadingGroup
-        fields = ["name", "description", "keywords", "city", "country", "room",
+        fields = ["name", "description", "keywords", "address", "city", "country", "room",
                   "day", "timezone", "start_time", "end_time", "is_public", "videoconferencing"]
 
 
