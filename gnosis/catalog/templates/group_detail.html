@@ -52,34 +52,62 @@
 {% if group.is_public or user.id == group.owner.id  or is_member%} 
 <div class="card shadow-sm mt-5">
     <div class="card-header">
-        <h3>Upcoming Papers</h3>
+        <h3>Schedule</h3>
     </div>
-        <div class="card-body">
-            {% if papers_discussed %}
-            <ul class="list-group list-group-flush">
-                {% for paper_entry in papers_discussed %}
-                {% if paper_entry.date_discussed %}
-                    {% if paper_entry.date_discussed >= today %}
-
-                    <li class="list-group-item">
-                        <div class="d-flex flex-row">
-                            <div class="mr-auto p-2">{{ paper_entry.date_discussed }} <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                                proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}</div>
-                            {% if user.id == group.owner.id %}
-                                <div class="p-2">
-                                    <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_unschedule' paper_entry.reading_group.id paper_entry.id %}">Unschedule</a>
-                                </div>
+    <div class="card-body">
+        {% if papers_discussed %}
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#upcoming">Upcoming Paper(s)</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#location">Location</a>
+            </li>
+        </ul>
+                  
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane container active" id="upcoming">
+                <ul class="list-group list-group-flush">
+                    {% for paper_entry in papers_discussed %}
+                        {% if paper_entry.date_discussed %}
+                            {% if paper_entry.date_discussed >= today %}            
+                                <li class="list-group-item">
+                                    <div class="d-flex flex-row">
+                                        <div class="mr-auto p-2">{{ paper_entry.date_discussed }} <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                            proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
+                                        </div>
+                                        {% if user.id == group.owner.id %}
+                                            <div class="p-2">
+                                                <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_unschedule' paper_entry.reading_group.id paper_entry.id %}">Unschedule</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
                             {% endif %}
-                        </div>
-                    </li>
-                    {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="tab-pane container fade" id="location">
+                {% if group.room|length > 0 %}
+                    <strong>Room:</strong><br/>{{ group.room }} <br/><br/>
                 {% endif %}
-                {% endfor %}
-            </ul>
-            {% endif %}
+                {% if group.address|length > 0 %}
+                    <strong>Address:</strong> {{ group.address|safe|linebreaks }} {{ group.city }}, {{ group.country.name }}
+                {% else %}
+                    <strong>Address:</strong> {{ group.city }}, {{ group.country.name }}
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+            <p><i>No paper(s) scheduled.</i></p>
+        {% endif %}
     </div>
 </div>
 
+{% if user.id == group.owner.id  or is_member%} 
 {% if group.videoconferencing  %}
 <div class="card shadow-sm mt-5">
         <div class="card-header">
@@ -90,18 +118,7 @@
         </div>
     </div>    
 {% endif %}
-
-{% if group.room  %}
-<div class="card shadow-sm mt-5">
-        <div class="card-header">
-            <h3>Room</h3>
-        </div>
-        <div class="card-body">
-        {{ group.room|safe|linebreaks }}        
-        </div>
-    </div>    
 {% endif %}
-
 
 <div class="card shadow-sm mt-5">
     <div class="card-header">
