@@ -147,9 +147,6 @@ def group_detail(request, id):
         "-date_discussed"
     )
 
-    print(papers_proposed)
-    print(papers_discussed)
-
     today = date.today()
 
     # Flag to indicate if the user is a member of this group, if the group is private
