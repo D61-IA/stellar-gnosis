@@ -240,7 +240,7 @@ class ReadingGroupViewsTestCase(TestCase):
         response = self.client.get(reverse("group_join", kwargs={'id': self.ml_group_public.id}))
         target_url = f"/catalog/group/{self.ml_group_public.id}"
 
-        # We should be redirected to the account login page
+        # We should be redirected to the group detail page
         self.assertRedirects(response,
                             expected_url=target_url,
                             status_code=302,
@@ -258,3 +258,87 @@ class ReadingGroupViewsTestCase(TestCase):
         self.client.logout()
         # The public group now has one owner (admin) and one member (testuser)
         self.assertEqual(self.ml_group_public.members.all().count(), 1)
+
+    def test_group_join_private(self):
+        '''Testing a user joinig a private group'''
+
+        # a user must login before s/he can join a group
+        # We have tested this earlier when joining a public group but for sanity, let's test again
+        # for a private group.
+        target_url = f"/accounts/login/?next=/catalog/group/{self.ml_group_private.id}/join"
+        response = self.client.get(reverse("group_join", kwargs={'id': self.ml_group_private.id}))
+
+        # We should be redirected to the account login page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+        
+        # check join for logged in user who is not the group owner
+        # login user testuser; note that this user is not the owner of the public reading group (admin is).
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_private.id}))
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+
+        # This is a private group, a user must join and be granted access to the group to see all the details.
+        self.assertNotContains(response, "Video/Web Conference Details")
+
+        # When a user joins a private group, s/he is not granted access immediately but only if the group owner
+        # approves. That is, upong joining, no additional information about the group is shown but the user's status
+        # with regards to the group is updated to access type "requested".
+        response = self.client.get(reverse("group_join", kwargs={'id': self.ml_group_private.id}))
+        target_url = f"/catalog/group/{self.ml_group_private.id}"
+
+        # We should be redirected to the group detail page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+
+        # Now that the user has requested to join the private group, s/he should appear on the group's members
+        # with access type set to requested
+        rg_member = self.ml_group_private.members.filter(member=self.user).all()
+        self.assertEqual(rg_member[0].access_type, "requested")
+
+        # The user testuser has aked to join the group but he has not be granted access yet. So, 
+        # video conferencing details should not be visible.
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_private.id}))
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Video/Web Conference Details")
+
+        # Only the group owner can grant access to the group
+        response = self.client.get(reverse("group_grant_access", kwargs={'id': self.ml_group_private.id, 'aid': self.user.id}))
+        target_url = f"/catalog/group/{self.ml_group_private.id}"
+
+        # We should be redirected to the group detail page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+
+        rg_member = self.ml_group_private.members.filter(member=self.user).all()
+        self.assertEqual(rg_member[0].access_type, "requested")
+        self.assertNotEqual(rg_member[0].access_type, "granted")
+
+        # Logout user test
+        self.client.logout()
+
+        # Login user admin so that we can grant access to user testuser.
+        login = self.client.login(username='admin', password='abcdefg')
+
+        # Only the group owner can grant access to the group
+        response = self.client.get(reverse("group_grant_access", kwargs={'id': self.ml_group_private.id, 'aid': self.user.id}))
+
+        # rg_member = self.ml_group_private.members.filter(member=self.user).all()
+        self.assertNotEqual(rg_member[0].access_type, "requested")
+        self.assertEqual(rg_member[0].access_type, "granted")
+
+        # Logout user admin
+        self.client.logout()
+
+
+        # The public group now has one owner (admin) and one member (testuser)
+        self.assertEqual(self.ml_group_private.members.all().count(), 1)

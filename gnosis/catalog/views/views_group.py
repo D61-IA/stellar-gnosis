@@ -41,8 +41,8 @@ def group_manage_members(request, id):
         members = group.members.filter(access_type="granted").all()
         applicants = group.members.filter(access_type="requested").all()
 
-        print(f"members: {members}")
-        print(f"members: {applicants}")
+        # print(f"members: {members}")
+        # print(f"members: {applicants}")
         return render(
             request,
             "group_manage_members.html",
@@ -102,21 +102,21 @@ def group_join(request, id):
     if group.is_public:
         # check if the user is already in the list of members
         if member.count() == 0:
-            print(f"{request.user} joining public group.")
+            # print(f"{request.user} joining public group.")
             member = ReadingGroupMember(member=request.user, access_type="granted")
             member.save()
             group.members.add(member)        
-        else:
-            print(f"{request.user} has status {member[0].access_type} for this group")
+        # else:
+        #     print(f"{request.user} has status {member[0].access_type} for this group")
     else:
         # check if the user is already in the list of members
-        if member.count() == 1:
-            print(f"{request.user} requesting access to group.")
+        if member.count() == 0:
+            # print(f"{request.user} requesting access to group.")
             member = ReadingGroupMember(member=request.user, access_type="requested")
             member.save()
             group.members.add(member)        
-        else:
-            print(f"{request.user} has status {member[0].access_type} for this group")
+        # else:
+        #     print(f"{request.user} has status {member[0].access_type} for this group")
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
@@ -129,10 +129,10 @@ def group_leave(request, id):
     member = group.members.filter(member=request.user).all()
     # check if the user is already in the list of members
     if member.count() == 1:
-        print("((( Leaving the group )))")
+        # print("((( Leaving the group )))")
         member.delete()
-    else:
-        print("((( User is not a member of this group )))")
+    # else:
+    #     print("((( User is not a member of this group )))")
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
@@ -283,7 +283,7 @@ def group_entry_update(request, id, eid):
             form = GroupEntryForm(request.POST)
             if form.is_valid():
                 group_entry.date_discussed = form.cleaned_data["date_discussed"]
-                print("Date to be discussed {}".format(group_entry.date_discussed))
+                # print("Date to be discussed {}".format(group_entry.date_discussed))
                 group_entry.save()
 
                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
@@ -293,7 +293,7 @@ def group_entry_update(request, id, eid):
                 initial={"date_discussed": group_entry.date_discussed}
             )
     else:
-        print("You are not the owner.")
+        # print("You are not the owner.")
         return HttpResponseRedirect(reverse("groups_index"))
 
     return render(
@@ -311,10 +311,10 @@ def group_delete(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
     if group:
         if group.owner == request.user:
-            print("Found group")
+            # print("Found group")
             group.delete()
-            print("   ==> Deleted group.")
-        else:
-            print("Group does not belong to user.")
+            # print("   ==> Deleted group.")
+        # else:
+        #     print("Group does not belong to user.")
 
     return HttpResponseRedirect(reverse("groups_index"))
