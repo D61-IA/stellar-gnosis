@@ -339,6 +339,60 @@ class ReadingGroupViewsTestCase(TestCase):
         # Logout user admin
         self.client.logout()
 
-
         # The public group now has one owner (admin) and one member (testuser)
         self.assertEqual(self.ml_group_private.members.all().count(), 1)
+
+    def test_group_join_private_deny(self):
+        '''Testing a user requesting to join a private group but denied by the group owner'''
+
+        # login user testuser; note that this user is not the owner of the public reading group (admin is).
+        login = self.client.login(username='testuser', password='12345')
+
+        # When a user joins a private group, s/he is not granted access immediately but only if the group owner
+        # approves. That is, upong joining, no additional information about the group is shown but the user's status
+        # with regards to the group is updated to access type "requested".
+        response = self.client.get(reverse("group_join", kwargs={'id': self.ml_group_private.id}))
+        target_url = f"/catalog/group/{self.ml_group_private.id}"
+
+        # We should be redirected back to the group detail page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+
+        # Now that the user has requested to join the private group, s/he should appear on the group's members
+        # with access type set to requested
+        rg_member = self.ml_group_private.members.filter(member=self.user).all()
+        self.assertEqual(rg_member[0].access_type, "requested")
+
+        # Only the group owner can deny access to the group.
+        # A user should not be able to deny access to the group himself
+        response = self.client.get(reverse("group_deny_access", kwargs={'id': self.ml_group_private.id, 'aid': self.user.id}))
+        target_url = f"/catalog/group/{self.ml_group_private.id}"
+        # We should be redirected to the account login page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+
+        self.assertEqual(self.ml_group_private.members.all().count(), 1)
+
+        rg_member = self.ml_group_private.members.filter(member=self.user).all()
+        self.assertEqual(rg_member[0].access_type, "requested")  # should still be 'requested'
+
+        # Logout user test
+        self.client.logout()
+
+        # Login user admin so that we can grant access to user testuser.
+        login = self.client.login(username='admin', password='abcdefg')
+
+        # Only the group owner can grant access to the group
+        response = self.client.get(reverse("group_deny_access", kwargs={'id': self.ml_group_private.id, 'aid': self.user.id}))
+
+        # The user should no longer appear in the group's member list even as a suser with access_type requested
+        # The public group now has one owner (admin) and one member (testuser)
+        self.assertEqual(self.ml_group_private.members.all().count(), 0)  # no applicants to join the group.
+
+        # Logout user admin
+        self.client.logout()
+
