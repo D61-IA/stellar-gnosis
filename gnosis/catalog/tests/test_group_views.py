@@ -345,6 +345,16 @@ class ReadingGroupViewsTestCase(TestCase):
     def test_group_join_private_deny(self):
         '''Testing a user requesting to join a private group but denied by the group owner'''
 
+        # Anonymous users should not be able to call the group deny access for a group applicant.
+        target_url = f"/accounts/login/?next=/catalog/group/{self.ml_group_private.id}/user/{self.user.id}/deny"
+        response = self.client.get(reverse("group_deny_access", kwargs={'id': self.ml_group_private.id, 'aid': self.user.id}))
+
+        # We should be redirected to the account login page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+
         # login user testuser; note that this user is not the owner of the public reading group (admin is).
         login = self.client.login(username='testuser', password='12345')
 
