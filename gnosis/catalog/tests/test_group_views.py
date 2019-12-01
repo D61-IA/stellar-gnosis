@@ -95,7 +95,6 @@ class ReadingGroupViewsTestCase(TestCase):
     def test_group_create(self):
         """Only logged in users can create a new ReadingGroup object"""
         target_url = "/accounts/login/?next=/catalog/group/create/"
-
         response = self.client.get(reverse("group_create"))
 
         # We should be redirected to the account login page
@@ -212,3 +211,50 @@ class ReadingGroupViewsTestCase(TestCase):
         # Logout user admin
         self.client.logout()
 
+
+    def test_group_join_public(self):
+        '''Testing a user joinig a public group'''
+
+        # a user must login before s/he can join a group
+        target_url = f"/accounts/login/?next=/catalog/group/{self.ml_group_public.id}/join"
+        response = self.client.get(reverse("group_join", kwargs={'id': self.ml_group_public.id}))
+
+        # We should be redirected to the account login page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+        
+        # check join for logged in user who is not the group owner
+        # login user testuser; note that this user is not the owner of the public reading group (admin is).
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_public.id}))
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+
+        # Even though this is a public group, a user must join the group to see all the details.
+        self.assertNotContains(response, "Video/Web Conference Details")
+
+        # When a user joins a public group, s/he is immediately a member and can see all the details.
+        response = self.client.get(reverse("group_join", kwargs={'id': self.ml_group_public.id}))
+        target_url = f"/catalog/group/{self.ml_group_public.id}"
+
+        # We should be redirected to the account login page
+        self.assertRedirects(response,
+                            expected_url=target_url,
+                            status_code=302,
+                            target_status_code=200,)
+
+        # Now that user testuser has joined, video conferencing details should be visible.
+        response = self.client.get(reverse("group_detail", kwargs={'id': self.ml_group_public.id}))
+        # Anyone can access the detail view
+        self.assertEqual(response.status_code, 200)
+
+        # Even though this is a public group, a user must join the group to see all the details.
+        self.assertContains(response, "Video/Web Conference Details")
+
+        # Logout user test
+        self.client.logout()
+        # The public group now has one owner (admin) and one member (testuser)
+        self.assertEqual(self.ml_group_public.members.all().count(), 1)
