@@ -88,12 +88,13 @@
                     class="btn btn-danger btn-sm" role="button">
                 Edit</a>{% endif %}
             </h5>
+            {% if paper.keywords %}
+                <h5 class="text-right">
+                    <small>keywords: {{ paper.keywords|truncatechars:75 }}</small>
+                </h5>
+            {% endif %}
 
-            <h5 class="text-right">
-                <small>keywords: {{ paper.keywords }}</small>
-            </h5>
-
-            <p><strong>Abstract:</strong> {{ paper.abstract }} </p>
+            <p><strong>Abstract:</strong> {{ paper.abstract|safe|linebreaks }} </p>
             {% if venue %}
                 <p>
                     <small><strong>Venue:</strong> {{ venue }}</small>
@@ -109,8 +110,8 @@
             <h4 class="text-right">
                 {% if not user.is_authenticated %}
                     <a href="{% url 'account_login' %}?next={{ request.path }}">Endorse</a>{% endif %}
-                {% if user.is_authenticated %}
 
+                {% if user.is_authenticated %}
                     <div>
                         <div>Connect with:
                             <a href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
@@ -299,7 +300,7 @@
                                     {% if comment.is_flagged %}
                                         <p class="comment_text">Comment is being held for moderation</p>
                                     {% else %}
-                                        <p class="comment_text">{{ comment.text }}</p>
+                                        <p class="comment_text">{{ comment.text|safe|linebreaks }}</p>
                                     {% endif %}
                                     {% if comment.created_by == user %}
                                         <a href="{% url 'comment_update' comment.id %}">Edit</a>
@@ -351,7 +352,7 @@
                                 {% paginate notes %}
                                 {% for note in notes %}
                                     <li class="list-group-item shadow-sm mt-1">
-                                        <p>{{ note.note_content }}</p>
+                                        <p>{{ note.note_content|safe|linebreaks }}</p>
                                         <p>Date:
                                             <small class="ml-0 pr-5 text-muted">{{ note.created_at }}</small>
                                             Modified:
@@ -389,7 +390,7 @@
                     </div>
                 </div>
                 {#        if the user is not login#}
-                {#                <a href="{% url 'django_registration_register' %}">register a new#}
+                {#                <a href="{% url 'account_signup' %}">register a new#}
                 {#                    account!</a>#}
             {% else %}
                 <h4 class="mt-2 mb-2"><a href="{% url 'account_signup' %}?next={{ request.path }}">Sign
@@ -405,7 +406,7 @@
                                 {% if comment.is_flagged %}
                                     <p>Comment is being held for moderation</p>
                                 {% else %}
-                                    <p>{{ comment.text }}</p>
+                                    <p>{{ comment.text|safe|linebreaks }}</p>
                                 {% endif %}
                             </li>
                         {% endfor %}
