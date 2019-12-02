@@ -77,6 +77,7 @@ class SearchVenuesForm(Form):
 
     keywords = forms.CharField(required=True)
 
+
 class SearchDatasetsForm(Form):
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
@@ -87,6 +88,19 @@ class SearchDatasetsForm(Form):
         return self.cleaned_data["keywords"]
 
     keywords = forms.CharField(required=True,)
+
+
+class SearchGroupsForm(Form):
+    def __init__(self, *args, **kwargs):
+        super(Form, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
+    def clean_query(self):
+        return self.cleaned_data["query"]
+
+    query = forms.CharField(required=True,)
+
 
 class SearchPapersForm(Form):
     def __init__(self, *args, **kwargs):

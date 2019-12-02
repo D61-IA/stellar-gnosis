@@ -1,20 +1,23 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.shortcuts import render, get_object_or_404
-from django.http import Http404
 from catalog.models import ReadingGroup, ReadingGroupEntry, ReadingGroupMember
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from catalog.forms import GroupForm, GroupEntryForm
+from catalog.forms import GroupForm, GroupEntryForm, SearchGroupsForm
 from django.contrib.auth.models import User
 from datetime import date
 from itertools import chain
 
 
 def groups(request):
-    """Groups index view."""
+    """Groups index view. Now supports searching for groups"""
+
+    message = ""
     my_groups = []
     all_groups = ReadingGroup.objects.all().order_by("-created_at")[:50]
+
+    # First, we find all the groups the user is a member or owner
     if request.user.is_authenticated:
         my_groups = ReadingGroup.objects.filter(
             members__member=request.user, members__access_type="granted"
@@ -23,12 +26,28 @@ def groups(request):
         # Combine the Query sets
         my_groups = list(chain(my_groups, my_groups_owned))
 
-    message = ""
+    if request.method == 'POST':
+        # user is searching for a group
+        form = SearchGroupsForm(request.POST)
+        if form.is_valid():
+            query = form.clean_query()
+            # print(f"Searching for groups using keywords {query}")
+            all_groups = ReadingGroup.objects.annotate(
+                 search=SearchVector('keywords')
+            ).filter(search=SearchQuery(query, search_type='plain'))
+
+            print(all_groups)
+
+            if all_groups is None:
+                message = "No results found. Please try again!"
+
+    elif request.method == "GET":
+        form = SearchGroupsForm()
 
     return render(
         request,
         "groups.html",
-        {"groups": all_groups, "mygroups": my_groups, "message": message},
+        {"groups": all_groups, "mygroups": my_groups, "message": message, "form": form},
     )
 
 
