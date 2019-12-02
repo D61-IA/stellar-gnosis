@@ -52,7 +52,7 @@ form.submit(function (e) {
                 console.log("submit successful!");
                 if (data.is_valid) {
                     if ($this_comment != null) {
-                        $this_comment.find('.comment_text').text('Comment is being held for moderation');
+                        $this_comment.find('.comment_text').replaceWith('<p>Comment is being held for moderation</p>');
                         $this_comment.find('.material-icons').text('flag');
                         $this_comment.find('.not_flagged').attr('class', 'flagged').attr('title', 'Flagged');
                     }
