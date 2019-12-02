@@ -19,8 +19,8 @@ class GoogleTestCase(unittest.TestCase):
         cls.user = User.objects.create_user(username=cls.usrname, password="12345")
 
         cls.admin = User.objects.create_superuser(username=cls.adminname,
-                                                   password='abcdefg',
-                                                   email="admin@gnosis.stellargraph.io")
+                                                  password='abcdefg',
+                                                  email="admin@gnosis.stellargraph.io")
 
         cls.paper = Paper.objects.create(
             title="Best paper in the world",
@@ -66,7 +66,7 @@ class GoogleTestCase(unittest.TestCase):
 
         cls.comment.delete()
 
-# the following tests are designed to test on comments that are yet flagged, make sure the page has such comments.
+    # the following tests are designed to test on comments that are yet flagged, make sure the page has such comments.
     # assert each comment has the correct flag status shown on the flag UI
     def testFlagUIs(self):
         text = self.first_comment.find_element_by_class_name('material-icons').text
@@ -75,14 +75,11 @@ class GoogleTestCase(unittest.TestCase):
     # assert pop up flag form is shown when flag icon is clicked
     def testFlagClick(self):
         first_comment = self.first_comment
-        if first_comment is not None:
-            flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
-            flag_clickable.click()
+        flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
+        flag_clickable.click()
 
-            a1 = self.browser.find_element_by_id('flag_form_container').get_attribute('hidden')
-            self.assertEqual(a1, None)
-        else:
-            print("No comments from other users available on the paper.")
+        a1 = self.browser.find_element_by_id('flag_form_container').get_attribute('hidden')
+        self.assertEqual(a1, None)
 
     def testFlagForm(self):
         flag_form = self.browser.find_element_by_id('flag_form')
@@ -97,11 +94,8 @@ class GoogleTestCase(unittest.TestCase):
             true_labels.append(v[0])
 
         # assert radio buttons have the right violations.
-        if labels is not None:
-            for i in range(len(labels)):
-                self.assertEqual(true_labels[i], labels[i].text)
-        else:
-            print("Form radio buttons not found.")
+        for i in range(len(labels)):
+            self.assertEqual(true_labels[i], labels[i].text)
 
         # assert the form has the right description field
         description = flag_form.find_elements_by_tag_name('textarea')
@@ -137,13 +131,14 @@ class GoogleTestCase(unittest.TestCase):
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
     def testFlaggedComment(self):
-        if self.first_comment is not None:
-            first_comment = self.first_comment
-            arr = first_comment.find_elements_by_class_name("flagged")
-            self.assertEqual(len(arr), 1)
+        first_comment = self.first_comment
+        arr = first_comment.find_elements_by_class_name("flagged")
+        self.assertEqual(len(arr), 1)
 
-            arr = first_comment.find_elements_by_class_name("material-icons")
-            self.assertEqual(arr[0].text, "flag")
+        arr = first_comment.find_elements_by_class_name("material-icons")
+        self.assertEqual(arr[0].text, "flag")
+        self.browser.quit()
+
 
 
 class FirefoxTestCase(unittest.TestCase):
@@ -217,14 +212,11 @@ class FirefoxTestCase(unittest.TestCase):
     # assert pop up flag form is shown when flag icon is clicked
     def testFlagClick(self):
         first_comment = self.first_comment
-        if first_comment is not None:
-            flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
-            flag_clickable.click()
+        flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
+        flag_clickable.click()
 
-            a1 = self.browser.find_element_by_id('flag_form_container').get_attribute('hidden')
-            self.assertEqual(a1, None)
-        else:
-            print("No comments from other users available on the paper.")
+        a1 = self.browser.find_element_by_id('flag_form_container').get_attribute('hidden')
+        self.assertEqual(a1, None)
 
     def testFlagForm(self):
         flag_form = self.browser.find_element_by_id('flag_form')
@@ -279,13 +271,13 @@ class FirefoxTestCase(unittest.TestCase):
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
     def testFlaggedComment(self):
-        if self.first_comment is not None:
-            first_comment = self.first_comment
-            arr = first_comment.find_elements_by_class_name("flagged")
-            self.assertEqual(len(arr), 1)
+        first_comment = self.first_comment
+        arr = first_comment.find_elements_by_class_name("flagged")
+        self.assertEqual(len(arr), 1)
 
-            arr = first_comment.find_elements_by_class_name("material-icons")
-            self.assertEqual(arr[0].text, "flag")
+        arr = first_comment.find_elements_by_class_name("material-icons")
+        self.assertEqual(arr[0].text, "flag")
+        self.browser.quit()
 
 
 
@@ -302,5 +294,3 @@ class FirefoxTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
-
-
