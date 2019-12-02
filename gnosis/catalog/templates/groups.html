@@ -31,15 +31,15 @@
     <div class="card-body">
         {#        Navigation bar in tag view, show the all-groups and my-groups tab depending on the login condition #}
         <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item">
-                  <a class="nav-link active" data-toggle="tab" href="#navallgroups">All Groups</a>
-                </li>
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" data-toggle="tab" href="#navmygroups">My Groups</a>
-                </li>
-                {% endif %}
-              </ul>
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#navallgroups">{{ navtablabel }}</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#navmygroups">My Groups</a>
+            </li>
+            {% endif %}
+        </ul>
             <div class="tab-content">
                 {#            tab content of all-groups tab #}
                 <div class="container tab-pane active" id="navallgroups" >
@@ -72,7 +72,9 @@
                             {% endif %}
                         </ul>
                     {% else %}
-                        There are no groups. <a href="{% url 'group_create' %}">Create a new Reading Group.</a>
+                        <dv class="p-5">
+                            <p><i>No groups matching your query found.</i></p>
+                        </dv>
                     {% endif %}
                 </div>
                 {#              tab content of my-groups tab#}

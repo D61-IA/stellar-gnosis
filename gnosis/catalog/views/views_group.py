@@ -16,6 +16,7 @@ def groups(request):
     message = ""
     my_groups = []
     all_groups = ReadingGroup.objects.all().order_by("-created_at")[:50]
+    nav_tab_label = "All Groups"
 
     # First, we find all the groups the user is a member or owner
     if request.user.is_authenticated:
@@ -40,6 +41,7 @@ def groups(request):
 
             if all_groups is None:
                 message = "No results found. Please try again!"
+            nav_tab_label = "Search Results"
 
     elif request.method == "GET":
         form = SearchGroupsForm()
@@ -47,7 +49,7 @@ def groups(request):
     return render(
         request,
         "groups.html",
-        {"groups": all_groups, "mygroups": my_groups, "message": message, "form": form},
+        {"groups": all_groups, "mygroups": my_groups, "message": message, "form": form, "navtablabel": nav_tab_label},
     )
 
 
