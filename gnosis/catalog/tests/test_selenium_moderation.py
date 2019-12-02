@@ -84,15 +84,9 @@ class GoogleTestCase(unittest.TestCase):
             action = item.find_elements_by_class_name('actions')
             if len(action) > 0:
                 cmt_id = action[0].get_attribute('data-commentid')
-                print(cmt_id)
-                print(self.comment_id)
                 if str(cmt_id) == str(self.comment_id):
-                    print("this is true!")
                     self.first_flag = item
                     break
-
-
-        print(self.first_flag is None)
 
     def tearDown(self):
         self.comment.delete()
@@ -113,10 +107,14 @@ class GoogleTestCase(unittest.TestCase):
         wait = WebDriverWait(self.browser, 10)
         element = wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
-        actions = self.first_flag.find_elements_by_class_name('actions')
+        actions = self.first_flag.find_element_by_class_name('actions')
 
         # assert the buttons have disappeared when Ajax response is received
-        self.assertEqual(len(actions), 0)
+        self.assertEqual(actions.get_attribute('hidden'), 'true')
+
+        # assert the right response button
+        msg = self.first_flag.find_elements_by_class_name('res_msg')
+        self.assertEqual(len(msg), 1)
 
         # return to the paper detail page
         a = self.first_flag.find_element_by_tag_name('a')
@@ -141,10 +139,14 @@ class GoogleTestCase(unittest.TestCase):
         wait = WebDriverWait(self.browser, 10)
         element = wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
-        actions = self.first_flag.find_elements_by_class_name('actions')
+        actions = self.first_flag.find_element_by_class_name('actions')
 
         # assert the buttons have disappeared when Ajax response is received
-        self.assertEqual(len(actions), 0)
+        self.assertEqual(actions.get_attribute('hidden'), 'true')
+
+        # assert the right response button
+        msg = self.first_flag.find_elements_by_class_name('del_msg')
+        self.assertEqual(len(msg), 1)
 
         # return to the paper detail page
         a = self.first_flag.find_element_by_tag_name('a')
@@ -240,15 +242,10 @@ class FirefoxTestCase(unittest.TestCase):
             action = item.find_elements_by_class_name('actions')
             if len(action) > 0:
                 cmt_id = action[0].get_attribute('data-commentid')
-                print(cmt_id)
-                print(self.comment_id)
+
                 if str(cmt_id) == str(self.comment_id):
-                    print("this is true!")
                     self.first_flag = item
                     break
-
-
-        print(self.first_flag is None)
 
     def tearDown(self):
         self.comment.delete()
@@ -269,10 +266,14 @@ class FirefoxTestCase(unittest.TestCase):
         wait = WebDriverWait(self.browser, 10)
         element = wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
-        actions = self.first_flag.find_elements_by_class_name('actions')
+        actions = self.first_flag.find_element_by_class_name('actions')
 
         # assert the buttons have disappeared when Ajax response is received
-        self.assertEqual(len(actions), 0)
+        self.assertEqual(actions.get_attribute('hidden'), 'true')
+
+        # assert the right response button
+        msg = self.first_flag.find_elements_by_class_name('res_msg')
+        self.assertEqual(len(msg), 1)
 
         # return to the paper detail page
         a = self.first_flag.find_element_by_tag_name('a')
@@ -297,10 +298,14 @@ class FirefoxTestCase(unittest.TestCase):
         wait = WebDriverWait(self.browser, 10)
         element = wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
-        actions = self.first_flag.find_elements_by_class_name('actions')
+        actions = self.first_flag.find_element_by_class_name('actions')
 
         # assert the buttons have disappeared when Ajax response is received
-        self.assertEqual(len(actions), 0)
+        self.assertEqual(actions.get_attribute('hidden'), 'true')
+
+        # assert the right response button
+        msg = self.first_flag.find_elements_by_class_name('del_msg')
+        self.assertEqual(len(msg), 1)
 
         # return to the paper detail page
         a = self.first_flag.find_element_by_tag_name('a')
