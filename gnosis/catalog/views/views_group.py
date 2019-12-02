@@ -9,7 +9,8 @@ from django.contrib.auth.models import User
 from datetime import date
 from datetime import datetime
 from itertools import chain
-
+from django.utils import timezone
+import pytz
 
 def groups(request):
     """Groups index view. Now supports searching for groups"""
@@ -142,8 +143,6 @@ def group_join(request, id):
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
-from django.utils import timezone
-
 @login_required
 def group_leave(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
@@ -170,17 +169,9 @@ def group_detail(request, id):
         "-date_discussed"
     )
 
-    # This is the day on the servers
-    # today = date.today()
-    # convert the day to the group timezone
-    today = timezone.now().date()
-    # print(f"{type(today)}")
-    # print(f"[[[[[[[ {today} ]]]]]]]")
-    # print("-----------------------")
-
-    # What do I want?
-    # I want today and paper_entry.date_discussed to be in the group's timezone.
-    #
+    # Get the current day on the group's timezone. The server is on UTC time so, we
+    # ask for the current day and convert it to the group's timezone.
+    today = timezone.now().astimezone(group.timezone).date()
 
     # Flag to indicate if the user is a member of this group, if the group is private
     is_member = False
