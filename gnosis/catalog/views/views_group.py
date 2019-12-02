@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from catalog.forms import GroupForm, GroupEntryForm, SearchGroupsForm
 from django.contrib.auth.models import User
 from datetime import date
+from datetime import datetime
 from itertools import chain
 
 
@@ -141,6 +142,7 @@ def group_join(request, id):
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
+from django.utils import timezone
 
 @login_required
 def group_leave(request, id):
@@ -168,7 +170,25 @@ def group_detail(request, id):
         "-date_discussed"
     )
 
+    # This is the day on the server
     today = date.today()
+    # convert the day to the group timezone
+    print("-----------------------")
+    print(f"{type(today)}")
+    print(f"[[[[[[[ {datetime.now()} ]]]]]]]")
+    print(f"[[[[[[[ {timezone.now()} ]]]]]]]")
+    print(f"[[[[[[[ {group.timezone} ]]]]]]]")
+    print(f"[[[[[[[ {today} ]]]]]]]")
+    print("-----------------------")
+
+    today = timezone.now().date()
+    print(f"{type(today)}")
+    print(f"[[[[[[[ {today} ]]]]]]]")
+    print("-----------------------")
+
+    # What do I want?
+    # I want today and paper_entry.date_discussed to be in the group's timezone.
+    #
 
     # Flag to indicate if the user is a member of this group, if the group is private
     is_member = False
