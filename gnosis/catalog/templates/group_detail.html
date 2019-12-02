@@ -71,7 +71,7 @@
                 <ul class="list-group list-group-flush">
                     {% for paper_entry in papers_discussed %}
                         {% if paper_entry.date_discussed %}
-                            {% if paper_entry.date_discussed >= today %}            
+                            {% if paper_entry.date_discussed >= today %}
                                 <li class="list-group-item">
                                     <div class="d-flex flex-row">
                                         <div class="mr-auto p-2"><strong>{{ paper_entry.date_discussed }}</strong> <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>

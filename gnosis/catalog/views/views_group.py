@@ -171,20 +171,12 @@ def group_detail(request, id):
     )
 
     # This is the day on the server
-    today = date.today()
+    # today = date.today()
     # convert the day to the group timezone
-    print("-----------------------")
-    print(f"{type(today)}")
-    print(f"[[[[[[[ {datetime.now()} ]]]]]]]")
-    print(f"[[[[[[[ {timezone.now()} ]]]]]]]")
-    print(f"[[[[[[[ {group.timezone} ]]]]]]]")
-    print(f"[[[[[[[ {today} ]]]]]]]")
-    print("-----------------------")
-
     today = timezone.now().date()
-    print(f"{type(today)}")
-    print(f"[[[[[[[ {today} ]]]]]]]")
-    print("-----------------------")
+    # print(f"{type(today)}")
+    # print(f"[[[[[[[ {today} ]]]]]]]")
+    # print("-----------------------")
 
     # What do I want?
     # I want today and paper_entry.date_discussed to be in the group's timezone.
