@@ -170,7 +170,7 @@ def group_detail(request, id):
         "-date_discussed"
     )
 
-    # This is the day on the server
+    # This is the day on the servers
     # today = date.today()
     # convert the day to the group timezone
     today = timezone.now().date()
