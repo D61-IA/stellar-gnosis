@@ -3,10 +3,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 import datetime
-from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator, RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
+from django_countries.fields import CountryField
+from timezone_field import TimeZoneField
 
 #
 def valid_code_website(value):
@@ -444,11 +445,45 @@ class ReadingGroupMember(models.Model):
 class ReadingGroup(models.Model):
     """A ReadingGroup model"""
 
+    days = (
+        ("Monday", "Monday"),
+        ("Tuesday", "Tuesday"),
+        ("Wednesday", "Wednesday"),
+        ("Thursday", "Thursday"),
+        ("Friday", "Friday"),
+        ("Saturday", "Saturday"),
+        ("Sunday", "Sunday")
+    )
+
+    city_validator = RegexValidator(r'^[a-zA-Z]*$', 'Only alphabetic characters are allowed.')
+
     # Fields
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=False)
     keywords = models.CharField(max_length=100, blank=False)
     is_public = models.BooleanField(default=False, blank=False, null=False)
+    videoconferencing = models.TextField(blank=True, null=True, default='')
+    room = models.TextField(max_length=150, blank=True, null=True, default='')
+
+    day = models.CharField(max_length=9, choices=days, blank=False, default="Monday")
+    start_time = models.TimeField(blank=False, null=False)
+    end_time = models.TimeField(blank=False, null=False)
+
+    timezone = TimeZoneField(default='Australia/Sydney',
+                             display_GMT_offset=True,
+                             null=False,
+                             blank=False)
+
+    address = models.CharField(max_length=255, default='', blank=False, null=False)
+
+    city = models.CharField(max_length=75,
+                            default="Sydney",
+                            blank=False,
+                            null=False,
+                            validators=[city_validator])
+
+    country = CountryField(default='AU', blank=False, null=False)
+
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     owner = models.ForeignKey(

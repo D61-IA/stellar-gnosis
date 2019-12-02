@@ -8,56 +8,119 @@
         <h3>
             {{ group.name }}
             {% if user.is_authenticated %}
-            {% if user.is_superuser or user.id == group.owner.id %}
-            <p>
-                <a href="{% url 'group_update' group.id %}" class="btn btn-danger btn-sm" role="button">
-                    Edit
-                </a>
-            </p>
-            {% endif %}
+                {% if user.id == group.owner.id %}
+                <p>
+                    <a href="{% url 'group_update' group.id %}">
+                        <i class="material-icons">edit</i>
+                    </a>                    
+                    <a href="{% url 'group_manage_members' group.id %}">
+                        <i class="material-icons">group</i>
+                    </a>        
+                </p>
+                {% elif is_member %}
+                    <p>
+                        <a href="{% url 'group_leave' group.id %}" class="btn btn-danger btn-sm" role="button">
+                            Leave
+                        </a>
+                    </p>    
+                {% endif %}
             {% endif %}
         </h3>
-        created by {{ group.owner }} on {{ group.created_at }}
+        <h5>Meets on {{ group.day }}s from {{ group.start_time }} to {{ group.end_time }} ({{ group.timezone }})</h5>
+        <p class="text-right"> created by {{ group.owner }} on {{ group.created_at }}</p>
     </div>
     <div class="card-body">
         <p>{{ group.description }}</p>
+        <p><strong>Location:</strong> {{ group.city }}, {{ group.country.name }}</p>
         <p class="text-right">
-            <small>Keywords: {{ group.keywords }}</small>
+            <small>Keywords: {{ group.keywords|truncatechars:75 }}</small>
         </p>
     </div>
 </div>
 
+{% if user.id != group.owner.id %}
+    {% if group.is_public and not is_member %}
+    <div class="card text-left shadow-sm mb-5 mt-3">
+            <div class="card-header"><strong>Public Group</strong></div>
+            <div class="card-body">
+                Join this group and be part of the conversation. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
+            </div>
+        </div>    
+    {% endif %}
+{% endif %}
 
-{% if group.is_public or user.id == group.owner.id  %}
+{% if group.is_public or user.id == group.owner.id  or is_member%} 
 <div class="card shadow-sm mt-5">
     <div class="card-header">
-        <h3>Upcoming Papers</h3>
+        <h3>Schedule</h3>
     </div>
-        <div class="card-body">
-            {% if papers_discussed %}
-            <ul class="list-group list-group-flush">
-                {% for paper_entry in papers_discussed %}
-                {% if paper_entry.date_discussed %}
-                    {% if paper_entry.date_discussed >= today %}
-
-                    <li class="list-group-item">
-                        <div class="d-flex flex-row">
-                            <div class="mr-auto p-2">{{ paper_entry.date_discussed }} <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                                proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}</div>
-                            {% if user.id == group.owner.id %}
-                                <div class="p-2">
-                                    <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_unschedule' paper_entry.reading_group.id paper_entry.id %}">Unschedule</a>
-                                </div>
+    <div class="card-body">
+        {% if papers_discussed %}
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#upcoming">Upcoming Paper(s)</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#location">Location</a>
+            </li>
+        </ul>
+                  
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane container active" id="upcoming">
+                <ul class="list-group list-group-flush">
+                    {% for paper_entry in papers_discussed %}
+                        {% if paper_entry.date_discussed %}
+                            {% if paper_entry.date_discussed >= today %}
+                                <li class="list-group-item">
+                                    <div class="d-flex flex-row">
+                                        <div class="mr-auto p-2"><strong>{{ paper_entry.date_discussed }}</strong> <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                            proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
+                                        </div>
+                                        {% if user.id == group.owner.id %}
+                                            <div class="p-2">
+                                                <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_unschedule' paper_entry.reading_group.id paper_entry.id %}">Unschedule</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
                             {% endif %}
-                        </div>
-                    </li>
-                    {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="tab-pane container fade" id="location">
+                {% if group.room|length > 0 %}
+                    <strong>Room:</strong><br/>{{ group.room }} <br/><br/>
                 {% endif %}
-                {% endfor %}
-            </ul>
-            {% endif %}
+                {% if group.address|length > 0 %}
+                    <strong>Address:</strong> {{ group.address|safe|linebreaks }} {{ group.city }}, {{ group.country.name }}
+                {% else %}
+                    <strong>Address:</strong> {{ group.city }}, {{ group.country.name }}
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+            <p><i>No paper(s) scheduled.</i></p>
+        {% endif %}
     </div>
 </div>
+
+{% if user.id == group.owner.id  or is_member%} 
+{% if group.videoconferencing  %}
+<div class="card shadow-sm mt-5">
+        <div class="card-header">
+            <h3>Video/Web Conference Details (<a data-toggle="collapse" href="#card-body" aria-expanded="true" aria-controls="card-body">view/hide</a>)</h3>
+        </div>
+        <div id="card-body" class="collapse">
+            <div class="card-body">
+                {{ group.videoconferencing|safe|linebreaks }}        
+            </div>  
+        </div>
+    </div>    
+{% endif %}
+{% endif %}
 
 <div class="card shadow-sm mt-5">
     <div class="card-header">
@@ -155,15 +218,20 @@
         <p></p>
     </div>
 </div>
+{% elif has_requested_access %}
+<div class="card text-left shadow-sm mb-5 mt-3">
+        <div class="card-header"><strong>Private Group</strong></div>
+        <div class="card-body">
+            You have requested to join this group.
+        </div>
+    </div>    
 {% else %}
 <div class="card text-left shadow-sm mb-5 mt-3">
     <div class="card-header"><strong>Private Group</strong></div>
     <div class="card-body">
-        This is a private groups. You need to request and be granted access to view.
-        <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
+        This is a private group. You need to request and be granted access to view. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
     </div>
 </div>
-
 {% endif %}
 
 {% if user.is_authenticated %}

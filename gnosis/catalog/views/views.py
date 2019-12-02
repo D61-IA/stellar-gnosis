@@ -686,7 +686,7 @@ def paper_add_to_group_selected(request, id, gid):
     # If group is public then all good.
     # If the group is private then check if user is a member of this group.
     q_set = group.members.filter(member=request.user).all()
-    if group.owner==request.user or group.is_public or (q_set.count()==1 and q_set.access_type=='granted'):
+    if group.owner==request.user or group.is_public or (q_set.count()==1 and q_set[0].access_type=='granted'):
         paper_in_group = group.papers.filter(paper=paper)
         if paper_in_group:
             # message = "Paper already exists in group {}".format(group.name)

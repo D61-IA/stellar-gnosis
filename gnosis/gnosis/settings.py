@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'recaptcha',
     'captcha',
     'django.contrib.humanize',
+    'django_countries',
+    'timezone_field',
 ]
 
 MIDDLEWARE = [
@@ -130,7 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Australia/Sydney'
+TIME_ZONE = 'UTC'  # default is UTC
 
 USE_I18N = True
 

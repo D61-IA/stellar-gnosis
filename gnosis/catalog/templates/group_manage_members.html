@@ -2,55 +2,35 @@
 {% block content %}
 {% load el_pagination_tags %}
 
-
-<div class="card shadow-sm mt-3">
-    <div class="card-body text-center">
-        {% if message %}
-        <p class="bg-info">{{ message }}</p>
-        {% endif %}
-        <form action="" method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            {{ field }}
-            {% endfor %}
-            <br>
-           <div>
-              <input type="submit" class="btn btn-primary btn-lg" value="Search Groups"/>
-          </div>
-        </form>
-    </div>
-</div>
-
-
 <div class="card shadow-sm mt-3">
     <div class="card-header">
-        <h4>Study/Reading Groups</h4>
-        <a href="{% url 'group_create' %}" class="btn btn-link float-right">Create Group</a>
+        <h4>Group Members</h4>
     </div>
 
     <div class="card-body">
-        {#        Navigation bar in tag view, show the all-groups and my-groups tab depending on the login condition #}
+        {#        Navigation bar in tag view, show members who have joined and members who are asking to join the group #}
         <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#navallgroups">{{ navtablabel }}</a>
-            </li>
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#navmygroups">My Groups</a>
-            </li>
-            {% endif %}
-        </ul>
+                <li class="nav-item">
+                  <a class="nav-link active" data-toggle="tab" href="#navmembers">Members</a>
+                </li>
+                {% if not group.is_public %}
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#navapplicants">Applicants</a>
+                </li>
+                {% endif %}
+              </ul>
             <div class="tab-content">
-                {#            tab content of all-groups tab #}
-                <div class="container tab-pane active" id="navallgroups" >
-                    {#                    show the groups#}
-                    {% if groups %}
-                        {% paginate groups %}
+                {#            tab content of members tab #}
+                <div class="container tab-pane active" id="navmembers" >
+                    {#                    show the members#}
+                    {% if members %}
+                        {% paginate members %}
                         <ul class="list-group list-group-flush">
-                        {% for group in groups %}
+                        {% for member in members %}
                             <li class="list-group-item mt-1">
-                                <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
-                                <p>{{ group.description }}</p>
+                                <!-- We should link to the user's profile when available. -->
+                                <!-- <a href=""></a> -->
+                                <h4>{{ member }}</h4>
                             </li>
                         {% endfor %}
                         </ul>
@@ -72,21 +52,21 @@
                             {% endif %}
                         </ul>
                     {% else %}
-                        <dv class="p-5">
-                            <p><i>No groups matching your query found.</i></p>
-                        </dv>
+                        <p><h4><i>No members.</i></h4></p>
                     {% endif %}
                 </div>
-                {#              tab content of my-groups tab#}
-                {% if user.is_authenticated %}
-                <div class="container tab-pane fade" id="navmygroups">
-                    {% if mygroups %}
-                        {% paginate mygroups %}
+                {#              tab content of applicants tab#}
+                {% if not group.is_public %}
+                <div class="container tab-pane fade" id="navapplicants">
+                    {% if applicants %}
+                        {% paginate applicants %}
                         <ul class="list-group list-group-flush">
-                            {% for group in mygroups %}
+                            {% for applicant in applicants %}
                             <li class="list-group-item mt-1">
-                                <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
-                                <p>{{ group.description }}</p>
+                                <!-- We should link to the user's profile when available. -->
+                                <h4>{{ applicant }}</h4>
+                                <a href="{% url 'group_grant_access' id=group.id aid=applicant.member.id %}" class="btn btn-primary btn-sm" role="button">Grant</a>
+                                <a href="{% url 'group_deny_access' id=group.id aid=applicant.member.id %}" class="btn btn-danger btn-sm" role="button">Deny</a>
                             </li>
                         </ul>
                         {% endfor %}
@@ -109,7 +89,7 @@
                             {% endif %}
                         </ul>
                     {% else %}
-                        <p><h4><i>You have not joined any groups.</i></h4></p>
+                        <p><h4><i>No applicants</i></h4></p>
                     {% endif %}
                 </div>
                 {% endif %}
