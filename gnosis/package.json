@@ -1,5 +1,7 @@
 {
   "name": "gnosis",
   "version": "1.0.0",
-  "dependencies": {}
+  "dependencies": {
+    "cypress": "^3.7.0"
+  }
 }

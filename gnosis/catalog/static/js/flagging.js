@@ -36,7 +36,7 @@ function cancel_form() {
 
 /************** sending ajax post request with flag forms **************/
 var form = $('#flag_form');
-form.submit(function (e) {
+form.on('submit', function (e) {
     e.preventDefault();
 
     $('.popup').attr('hidden', true);
@@ -65,9 +65,9 @@ form.submit(function (e) {
                     $('#loader').attr('hidden', true);
                 }
             },
-            error: function (data) {
+            error: function (xhr, ajaxOptions, thrownError) {
                 $('#loader').attr('hidden', true);
-                alert("Request failed.");
+                alert(xhr.status);
             },
 
         })
