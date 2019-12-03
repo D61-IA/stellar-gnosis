@@ -101,7 +101,7 @@ EL_PAGINATION_PER_PAGE = 3
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gnosistest',  # gnosis_db
+        'NAME': 'testgnosis',  # gnosis_db
         'USER': 'gnosisuser',      # gnosis
         'PASSWORD': 'gnosis',
         'HOST': 'localhost',
