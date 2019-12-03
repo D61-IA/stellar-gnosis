@@ -1,75 +1,203 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.shortcuts import render, get_object_or_404
-from django.http import Http404
 from catalog.models import ReadingGroup, ReadingGroupEntry, ReadingGroupMember
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from catalog.forms import GroupForm, GroupEntryForm
+from catalog.forms import GroupForm, GroupEntryForm, SearchGroupsForm
+from django.contrib.auth.models import User
 from datetime import date
+from datetime import datetime
 from itertools import chain
-
+from django.utils import timezone
+import pytz
 
 def groups(request):
-    """Groups index view."""
+    """Groups index view. Now supports searching for groups"""
+
+    message = ""
     my_groups = []
-    all_groups = ReadingGroup.objects.all().order_by('-created_at')[:50]
+    all_groups = ReadingGroup.objects.all().order_by("-created_at")[:50]
+    nav_tab_label = "All Groups"
+
+    # First, we find all the groups the user is a member or owner
     if request.user.is_authenticated:
-        my_groups = ReadingGroup.objects.filter(members__member=request.user, members__access_type='granted').all()
+        my_groups = ReadingGroup.objects.filter(
+            members__member=request.user, members__access_type="granted"
+        ).all()
         my_groups_owned = ReadingGroup.objects.filter(owner=request.user).all()
         # Combine the Query sets
-        my_groups = list(chain(my_groups, my_groups_owned,))
-    
-    message = ''
+        my_groups = list(chain(my_groups, my_groups_owned))
+
+    if request.method == 'POST':
+        # user is searching for a group
+        form = SearchGroupsForm(request.POST)
+        if form.is_valid():
+            query = form.clean_query()
+            # print(f"Searching for groups using keywords {query}")
+            all_groups = ReadingGroup.objects.annotate(
+                 search=SearchVector('keywords')
+            ).filter(search=SearchQuery(query, search_type='plain'))
+
+            print(all_groups)
+
+            if all_groups is None:
+                message = "No results found. Please try again!"
+            nav_tab_label = "Search Results"
+
+    elif request.method == "GET":
+        form = SearchGroupsForm()
 
     return render(
-        request, "groups.html", {"groups": all_groups, "mygroups": my_groups, "message": message}
+        request,
+        "groups.html",
+        {"groups": all_groups, "mygroups": my_groups, "message": message, "form": form, "navtablabel": nav_tab_label},
     )
 
-def group_join(request, id):
+
+@login_required
+def group_manage_members(request, id):
+
     group = get_object_or_404(ReadingGroup, pk=id)
 
-    # if user does not have access to the group and the group is private, request it
-    if not group.is_public:
-        # check if the user is already in the list of members
-        member = group.members.filter(member=request.user).all()
-        if member.count()>0:
-            print(f"{request.user} has status {member[0].access_type} for this group")
-        else:
-            print(f"{request.user} requesting access to group.")
-            member = ReadingGroupMember(member=request.user, access_type="requested")
-            member.save()
-            group.members.add(member)            
-    # otherwise, do nothing
+    if group.owner == request.user:
+        members = group.members.filter(access_type="granted").all()
+        applicants = group.members.filter(access_type="requested").all()
+
+        # print(f"members: {members}")
+        # print(f"members: {applicants}")
+        return render(
+            request,
+            "group_manage_members.html",
+            {
+                "members": members,
+                "applicants": applicants,
+                # "is_public": group.is_public,
+                "group": group,
+            },
+        )
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
+
+@login_required
+def group_grant_access(request, id, aid):
+
+    group = get_object_or_404(ReadingGroup, pk=id)
+
+    if group.owner == request.user:
+        applicant = get_object_or_404(User, pk=aid)
+        # How do we change the applicant's status?
+        applicant_request_entry = group.members.filter(member=applicant).all()
+        if applicant_request_entry.count() == 1:                        
+            # I don't know if this is the best way to do this, but I will delete the existing entry
+            # with access_type set to 'requested' and add a new one with access_type 'granted'.
+            applicant_request_entry.delete()
+            member = ReadingGroupMember(member=applicant, access_type="granted")
+            member.save()
+            group.members.add(member)
+
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
+
+@login_required
+def group_deny_access(request, id, aid):
+
+    group = get_object_or_404(ReadingGroup, pk=id)
+
+    if group.owner == request.user:
+        applicant = get_object_or_404(User, pk=aid)
+        applicant_request_entry = group.members.filter(member=applicant).all()
+        if applicant_request_entry.count() == 1:                        
+            applicant_request_entry.delete()
+    
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
+
+@login_required
+def group_join(request, id):
+    group = get_object_or_404(ReadingGroup, pk=id)
+
+    # If the group is public, then joining is automatic.
+    # if user does not have access to the group and the group is private, request it so that the group
+    # owner can grant or deny access.
+    member = group.members.filter(member=request.user).all()
+    if group.is_public:
+        # check if the user is already in the list of members
+        if member.count() == 0:
+            # print(f"{request.user} joining public group.")
+            member = ReadingGroupMember(member=request.user, access_type="granted")
+            member.save()
+            group.members.add(member)        
+        # else:
+        #     print(f"{request.user} has status {member[0].access_type} for this group")
+    else:
+        # check if the user is already in the list of members
+        if member.count() == 0:
+            # print(f"{request.user} requesting access to group.")
+            member = ReadingGroupMember(member=request.user, access_type="requested")
+            member.save()
+            group.members.add(member)        
+        # else:
+        #     print(f"{request.user} has status {member[0].access_type} for this group")
+
+    return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
+@login_required
 def group_leave(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
 
-    # if user is a member of the group and the group is private, then leave it
+    # if user is a member of the group then leave it.
+    member = group.members.filter(member=request.user).all()
+    # check if the user is already in the list of members
+    if member.count() == 1:
+        # print("((( Leaving the group )))")
+        member.delete()
+    # else:
+    #     print("((( User is not a member of this group )))")
 
-    # otherwise, do nothing
-
-    
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
 
 def group_detail(request, id):
 
     group = get_object_or_404(ReadingGroup, pk=id)
-    papers_proposed = group.papers.filter(date_discussed=None).order_by('-date_proposed')
-    papers_discussed = group.papers.exclude(date_discussed=None).order_by('-date_discussed')
+    papers_proposed = group.papers.filter(date_discussed=None).order_by(
+        "-date_proposed"
+    )
+    papers_discussed = group.papers.exclude(date_discussed=None).order_by(
+        "-date_discussed"
+    )
 
-    print(papers_proposed)
-    print(papers_discussed)
+    # Get the current day on the group's timezone. The server is on UTC time so, we
+    # ask for the current day and convert it to the group's timezone.
+    today = timezone.now().astimezone(group.timezone).date()
 
-    today = date.today()
+    # Flag to indicate if the user is a member of this group, if the group is private
+    is_member = False
+    has_requested_access = False
 
-    return render(request, "group_detail.html", {"group": group,
-                                                 "papers_proposed": papers_proposed,
-                                                 "papers_discussed": papers_discussed,
-                                                 "today": today})
+    if not request.user.is_anonymous:
+        member = group.members.filter(member=request.user).all()
+        if member.count() == 1 :
+            print(f"{request.user} has status {member[0].access_type} for this group")
+            if member[0].access_type == 'granted':
+                is_member = True
+            elif member[0].access_type == 'requested':
+                has_requested_access = True
+
+    return render(
+        request,
+        "group_detail.html",
+        {
+            "group": group,
+            "papers_proposed": papers_proposed,
+            "papers_discussed": papers_discussed,
+            "is_member": is_member,
+            "has_requested_access": has_requested_access,
+            "today": today,
+        },
+    )
 
 
 @login_required
@@ -103,9 +231,18 @@ def group_update(request, id):
                 group.keywords = form.cleaned_data["keywords"]
                 group.description = form.cleaned_data["description"]
                 group.is_public = form.cleaned_data["is_public"]
+                group.videoconferencing = form.clean_videoconferencing()
+                group.address = form.clean_address()
+                group.city = form.clean_city()
+                group.country = form.clean_country()
+                group.room = form.clean_room()
+                group.day = form.clean_day()
+                group.start_time = form.clean_start_time()
+                group.end_time = form.clean_end_time()
+                group.timezone = form.clean_timezone()
                 group.save()
 
-                return HttpResponseRedirect(reverse("groups_index"))
+                return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
         # GET request
         else:
             form = GroupForm(
@@ -113,7 +250,16 @@ def group_update(request, id):
                     "name": group.name,
                     "keywords": group.keywords,
                     "description": group.description,
-                    "is_public": group.is_public
+                    "is_public": group.is_public,
+                    "address": group.address, 
+                    "city": group.city,
+                    "country": group.country,
+                    "room": group.room,
+                    "day": group.day,
+                    "start_time": group.start_time,
+                    "end_time": group.end_time,
+                    "timezone": group.timezone,
+                    "videoconferencing": group.videoconferencing,
                 }
             )
 
@@ -161,24 +307,24 @@ def group_entry_update(request, id, eid):
             form = GroupEntryForm(request.POST)
             if form.is_valid():
                 group_entry.date_discussed = form.cleaned_data["date_discussed"]
-                print("Date to be discussed {}".format(group_entry.date_discussed))
+                # print("Date to be discussed {}".format(group_entry.date_discussed))
                 group_entry.save()
 
                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
         # GET request
         else:
             form = GroupEntryForm(
-                initial={
-                    "date_discussed": group_entry.date_discussed,
-                }
+                initial={"date_discussed": group_entry.date_discussed}
             )
     else:
-        print("You are not the owner.")
+        # print("You are not the owner.")
         return HttpResponseRedirect(reverse("groups_index"))
 
-    return render(request, "group_entry_update.html", {"form": form,
-                                                       "group": group,
-                                                       "group_entry": group_entry})
+    return render(
+        request,
+        "group_entry_update.html",
+        {"form": form, "group": group, "group_entry": group_entry},
+    )
 
 
 #
@@ -189,11 +335,10 @@ def group_delete(request, id):
     group = get_object_or_404(ReadingGroup, pk=id)
     if group:
         if group.owner == request.user:
-            print("Found group")
+            # print("Found group")
             group.delete()
-            print("   ==> Deleted group.")
-        else:
-            print("Group does not belong to user.")
+            # print("   ==> Deleted group.")
+        # else:
+        #     print("Group does not belong to user.")
 
     return HttpResponseRedirect(reverse("groups_index"))
-

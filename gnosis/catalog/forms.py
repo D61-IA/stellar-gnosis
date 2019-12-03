@@ -4,7 +4,6 @@ from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from .models import ReadingGroup, ReadingGroupEntry
 from .models import Collection, CollectionEntry
 from django.utils.safestring import mark_safe
-
 from captcha.fields import ReCaptchaField
 from captcha.widgets import ReCaptchaV2Checkbox, ReCaptchaV2Invisible, ReCaptchaV3
 
@@ -78,6 +77,7 @@ class SearchVenuesForm(Form):
 
     keywords = forms.CharField(required=True)
 
+
 class SearchDatasetsForm(Form):
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
@@ -88,6 +88,19 @@ class SearchDatasetsForm(Form):
         return self.cleaned_data["keywords"]
 
     keywords = forms.CharField(required=True,)
+
+
+class SearchGroupsForm(Form):
+    def __init__(self, *args, **kwargs):
+        super(Form, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
+    def clean_query(self):
+        return self.cleaned_data["query"]
+
+    query = forms.CharField(required=True,)
+
 
 class SearchPapersForm(Form):
     def __init__(self, *args, **kwargs):
@@ -482,7 +495,22 @@ class GroupForm(ModelForm):
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
 
+        self.fields["address"].widget = forms.Textarea()
+        self.fields["address"].widget.attrs.update({"rows": "3"})
+
+        self.fields["address"].label = "Building/Street/Suburb/Postcode"
+        self.fields["city"].label = "City*"
+        self.fields["country"].label = "Country*"
+        self.fields["room"].widget = forms.Textarea()
+        self.fields["room"].widget.attrs.update({"rows": "1"})
+
+        self.fields["day"].label = "Day*"
+        self.fields["start_time"].label = "Start Time (HH/MM/SS)*"
+        self.fields["end_time"].label = "Finish Time (HH/MM/SS)*"
+        self.fields["timezone"].label = "Timezone*"
         self.fields["keywords"].label = "Keywords*"
+        self.fields["videoconferencing"].label = "WebEx, Skype, etc."
+        self.fields["room"].lable="Room"
         self.fields["description"].label = "Description*"
         self.fields["name"].label = "Name*"
         self.fields["is_public"].label = "Public*"
@@ -490,6 +518,44 @@ class GroupForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
+
+    def clean(self):
+        """Overriding in order to validate the start and finish times."""
+        cleaned_data = super().clean()
+        stime = cleaned_data.get("start_time")
+        etime = cleaned_data.get("end_time")
+
+        if etime < stime:
+            raise forms.ValidationError("Finish time must be later than start time.")
+
+        return cleaned_data
+
+    def clean_address(self):
+        return self.cleaned_data["address"]
+
+    def clean_timezone(self):
+        return self.cleaned_data["timezone"]
+
+    def clean_country(self):
+        return self.cleaned_data["country"]
+
+    def clean_city(self):
+        return self.cleaned_data["city"]
+
+    def clean_day(self):
+        return self.cleaned_data["day"]
+
+    def clean_start_time(self):
+        return self.cleaned_data["start_time"]
+
+    def clean_end_time(self):
+        return self.cleaned_data["end_time"]
+
+    def clean_videoconferencing(self):
+        return self.cleaned_data["videoconferencing"]
+
+    def clean_room(self):
+        return self.cleaned_data["room"]
 
     def clean_keywords(self):
         return self.cleaned_data["keywords"]
@@ -502,7 +568,8 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = ReadingGroup
-        fields = ["name", "description", "keywords", "is_public"]
+        fields = ["name", "description", "keywords", "address", "city", "country", "room",
+                  "day", "timezone", "start_time", "end_time", "is_public", "videoconferencing"]
 
 
 class GroupEntryForm(ModelForm):
