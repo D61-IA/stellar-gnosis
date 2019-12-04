@@ -77,9 +77,9 @@ class ChromeTestCase(unittest.TestCase):
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
         element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
-        self.comment_container = self.browser.find_element_by_css_selector('ul.list-group')
+        comment_container = self.browser.find_element_by_css_selector('ul.list-group')
         # there should be only one comment in this fictional paper
-        self.first_comment = self.comment_container.find_element_by_css_selector('li.list-group-item')
+        self.first_comment = comment_container.find_element_by_css_selector('li.list-group-item')
 
     def tearDown(self):
         """remove temporary assets from DB"""
