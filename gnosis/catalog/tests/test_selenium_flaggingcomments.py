@@ -15,11 +15,11 @@ class ChromeTestCase(unittest.TestCase):
 
         self.username = 'user1'
         self.userpassword = '12345'
-        self.useremail = 'somthing@gnosis.stellargraph.io'
+        self.useremail = 'user1@gnosis.stellargraph.io'
 
         self.user2name = 'user2'
         self.user2password = 'abcde'
-        self.user2email = 'somethingelse@gnosis.stellargraph.io'
+        self.user2email = 'user2@gnosis.stellargraph.io'
 
         self.user = User.objects.create_user(username=self.username, password=self.userpassword,
                                              email=self.useremail)
