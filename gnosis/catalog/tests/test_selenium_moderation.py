@@ -8,7 +8,32 @@ from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
 
 
-class GoogleTestCase(unittest.TestCase):
+class ChromeTestCase(unittest.TestCase):
+
+
+    def setupBrowser(self):
+        """set up testing browser"""
+
+        self.browser = webdriver.Chrome()
+
+    def createUsers(self):
+        """create two users, user2 as admin whose info will be used for logging in"""
+
+        self.username = 'user1'
+        self.userpassword = '12345'
+        self.useremail = 'somthing@gnosis.stellargraph.io'
+
+        self.user2name = 'user2'
+        self.user2password = 'abcde'
+        self.user2email = 'somethingelse@gnosis.stellargraph.io'
+
+        self.user = User.objects.create_user(username=self.username, password=self.userpassword,
+                                             email=self.useremail)
+
+        # create user 2 who is an admin
+        self.user2 = User.objects.create_superuser(username=self.user2name,
+                                                   password=self.user2password,
+                                                   email=self.user2email)
 
     @classmethod
     def setUpClass(cls):
@@ -38,7 +63,7 @@ class GoogleTestCase(unittest.TestCase):
             paper=self.paper
         )
 
-        self.browser = webdriver.Chrome()
+        self.setupBrowser()
         # login as admin
         self.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(self.paper.id) + '/')
         username = self.browser.find_element_by_id('id_login')
