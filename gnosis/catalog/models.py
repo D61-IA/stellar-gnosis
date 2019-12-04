@@ -227,7 +227,7 @@ class Comment(models.Model):
 
     class Meta:
         app_label = "catalog"
-        ordering = ["-created_at"]
+        ordering = ["created_at"]
 
     def __str__(self):
         return "{}".format(self.text)
@@ -407,20 +407,6 @@ class CommentFlag(models.Model):
 
     def __str__(self):
         return self.description
-
-
-# class HiddenComment(models.Model):
-#     comment_id = models.IntegerField(null=False, blank=False)
-#     proposed_by = models.ForeignKey(to=User,
-#                                     on_delete=models.CASCADE,
-#                                     related_name="hidden_flags")
-#
-#     class Meta:
-#         ordering = ['proposed_by', 'comment_id']
-#         verbose_name = "hidden flag"
-#
-#     def __str__(self):
-#         return "comment id: " + str(self.comment_id)
 
 
 # A ReadingGroup member for private groups
