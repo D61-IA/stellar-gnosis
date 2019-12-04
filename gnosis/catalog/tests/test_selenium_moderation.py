@@ -84,6 +84,10 @@ class ChromeTestCase(unittest.TestCase):
 
         self.browser.find_element_by_tag_name('form').submit()
 
+        # wait till page is directed
+        wait = WebDriverWait(self.browser, 10)
+        element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
+
         self.comments = self.browser.find_element_by_css_selector('ul.list-group')
         self.first_comment = self.comments.find_element_by_css_selector('li.list-group-item')
         self.comment_id = self.comment.id
@@ -126,9 +130,9 @@ class ChromeTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.user.delete()
+        cls.user1.delete()
 
-        cls.admin.delete()
+        cls.user2.delete()
 
         cls.paper.delete()
 
