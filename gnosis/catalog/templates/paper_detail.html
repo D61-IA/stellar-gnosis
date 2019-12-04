@@ -16,7 +16,8 @@
                                       method="post">
                                     {% csrf_token %}
                                     <button name="endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#e_create', '#endorsement')">E</button>
+                            background: none;" onclick="endorsement_bookmark_fun('#e_create', '#endorsement')">E
+                                    </button>
                                 </form>
 
 
@@ -31,11 +32,12 @@
                         </div>
 
                         <div id="bookmark">
-                                <form id="b_create" action="{% url 'paper_bookmark' id=paper.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button name="bookmark" value="B" style="border: none; outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#b_create', '#bookmark')">B</button>
-                                </form>
+                            <form id="b_create" action="{% url 'paper_bookmark' id=paper.id %}" method="post">
+                                {% csrf_token %}
+                                <button name="bookmark" value="B" style="border: none; outline: none !important;
+                            background: none;" onclick="endorsement_bookmark_fun('#b_create', '#bookmark')">B
+                                </button>
+                            </form>
                         </div>
                     {% else %}
                         <form action="{% url 'account_login' %}?next={{ request.path }}" method="post">
@@ -67,9 +69,9 @@
                                role="button">
                                 Add to Collection</a>
                             {% if user.is_superuser %}
-                            <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
-                               role="button">
-                                Edit</a>
+                                <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
+                                   role="button">
+                                    Edit</a>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -106,13 +108,16 @@
             {% endif %}
 
             <h4 class="text-right">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'account_login' %}?next={{ request.path }}">Endorse</a>{% endif %}
+
                 {% if user.is_authenticated %}
                     <div>
                         <div>Connect with:
                             <a href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
                             || <a href="{% url 'paper_connect_venue' paper.id %}">Venue</a> ||
                             {% if user.is_superuser %}
-                            <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
+                                <a href="{% url 'paper_connect_author' paper.id %}">Author</a> ||
                             {% endif %}
                             <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
                             <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>
@@ -271,26 +276,33 @@
                             {% paginate comments %}
                             {% for comment in comments %}
 
-                                <li class="list-group-item shadow-sm mt-1">
+                                <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
                                     {% if comment.created_by != user %}
                                         <div style="float: right; text-align: right;">
-                                            <div>
-                                                <a href="{% url 'paper_flag_comment' paper.id comment.id %}">Flag</a>
-                                            </div>
-                                            <div class="opt_container open_flag_dialog"
-                                                 data-url="{% url 'comment_flag_create' comment.id %}"
-                                                 data-commentid={{ comment.id }}>
-                                                <i class="material-icons menu_item">outlined_flag</i>
+                                            <div class="open_flag_dialog popup_opener"
+                                                 data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
+                                                 data-commentid={{ comment.id }} data-flagged={{ comment.is_flagged }}>
+                                                {% if comment.is_flagged %}
+                                                    <div class="flagged" data-toggle="tooltip" title="Flagged">
+                                                        <i class="material-icons menu_item">flag</i>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="not_flagged" data-toggle="tooltip" title="Report">
+                                                        <i class="material-icons menu_item">outlined_flag</i>
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     {% endif %}
 
-                                   <p><strong>{{ comment.created_by }}</strong> said on
-                                    {{ comment.created_at|date:"F d, Y" }}</p>
+                                    <p><strong>{{ comment.created_by }}</strong> said on
+                                        {{ comment.created_at|date:"F    d, Y" }}</p>
                                     {% if comment.is_flagged %}
                                         <p>Comment is being held for moderation</p>
                                     {% else %}
-                                        <p>{{ comment.text|safe|linebreaks }}</p>
+                                        <div class="comment_text">
+                                            <p>{{ comment.text|safe|linebreaks }}</p>
+                                        </div>
                                     {% endif %}
                                     {% if comment.created_by == user %}
                                         <a href="{% url 'comment_update' comment.id %}">Edit</a>
@@ -598,7 +610,7 @@
         });
 
         // setting the minimum zoom factor to 50% of its initial zoom
-        cy.minZoom(cy.zoom()* 0.5);
+        cy.minZoom(cy.zoom() * 0.5);
     </script>
 
     <script src="{% static "js/ego_graph.js" %}"></script>

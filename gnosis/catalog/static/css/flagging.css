@@ -23,25 +23,12 @@
     user-select: none;
 }
 
-.more_vert {
-    user-select: none;
-    color: darkgrey;
-}
-
-.more_vert:hover {
+.not_flagged{
     cursor: pointer;
-    color: black;
 }
 
-.opt_container {
-    padding: 10px;
-}
-
-.opt_container:hover {
-    cursor: pointer;
-    text-decoration: none;
-    color: black;
-    background-color: lightgray;
+.flagged {
+    cursor: auto !important;
 }
 
 /* covers entire page as a background to popup elements (e.g. dialogs) */
@@ -62,8 +49,8 @@
     padding: 20px;
     top: 50%;
     left: 50%;
-    margin-left: -181.5px; /* form width/2.0 */
-    margin-top: -239px; /* form height/2.0 */
+    margin-left: -188.8px; /* form width/2.0 */
+    margin-top: -239.8px; /* form height/2.0 */
     z-index: 3000;
 }
 
