@@ -1,12 +1,10 @@
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from catalog.models import CommentFlag, Comment, Paper
-from catalog.forms import FlaggedCommentForm
+from catalog.models import Comment, Paper
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
-import time
 
 
 class ChromeTestCase(unittest.TestCase):
