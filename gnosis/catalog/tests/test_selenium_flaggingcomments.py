@@ -7,10 +7,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
 
-
+"""test with Chrome webdriver"""
 class ChromeTestCase(unittest.TestCase):
 
-    # create two users
+    """create two users"""
     def createUsers(self):
         self.username = 'testusr'
         self.userpassword = '12345'
@@ -27,7 +27,7 @@ class ChromeTestCase(unittest.TestCase):
                                                    password=self.user2password,
                                                    email=self.user2email)
 
-    # create a paper
+    """create a paper"""
     def createPaper(self):
         self.paper = Paper.objects.create(
             title="Best paper in the world",
@@ -36,7 +36,7 @@ class ChromeTestCase(unittest.TestCase):
             created_by=self.user,
         )
 
-    # create a comment, with is_flagged as False
+    """create a comment, with is_flagged as False"""
     def createComment(self):
         self.comment = Comment.objects.create(
             text="testing comment",
@@ -46,13 +46,13 @@ class ChromeTestCase(unittest.TestCase):
             paper=self.paper
         )
 
-    # create all necessary assets
+    """create all necessary assets"""
     def createAssets(self):
         self.createUsers()
         self.createPaper()
         self.createComment()
 
-    # fill in the flag form
+    """fill in the flag form"""
     def fillFlagForm(self, flag_form):
         # select the first violation
         input_0 = flag_form.find_element_by_id('id_violation_0')
@@ -62,10 +62,11 @@ class ChromeTestCase(unittest.TestCase):
         description.clear()
         description.send_keys('violation description')
 
-    # setup testing browser
+    """set up testing browser"""
     def setupBrowser(self):
         self.browser = webdriver.Chrome()
 
+    """Log in and set up global variables"""
     def setUp(self):
         # create temporary assets for testing
         self.createAssets()
@@ -89,7 +90,7 @@ class ChromeTestCase(unittest.TestCase):
         # there should be only one comment in this fictional paper
         self.first_comment = self.comment_container.find_element_by_css_selector('li.list-group-item')
 
-    # remove temporary assets from DB
+    """remove temporary assets from DB"""
     def tearDown(self):
         self.user.delete()
         self.user2.delete()
@@ -97,7 +98,7 @@ class ChromeTestCase(unittest.TestCase):
         self.comment.delete()
         self.browser.quit()
 
-    # test all actions for flagging a comment
+    """test all actions for flagging a comment"""
     def test_flaggingcomments(self):
         first_comment = self.first_comment
         browser = self.browser
@@ -164,7 +165,7 @@ class ChromeTestCase(unittest.TestCase):
         arr = first_comment.find_elements_by_class_name("material-icons")
         self.assertEqual(arr[0].text, "flag")
 
-
+"""test using Firefox webdriver"""
 class FirfoxTestCase(ChromeTestCase):
     def setupBrowser(self):
         self.browser = webdriver.Firefox()
