@@ -10,53 +10,6 @@ from django.contrib.auth.models import User
 class ChromeTestCase(unittest.TestCase):
     """test with Chrome webdriver"""
 
-    def createUsers(self):
-        """create two users, user2's info will be used for logging in"""
-
-        self.username = 'user1'
-        self.userpassword = '12345'
-        self.useremail = 'user1@gnosis.stellargraph.io'
-
-        self.user2name = 'user2'
-        self.user2password = 'abcde'
-        self.user2email = 'user2@gnosis.stellargraph.io'
-
-        self.user = User.objects.create_user(username=self.username, password=self.userpassword,
-                                             email=self.useremail)
-
-
-        self.user2 = User.objects.create_user(username=self.user2name,
-                                                   password=self.user2password,
-                                                   email=self.user2email)
-
-    def createPaper(self):
-        """create a paper, created by user1"""
-
-        self.paper = Paper.objects.create(
-            title="Best paper in the world",
-            abstract="The nature of gravity.",
-            download_link="https://google.com",
-            created_by=self.user,
-        )
-
-    def createComment(self):
-        """create a comment, with is_flagged as False"""
-
-        self.comment = Comment.objects.create(
-            text="testing comment",
-            created_by=self.user,
-            is_flagged=False,
-            is_hidden=False,
-            paper=self.paper
-        )
-
-    def createAssets(self):
-        """create all necessary assets"""
-
-        self.createUsers()
-        self.createPaper()
-        self.createComment()
-
     def fillFlagForm(self, flag_form):
         """fill in the flag form"""
 
@@ -74,10 +27,41 @@ class ChromeTestCase(unittest.TestCase):
         self.browser = webdriver.Chrome()
 
     def setUp(self):
-        """Log in and set up global variables"""
+        """create testing assets, logg in and set up global variables"""
 
-        # create temporary assets for testing
-        self.createAssets()
+        # create two users, user2's info will be used for logging in
+        self.username = 'user1'
+        self.userpassword = '12345'
+        self.useremail = 'user1@gnosis.stellargraph.io'
+
+        self.user2name = 'user2'
+        self.user2password = 'abcde'
+        self.user2email = 'user2@gnosis.stellargraph.io'
+
+        self.user = User.objects.create_user(username=self.username, password=self.userpassword,
+                                             email=self.useremail)
+
+        self.user2 = User.objects.create_user(username=self.user2name,
+                                                   password=self.user2password,
+                                                   email=self.user2email)
+
+        # create a paper
+        self.paper = Paper.objects.create(
+            title="Best paper in the world",
+            abstract="The nature of gravity.",
+            download_link="https://google.com",
+            created_by=self.user,
+        )
+
+        # create a comment
+        self.comment = Comment.objects.create(
+            text="testing comment",
+            created_by=self.user,
+            is_flagged=False,
+            is_hidden=False,
+            paper=self.paper
+        )
+
         self.setupBrowser()
 
         # login as user by first typing the login info on the login form, then submit
