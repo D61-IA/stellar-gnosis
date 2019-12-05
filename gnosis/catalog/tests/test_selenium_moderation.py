@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 
 
 class ChromeTestCase(unittest.TestCase):
+    """test with Chrome webdriver"""
 
     @classmethod
     def setupBrowser(cls):
@@ -54,8 +55,8 @@ class ChromeTestCase(unittest.TestCase):
         pwd.send_keys(cls.user2password)
         cls.browser.find_element_by_tag_name('form').submit()
         # wait for page to load
-        wait = WebDriverWait(cls.browser, 1000)
-        element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
+        wait = WebDriverWait(cls.browser, 10)
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
 
     def setUp(self):
         """set up testing assets that will be modified in tests and global variables"""
@@ -74,7 +75,7 @@ class ChromeTestCase(unittest.TestCase):
 
         # wait for page to load
         wait = WebDriverWait(self.browser, 10)
-        element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
 
         # find and save the id of the comment as global
         self.comments = self.browser.find_element_by_css_selector('ul.list-group')
@@ -83,10 +84,11 @@ class ChromeTestCase(unittest.TestCase):
 
         self.first_flag = None
         # click on its flag
-        a = self.first_comment.find_element_by_tag_name('a')
-        a.click()
+        # test pop up flag form is shown when flag icon is clicked
+        flag_clickable = self.first_comment.find_element_by_class_name('open_flag_dialog')
+        flag_clickable.click()
 
-        flag_form = self.browser.find_element_by_tag_name('form')
+        flag_form = self.browser.find_element_by_id('flag_form')
         violations = flag_form.find_element_by_id('id_violation')
 
         # select the first violation on the form
@@ -100,9 +102,18 @@ class ChromeTestCase(unittest.TestCase):
 
         flag_form.submit()
 
+        # wait for Ajax response
+        wait = WebDriverWait(self.browser, 10)
+        wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
+        # remove response overlay
+        self.browser.find_element_by_class_name("response-ok").click()
+
         # go to moderation page
         mod_link = self.browser.find_element_by_id('moderation_link')
         mod_link.click()
+
+        wait = WebDriverWait(self.browser, 10)
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
 
         flags = self.browser.find_element_by_css_selector('ul.list-group')
         flag_items = flags.find_elements_by_class_name('list-group-item')
@@ -131,7 +142,6 @@ class ChromeTestCase(unittest.TestCase):
 
         cls.browser.quit()
 
-
     def testRestoreComment(self):
         """test the comment restores after clicking on restore button"""
 
@@ -141,7 +151,7 @@ class ChromeTestCase(unittest.TestCase):
 
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
-        element = wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
+        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
         actions = self.first_flag.find_element_by_class_name('actions')
 
@@ -158,7 +168,7 @@ class ChromeTestCase(unittest.TestCase):
 
         # wait for page to load
         wait = WebDriverWait(self.browser, 10)
-        element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
 
         self.comments = self.browser.find_element_by_css_selector('ul.list-group')
         self.first_comment = self.comments.find_element_by_css_selector('li.list-group-item')
@@ -194,7 +204,7 @@ class ChromeTestCase(unittest.TestCase):
 
         # wait for page to load
         wait = WebDriverWait(self.browser, 10)
-        element = wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
+        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
         comments = self.browser.find_elements_by_css_selector('ul.list-group')
 
