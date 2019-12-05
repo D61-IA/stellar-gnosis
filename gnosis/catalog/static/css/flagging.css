@@ -99,3 +99,17 @@
     color: olivedrab;
 }
 
+.res_msg {
+    width: 80px;
+    padding: 5px 0;
+    text-align: center;
+    background-color: #59d143;
+}
+
+.del_msg {
+    width: 80px;
+    padding: 5px 0;
+    text-align: center;
+    background-color: orangered;
+}
+

@@ -38,8 +38,8 @@ class ChromeTestCase(unittest.TestCase):
         self.user2password = 'abcde'
         self.user2email = 'user2@gnosis.stellargraph.io'
 
-        self.user = User.objects.create_user(username=self.username, password=self.userpassword,
-                                             email=self.useremail)
+        self.user1 = User.objects.create_user(username=self.username, password=self.userpassword,
+                                              email=self.useremail)
 
         self.user2 = User.objects.create_user(username=self.user2name,
                                                    password=self.user2password,
@@ -50,13 +50,13 @@ class ChromeTestCase(unittest.TestCase):
             title="Best paper in the world",
             abstract="The nature of gravity.",
             download_link="https://google.com",
-            created_by=self.user,
+            created_by=self.user1,
         )
 
         # create a comment
         self.comment = Comment.objects.create(
             text="testing comment",
-            created_by=self.user,
+            created_by=self.user1,
             is_flagged=False,
             is_hidden=False,
             paper=self.paper
@@ -76,7 +76,7 @@ class ChromeTestCase(unittest.TestCase):
         self.browser.find_element_by_tag_name('form').submit()
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
-        element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
         comment_container = self.browser.find_element_by_css_selector('ul.list-group')
         # there should be only one comment in this fictional paper
         self.first_comment = comment_container.find_element_by_css_selector('li.list-group-item')
@@ -84,7 +84,7 @@ class ChromeTestCase(unittest.TestCase):
     def tearDown(self):
         """remove temporary assets from DB"""
 
-        self.user.delete()
+        self.user1.delete()
         self.user2.delete()
         self.paper.delete()
         self.comment.delete()
@@ -144,7 +144,7 @@ class ChromeTestCase(unittest.TestCase):
         flag_form.submit()
         # wait for Ajax response
         wait = WebDriverWait(browser, 10)
-        element = wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
+        wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
 
         # after submit, test flag form is hidden
         a1 = browser.find_element_by_id('flag_form_container').get_attribute('hidden')
