@@ -13,10 +13,11 @@
                         <div id="endorsement">
                             <a id="e_create" href="{% url 'endorsement_create' id=paper.id %}">
                                 {% if not endorsed %}
-                                    <i class="material-icons"
+                                    <i class="material-icons" data-toggle="tooltip" title="add endorsement"
                                        style="font-size:48px; color:#000000">lightbulb_outline</i>
                                 {% else %}
-                                    <i class="material-icons" style="font-size:48px; color:#FFFF00;">lightbulb</i>
+                                    <i class="material-icons" data-toggle="tooltip" title="remove endorsement"
+                                       style="font-size:48px; color:#FFFF00;">lightbulb</i>
                                 {% endif %}
                             </a>
                         </div>
@@ -24,11 +25,13 @@
                         <div id="bookmark">
                             <a id="b_create" href="{% url 'paper_bookmark' id=paper.id %}">
                                 {% if not bookmarked %}
-                                    <i id="bookmark_icon" class="material-icons" style="font-size:48px; color:#000000">
+                                    <i class="material-icons" data-toggle="tooltip" title="add bookmark"
+                                       style="font-size:48px; color:#000000">
                                         bookmark_border
                                     </i>
                                 {% else %}
-                                    <i id="bookmark_icon" class="material-icons" style="font-size:48px; color:#000000">
+                                    <i class="material-icons" data-toggle="tooltip" title="remove bookmark"
+                                       style="font-size:48px; color:#000000">
                                         bookmark
                                     </i>
                                 {% endif %}
