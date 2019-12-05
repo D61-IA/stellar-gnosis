@@ -86,6 +86,7 @@ describe('Logging In - CSRF Tokens', function () {
         })
     });
 
+    // ERROR: unable to submit form for some reason
     it('testFlagValidFormSubmit', function () {
         cy.get('#id_violation > li').first().within(() => {
             cy.get('input').click()
