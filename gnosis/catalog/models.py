@@ -584,7 +584,7 @@ class Endorsement(models.Model):
     # Fields
     paper = models.ForeignKey(
         to=Paper, on_delete=models.CASCADE, related_name="endorsements"
-    )  # Paper.bookmarks()
+    )  # Paper.endorsements()
 
     user = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name="endorsements"

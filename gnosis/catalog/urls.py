@@ -121,9 +121,9 @@ urlpatterns += [
 urlpatterns += [
     path('endorsements', views.endorsements, name='endorsements'),
     path('endorsements/create/<int:id>', views.endorsement_create, name='endorsement_create'),
-    path('endorsements/undo/<int:paper_id>', views.endorsement_undo, name='endorsement_undo'),
+    # path('endorsements/undo/<int:paper_id>', views.endorsement_undo, name='endorsement_undo'),
     path('endorsements/delete/<int:id>', views.endorsement_delete, name='endorsement_delete'),
-    path('endorsements/undoview//<int:paper_id>', views.endorsement_undo_from_view, name='endorsement_undo_from_view'),
+    # path('endorsements/undoview//<int:paper_id>', views.endorsement_undo_from_view, name='endorsement_undo_from_view'),
 ]
 
 # for updating/creating a Bookmark
