@@ -32,6 +32,18 @@
     opacity: 0.5;
 }
 
+.light_off, .bm_on, .bm_off {
+    color: #000000;
+}
+
+.light_on {
+    color: #FFFF00;
+}
+
+.material-icons {
+    font-size: 48px;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

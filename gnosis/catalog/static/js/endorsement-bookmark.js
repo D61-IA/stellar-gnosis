@@ -9,12 +9,10 @@ $('#e_create').click(function (e) {
             console.log("submit successful!");
             if (data.result === "add") {
                 $that.html('lightbulb');
-                $that.css('color', '#FFFF00');
-                $that.attr('title', 'remove endorsement')
+                $that.attr({title: 'remove endorsement', class: "material-icons light_on"});
             } else {
                 $that.html('lightbulb_outline');
-                $that.css('color', '#000000');
-                $that.attr('title', 'add endorsement')
+                $that.attr({title: 'add endorsement', class: "material-icons light_off"});
             }
             console.log("endorsement action performed:", data.result)
 
@@ -35,11 +33,11 @@ $('#b_create').click(function (e) {
             console.log("submit successful!");
             if (data.result === "add") {
                 $that.html('bookmark');
-                $that.attr('title', 'remove bookmark')
+                $that.attr({title: 'remove bookmark', class: "material-icons bm_on"});
 
             } else {
                 $that.html('bookmark_border');
-                $that.attr('title', 'add bookmark')
+                $that.attr({title: 'add bookmark', class: "material-icons bm_off"});
             }
             console.log("bookmark action performed:", data.result)
 

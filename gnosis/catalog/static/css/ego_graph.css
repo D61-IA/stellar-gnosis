@@ -34,6 +34,7 @@
 
 .ego-button-container .material-icons {
     display: block;
+    font-size: 24px; !important;
 }
 
 .ego-button {
@@ -91,6 +92,7 @@
 .drop_indicator {
     margin-top: auto;
     margin-bottom: auto;
+    font-size: 24px;
 }
 
 #tooltip span {
