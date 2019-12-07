@@ -3,6 +3,7 @@ from catalog.models import Paper
 from bookmark.models import Bookmark
 from django.urls import reverse
 from django.contrib.auth.models import User
+import json
 
 
 class BookmarkViewTestCase(TestCase):
@@ -21,7 +22,7 @@ class BookmarkViewTestCase(TestCase):
 
     def test_bookmark_create(self):
         """ Only a logged in user can bookmark a paper"""
-        response = self.client.post(reverse("paper_bookmark"), kwargs={'id': self.paper.id})
+        response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
 
         # Expects a redirect to the login page if user is not logged in
         self.assertEqual(response.status_code, 302)
@@ -33,7 +34,7 @@ class BookmarkViewTestCase(TestCase):
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(response.content, '{"bookmark": "add"}')
+        self.assertEqual(json.loads(response.content)['result'], "add")
 
         self.client.logout()
 
@@ -44,7 +45,7 @@ class BookmarkViewTestCase(TestCase):
         # create a bookmark for test paper
         bm = Bookmark.objects.create(paper=self.paper, owner=self.user)
 
-        response = self.client.post(reverse("paper_bookmark"), kwargs={'id': self.paper.id})
+        response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
 
         # Expects a redirect to the login page if user is not logged in
         self.assertEqual(response.status_code, 302)
@@ -56,7 +57,7 @@ class BookmarkViewTestCase(TestCase):
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(response.content, '{"bookmark": "delete"}')
+        self.assertEqual(json.loads(response.content)['result'], "delete")
 
         self.client.logout()
 
