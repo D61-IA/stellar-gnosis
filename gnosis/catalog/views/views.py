@@ -171,14 +171,16 @@ def paper_detail(request, id):
         )
         print(f"{rel_model.relationship_type}")
 
-    endorsed = paper.endorsements.filter(user=request.user).exists()
-
-    bookmarked = paper.bookmarks.filter(owner=request.user).exists()
+    endorsed, bookmarked = False, False
 
     # Retrieve all notes that created by the current user and on current paper.
     notes = []
     if request.user.is_authenticated:
         notes = Note.objects.filter(paper=paper, created_by=request.user)
+
+        # Get if paper is endorsed or bookmarked by the user
+        endorsed = paper.endorsements.filter(user=request.user).exists()
+        bookmarked = paper.bookmarks.filter(owner=request.user).exists()
 
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
