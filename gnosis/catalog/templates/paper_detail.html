@@ -290,7 +290,7 @@
                                     <p><strong>{{ comment.created_by }}</strong> said on
                                         {{ comment.created_at|date:"F    d, Y" }}</p>
                                     {% if comment.is_flagged %}
-                                        <p>Comment is being held for moderation</p>
+                                        <p class="flagged">Comment is being held for moderation</p>
                                     {% else %}
                                         <div class="comment_text">
                                             <p>{{ comment.text|safe|linebreaks }}</p>

@@ -10,4 +10,7 @@ from catalog.tests.test_group_views import *
 from catalog.tests.test_bookmark_view import *
 from catalog.tests.test_endorsement_view import *
 from catalog.tests.test_selenium_flaggingcomments import *
+from catalog.tests.test_selenium_moderation import *
 from catalog.tests.test_selenium_bookmark_endorsement import *
+
+

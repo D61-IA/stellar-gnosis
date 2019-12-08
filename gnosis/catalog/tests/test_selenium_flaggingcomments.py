@@ -50,13 +50,13 @@ class ChromeTestCase(unittest.TestCase):
             title="Best paper in the world",
             abstract="The nature of gravity.",
             download_link="https://google.com",
-            created_by=self.user,
+            created_by=self.user1,
         )
 
         # create a comment
         self.comment = Comment.objects.create(
             text="testing comment",
-            created_by=self.user,
+            created_by=self.user1,
             is_flagged=False,
             is_hidden=False,
             paper=self.paper
@@ -85,7 +85,7 @@ class ChromeTestCase(unittest.TestCase):
     def tearDown(self):
         """remove temporary assets from DB"""
 
-        self.user.delete()
+        self.user1.delete()
         self.user2.delete()
         self.paper.delete()
         self.comment.delete()

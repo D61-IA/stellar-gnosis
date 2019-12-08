@@ -6,7 +6,7 @@ from catalog.models import Paper, Comment, CommentFlag
 from catalog.views.utils.import_functions import *
 from catalog.forms import CommentForm
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 
 
 #
@@ -106,35 +106,44 @@ def comment_update(request, id):
 @staff_member_required
 def comment_restore(request, id):
     """It restores a flagged comment making it visible to users again."""
-    comment = get_object_or_404(Comment, pk=id)
+    comment = Comment.objects.get(pk=id)
 
-    # Remove the entry from the CommentFlag table
-    flags = CommentFlag.objects.filter(comment=comment).all()
+    if request.method == 'POST':
+        data = {'is_valid': False}
+        if comment is not None:
+            # Remove the entry from the CommentFlag table
+            flags = CommentFlag.objects.filter(comment=comment).all()
 
-    # Potentially (although not likely) more than one users may have flagged this comment. So, if we are restoring it,
-    # then we delete all rows in the CommentFlag table.
-    print(f"Found {flags.count()} flags for this comment.")
+            # Potentially (although not likely) more than one users may have flagged this comment. So, if we are restoring it,
+            # then we delete all rows in the CommentFlag table.
+            print(f"Found {flags.count()} flags for this comment.")
 
-    for flag in flags:
-        flag.delete()
+            for flag in flags:
+                flag.delete()
 
-    # reset is_flagged to False so users can see the comment in the paper detail
-    comment.is_flagged = False
-    comment.save()
+            # reset is_flagged to False so users can see the comment in the paper detail
+            comment.is_flagged = False
+            comment.save()
 
-    # Shall we return to the paper detail or the flagged comments index page?
-    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": comment.paper.id}))
+            data['is_valid'] = True
+
+            # Shall we return to the paper detail or the flagged comments index page?
+        return JsonResponse(data)
 
 
 @staff_member_required
 def comment_delete(request, id):
-    comment = get_object_or_404(Comment, pk=id)
-    paper_id = comment.paper.id
+    comment = Comment.objects.get(pk=id)
+    # paper_id = comment.paper.id
 
-    print(f"Warning: Deleting comment: {comment}")
-    comment.delete()
+    if request.method == 'POST':
+        data = {'is_valid': False}
+        if comment is not None:
+            print(f"Warning: Deleting comment: {comment}")
+            comment.delete()
+            data['is_valid'] = True
 
-    return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": paper_id}))
+        return JsonResponse(data)
 
 
 @staff_member_required
