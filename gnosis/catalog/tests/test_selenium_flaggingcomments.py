@@ -166,3 +166,8 @@ class FirfoxTestCase(ChromeTestCase):
     def setupBrowser(self):
         """set the webdriver to Firefox"""
         self.browser = webdriver.Firefox()
+
+
+if __name__ == '__main__':
+    # 2 (verbose): you get the help string of every test and the result
+    unittest.main(verbosity=2)
