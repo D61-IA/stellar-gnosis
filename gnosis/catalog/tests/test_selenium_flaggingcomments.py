@@ -30,16 +30,16 @@ class ChromeTestCase(unittest.TestCase):
         """create testing assets, log in and set up global variables"""
 
         # create two users, user2's info will be used for logging in
-        username = 'user1'
-        userpassword = '12345'
-        useremail = 'user1@gnosis.stellargraph.io'
+        user1name = 'user1'
+        user1password = '12345'
+        user1email = 'user1@gnosis.stellargraph.io'
 
         user2name = 'user2'
         user2password = 'abcde'
         user2email = 'user2@gnosis.stellargraph.io'
 
-        self.user = User.objects.create_user(username=username, password=userpassword,
-                                             email=useremail)
+        self.user1 = User.objects.create_user(username=user1name, password=user1password,
+                                             email=user1email)
 
         self.user2 = User.objects.create_user(username=user2name,
                                                    password=user2password,
