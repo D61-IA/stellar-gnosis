@@ -27,23 +27,23 @@ class ChromeTestCase(unittest.TestCase):
         self.browser = webdriver.Chrome()
 
     def setUp(self):
-        """create testing assets, logg in and set up global variables"""
+        """create testing assets, log in and set up global variables"""
 
         # create two users, user2's info will be used for logging in
-        self.username = 'user1'
-        self.userpassword = '12345'
-        self.useremail = 'user1@gnosis.stellargraph.io'
+        username = 'user1'
+        userpassword = '12345'
+        useremail = 'user1@gnosis.stellargraph.io'
 
-        self.user2name = 'user2'
-        self.user2password = 'abcde'
-        self.user2email = 'user2@gnosis.stellargraph.io'
+        user2name = 'user2'
+        user2password = 'abcde'
+        user2email = 'user2@gnosis.stellargraph.io'
 
-        self.user = User.objects.create_user(username=self.username, password=self.userpassword,
-                                             email=self.useremail)
+        self.user = User.objects.create_user(username=username, password=userpassword,
+                                             email=useremail)
 
-        self.user2 = User.objects.create_user(username=self.user2name,
-                                                   password=self.user2password,
-                                                   email=self.user2email)
+        self.user2 = User.objects.create_user(username=user2name,
+                                                   password=user2password,
+                                                   email=user2email)
 
         # create a paper
         self.paper = Paper.objects.create(
@@ -66,17 +66,18 @@ class ChromeTestCase(unittest.TestCase):
 
         # login as user by first typing the login info on the login form, then submit
         self.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(self.paper.id) + '/')
+
         username = self.browser.find_element_by_id('id_login')
         username.clear()
-        username.send_keys(self.user2name)
+        username.send_keys(user2name)
 
         pwd = self.browser.find_element_by_id('id_password')
         pwd.clear()
-        pwd.send_keys(self.user2password)
+        pwd.send_keys(user2password)
         self.browser.find_element_by_tag_name('form').submit()
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
-        element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
         comment_container = self.browser.find_element_by_css_selector('ul.list-group')
         # there should be only one comment in this fictional paper
         self.first_comment = comment_container.find_element_by_css_selector('li.list-group-item')
@@ -144,7 +145,7 @@ class ChromeTestCase(unittest.TestCase):
         flag_form.submit()
         # wait for Ajax response
         wait = WebDriverWait(browser, 10)
-        element = wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
+        wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
 
         # after submit, test flag form is hidden
         a1 = browser.find_element_by_id('flag_form_container').get_attribute('hidden')
@@ -165,8 +166,3 @@ class FirfoxTestCase(ChromeTestCase):
     def setupBrowser(self):
         """set the webdriver to Firefox"""
         self.browser = webdriver.Firefox()
-
-
-if __name__ == '__main__':
-    # 2 (verbose): you get the help string of every test and the result
-    unittest.main(verbosity=2)

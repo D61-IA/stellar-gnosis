@@ -8,7 +8,7 @@
         <div class="card-header">
 
             <div style="display: flex">
-                <div style="display: flex;">
+                <div class="header_icons">
                     {% if user.is_authenticated %}
                         <div id="endorsement">
                             <a id="e_create" href="{% url 'endorsement_create' id=paper.id %}">

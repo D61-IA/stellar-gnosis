@@ -32,6 +32,7 @@ class EndorsementViewTestCase(TestCase):
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
+        # Response should have the right message
         self.assertEqual(json.loads(response.content)['result'], "add")
 
         self.client.logout()
@@ -40,6 +41,7 @@ class EndorsementViewTestCase(TestCase):
     def test_endorsement_delete(self):
         """ Only a logged in user can endorse a paper"""
 
+        # create an endorsement for test paper
         endorsement = Endorsement.objects.create(paper=self.paper, user=self.user)
 
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
@@ -54,6 +56,7 @@ class EndorsementViewTestCase(TestCase):
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
+        # Response should have the right message
         self.assertEqual(json.loads(response.content)['result'], "delete")
 
         self.client.logout()

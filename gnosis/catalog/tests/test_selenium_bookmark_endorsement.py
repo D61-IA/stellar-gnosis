@@ -21,20 +21,20 @@ class ChromeTestCase(unittest.TestCase):
         """create testing assets that are used only once"""
 
         # create a regular user and an admin user
-        cls.user1name = 'user1'
-        cls.user1password = '12345'
-        cls.user1email = 'user1@gnosis.stellargraph.io'
+        user1name = 'user1'
+        user1password = '12345'
+        user1email = 'user1@gnosis.stellargraph.io'
 
-        cls.user2name = 'user2'
-        cls.user2password = 'abcde'
-        cls.user2email = 'user2@gnosis.stellargraph.io'
+        user2name = 'user2'
+        user2password = 'abcde'
+        user2email = 'user2@gnosis.stellargraph.io'
 
-        cls.user1 = User.objects.create_user(username=cls.user1name, password=cls.user1password,
-                                             email=cls.user1email)
+        cls.user1 = User.objects.create_user(username=user1name, password=user1password,
+                                             email=user1email)
 
-        cls.user2 = User.objects.create_superuser(username=cls.user2name,
-                                                  password=cls.user2password,
-                                                  email=cls.user2email)
+        cls.user2 = User.objects.create_user(username=user2name,
+                                                  password=user2password,
+                                                  email=user2email)
 
         # create a paper
         cls.paper = Paper.objects.create(
@@ -45,14 +45,15 @@ class ChromeTestCase(unittest.TestCase):
         )
         cls.setupBrowser()
 
-        # login as admin/user2
+        # login as user2
         cls.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(cls.paper.id) + '/')
+
         username = cls.browser.find_element_by_id('id_login')
         username.clear()
-        username.send_keys(cls.user2name)
+        username.send_keys(user2name)
         pwd = cls.browser.find_element_by_id('id_password')
         pwd.clear()
-        pwd.send_keys(cls.user2password)
+        pwd.send_keys(user2password)
         cls.browser.find_element_by_tag_name('form').submit()
         # wait for page to load
         wait = WebDriverWait(cls.browser, 10)

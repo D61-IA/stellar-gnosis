@@ -40,7 +40,11 @@
     color: #FFFF00;
 }
 
-.material-icons {
+.header_icons {
+    display: flex;
+}
+
+.header_icons .material-icons{
     font-size: 48px;
 }
 
