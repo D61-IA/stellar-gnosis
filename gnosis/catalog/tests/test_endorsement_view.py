@@ -17,7 +17,6 @@ class EndorsementViewTestCase(TestCase):
             created_by=self.user,
         )
 
-
     def test_endorsement_create(self):
         """ Only a logged in user can endorse a paper"""
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))

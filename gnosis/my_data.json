@@ -1,0 +1,1368 @@
+[
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 1,
+    "fields": {
+      "app_label": "admin",
+      "model": "logentry"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 2,
+    "fields": {
+      "app_label": "auth",
+      "model": "permission"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 3,
+    "fields": {
+      "app_label": "auth",
+      "model": "group"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 4,
+    "fields": {
+      "app_label": "auth",
+      "model": "user"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 5,
+    "fields": {
+      "app_label": "contenttypes",
+      "model": "contenttype"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 6,
+    "fields": {
+      "app_label": "sessions",
+      "model": "session"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 7,
+    "fields": {
+      "app_label": "sites",
+      "model": "site"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 8,
+    "fields": {
+      "app_label": "account",
+      "model": "emailaddress"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 9,
+    "fields": {
+      "app_label": "account",
+      "model": "emailconfirmation"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 10,
+    "fields": {
+      "app_label": "catalog",
+      "model": "venue"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 11,
+    "fields": {
+      "app_label": "catalog",
+      "model": "paper"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 12,
+    "fields": {
+      "app_label": "catalog",
+      "model": "paperrelationshiptype"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 13,
+    "fields": {
+      "app_label": "catalog",
+      "model": "code"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 14,
+    "fields": {
+      "app_label": "catalog",
+      "model": "comment"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 15,
+    "fields": {
+      "app_label": "catalog",
+      "model": "person"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 16,
+    "fields": {
+      "app_label": "catalog",
+      "model": "paperauthorrelationshipdata"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 17,
+    "fields": {
+      "app_label": "catalog",
+      "model": "dataset"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 18,
+    "fields": {
+      "app_label": "catalog",
+      "model": "paperdatasetrelationshipdata"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 19,
+    "fields": {
+      "app_label": "catalog",
+      "model": "commentflag"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 20,
+    "fields": {
+      "app_label": "catalog",
+      "model": "readinggroupmember"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 21,
+    "fields": {
+      "app_label": "catalog",
+      "model": "readinggroup"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 22,
+    "fields": {
+      "app_label": "catalog",
+      "model": "readinggroupentry"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 23,
+    "fields": {
+      "app_label": "catalog",
+      "model": "collection"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 24,
+    "fields": {
+      "app_label": "catalog",
+      "model": "collectionentry"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 25,
+    "fields": {
+      "app_label": "catalog",
+      "model": "endorsement"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 26,
+    "fields": {
+      "app_label": "bookmark",
+      "model": "bookmark"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 27,
+    "fields": {
+      "app_label": "notes",
+      "model": "note"
+    }
+  },
+  {
+    "model": "sessions.session",
+    "pk": "dniz1g4d1dpwe06qf0uzb6oivge9x8mg",
+    "fields": {
+      "session_data": "YTcwMzA3YjZjNTBlNjBjZTBhNzBiMWZmY2FjNDY4NWU4NmJiOTM4ZDp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJmMWM4MDU3NTZhOGE4OWFjZWZmM2EwNjBkODVmYTc2OWU3YzJiOGEwIiwiX3Nlc3Npb25fZXhwaXJ5IjowLCJmcm9tX2V4dGVybmFsIjpmYWxzZSwiZXh0ZXJuYWxfdGl0bGUiOiJGdWxseSBEZWNvdXBsZWQgTmV1cmFsIE5ldHdvcmsgTGVhcm5pbmcgVXNpbmcgRGVsYXllZCBHcmFkaWVudHMiLCJleHRlcm5hbF9hYnN0cmFjdCI6IlRyYWluaW5nIG5ldXJhbCBuZXR3b3JrcyB3aXRoIGJhY2stcHJvcGFnYXRpb24gKEJQKSByZXF1aXJlcyBhIHNlcXVlbnRpYWwgcGFzc2luZyBvZiBhY3RpdmF0aW9ucyBhbmQgZ3JhZGllbnRzLCB3aGljaCBmb3JjZXMgdGhlIG5ldHdvcmsgbW9kdWxlcyB0byB3b3JrIGluIGEgc3luY2hyb25vdXMgZmFzaGlvbi4gVGhpcyBoYXMgYmVlbiByZWNvZ25pemVkIGFzIHRoZSBsb2NraW5ncyAoaS5lLiwgdGhlIGZvcndhcmQsIGJhY2t3YXJkIGFuZCB1cGRhdGUgbG9ja2luZ3MpIGluaGVyaXRlZCBmcm9tIHRoZSBCUC4gSW4gdGhpcyBwYXBlciwgd2UgcHJvcG9zZSBhIGZ1bGx5IGRlY291cGxlZCB0cmFpbmluZyBzY2hlbWUgdXNpbmcgZGVsYXllZCBncmFkaWVudHMgKEZERykgdG8gYnJlYWsgYWxsIHRoZXNlIGxvY2tpbmdzLiBUaGUgRkRHIHNwbGl0cyBhIG5ldXJhbCBuZXR3b3JrIGludG8gbXVsdGlwbGUgbW9kdWxlcyBhbmQgdHJhaW5zIHRoZW0gaW5kZXBlbmRlbnRseSBhbmQgYXN5bmNocm9ub3VzbHkgdXNpbmcgZGlmZmVyZW50IHdvcmtlcnMgKGUuZy4sIEdQVXMpLiBXZSBhbHNvIGludHJvZHVjZSBhIGdyYWRpZW50IHNocmlua2luZyBwcm9jZXNzIHRvIHJlZHVjZSB0aGUgc3RhbGUgZ3JhZGllbnQgZWZmZWN0IGNhdXNlZCBieSB0aGUgZGVsYXllZCBncmFkaWVudHMuIEluIGFkZGl0aW9uLCB3ZSBwcm92ZSB0aGF0IHRoZSBwcm9wb3NlZCBGREcgYWxnb3JpdGhtIGd1YXJhbnRlZXMgYSBzdGF0aXN0aWNhbCBjb252ZXJnZW5jZSBkdXJpbmcgdHJhaW5pbmcuIEV4cGVyaW1lbnRzIGFyZSBjb25kdWN0ZWQgYnkgdHJhaW5pbmcgZGVlcCBjb252b2x1dGlvbmFsIG5ldXJhbCBuZXR3b3JrcyB0byBwZXJmb3JtIGNsYXNzaWZpY2F0aW9uIHRhc2tzIG9uIGJlbmNobWFyayBkYXRhc2V0cywgc2hvd2luZyBjb21wYXJhYmxlIG9yIGJldHRlciByZXN1bHRzIGFnYWluc3QgdGhlIHN0YXRlLW9mLXRoZS1hcnQgbWV0aG9kcyBhcyB3ZWxsIGFzIHRoZSBCUCBpbiB0ZXJtcyBvZiBib3RoIGdlbmVyYWxpemF0aW9uIGFuZCBhY2NlbGVyYXRpb24gYWJpbGl0aWVzLiBJbiBwYXJ0aWN1bGFyLCB3ZSBzaG93IHRoYXQgdGhlIEZERyBpcyBhbHNvIGFibGUgdG8gdHJhaW4gdmVyeSB3aWRlIG5ldHdvcmtzIChlLmcuLCBXUk4tMjgtMTApIGFuZCBleHRyZW1lbHkgZGVlcCBuZXR3b3JrcyAoZS5nLiwgUmVzTmV0LTEyMDIpLiBDb2RlIGlzIGF2YWlsYWJsZSBhdCB0aGlzIGh0dHBzIFVSTC4iLCJleHRlcm5hbF91cmwiOiJodHRwczovL2FyeGl2Lm9yZy9hYnMvMTkwNi4wOTEwOCIsImRvd25sb2FkX2xpbmsiOiJodHRwczovL2FyeGl2Lm9yZy9wZGYvMTkwNi4wOTEwOC5wZGYiLCJleHRlcm5hbF9hdXRob3JzIjoiSHVpcGluZyBaaHVhbmcsIFlpIFdhbmcsIFFpbmdsYWkgTGl1LCBTaHVhaSBaaGFuZywgWmhpcGluZyBMaW4iLCJsYXN0LXZpZXdlZC1wYXBlciI6MX0=",
+      "expire_date": "2019-12-23T03:31:34.486Z"
+    }
+  },
+  {
+    "model": "sites.site",
+    "pk": 1,
+    "fields": {
+      "domain": "example.com",
+      "name": "example.com"
+    }
+  },
+  {
+    "model": "catalog.paperauthorrelationshipdata",
+    "pk": 1,
+    "fields": {
+      "order": 1,
+      "paper": 1,
+      "author": 1
+    }
+  },
+  {
+    "model": "catalog.paperauthorrelationshipdata",
+    "pk": 2,
+    "fields": {
+      "order": 2,
+      "paper": 1,
+      "author": 2
+    }
+  },
+  {
+    "model": "catalog.paperauthorrelationshipdata",
+    "pk": 3,
+    "fields": {
+      "order": 3,
+      "paper": 1,
+      "author": 3
+    }
+  },
+  {
+    "model": "catalog.paperauthorrelationshipdata",
+    "pk": 4,
+    "fields": {
+      "order": 4,
+      "paper": 1,
+      "author": 4
+    }
+  },
+  {
+    "model": "catalog.paperauthorrelationshipdata",
+    "pk": 5,
+    "fields": {
+      "order": 5,
+      "paper": 1,
+      "author": 5
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 1,
+    "fields": {
+      "name": "Can add log entry",
+      "content_type": 1,
+      "codename": "add_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 2,
+    "fields": {
+      "name": "Can change log entry",
+      "content_type": 1,
+      "codename": "change_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 3,
+    "fields": {
+      "name": "Can delete log entry",
+      "content_type": 1,
+      "codename": "delete_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 4,
+    "fields": {
+      "name": "Can view log entry",
+      "content_type": 1,
+      "codename": "view_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 5,
+    "fields": {
+      "name": "Can add permission",
+      "content_type": 2,
+      "codename": "add_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 6,
+    "fields": {
+      "name": "Can change permission",
+      "content_type": 2,
+      "codename": "change_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 7,
+    "fields": {
+      "name": "Can delete permission",
+      "content_type": 2,
+      "codename": "delete_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 8,
+    "fields": {
+      "name": "Can view permission",
+      "content_type": 2,
+      "codename": "view_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 9,
+    "fields": {
+      "name": "Can add group",
+      "content_type": 3,
+      "codename": "add_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 10,
+    "fields": {
+      "name": "Can change group",
+      "content_type": 3,
+      "codename": "change_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 11,
+    "fields": {
+      "name": "Can delete group",
+      "content_type": 3,
+      "codename": "delete_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 12,
+    "fields": {
+      "name": "Can view group",
+      "content_type": 3,
+      "codename": "view_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 13,
+    "fields": {
+      "name": "Can add user",
+      "content_type": 4,
+      "codename": "add_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 14,
+    "fields": {
+      "name": "Can change user",
+      "content_type": 4,
+      "codename": "change_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 15,
+    "fields": {
+      "name": "Can delete user",
+      "content_type": 4,
+      "codename": "delete_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 16,
+    "fields": {
+      "name": "Can view user",
+      "content_type": 4,
+      "codename": "view_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 17,
+    "fields": {
+      "name": "Can add content type",
+      "content_type": 5,
+      "codename": "add_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 18,
+    "fields": {
+      "name": "Can change content type",
+      "content_type": 5,
+      "codename": "change_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 19,
+    "fields": {
+      "name": "Can delete content type",
+      "content_type": 5,
+      "codename": "delete_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 20,
+    "fields": {
+      "name": "Can view content type",
+      "content_type": 5,
+      "codename": "view_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 21,
+    "fields": {
+      "name": "Can add session",
+      "content_type": 6,
+      "codename": "add_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 22,
+    "fields": {
+      "name": "Can change session",
+      "content_type": 6,
+      "codename": "change_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 23,
+    "fields": {
+      "name": "Can delete session",
+      "content_type": 6,
+      "codename": "delete_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 24,
+    "fields": {
+      "name": "Can view session",
+      "content_type": 6,
+      "codename": "view_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 25,
+    "fields": {
+      "name": "Can add site",
+      "content_type": 7,
+      "codename": "add_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 26,
+    "fields": {
+      "name": "Can change site",
+      "content_type": 7,
+      "codename": "change_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 27,
+    "fields": {
+      "name": "Can delete site",
+      "content_type": 7,
+      "codename": "delete_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 28,
+    "fields": {
+      "name": "Can view site",
+      "content_type": 7,
+      "codename": "view_site"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 29,
+    "fields": {
+      "name": "Can add email address",
+      "content_type": 8,
+      "codename": "add_emailaddress"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 30,
+    "fields": {
+      "name": "Can change email address",
+      "content_type": 8,
+      "codename": "change_emailaddress"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 31,
+    "fields": {
+      "name": "Can delete email address",
+      "content_type": 8,
+      "codename": "delete_emailaddress"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 32,
+    "fields": {
+      "name": "Can view email address",
+      "content_type": 8,
+      "codename": "view_emailaddress"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 33,
+    "fields": {
+      "name": "Can add email confirmation",
+      "content_type": 9,
+      "codename": "add_emailconfirmation"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 34,
+    "fields": {
+      "name": "Can change email confirmation",
+      "content_type": 9,
+      "codename": "change_emailconfirmation"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 35,
+    "fields": {
+      "name": "Can delete email confirmation",
+      "content_type": 9,
+      "codename": "delete_emailconfirmation"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 36,
+    "fields": {
+      "name": "Can view email confirmation",
+      "content_type": 9,
+      "codename": "view_emailconfirmation"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 37,
+    "fields": {
+      "name": "Can add venue",
+      "content_type": 10,
+      "codename": "add_venue"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 38,
+    "fields": {
+      "name": "Can change venue",
+      "content_type": 10,
+      "codename": "change_venue"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 39,
+    "fields": {
+      "name": "Can delete venue",
+      "content_type": 10,
+      "codename": "delete_venue"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 40,
+    "fields": {
+      "name": "Can view venue",
+      "content_type": 10,
+      "codename": "view_venue"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 41,
+    "fields": {
+      "name": "Can add paper",
+      "content_type": 11,
+      "codename": "add_paper"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 42,
+    "fields": {
+      "name": "Can change paper",
+      "content_type": 11,
+      "codename": "change_paper"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 43,
+    "fields": {
+      "name": "Can delete paper",
+      "content_type": 11,
+      "codename": "delete_paper"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 44,
+    "fields": {
+      "name": "Can view paper",
+      "content_type": 11,
+      "codename": "view_paper"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 45,
+    "fields": {
+      "name": "Can add paper relationship type",
+      "content_type": 12,
+      "codename": "add_paperrelationshiptype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 46,
+    "fields": {
+      "name": "Can change paper relationship type",
+      "content_type": 12,
+      "codename": "change_paperrelationshiptype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 47,
+    "fields": {
+      "name": "Can delete paper relationship type",
+      "content_type": 12,
+      "codename": "delete_paperrelationshiptype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 48,
+    "fields": {
+      "name": "Can view paper relationship type",
+      "content_type": 12,
+      "codename": "view_paperrelationshiptype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 49,
+    "fields": {
+      "name": "Can add code",
+      "content_type": 13,
+      "codename": "add_code"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 50,
+    "fields": {
+      "name": "Can change code",
+      "content_type": 13,
+      "codename": "change_code"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 51,
+    "fields": {
+      "name": "Can delete code",
+      "content_type": 13,
+      "codename": "delete_code"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 52,
+    "fields": {
+      "name": "Can view code",
+      "content_type": 13,
+      "codename": "view_code"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 53,
+    "fields": {
+      "name": "Can add comment",
+      "content_type": 14,
+      "codename": "add_comment"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 54,
+    "fields": {
+      "name": "Can change comment",
+      "content_type": 14,
+      "codename": "change_comment"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 55,
+    "fields": {
+      "name": "Can delete comment",
+      "content_type": 14,
+      "codename": "delete_comment"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 56,
+    "fields": {
+      "name": "Can view comment",
+      "content_type": 14,
+      "codename": "view_comment"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 57,
+    "fields": {
+      "name": "Can add person",
+      "content_type": 15,
+      "codename": "add_person"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 58,
+    "fields": {
+      "name": "Can change person",
+      "content_type": 15,
+      "codename": "change_person"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 59,
+    "fields": {
+      "name": "Can delete person",
+      "content_type": 15,
+      "codename": "delete_person"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 60,
+    "fields": {
+      "name": "Can view person",
+      "content_type": 15,
+      "codename": "view_person"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 61,
+    "fields": {
+      "name": "Can add paper author relationship data",
+      "content_type": 16,
+      "codename": "add_paperauthorrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 62,
+    "fields": {
+      "name": "Can change paper author relationship data",
+      "content_type": 16,
+      "codename": "change_paperauthorrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 63,
+    "fields": {
+      "name": "Can delete paper author relationship data",
+      "content_type": 16,
+      "codename": "delete_paperauthorrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 64,
+    "fields": {
+      "name": "Can view paper author relationship data",
+      "content_type": 16,
+      "codename": "view_paperauthorrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 65,
+    "fields": {
+      "name": "Can add dataset",
+      "content_type": 17,
+      "codename": "add_dataset"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 66,
+    "fields": {
+      "name": "Can change dataset",
+      "content_type": 17,
+      "codename": "change_dataset"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 67,
+    "fields": {
+      "name": "Can delete dataset",
+      "content_type": 17,
+      "codename": "delete_dataset"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 68,
+    "fields": {
+      "name": "Can view dataset",
+      "content_type": 17,
+      "codename": "view_dataset"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 69,
+    "fields": {
+      "name": "Can add paper dataset relationship data",
+      "content_type": 18,
+      "codename": "add_paperdatasetrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 70,
+    "fields": {
+      "name": "Can change paper dataset relationship data",
+      "content_type": 18,
+      "codename": "change_paperdatasetrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 71,
+    "fields": {
+      "name": "Can delete paper dataset relationship data",
+      "content_type": 18,
+      "codename": "delete_paperdatasetrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 72,
+    "fields": {
+      "name": "Can view paper dataset relationship data",
+      "content_type": 18,
+      "codename": "view_paperdatasetrelationshipdata"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 73,
+    "fields": {
+      "name": "Can add comment flag",
+      "content_type": 19,
+      "codename": "add_commentflag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 74,
+    "fields": {
+      "name": "Can change comment flag",
+      "content_type": 19,
+      "codename": "change_commentflag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 75,
+    "fields": {
+      "name": "Can delete comment flag",
+      "content_type": 19,
+      "codename": "delete_commentflag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 76,
+    "fields": {
+      "name": "Can view comment flag",
+      "content_type": 19,
+      "codename": "view_commentflag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 77,
+    "fields": {
+      "name": "Can add reading group member",
+      "content_type": 20,
+      "codename": "add_readinggroupmember"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 78,
+    "fields": {
+      "name": "Can change reading group member",
+      "content_type": 20,
+      "codename": "change_readinggroupmember"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 79,
+    "fields": {
+      "name": "Can delete reading group member",
+      "content_type": 20,
+      "codename": "delete_readinggroupmember"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 80,
+    "fields": {
+      "name": "Can view reading group member",
+      "content_type": 20,
+      "codename": "view_readinggroupmember"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 81,
+    "fields": {
+      "name": "Can add reading group",
+      "content_type": 21,
+      "codename": "add_readinggroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 82,
+    "fields": {
+      "name": "Can change reading group",
+      "content_type": 21,
+      "codename": "change_readinggroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 83,
+    "fields": {
+      "name": "Can delete reading group",
+      "content_type": 21,
+      "codename": "delete_readinggroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 84,
+    "fields": {
+      "name": "Can view reading group",
+      "content_type": 21,
+      "codename": "view_readinggroup"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 85,
+    "fields": {
+      "name": "Can add reading group entry",
+      "content_type": 22,
+      "codename": "add_readinggroupentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 86,
+    "fields": {
+      "name": "Can change reading group entry",
+      "content_type": 22,
+      "codename": "change_readinggroupentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 87,
+    "fields": {
+      "name": "Can delete reading group entry",
+      "content_type": 22,
+      "codename": "delete_readinggroupentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 88,
+    "fields": {
+      "name": "Can view reading group entry",
+      "content_type": 22,
+      "codename": "view_readinggroupentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 89,
+    "fields": {
+      "name": "Can add collection",
+      "content_type": 23,
+      "codename": "add_collection"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 90,
+    "fields": {
+      "name": "Can change collection",
+      "content_type": 23,
+      "codename": "change_collection"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 91,
+    "fields": {
+      "name": "Can delete collection",
+      "content_type": 23,
+      "codename": "delete_collection"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 92,
+    "fields": {
+      "name": "Can view collection",
+      "content_type": 23,
+      "codename": "view_collection"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 93,
+    "fields": {
+      "name": "Can add collection entry",
+      "content_type": 24,
+      "codename": "add_collectionentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 94,
+    "fields": {
+      "name": "Can change collection entry",
+      "content_type": 24,
+      "codename": "change_collectionentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 95,
+    "fields": {
+      "name": "Can delete collection entry",
+      "content_type": 24,
+      "codename": "delete_collectionentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 96,
+    "fields": {
+      "name": "Can view collection entry",
+      "content_type": 24,
+      "codename": "view_collectionentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 97,
+    "fields": {
+      "name": "Can add endorsement",
+      "content_type": 25,
+      "codename": "add_endorsement"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 98,
+    "fields": {
+      "name": "Can change endorsement",
+      "content_type": 25,
+      "codename": "change_endorsement"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 99,
+    "fields": {
+      "name": "Can delete endorsement",
+      "content_type": 25,
+      "codename": "delete_endorsement"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 100,
+    "fields": {
+      "name": "Can view endorsement",
+      "content_type": 25,
+      "codename": "view_endorsement"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 101,
+    "fields": {
+      "name": "Can add bookmark",
+      "content_type": 26,
+      "codename": "add_bookmark"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 102,
+    "fields": {
+      "name": "Can change bookmark",
+      "content_type": 26,
+      "codename": "change_bookmark"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 103,
+    "fields": {
+      "name": "Can delete bookmark",
+      "content_type": 26,
+      "codename": "delete_bookmark"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 104,
+    "fields": {
+      "name": "Can view bookmark",
+      "content_type": 26,
+      "codename": "view_bookmark"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 105,
+    "fields": {
+      "name": "Can add note",
+      "content_type": 27,
+      "codename": "add_note"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 106,
+    "fields": {
+      "name": "Can change note",
+      "content_type": 27,
+      "codename": "change_note"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 107,
+    "fields": {
+      "name": "Can delete note",
+      "content_type": 27,
+      "codename": "delete_note"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 108,
+    "fields": {
+      "name": "Can view note",
+      "content_type": 27,
+      "codename": "view_note"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$PpPjtmDO4GWJ$d9ZxVgyNocohJkzFYF1Vr2BQi+vljUVir8KgoJ5KNtg=",
+      "last_login": "2019-12-09T01:13:32.141Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@admin.au",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2019-12-09T01:13:27.998Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "catalog.paper",
+    "pk": 1,
+    "fields": {
+      "title": "Fully Decoupled Neural Network Learning Using Delayed Gradients",
+      "abstract": "Training neural networks with back-propagation (BP) requires a sequential passing of activations and gradients, which forces the network modules to work in a synchronous fashion. This has been recognized as the lockings (i.e., the forward, backward and update lockings) inherited from the BP. In this paper, we propose a fully decoupled training scheme using delayed gradients (FDG) to break all these lockings. The FDG splits a neural network into multiple modules and trains them independently and asynchronously using different workers (e.g., GPUs). We also introduce a gradient shrinking process to reduce the stale gradient effect caused by the delayed gradients. In addition, we prove that the proposed FDG algorithm guarantees a statistical convergence during training. Experiments are conducted by training deep convolutional neural networks to perform classification tasks on benchmark datasets, showing comparable or better results against the state-of-the-art methods as well as the BP in terms of both generalization and acceleration abilities. In particular, we show that the FDG is also able to train very wide networks (e.g., WRN-28-10) and extremely deep networks (e.g., ResNet-1202). Code is available at this https URL.",
+      "keywords": "",
+      "download_link": "https://arxiv.org/pdf/1906.09108.pdf",
+      "is_public": true,
+      "source_link": "",
+      "created_at": "2019-12-09",
+      "updated_at": null,
+      "created_by": 1,
+      "was_published_at": null
+    }
+  },
+  {
+    "model": "catalog.comment",
+    "pk": 1,
+    "fields": {
+      "text": "comment1",
+      "created_at": "2019-12-09",
+      "updated_at": null,
+      "created_by": 1,
+      "is_flagged": false,
+      "is_hidden": false,
+      "paper": 1
+    }
+  },
+  {
+    "model": "catalog.person",
+    "pk": 1,
+    "fields": {
+      "first_name": "Huiping",
+      "last_name": "Zhuang",
+      "middle_name": null,
+      "affiliation": null,
+      "website": null,
+      "created_at": "2019-12-09",
+      "updated_at": null,
+      "created_by": null
+    }
+  },
+  {
+    "model": "catalog.person",
+    "pk": 2,
+    "fields": {
+      "first_name": "Yi",
+      "last_name": "Wang",
+      "middle_name": null,
+      "affiliation": null,
+      "website": null,
+      "created_at": "2019-12-09",
+      "updated_at": null,
+      "created_by": null
+    }
+  },
+  {
+    "model": "catalog.person",
+    "pk": 3,
+    "fields": {
+      "first_name": "Qinglai",
+      "last_name": "Liu",
+      "middle_name": null,
+      "affiliation": null,
+      "website": null,
+      "created_at": "2019-12-09",
+      "updated_at": null,
+      "created_by": null
+    }
+  },
+  {
+    "model": "catalog.person",
+    "pk": 4,
+    "fields": {
+      "first_name": "Shuai",
+      "last_name": "Zhang",
+      "middle_name": null,
+      "affiliation": null,
+      "website": null,
+      "created_at": "2019-12-09",
+      "updated_at": null,
+      "created_by": null
+    }
+  },
+  {
+    "model": "catalog.person",
+    "pk": 5,
+    "fields": {
+      "first_name": "Zhiping",
+      "last_name": "Lin",
+      "middle_name": null,
+      "affiliation": null,
+      "website": null,
+      "created_at": "2019-12-09",
+      "updated_at": null,
+      "created_by": null
+    }
+  }
+]
