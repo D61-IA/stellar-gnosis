@@ -44,8 +44,12 @@
     display: flex;
 }
 
-.header_icons .material-icons{
+.header_icons .material-icons {
     font-size: 48px;
+}
+
+.max-width {
+    max-width: 1024px;
 }
 
 @keyframes spin {

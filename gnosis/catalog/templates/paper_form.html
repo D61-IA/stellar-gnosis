@@ -1,31 +1,45 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h3>Import Paper</h3>
-    </div>
-    <div class="card-body">
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h3>Import Paper</h3>
+        </div>
+        <div class="card-body">
 
-        {% if message %}
-        <p class="bg-info text-center">{{ message }}</p>
-        {% endif %}
+            {% if message %}
+                <p class="bg-info text-center">{{ message }}</p>
+            {% endif %}
 
-        <form action="" method="post">
-            {% csrf_token %}
-            <table class="w-100">
-                {{ form }}
-            </table>
-            <br/>
-            <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
-        </form>
-          <h5><br/>*required</h5>
-    </div>
-    <div class="card-footer">
-                <p>You can import papers from the following websites, arXiv.org, papers.nips.cc, jmlr.org, ieeexplore.ieee.org, and dl.acm.org.</p>
-        <p>For all websites, please, provide the URL with the paper abstract, e.g, https://arxiv.org/abs/1607.00653.</p>
+            <form id="source_url" action="">
+                <label for="id_url">Source URL*:</label>
+                <input id="id_url" name="url" class="form-control" required="" type="text">
+                <button type="submit" style="margin-top: 5px">
+                    <!--                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>-->
+                    <!--                <span class="sr-only">Loading...</span>-->
+                    Import
+                </button>
+            </form>
 
+            <br>
+
+            <form action="" method="post">
+                {% csrf_token %}
+                <table class="w-100">
+                    {{ form }}
+                </table>
+                <br/>
+                <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
+            </form>
+            <h5><br/>*required</h5>
+        </div>
+        <div class="card-footer">
+            <p>You can import papers from the following websites, arXiv.org, papers.nips.cc, jmlr.org,
+                ieeexplore.ieee.org, and dl.acm.org.</p>
+            <p>For all websites, please, provide the URL with the paper abstract, e.g,
+                https://arxiv.org/abs/1607.00653.</p>
+
+        </div>
     </div>
-</div>
 
 {% endblock %}
