@@ -131,7 +131,6 @@ function scrapper(host, html) {
         if (host === 'arxiv' || host === 'jmlr' || host === 'cvf') {
             $("meta[name='citation_author']", html).each(function (i, obj) {
                 name = $(this).attr('content').replace(",", "");
-                // returns an array in an object (json purposes)
                 author_list.push($.trim(name));
             });
         }
