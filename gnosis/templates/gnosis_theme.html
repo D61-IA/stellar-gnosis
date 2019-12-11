@@ -10,6 +10,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.3.3/cytoscape.min.js"></script>
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     {% load static %}
@@ -19,6 +22,17 @@
     <link rel="stylesheet" href="{% static 'css/ego_graph.css' %}">
     <link rel="stylesheet" href="{% static 'css/flagging.css' %}">
 </head>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+
+
+</script>
 
 <body>
 
@@ -97,14 +111,14 @@
 <div class="container-fluid  max-width float-container" style="margin-top:30px ">
     <div class="row float-right" style="margin-right:30px">
         {% if user.is_authenticated %}
-           <div class="btn-group">
+            <div class="btn-group">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all papers">Papers&nbsp&nbsp</a>
                 <div class="btn-group">
                     <a href="{% url 'paper_create' %}" class="btn btn-primary flex-item" role="button"
                        title="Add new paper">+</a>
                 </div>
-           </div>
+            </div>
 
             <div class="btn-group ml-1">
                 <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
@@ -246,9 +260,9 @@
                         <a href="#">Contact</a>
                     </li>
                     {% if user.is_authenticated and user.is_superuser %}
-                    <li>
-                        <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
-                    </li>
+                        <li>
+                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
