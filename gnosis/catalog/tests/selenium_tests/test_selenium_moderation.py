@@ -168,7 +168,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
-        element = wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
+        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
         # find action buttons
         actions = self.first_flag.find_element_by_class_name('actions')
