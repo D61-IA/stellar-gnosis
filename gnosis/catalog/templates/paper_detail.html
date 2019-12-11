@@ -35,12 +35,11 @@
                         </div>
                     {% else %}
                         <a href="{% url 'account_login' %}?next={{ request.path }}">
-                            <i class="material-icons"
-                               style="font-size:48px; color:#000000">lightbulb_outline</i>
+                            <i class="material-icons light_off">lightbulb_outline</i>
                         </a>
 
                         <a href="{% url 'account_login' %}?next={{ request.path }}">
-                            <i id="bookmark_icon" class="material-icons" style="font-size:48px; color:#000000">
+                            <i class="material-icons bm_off">
                                 bookmark_border
                             </i>
                         </a>

@@ -4,59 +4,90 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 import json
 
+
 class EndorsementViewTestCase(TestCase):
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username="testuser", password="12345")
+        self.user1 = User.objects.create_user(username="testuser1", password="12345")
+        self.user2 = User.objects.create_user(username='testuser2', password='54321')
 
         # Create a paper
         self.paper = Paper.objects.create(
             title="Best paper in the world",
             abstract="The nature of gravity.",
             download_link="https://google.com",
-            created_by=self.user,
+            created_by=self.user1,
         )
 
 
-    def test_endorsement_create(self):
+    def test_log_in_redirect(self):
         """ Only a logged in user can endorse a paper"""
-        response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
-
         # Expects a redirect to the login page if user is not logged in
-        self.assertEqual(response.status_code, 302)
+        target_url = f"/accounts/login/?next=/catalog/endorsements/create/{self.paper.id}"
+        response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
+        self.assertRedirects(response, expected_url=target_url, status_code=302, target_status_code=200)
 
-        # Login the test user
-        login = self.client.login(username='testuser', password='12345')
+
+    def test_endorsement_create(self):
+
+        # Login the test user user1
+        login = self.client.login(username='testuser1', password='12345')
 
         # Try creating a endorsement for that paper again
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
+
         self.assertEqual(response.status_code, 200)
 
-        # Response should have the right message
         self.assertEqual(json.loads(response.content)['result'], "add")
+
+        # check we do not have 2 endorsement entries for the same paper
+        endorsements = Endorsement.objects.filter(user=self.user1, paper=self.paper)
+        self.assertEqual(len(endorsements), 1)
+
+        self.client.logout()
+
+        # Log in as test user user2
+        login = self.client.login(username='testuser2', password='54321')
+
+        # check user2 does not have a endorsement
+        endorsements = Endorsement.objects.filter(user=self.user2, paper=self.paper)
+        self.assertEqual(len(endorsements), 0)
 
         self.client.logout()
 
 
     def test_endorsement_delete(self):
-        """ Only a logged in user can endorse a paper"""
+        """ Only a logged in user can delete their own endorsements"""
 
-        # create an endorsement for test paper
-        endorsement = Endorsement.objects.create(paper=self.paper, user=self.user)
-
-        response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
-
-        # Expects a redirect to the login page if user is not logged in
-        self.assertEqual(response.status_code, 302)
-
-        # Login the test user
-        login = self.client.login(username='testuser', password='12345')
-
-        # Try creating a endorsement for that paper again
+        # Login user2
+        login = self.client.login(username='testuser2', password='54321')
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
-        # Response should have the right message
+        # check user2 has a endorsement entry for the same paper
+        endorsements = Endorsement.objects.filter(user=self.user2, paper=self.paper)
+        self.assertEqual(len(endorsements), 1)
+        self.client.logout()
+
+        # Login user1
+        login = self.client.login(username='testuser1', password='12345')
+        response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
+        self.assertEqual(response.status_code, 200)
+
+        # check user1 has a endorsement entry for the same paper
+        endorsements = Endorsement.objects.filter(user=self.user1, paper=self.paper)
+        self.assertEqual(len(endorsements), 1)
+
+        # delete endorsement for user1
+        response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
         self.assertEqual(json.loads(response.content)['result'], "delete")
+        # check user1's endorsement is gone
+        endorsements = Endorsement.objects.filter(user=self.user1, paper=self.paper)
+        self.assertEqual(len(endorsements), 0)
 
         self.client.logout()
+
+        # check user2 still has the same paper
+        endorsements = Endorsement.objects.filter(user=self.user2, paper=self.paper)
+        self.assertEqual(len(endorsements), 1)
+
