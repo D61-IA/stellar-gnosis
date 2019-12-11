@@ -86,19 +86,22 @@ function importPaper(url) {
 function scrapper(host, html) {
 
     var getAbstract = function () {
-        var raw;
+        var raw, html_str, i, j;
 
         if (host === 'arxiv') {
-            raw = $("meta[property='og:description']", html).attr('content');
+            html_str = $('.abstract', html).prop('outerHTML');
+            i = html_str.indexOf("</span>");
+            j = html_str.indexOf("</blockquote>");
+            raw = html_str.substring(i + 9, j-1)
         }
         if (host === 'nips') {
             raw = $('p.abstract', html).prop('innerHTML');
         }
         if (host === 'jmlr') {
-            var html_str = $("#content", html).prop('innerHTML');
-            var i = html_str.indexOf("</h3>");
-            var j = html_str.indexOf("<font");
-            raw = $.trim(html_str.substring(i + 5, j));
+            html_str = $("#content", html).prop('innerHTML');
+            i = html_str.indexOf("</h3>");
+            j = html_str.indexOf("<font");
+            raw = html_str.substring(i + 5, j);
         }
         if (host === 'pmlr') {
             raw = $("#abstract", html).prop('innerHTML');
@@ -130,7 +133,9 @@ function scrapper(host, html) {
         // first name and next name are seperated with ', '
         if (host === 'arxiv' || host === 'jmlr' || host === 'cvf') {
             $("meta[name='citation_author']", html).each(function (i, obj) {
-                name = $(this).attr('content').replace(",", "");
+                var names = $(this).attr('content').split(",");
+                // reverse the order so that first name is before space
+                name = names[1] + " " + names[0];
                 author_list.push($.trim(name));
             });
         }
