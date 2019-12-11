@@ -22,7 +22,8 @@ class BookmarkViewTestCase(TestCase):
 
 
     def test_log_in_redirect(self):
-        """ Only a logged in user can bookmark a paper"""
+        """ Only a logged in user can bookmark a paper or delete the bookmark"""
+
         # Expects a redirect to the login page if user is not logged in
         target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/bookmark"
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
@@ -30,6 +31,7 @@ class BookmarkViewTestCase(TestCase):
 
 
     def test_bookmark_create(self):
+        """ Only a logged in user can bookmark a paper"""
 
         # Login the test user user1
         login = self.client.login(username='testuser1', password='12345')

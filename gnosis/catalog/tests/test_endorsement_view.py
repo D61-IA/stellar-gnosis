@@ -21,7 +21,8 @@ class EndorsementViewTestCase(TestCase):
 
 
     def test_log_in_redirect(self):
-        """ Only a logged in user can endorse a paper"""
+        """ Only a logged in user can endorse a paper or delete the endorsement"""
+
         # Expects a redirect to the login page if user is not logged in
         target_url = f"/accounts/login/?next=/catalog/endorsements/create/{self.paper.id}"
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
