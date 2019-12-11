@@ -85,7 +85,7 @@ def papers(request):
                 )
             else:
                 message = "No results found. Please try again!"
-                messages.add_message(request, messages.INFO, message)        
+                messages.add_message(request, messages.INFO, message)
 
     elif request.method == "GET":
         print("papers: Received GET request")
@@ -319,7 +319,7 @@ def _get_paper_paper_network(main_paper, ego_json):
             "-",
             paper.id,
             "Paper",
-            paper_in.relationship_type, 
+            paper_in.relationship_type,
             paper.id,
             main_paper.id,
             line,
@@ -835,7 +835,7 @@ def paper_connect_paper_selected(request, id, pid):
 
     print(f"paper_from: {paper_from}")
     print(f"paper_to: {paper_to}")
-    
+
     if paper_from == paper_to:
         messages.add_message(request, messages.INFO, "You cannot connect a paper with itself.")
     else:
@@ -1180,11 +1180,12 @@ def paper_create(request):
         paper = Paper()
         paper.created_by = user
         form = PaperForm(instance=paper, data=request.POST)
+
         if form.is_valid():
             # Check if the paper already exists in DB
             # Exact match on title.
             matching_papers = Paper.objects.filter(title=form.cleaned_data["title"], is_public=True)
-   
+
             if matching_papers.count() > 0:  # paper in DB already
                 message = "Paper already exists in Gnosis!"
                 messages.add_message(request, messages.INFO, message)
@@ -1193,13 +1194,13 @@ def paper_create(request):
                 form.save()  # store
                 # Now, add the authors and link each author to the paper with an "authors"
                 # type edge.
-                if request.session.get("from_external", False):
-                    paper_authors = request.session["external_authors"]
-                    print(f"Received authors {paper_authors}")
-                    for order, paper_author in enumerate(paper_authors.split(",")):
-                        print("Adding author {}".format(paper_author))
-                        print(f"** Adding author {paper_author} with order {order+1}")
-                        _add_author(paper_author, paper, order+1)
+                paper_authors = request.POST.get('authors')
+
+                print(f"Received authors {paper_authors}")
+                for order, paper_author in enumerate(paper_authors.split(",")):
+                    print("Adding author {}".format(paper_author))
+                    print(f"** Adding author {paper_author} with order {order + 1}")
+                    _add_author(paper_author, paper, order + 1)
 
                 request.session["from_external"] = False  # reset
                 # go back to paper index page.

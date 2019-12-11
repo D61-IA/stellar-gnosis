@@ -56,12 +56,16 @@ function importPaper(url) {
         $('#paper_import').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading');
         importHTML(url).then(function (html) {
             var content = scrapper(host, html);
+
             // id='id_title'
             $('#id_title').val(content['title']);
             // id='id_abstract'
             $('#id_abstract').val(content['abstract']);
             // id='id_download_link
             $('#id_download_link').val(content['download']);
+            // id='id_authors'
+            $('#id_authors').val(content['authors']);
+
             $('#paper_import').html('Import');
             $('#paper_submit').attr('disabled', false);
 

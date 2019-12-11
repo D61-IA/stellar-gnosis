@@ -11,7 +11,7 @@
                 <p class="bg-info text-center">{{ message }}</p>
             {% endif %}
 
-            <form id="source_url" action="">
+            <form id="source_url">
                 <label for="id_url">Source URL*:</label>
                 <input id="id_url" name="url" class="form-control" required="" type="text">
                 <button id="paper_import" type="submit" style="margin-top: 5px">
@@ -26,6 +26,7 @@
                 <table class="w-100">
                     {{ form }}
                 </table>
+                <input id="id_authors" type="hidden" name="authors" value="">
                 <br/>
                 <input id="paper_submit" type="submit" class="btn btn-primary btn-lg float-right" value="Submit" disabled/>
             </form>
