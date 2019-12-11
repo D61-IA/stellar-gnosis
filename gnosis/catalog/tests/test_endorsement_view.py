@@ -29,6 +29,7 @@ class EndorsementViewTestCase(TestCase):
 
 
     def test_endorsement_create(self):
+        """Only a logged in user can create an endorsement for a paper """
 
         # Login the test user user1
         login = self.client.login(username='testuser1', password='12345')
@@ -37,10 +38,8 @@ class EndorsementViewTestCase(TestCase):
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
 
         self.assertEqual(response.status_code, 200)
-
         self.assertEqual(json.loads(response.content)['result'], "add")
-
-        # check we do not have 2 endorsement entries for the same paper
+        # Check we do not have 2 endorsement entries for the same paper
         endorsements = Endorsement.objects.filter(user=self.user1, paper=self.paper)
         self.assertEqual(len(endorsements), 1)
 
@@ -49,7 +48,7 @@ class EndorsementViewTestCase(TestCase):
         # Log in as test user user2
         login = self.client.login(username='testuser2', password='54321')
 
-        # check user2 does not have a endorsement
+        # Check user2 does not have a endorsement
         endorsements = Endorsement.objects.filter(user=self.user2, paper=self.paper)
         self.assertEqual(len(endorsements), 0)
 
@@ -57,14 +56,14 @@ class EndorsementViewTestCase(TestCase):
 
 
     def test_endorsement_delete(self):
-        """ Only a logged in user can delete their own endorsements"""
+        """Only a logged in user can delete their endorsement for a paper """
 
         # Login user2
         login = self.client.login(username='testuser2', password='54321')
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
-        # check user2 has a endorsement entry for the same paper
+        # Check user2 has a endorsement entry for the same paper
         endorsements = Endorsement.objects.filter(user=self.user2, paper=self.paper)
         self.assertEqual(len(endorsements), 1)
         self.client.logout()
@@ -74,20 +73,20 @@ class EndorsementViewTestCase(TestCase):
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
-        # check user1 has a endorsement entry for the same paper
+        # Check user1 has a endorsement entry for the same paper
         endorsements = Endorsement.objects.filter(user=self.user1, paper=self.paper)
         self.assertEqual(len(endorsements), 1)
-
-        # delete endorsement for user1
+        # Delete endorsement for user1
         response = self.client.post(reverse("endorsement_create", kwargs={'id': self.paper.id}))
         self.assertEqual(json.loads(response.content)['result'], "delete")
-        # check user1's endorsement is gone
-        endorsements = Endorsement.objects.filter(user=self.user1, paper=self.paper)
-        self.assertEqual(len(endorsements), 0)
 
         self.client.logout()
 
-        # check user2 still has the same paper
+        # Check user1's endorsement is gone
+        endorsements = Endorsement.objects.filter(user=self.user1, paper=self.paper)
+        self.assertEqual(len(endorsements), 0)
+
+        # Check user2 still has the endorsement
         endorsements = Endorsement.objects.filter(user=self.user2, paper=self.paper)
         self.assertEqual(len(endorsements), 1)
 

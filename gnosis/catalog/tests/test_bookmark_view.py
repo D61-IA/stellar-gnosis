@@ -38,9 +38,7 @@ class BookmarkViewTestCase(TestCase):
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
 
         self.assertEqual(response.status_code, 200)
-
         self.assertEqual(json.loads(response.content)['result'], "add")
-
         # check we do not have 2 bookmark entries for the same paper
         bookmarks = Bookmark.objects.filter(owner=self.user1, paper=self.paper)
         self.assertEqual(len(bookmarks), 1)
@@ -65,7 +63,7 @@ class BookmarkViewTestCase(TestCase):
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
-        # check user2 has a bookmark entry for the same paper
+        # Check user2 has a bookmark entry for the same paper
         bookmarks = Bookmark.objects.filter(owner=self.user2, paper=self.paper)
         self.assertEqual(len(bookmarks), 1)
         self.client.logout()
@@ -75,21 +73,24 @@ class BookmarkViewTestCase(TestCase):
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
         self.assertEqual(response.status_code, 200)
 
-        # check user1 has a bookmark entry for the same paper
+        # Check user1 has a bookmark entry for the same paper
         bookmarks = Bookmark.objects.filter(owner=self.user1, paper=self.paper)
         self.assertEqual(len(bookmarks), 1)
 
-        # delete bookmark for user1
+        # Delete bookmark for user1
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
-        self.assertEqual(json.loads(response.content)['result'], "add")
-
-        self.client.logout()
-
-        # check user1's bookmark is gone
+        self.assertEqual(json.loads(response.content)['result'], "delete")
+        # Check user1's bookmark is gone
         bookmarks = Bookmark.objects.filter(owner=self.user1, paper=self.paper)
         self.assertEqual(len(bookmarks), 0)
 
-        # check user2 still has the same paper
+        self.client.logout()
+
+        # Check user1's bookmark is gone
+        bookmarks = Bookmark.objects.filter(owner=self.user1, paper=self.paper)
+        self.assertEqual(len(bookmarks), 0)
+
+        # Check user2 still has the bookmark
         bookmarks = Bookmark.objects.filter(owner=self.user2, paper=self.paper)
         self.assertEqual(len(bookmarks), 1)
 
