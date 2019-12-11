@@ -347,12 +347,9 @@ def _get_paper_author_network(main_paper, ego_json, offset=101):
 
     line = "dashed"
     for author in paper_authors:
-        # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
         middle_name = ""
         if author.middle_name is not None:
             middle_name = author.middle_name.replace("'", r"\'")
-            middle_name = middle_name.replace("[", r"")
-            middle_name = middle_name.replace("]", r"")
 
         ego_json += author_str.format(
             author.id + offset,
@@ -1142,7 +1139,7 @@ def _add_author(author, paper=None, order=1):
         p.first_name = author_name[0]
 
         if len(author_name) > 2:  # has middle name(s)
-            p.middle_name = author_name[1:-1]
+            p.middle_name = ' '.join(author_name[1:-1])
         # else:
         #     p.middle_name = None
         p.last_name = author_name[-1]
@@ -1157,7 +1154,7 @@ def _add_author(author, paper=None, order=1):
         # the same name then the wrong person will be linked to the paper.
         if p.first_name == author_name[0] and p.last_name == author_name[-1]:
             if len(author_name) > 2:
-                if p.middle_name == author_name[1:-1]:
+                if p.middle_name == ' '.join(author_name[1:-1]):
                     link_with_paper = True
             else:
                 link_with_paper = True

@@ -71,7 +71,7 @@ function importPaper(url) {
 
             // console.log("ABSTRACT:", content['abstract']);
             // console.log("TITLE:", content['title']);
-            // console.log("AUTHORS:", content['authors']);
+            console.log("AUTHORS:", content['authors']);
             // console.log("URL:", content['download']);
 
         }).catch(function (err) {
