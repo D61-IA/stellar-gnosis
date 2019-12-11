@@ -14,9 +14,7 @@
             <form id="source_url" action="">
                 <label for="id_url">Source URL*:</label>
                 <input id="id_url" name="url" class="form-control" required="" type="text">
-                <button type="submit" style="margin-top: 5px">
-                    <!--                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>-->
-                    <!--                <span class="sr-only">Loading...</span>-->
+                <button id="paper_import" type="submit" style="margin-top: 5px">
                     Import
                 </button>
             </form>
@@ -29,7 +27,7 @@
                     {{ form }}
                 </table>
                 <br/>
-                <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
+                <input id="paper_submit" type="submit" class="btn btn-primary btn-lg float-right" value="Submit" disabled/>
             </form>
             <h5><br/>*required</h5>
         </div>
@@ -40,6 +38,11 @@
                 https://arxiv.org/abs/1607.00653.</p>
 
         </div>
+
+        {% load static %}
+        <script src="{% static "js/paper_import.js" %}">
+        </script>
+
     </div>
 
 {% endblock %}

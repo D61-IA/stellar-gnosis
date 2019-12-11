@@ -53,12 +53,23 @@ function importPaper(url) {
 
     // if yes get necessary info from url using scrapper function
     if (host != null) {
+        $('#paper_import').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading');
         importHTML(url).then(function (html) {
             var content = scrapper(host, html);
-            console.log("ABSTRACT:", content['abstract']);
-            console.log("TITLE:", content['title']);
-            console.log("AUTHORS:", content['authors']);
-            console.log("URL:", content['download']);
+            // id='id_title'
+            $('#id_title').val(content['title']);
+            // id='id_abstract'
+            $('#id_abstract').val(content['abstract']);
+            // id='id_download_link
+            $('#id_download_link').val(content['download']);
+            $('#paper_import').html('Import');
+            $('#paper_submit').attr('disabled', false);
+
+            // console.log("ABSTRACT:", content['abstract']);
+            // console.log("TITLE:", content['title']);
+            // console.log("AUTHORS:", content['authors']);
+            // console.log("URL:", content['download']);
+
         }).catch(function (err) {
             console.log("There was an error!", err.statusText)
         });
@@ -147,4 +158,9 @@ function scrapper(host, html) {
         download: getDownloadLink()
     }
 }
+
+$('#paper_import').click(function (e) {
+    e.preventDefault();
+    importPaper($('#id_url').val())
+});
 
