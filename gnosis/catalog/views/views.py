@@ -22,6 +22,7 @@ from notes.forms import NoteForm
 from notes.models import Note
 from catalog.models import ReadingGroup, ReadingGroupEntry
 from catalog.models import Collection, CollectionEntry
+from catalog.models import Endorsement
 from bookmark.models import Bookmark
 from catalog.views.utils.import_functions import *
 from catalog.views.utils.classes import UserComment
@@ -170,10 +171,16 @@ def paper_detail(request, id):
         )
         print(f"{rel_model.relationship_type}")
 
+    endorsed, bookmarked = False, False
+
     # Retrieve all notes that created by the current user and on current paper.
     notes = []
     if request.user.is_authenticated:
         notes = Note.objects.filter(paper=paper, created_by=request.user)
+
+        # Get if paper is endorsed or bookmarked by the user
+        endorsed = paper.endorsements.filter(user=request.user).exists()
+        bookmarked = paper.bookmarks.filter(owner=request.user).exists()
 
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
@@ -230,6 +237,8 @@ def paper_detail(request, id):
 
     flag_form = FlaggedCommentForm()
 
+
+
     # print("ego_network_json: {}".format(ego_network_json))
     return render(
         request,
@@ -246,6 +255,8 @@ def paper_detail(request, id):
             "commentform": comment_form,
             "flag_form": flag_form,
             "num_comments": comments.count(),
+            "endorsed": endorsed,
+            "bookmarked": bookmarked,
             "ego_network": ego_network_json,
         },
     )
@@ -640,13 +651,18 @@ def paper_bookmark(request, id):
         paper = get_object_or_404(Paper, pk=id)
         # Check if the bookmarks already exist
         bookmark = Bookmark.objects.filter(owner=request.user, paper=paper)
+        response = {'bookmark': ""}
         if not bookmark:
             print(f"Bookmarking paper {paper}")
             bookmark = Bookmark(owner=request.user, paper=paper)
             bookmark.save()
+            response['result'] = "add"
         else:
             print("Bookmark already exists so deleting it.")
             bookmark.delete()
+            response['result'] = "delete"
+
+        return JsonResponse(response)
     else:
         print("GET request")
 

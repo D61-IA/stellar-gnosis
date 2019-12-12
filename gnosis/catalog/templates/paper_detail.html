@@ -8,50 +8,41 @@
         <div class="card-header">
 
             <div style="display: flex">
-                <div style="display: flex; width: 11%;">
+                <div class="header_icons">
                     {% if user.is_authenticated %}
                         <div id="endorsement">
-                            {% if not endorsed %}
-                                <form id="e_create" action="{% url 'endorsement_create' id=paper.id %}"
-                                      method="post">
-                                    {% csrf_token %}
-                                    <button name="endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#e_create', '#endorsement')">E
-                                    </button>
-                                </form>
-
-
-                            {% else %}
-                                <form id="e_undo" action="{% url 'endorsement_undo' id=paper.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button name="undo_endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#e_undo', '#endorsement')">E
-                                    </button>
-                                </form>
-                            {% endif %}
+                            <a id="e_create" href="{% url 'endorsement_create' id=paper.id %}">
+                                {% if not endorsed %}
+                                    <i class="material-icons light_off" data-toggle="tooltip"
+                                       title="add endorsement">lightbulb_outline</i>
+                                {% else %}
+                                    <i class="material-icons light_on" data-toggle="tooltip"
+                                       title="remove endorsement">lightbulb</i>
+                                {% endif %}
+                            </a>
                         </div>
 
                         <div id="bookmark">
-                            <form id="b_create" action="{% url 'paper_bookmark' id=paper.id %}" method="post">
-                                {% csrf_token %}
-                                <button name="bookmark" value="B" style="border: none; outline: none !important;
-                            background: none;" onclick="endorsement_bookmark_fun('#b_create', '#bookmark')">B
-                                </button>
-                            </form>
+                            <a id="b_create" href="{% url 'paper_bookmark' id=paper.id %}">
+                                {% if not bookmarked %}
+                                    <i class="material-icons bm_off" data-toggle="tooltip"
+                                       title="add bookmark">bookmark_border</i>
+                                {% else %}
+                                    <i class="material-icons bm_on" data-toggle="tooltip"
+                                       title="remove bookmark">bookmark</i>
+                                {% endif %}
+                            </a>
                         </div>
                     {% else %}
-                        <form action="{% url 'account_login' %}?next={{ request.path }}" method="post">
-                            {% csrf_token %}
-                            <button name="endorse" value="endorse" style="border: none; outline: none !important;
-                            background: none;">E
-                            </button>
-                        </form>
-                        <form action="{% url 'account_login' %}?next={{ request.path }}" method="post">
-                            {% csrf_token %}
-                            <button name="bookmark" value="bookmark" style="border: none; outline: none !important;
-                            background: none;">B
-                            </button>
-                        </form>
+                        <a href="{% url 'account_login' %}?next={{ request.path }}">
+                            <i class="material-icons light_off">lightbulb_outline</i>
+                        </a>
+
+                        <a href="{% url 'account_login' %}?next={{ request.path }}">
+                            <i class="material-icons bm_off">
+                                bookmark_border
+                            </i>
+                        </a>
                     {% endif %}
                 </div>
                 <h3>{{ paper.title }}</h3>

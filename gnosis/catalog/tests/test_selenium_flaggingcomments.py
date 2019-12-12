@@ -27,23 +27,23 @@ class ChromeTestCase(unittest.TestCase):
         self.browser = webdriver.Chrome()
 
     def setUp(self):
-        """create testing assets, logg in and set up global variables"""
+        """create testing assets, log in and set up global variables"""
 
         # create two users, user2's info will be used for logging in
-        self.username = 'user1'
-        self.userpassword = '12345'
-        self.useremail = 'user1@gnosis.stellargraph.io'
+        user1name = 'user1'
+        user1password = '12345'
+        user1email = 'user1@gnosis.stellargraph.io'
 
-        self.user2name = 'user2'
-        self.user2password = 'abcde'
-        self.user2email = 'user2@gnosis.stellargraph.io'
+        user2name = 'user2'
+        user2password = 'abcde'
+        user2email = 'user2@gnosis.stellargraph.io'
 
-        self.user1 = User.objects.create_user(username=self.username, password=self.userpassword,
-                                              email=self.useremail)
+        self.user1 = User.objects.create_user(username=user1name, password=user1password,
+                                             email=user1email)
 
-        self.user2 = User.objects.create_user(username=self.user2name,
-                                                   password=self.user2password,
-                                                   email=self.user2email)
+        self.user2 = User.objects.create_user(username=user2name,
+                                                   password=user2password,
+                                                   email=user2email)
 
         # create a paper
         self.paper = Paper.objects.create(
@@ -66,13 +66,14 @@ class ChromeTestCase(unittest.TestCase):
 
         # login as user by first typing the login info on the login form, then submit
         self.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(self.paper.id) + '/')
+
         username = self.browser.find_element_by_id('id_login')
         username.clear()
-        username.send_keys(self.user2name)
+        username.send_keys(user2name)
 
         pwd = self.browser.find_element_by_id('id_password')
         pwd.clear()
-        pwd.send_keys(self.user2password)
+        pwd.send_keys(user2password)
         self.browser.find_element_by_tag_name('form').submit()
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
