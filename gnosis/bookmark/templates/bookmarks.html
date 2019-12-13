@@ -9,9 +9,9 @@
 
     <form class="input-group mb-3" action="{% url 'search_bookmarks' %}" method="post">
         {% csrf_token %}
-      <input name="keyword1" type="text" class="form-control" placeholder="Search Bookmarks">
+      <input name="keywords" type="text" class="form-control" placeholder="Search bookmark">
       <div class="input-group-append">
-        <input class="btn btn-outline-secondary" value="Search" type="submit" id="button-addon2">
+        <input class="btn btn-outline-secondary" value="Search" type="submit" id="bm-search">
       </div>
     </form>
 

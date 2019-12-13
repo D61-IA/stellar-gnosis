@@ -28,7 +28,7 @@ def bookmark_delete(request, id):
 
 @login_required
 def search_bookmarks(request):
-    keyword = request.POST.get("keyword1", "")
+    keywords = request.POST.get("keywords", "")
     # pre-process query
     #english_stopwords = stopwords.words("english")
     #if len(keyword) > 1:
