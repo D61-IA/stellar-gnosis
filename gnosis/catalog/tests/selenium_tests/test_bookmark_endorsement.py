@@ -1,13 +1,12 @@
-import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from catalog.models import Paper
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-
-class ChromeTestCase(unittest.TestCase):
+class ChromeTestCase(StaticLiveServerTestCase):
     """test with Chrome webdriver"""
 
     @classmethod
@@ -20,6 +19,12 @@ class ChromeTestCase(unittest.TestCase):
     def setUpClass(cls):
         """create testing assets that are used only once"""
 
+        super().setUpClass()
+        cls.setupBrowser()
+
+    def setUp(self):
+        """create testing assets"""
+
         # create a regular user and an admin user
         user1name = 'user1'
         user1password = '12345'
@@ -29,46 +34,43 @@ class ChromeTestCase(unittest.TestCase):
         user2password = 'abcde'
         user2email = 'user2@gnosis.stellargraph.io'
 
-        cls.user1 = User.objects.create_user(username=user1name, password=user1password,
+        self.user1 = User.objects.create_user(username=user1name, password=user1password,
                                              email=user1email)
 
-        cls.user2 = User.objects.create_user(username=user2name,
+        self.user2 = User.objects.create_user(username=user2name,
                                                   password=user2password,
                                                   email=user2email)
 
         # create a paper
-        cls.paper = Paper.objects.create(
+        self.paper = Paper.objects.create(
             title="Best paper in the world",
             abstract="The nature of gravity.",
             download_link="https://google.com",
-            created_by=cls.user1,
+            created_by=self.user1,
         )
-        cls.setupBrowser()
 
         # login as user2
-        cls.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(cls.paper.id) + '/')
-
-        username = cls.browser.find_element_by_id('id_login')
+        self.browser.get(self.live_server_url + '/accounts/login/')
+        username = self.browser.find_element_by_id('id_login')
         username.clear()
         username.send_keys(user2name)
-        pwd = cls.browser.find_element_by_id('id_password')
+        pwd = self.browser.find_element_by_id('id_password')
         pwd.clear()
         pwd.send_keys(user2password)
-        cls.browser.find_element_by_tag_name('form').submit()
-        # wait for page to load
-        wait = WebDriverWait(cls.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.light_off')))
+        self.browser.find_element_by_tag_name('form').submit()
+        # confirm ajax response is received by checking correct page redirect
+        wait = WebDriverWait(self.browser, 10)
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
 
         # using get allows webdriver to wait for html to be fully ready
-        cls.browser.get('http://127.0.0.1:8000/catalog/paper/' + str(cls.paper.id) + '/')
+        self.paper_url = self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/'
+        self.browser.get(self.paper_url)
 
     @classmethod
     def tearDownClass(cls):
-        """delete testing assets"""
+        """delete testing assets and quit webdriver and browser"""
 
-        cls.user1.delete()
-        cls.user2.delete()
-        cls.paper.delete()
+        super().tearDownClass()
         cls.browser.quit()
 
     # attr_dic: {attr0_name: attr0_value, ...}
@@ -95,7 +97,6 @@ class ChromeTestCase(unittest.TestCase):
 
     def assert_light_on(self):
         """test lightbulb has the right attribute when it's endorsed"""
-
 
         self.endorsement_create = self.browser.find_element_by_id("e_create")
         icon_bulb = self.endorsement_create.find_element_by_class_name("material-icons")
@@ -171,8 +172,3 @@ class FirefoxTestCase(ChromeTestCase):
     @classmethod
     def setupBrowser(cls):
         cls.browser = webdriver.Firefox()
-
-
-if __name__ == '__main__':
-    # 2 (verbose): you get the help string of every test and the result
-    unittest.main(verbosity=2)

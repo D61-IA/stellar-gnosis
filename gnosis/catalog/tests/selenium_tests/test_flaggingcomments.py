@@ -1,4 +1,3 @@
-import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from catalog.models import Comment, Paper
@@ -6,8 +5,10 @@ from catalog.forms import FlaggedCommentForm
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-class ChromeTestCase(unittest.TestCase):
+
+class ChromeTestCase(StaticLiveServerTestCase):
     """test with Chrome webdriver"""
 
     def fillFlagForm(self, flag_form):
@@ -21,10 +22,18 @@ class ChromeTestCase(unittest.TestCase):
         description_elements.clear()
         description_elements.send_keys('violation description')
 
-    def setupBrowser(self):
+    @classmethod
+    def setupBrowser(cls):
         """set up testing browser"""
 
-        self.browser = webdriver.Chrome()
+        cls.browser = webdriver.Chrome()
+
+    @classmethod
+    def setUpClass(cls):
+        """create testing assets"""
+
+        super().setUpClass()
+        cls.setupBrowser()
 
     def setUp(self):
         """create testing assets, log in and set up global variables"""
@@ -62,10 +71,8 @@ class ChromeTestCase(unittest.TestCase):
             paper=self.paper
         )
 
-        self.setupBrowser()
-
         # login as user by first typing the login info on the login form, then submit
-        self.browser.get('http://127.0.0.1:8000/accounts/login/?next=/catalog/paper/' + str(self.paper.id) + '/')
+        self.browser.get(self.live_server_url + '/accounts/login/')
 
         username = self.browser.find_element_by_id('id_login')
         username.clear()
@@ -75,21 +82,24 @@ class ChromeTestCase(unittest.TestCase):
         pwd.clear()
         pwd.send_keys(user2password)
         self.browser.find_element_by_tag_name('form').submit()
-        # wait for Ajax response
+        # confirm ajax response is received by checking correct page redirect
         wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
+
+        # using get allows webdriver to wait for html to be fully ready
+        self.paper_url = self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/'
+        self.browser.get(self.paper_url)
+
         comment_container = self.browser.find_element_by_css_selector('ul.list-group')
         # there should be only one comment in this fictional paper
         self.first_comment = comment_container.find_element_by_css_selector('li.list-group-item')
 
-    def tearDown(self):
-        """remove temporary assets from DB"""
+    @classmethod
+    def tearDownClass(cls):
+        """delete testing assets and quit webdriver and browser"""
 
-        self.user1.delete()
-        self.user2.delete()
-        self.paper.delete()
-        self.comment.delete()
-        self.browser.quit()
+        super().tearDownClass()
+        cls.browser.quit()
 
     def test_flaggingcomments(self):
         """test all actions for flagging a comment"""
@@ -154,6 +164,8 @@ class ChromeTestCase(unittest.TestCase):
         flag_response = browser.find_element_by_id('flag_response')
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
+        self.browser.find_element_by_class_name("response-ok").click()
+
         # test the flagged comment has a filled flag icon attached
         arr = first_comment.find_elements_by_class_name("flagged")
         self.assertEqual(len(arr), 1)
@@ -163,11 +175,7 @@ class ChromeTestCase(unittest.TestCase):
 class FirfoxTestCase(ChromeTestCase):
     """test with Firefox webdriver"""
 
-    def setupBrowser(self):
+    @classmethod
+    def setupBrowser(cls):
         """set the webdriver to Firefox"""
-        self.browser = webdriver.Firefox()
-
-
-if __name__ == '__main__':
-    # 2 (verbose): you get the help string of every test and the result
-    unittest.main(verbosity=2)
+        cls.browser = webdriver.Firefox()
