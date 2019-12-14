@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 #
 def valid_code_website(value):
@@ -19,7 +21,6 @@ def valid_code_website(value):
             _("Invalid website %(value)s. Only links to github.com are allowed."),
             params={"value": value},
         )
-
 
 ###########################################
 #                                         #
@@ -83,6 +84,30 @@ class Venue(models.Model):
     def get_absolute_url(self):
         return reverse("venue_detail", args=[self.id])
 
+class Profile(models.Model):
+    '''User profile as described at,
+    https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#onetoone'''
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    bio = models.TextField(blank=True)
+    affiliation = models.TextField(max_length=150, blank=True)
+    interests = models.TextField(max_length=300, blank=True)
+    job = models.CharField(max_length=128, blank=True)
+    city = models.CharField(max_length=64, blank=True)
+    country = models.CharField(max_length=64, blank=True)
+    website = models.URLField(blank=True)
+    github = models.URLField(blank=True)
+    linkedin = models.URLField(blank=True)
+    twitter = models.URLField(blank=True)
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
 
 class Paper(models.Model):
 
