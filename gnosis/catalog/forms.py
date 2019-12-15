@@ -245,7 +245,7 @@ class ProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
 
-        self.fields["bio"].label = "Bio"
+        self.fields["about"].label = "About"
         self.fields["affiliation"].label = "Affiliation"
         self.fields["interests"].label = "Interests"
         self.fields["job"].label = "Job title"
@@ -261,8 +261,8 @@ class ProfileForm(ModelForm):
             visible.field.widget.attrs.update({"style": "width:25em"})
             print(visible.field.widget.attrs.items())
 
-    def clean_bio(self):
-        return self.cleaned_data["bio"]
+    def clean_about(self):
+        return self.cleaned_data["about"]
 
     def clean_affiliation(self):
         return self.cleaned_data["affiliation"]
@@ -293,7 +293,7 @@ class ProfileForm(ModelForm):
 
     class Meta:
         model = Profile
-        fields = ["bio", "affiliation", "interests", "job", "city", "country", "website", "github", "linkedin", "twitter"]
+        fields = ["about", "affiliation", "interests", "job", "city", "country", "website", "github", "linkedin", "twitter"]
 
 
 class PersonForm(ModelForm):

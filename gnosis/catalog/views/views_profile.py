@@ -28,7 +28,7 @@ def profile_update(request):
     if request.method == "POST":
         form = ProfileForm(request.POST)
         if form.is_valid():
-            user.profile.bio = form.clean_bio()
+            user.profile.about = form.clean_about()
             user.profile.affiliation = form.clean_affiliation()
             user.save()
             return HttpResponseRedirect(reverse("profile", kwargs={"id": user.id}))
@@ -36,7 +36,7 @@ def profile_update(request):
     else:
         form = ProfileForm(
             initial={
-                "bio": user.profile.bio,
+                "about": user.profile.about,
                 "affiliation": user.profile.affiliation,
                 "job": user.profile.job,
                 "interests": user.profile.interests,

@@ -7,24 +7,70 @@
     <div class="card-header">
         <h3>
             {{ profile.user }}
+            {% if user == profile.user %}
+            <a href="{% url 'profile_update' %}" class="btn btn-primary btn-sm" role="button">
+                Update
+            </a>
+            {% endif %}    
         </h3>
-        {% if user == profile.user %}
-        <a href="{% url 'profile_update' %}" class="btn btn-primary btn-sm" role="button">
-            Edit
-        </a>
+        {% if profile.city %}
+            {% if profile.country %}
+                {{ profile.city}}, {{ profile.country }}
+            {% endif %}
+        {% elif profile.country %}
+            {{ profile.country}}
         {% endif %}
     </div>
-    <div class="card-body">
-        <p>Bio: {{ profile.bio}}</p>
-        <p>Affiliation: {{ profile.affiliation }}</p>
-        {{ interests }}
-        {{ job }}
-        {{ city }}
-        {{ country }}
-        {{ website }} 
-        {{ github }}
-        {{ linkedin }}
-        {{ twitter }} 
+    <div class="card-body">        
+        <div class="card-columns">
+            <div class="card">
+                <div class="card-header text-center">
+                    About
+                </div>
+                <div class="card-body text-center">
+                    {% if profile.about %}
+                        <p class="card-text">{{ profile.about}}</p>
+                    {% else %}
+                        <p class="card-text"><i>Not provided</i></p>
+                    {% endif %}
+              </div>
+            </div>
+            <div class="card">
+                <div class="card-header text-center">
+                        Affiliation
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text">{{ profile.affiliation}}</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header text-center">
+                        Interests
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text">{{ profile.interest}}</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header text-center">
+                        Job
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text">{{ profile.job}}</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header text-center">
+                        Websites
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text">{{ profile.website}}</p>
+                    <p class="card-text">{{ profile.github}}</p>
+                    <p class="card-text">{{ profile.linkedin}}</p>
+                    <p class="card-text">{{ profile.twitter}}</p>
+                </div>
+            </div>    
+        </div>
     </div>
 </div>
 

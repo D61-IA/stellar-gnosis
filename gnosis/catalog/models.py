@@ -89,7 +89,7 @@ class Profile(models.Model):
     https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#onetoone'''
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    bio = models.TextField(blank=True)
+    about = models.TextField(blank=True)
     affiliation = models.TextField(max_length=150, blank=True)
     interests = models.TextField(max_length=300, blank=True)
     job = models.CharField(max_length=128, blank=True)
