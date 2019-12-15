@@ -124,6 +124,13 @@ urlpatterns += [
     path('endorsements/delete/<int:id>', views.endorsement_delete, name='endorsement_delete'),
 ]
 
+# for updating/creating a user's Profile
+urlpatterns += [
+    path('profile/<int:id>', views.profile_detail, name='profile'),
+    path('profile/update', views.profile_update, name='profile_update'),
+]
+
+
 # for updating/creating a Bookmark
 urlpatterns += [
     # path('bookmarks/entry/<int:pid>', views.paper_add_to_bookmark, name='paper_add_to_bookmark'),

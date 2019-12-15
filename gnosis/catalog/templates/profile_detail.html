@@ -1,0 +1,32 @@
+{% extends "gnosis_theme.html" %}
+
+{% block content %}
+{% load el_pagination_tags %}
+
+<div class="card shadow-sm mt-5 mb-5">
+    <div class="card-header">
+        <h3>
+            {{ profile.user }}
+        </h3>
+        {% if user == profile.user %}
+        <a href="{% url 'profile_update' %}" class="btn btn-primary btn-sm" role="button">
+            Edit
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <p>Bio: {{ profile.bio}}</p>
+        <p>Affiliation: {{ profile.affiliation }}</p>
+        {{ interests }}
+        {{ job }}
+        {{ city }}
+        {{ country }}
+        {{ website }} 
+        {{ github }}
+        {{ linkedin }}
+        {{ twitter }} 
+    </div>
+</div>
+
+
+{% endblock %}

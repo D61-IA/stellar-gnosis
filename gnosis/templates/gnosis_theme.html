@@ -54,7 +54,7 @@
                 {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link">{{ user }}</a></li>
                     <li class="nav-item"><a class="nav-link"
-                                            href="#">Profile</a></li>
+                                            href="{% url 'profile' user.id %}">Profile</a></li>
                     <li class="nav-item"><a class="nav-link"
                                             href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a></li>
                 {% else %}

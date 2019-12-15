@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm, Form
-from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
+from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag, Profile
 from .models import ReadingGroup, ReadingGroupEntry
 from .models import Collection, CollectionEntry
 from django.utils.safestring import mark_safe
@@ -240,6 +240,60 @@ class PaperImportForm(Form):
         max_length=2000,
         widget=forms.TextInput(attrs={"size": 60}),
     )
+
+class ProfileForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+
+        self.fields["bio"].label = "Bio"
+        self.fields["affiliation"].label = "Affiliation"
+        self.fields["interests"].label = "Interests"
+        self.fields["job"].label = "Job title"
+        self.fields["city"].label = "City"
+        self.fields["country"].label = "Country"
+        self.fields["website"].label = "Website"
+        self.fields["github"].label = "Github"
+        self.fields["linkedin"].label = "LinkedIn"
+        self.fields["twitter"].label = "Twitter"
+
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+            visible.field.widget.attrs.update({"style": "width:25em"})
+            print(visible.field.widget.attrs.items())
+
+    def clean_bio(self):
+        return self.cleaned_data["bio"]
+
+    def clean_affiliation(self):
+        return self.cleaned_data["affiliation"]
+
+    def clean_interests(self):
+        return self.cleaned_data["interests"]
+
+    def clean_job(self):
+        return self.cleaned_data["job"]
+
+    def clean_city(self):
+        return self.cleaned_data["city"]
+
+    def clean_country(self):
+        return self.cleaned_data["country"]
+
+    def clean_website(self):
+        return self.cleaned_data["website"]
+
+    def clean_github(self):
+        return self.cleaned_data["github"]
+
+    def clean_linkedin(self):
+        return self.cleaned_data["linkedin"]
+
+    def clean_twitter(self):
+        return self.cleaned_data["twitter"]
+
+    class Meta:
+        model = Profile
+        fields = ["bio", "affiliation", "interests", "job", "city", "country", "website", "github", "linkedin", "twitter"]
 
 
 class PersonForm(ModelForm):

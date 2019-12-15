@@ -7,3 +7,4 @@ from catalog.views.views_comment import *
 from catalog.views.views_dataset import *
 from catalog.views.views_endorsement import *
 from catalog.views.views_flagging import *
+from catalog.views.views_profile import *
