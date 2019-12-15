@@ -159,6 +159,16 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # check the bookmark has the right title
         self.assertEqual(items[0].find_element_by_class_name('paper_link').text, "2nd Best paper in the world")
 
+    def test_logout(self):
+        """user should not find Bookmarks option at nav bar if they are logged out"""
+        self.browser.get(self.live_server_url + '/accounts/logout/')
+        self.browser.find_element_by_tag_name('form').submit()
+
+        self.browser.get(self.live_server_url + '/home/')
+
+        bookmark = self.browser.find_elements_by_css_selector('a[href="/bookmark/"]')
+        self.assertEqual(len(bookmark), 0)
+
 
 class FirefoxTestCase(ChromeTestCase):
     """test with Firefox webdriver"""
