@@ -256,10 +256,17 @@ class ProfileForm(ModelForm):
         self.fields["linkedin"].label = "LinkedIn"
         self.fields["twitter"].label = "Twitter"
 
+        self.fields["about"].widget = forms.Textarea()    
+        self.fields["about"].widget.attrs.update({"rows": "5"})
+        self.fields["interests"].widget = forms.Textarea()    
+        self.fields["interests"].widget.attrs.update({"rows": "1"})
+        self.fields["affiliation"].widget = forms.Textarea()    
+        self.fields["affiliation"].widget.attrs.update({"rows": "1"})
+
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:25em"})
-            print(visible.field.widget.attrs.items())
+            #visible.field.widget.attrs.update({"style": "width:25em"})
+            #print(visible.field.widget.attrs.items())
 
     def clean_about(self):
         return self.cleaned_data["about"]
@@ -309,7 +316,7 @@ class PersonForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
-            print(visible.field.widget.attrs.items())
+            #print(visible.field.widget.attrs.items())
 
     def clean_first_name(self):
         return self.cleaned_data["first_name"]
@@ -351,8 +358,8 @@ class DatasetForm(ModelForm):
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
 
-        print(type(self.fields["description"].widget))
-        print(self.fields["description"].widget.attrs.items())
+        #print(type(self.fields["description"].widget))
+        #print(self.fields["description"].widget.attrs.items())
 
     def clean_name(self):
         return self.cleaned_data["name"]
@@ -405,7 +412,7 @@ class VenueForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
-            print(visible.field.widget.attrs.items())
+            #print(visible.field.widget.attrs.items())
 
     def clean_name(self):
         return self.cleaned_data["name"]
@@ -457,7 +464,7 @@ class CommentForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:100%"})
-            print(visible.field.widget.attrs.items())
+            #print(visible.field.widget.attrs.items())
 
     def clean_text(self):
         return self.cleaned_data["text"]

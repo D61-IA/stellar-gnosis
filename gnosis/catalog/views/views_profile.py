@@ -30,6 +30,14 @@ def profile_update(request):
         if form.is_valid():
             user.profile.about = form.clean_about()
             user.profile.affiliation = form.clean_affiliation()
+            user.profile.interests = form.clean_interests()
+            user.profile.job = form.clean_job()
+            user.profile.city = form.clean_city()
+            user.profile.country = form.clean_country()
+            user.profile.website = form.clean_website()
+            user.profile.twitter = form.clean_twitter()
+            user.profile.github = form.clean_github()
+            user.profile.linkedin = form.clean_linkedin()
             user.save()
             return HttpResponseRedirect(reverse("profile", kwargs={"id": user.id}))
     # GET request
@@ -39,8 +47,13 @@ def profile_update(request):
                 "about": user.profile.about,
                 "affiliation": user.profile.affiliation,
                 "job": user.profile.job,
+                "city": user.profile.city,
+                "country": user.profile.country,
                 "interests": user.profile.interests,
                 "website": user.profile.website,
+                "twitter": user.profile.twitter,
+                "github": user.profile.github,
+                "linkedin": user.profile.linkedin
             }
         )
 
