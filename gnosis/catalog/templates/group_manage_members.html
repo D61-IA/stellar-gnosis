@@ -30,7 +30,7 @@
                             <li class="list-group-item mt-1">
                                 <!-- We should link to the user's profile when available. -->
                                 <!-- <a href=""></a> -->
-                                <h4>{{ member }}</h4>
+                                <h4><a href="{% url 'profile' member.member.id %}">{{ member }}</a></h4>
                             </li>
                         {% endfor %}
                         </ul>
