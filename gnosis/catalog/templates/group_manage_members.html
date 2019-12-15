@@ -64,7 +64,7 @@
                             {% for applicant in applicants %}
                             <li class="list-group-item mt-1">
                                 <!-- We should link to the user's profile when available. -->
-                                <h4>{{ applicant }}</h4>
+                                <h4><a href="{% url 'profile' applicant.member.id %}">{{ applicant }}</a></h4>
                                 <a href="{% url 'group_grant_access' id=group.id aid=applicant.member.id %}" class="btn btn-primary btn-sm" role="button">Grant</a>
                                 <a href="{% url 'group_deny_access' id=group.id aid=applicant.member.id %}" class="btn btn-danger btn-sm" role="button">Deny</a>
                             </li>
