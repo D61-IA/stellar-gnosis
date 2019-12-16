@@ -89,8 +89,7 @@ function show_cites(label, type) {
         cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
     }
 
-    var layout1 = collection.layout(layout);
-    layout1.run();
+    collection.layout(layout).run();
     center();
 }
 
