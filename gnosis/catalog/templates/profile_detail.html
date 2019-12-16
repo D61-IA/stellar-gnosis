@@ -8,9 +8,11 @@
         <h3>
             {{ profile.user }}
             {% if user == profile.user %}
-            <a href="{% url 'profile_update' %}">
-                <i class="material-icons">edit</i>
-            </a>
+            <p>
+                <a href="{% url 'profile_update' %}">
+                    <i class="material-icons">edit</i>
+                </a>
+            </p>
             {% endif %}            
         </h3>
         {% if profile.job %}
