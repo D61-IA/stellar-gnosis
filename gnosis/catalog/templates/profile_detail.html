@@ -8,69 +8,41 @@
         <h3>
             {{ profile.user }}
             {% if user == profile.user %}
-            <a href="{% url 'profile_update' %}" class="btn btn-primary btn-sm" role="button">
-                Update
+            <a href="{% url 'profile_update' %}">
+                <i class="material-icons">edit</i>
             </a>
-            {% endif %}    
+            {% endif %}            
         </h3>
+        {% if profile.job %}
+            <div class="card-text">{{ profile.job}}</div>
+        {% endif %}
+        {% if profile.affiliation %}
+            <div class="card-text">{{ profile.affiliation}}</div>
+        {% endif %}
         {% if profile.city %}
             {% if profile.country %}
-                {{ profile.city}}, {{ profile.country }}
+                <div class="card-text">{{ profile.city}}, {{ profile.country }}</div>
             {% endif %}
         {% elif profile.country %}
-            {{ profile.country}}
+            <div class="card-text">{{ profile.country}}</div>
         {% endif %}
     </div>
     <div class="card-body">        
-        <div class="card-columns">
-            <div class="card">
-                <div class="card-header text-center">
-                    About
-                </div>
-                <div class="card-body text-center">
-                    {% if profile.about %}
-                        <p class="card-text">{{ profile.about}}</p>
-                    {% else %}
-                        <p class="card-text"><i>Not provided</i></p>
-                    {% endif %}
-              </div>
-            </div>
-            <div class="card">
-                <div class="card-header text-center">
-                        Affiliation
-                </div>
-                <div class="card-body text-center">
-                    {% if profile.affiliation %}
-                        <p class="card-text">{{ profile.affiliation}}</p>
-                    {% else %}
-                        <p class="card-text"><i>Not provided</i></p>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header text-center">
-                        Interests
-                </div>
-                <div class="card-body text-center">
-                    {% if profile.interests %}
-                        <p class="card-text">{{ profile.interests }}</p>
-                    {% else %}
-                        <p class="card-text"><i>Not provided</i></p>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header text-center">
-                        Job
-                </div>
-                <div class="card-body text-center">
-                    {% if profile.job %}
-                        <p class="card-text">{{ profile.job}}</p>
-                    {% else %}
-                        <p class="card-text"><i>Not provided</i></p>
-                    {% endif %}
-                </div>
-            </div>
+        <div class="card-body">
+            <h5><u><strong>About</strong></u></h5>
+            {% if profile.about %}
+                <p class="card-text">{{ profile.about}}</p>
+            {% else %}
+                <p class="card-text"><i>Not provided</i></p>
+            {% endif %}        
+        </div>
+        <div class="card-body">        
+            <h5><u><strong>Interests</strong></u></h5>
+            {% if profile.interests %}
+                <p class="card-text">{{ profile.interests }}</p>
+            {% else %}
+                <p class="card-text"><i>Not provided</i></p>
+            {% endif %}
         </div>
         <div class="card-body text-center">
             <a href="{{ profile.website }}" target="_blank"><i class='fas fa-link' style='font-size:36px'></i></a>
