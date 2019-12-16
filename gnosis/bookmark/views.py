@@ -25,11 +25,15 @@ def bookmark_delete(request, id):
 
 
 @login_required
-def search_bookmarks(request):
+def bookmark_search(request):
     """Search for a bookmark by its title"""
-    keywords = request.POST.get("keywords", "")
 
-    bookmarks = Bookmark.objects.filter(owner=request.user)
-    papers = bookmarks.filter(paper__title__icontains=keywords)
+    papers = Bookmark.objects.all()
+
+    if request.method == 'POST':
+        keywords = request.POST.get("keywords", "")
+
+        bm = Bookmark.objects.filter(owner=request.user)
+        papers = bm.filter(paper__title__icontains=keywords)
 
     return render(request, "bookmarks.html", {"bookmarks": papers})
