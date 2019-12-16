@@ -28,12 +28,11 @@ def bookmark_delete(request, id):
 def bookmark_search(request):
     """Search for a bookmark by its title"""
 
-    papers = Bookmark.objects.all()
+    bms = request.user.bookmarks.all()
 
     if request.method == 'POST':
         keywords = request.POST.get("keywords", "")
 
-        bm = Bookmark.objects.filter(owner=request.user)
-        papers = bm.filter(paper__title__icontains=keywords)
+        bms = bms.filter(paper__title__icontains=keywords)
 
-    return render(request, "bookmarks.html", {"bookmarks": papers})
+    return render(request, "bookmarks.html", {"bookmarks": bms})
