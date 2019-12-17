@@ -95,4 +95,3 @@ class BookmarkViewTestCase(TestCase):
         # Check user2 still has the bookmark
         bookmarks = Bookmark.objects.filter(owner=self.user2, paper=self.paper)
         self.assertEqual(len(bookmarks), 1)
-
