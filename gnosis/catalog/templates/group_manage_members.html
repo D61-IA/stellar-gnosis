@@ -4,7 +4,7 @@
 
 <div class="card shadow-sm mt-3">
     <div class="card-header">
-        <h4>Group Members</h4>
+        <h4>{{ group.name }} Group Members</h4>
     </div>
 
     <div class="card-body">
@@ -25,12 +25,34 @@
                     {#                    show the members#}
                     {% if members %}
                         {% paginate members %}
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group mt-3">
                         {% for member in members %}
                             <li class="list-group-item mt-1">
-                                <!-- We should link to the user's profile when available. -->
-                                <!-- <a href=""></a> -->
-                                <h4><a href="{% url 'profile' member.member.id %}">{{ member }}</a></h4>
+                                <div class="d-flex flex-row">
+                                <div class="mr-auto p-2">
+                                    <h4><a href="{% url 'profile' member.member.id %}">{{ member }}</a></h4><i>(member since {{ member.created_at }})</i>
+                                </div>
+                                {% if member.member.profile.website %}
+                                    <div class="p-2">
+                                        <a href="{{ member.member.profile.website }}" target="_blank"><i class='fas fa-link' style='font-size:24px'></i></a>
+                                    </div>
+                                {% endif %}
+                                {% if member.member.profile.github %}
+                                    <div class="p-2">
+                                        <a href="{{ member.member.profile.github }}" target="_blank"><i class='fab fa-github' style='font-size:24px;color:black'></i></a>
+                                    </div>
+                                {% endif %}
+                                {% if member.member.profile.linkedin %}
+                                    <div class="p-2">
+                                        <a href="{{ member.member.profile.linkedin }}" target="_blank"><i class='fab fa-linkedin' style='font-size:24px'></i></a>
+                                    </div>
+                                {% endif %}
+                                {% if member.member.profile.twitter %}
+                                    <div class="p-2">
+                                        <a href="{{ profile.twitter }}" target="_blank"><i class='fab fa-twitter' style='font-size:36px'></i></a>
+                                    </div>
+                                {% endif %}
+                            </div>
                             </li>
                         {% endfor %}
                         </ul>
@@ -60,13 +82,40 @@
                 <div class="container tab-pane fade" id="navapplicants">
                     {% if applicants %}
                         {% paginate applicants %}
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group  mt-3">
                             {% for applicant in applicants %}
                             <li class="list-group-item mt-1">
-                                <!-- We should link to the user's profile when available. -->
-                                <h4><a href="{% url 'profile' applicant.member.id %}">{{ applicant }}</a></h4>
-                                <a href="{% url 'group_grant_access' id=group.id aid=applicant.member.id %}" class="btn btn-primary btn-sm" role="button">Grant</a>
-                                <a href="{% url 'group_deny_access' id=group.id aid=applicant.member.id %}" class="btn btn-danger btn-sm" role="button">Deny</a>
+                                <div class="d-flex flex-row">
+                                    <div class="mr-auto p-2">
+                                        <h4><a href="{% url 'profile' applicant.member.id %}">{{ applicant }}</a></h4><i>(applied on {{ applicant.created_at }})</i>
+                                    </div>
+                                    {% if applicant.member.profile.website %}
+                                    <div class="p-2">
+                                        <a href="{{ member.member.profile.website }}" target="_blank"><i class='fas fa-link' style='font-size:24px'></i></a>
+                                    </div>
+                                    {% endif %}
+                                    {% if applicant.member.profile.github %}
+                                    <div class="p-2">
+                                        <a href="{{ member.member.profile.github }}" target="_blank"><i class='fab fa-github' style='font-size:24px;color:black'></i></a>
+                                    </div>
+                                    {% endif %}
+                                    {% if applicant.member.profile.linkedin %}
+                                    <div class="p-2">
+                                        <a href="{{ member.member.profile.linkedin }}" target="_blank"><i class='fab fa-linkedin' style='font-size:24px'></i></a>
+                                    </div>
+                                    {% endif %}
+                                    {% if applicant.member.profile.twitter %}
+                                    <div class="p-2">
+                                        <a href="{{ profile.twitter }}" target="_blank"><i class='fab fa-twitter' style='font-size:36px'></i></a>
+                                    </div>
+                                {% endif %}
+
+                                </div>
+                                <div class="p-2">
+                                    <a href="{% url 'group_grant_access' id=group.id aid=applicant.member.id %}" class="btn btn-primary btn-sm" role="button">Grant</a>
+                                    <a href="{% url 'group_deny_access' id=group.id aid=applicant.member.id %}" class="btn btn-danger btn-sm" role="button">Deny</a>
+                                </div>
+
                             </li>
                         </ul>
                         {% endfor %}
@@ -89,7 +138,7 @@
                             {% endif %}
                         </ul>
                     {% else %}
-                        <p><h4><i>No applicants</i></h4></p>
+                        <p><h5><i>No applicants</i></h5></p>
                     {% endif %}
                 </div>
                 {% endif %}
