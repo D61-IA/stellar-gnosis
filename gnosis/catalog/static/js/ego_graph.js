@@ -6,7 +6,7 @@ var resizeTimer;
 $(window).on('resize', function (e) {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-        center();
+        center()
         // Run code here, resizing has "stopped"
     }, 250);
 
@@ -42,6 +42,9 @@ function center() {
 }
 
 /************** reset and re-render layout **************/
+
+var $graphfilter = $('#graphfilter');
+
 // reset layout, all nodes return to initial positions
 function reset_layout() {
     cy.layout(layout).run();
@@ -55,8 +58,16 @@ function reset_nodes() {
     reset_layout();
 
     // sync select menu option to 'all'
-    $('#graphfilter').val('all');
+    $graphfilter.val('all');
 }
+
+$('#ego_button_reset').click(function () {
+    reset_nodes();
+});
+
+$('#ego_button_toggle').click(function () {
+    toggle_relas();
+});
 
 /************** graph filtering function **************/
 function show_cites(label, type) {
@@ -78,24 +89,45 @@ function show_cites(label, type) {
         cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
     }
 
+    collection.layout(layout).run();
     center();
 }
+
+$('#paper_filter').click(function () {
+    show_cites('all', 'Paper');
+});
+$('#person_filter').click(function () {
+    show_cites('all', 'Person');
+});
+$('#venue_filter').click(function () {
+    show_cites('all', 'Venue');
+});
+$('#code_filter').click(function () {
+    show_cites('all', 'Code');
+});
+$('#dataset_filter').click(function () {
+    show_cites('all', 'Dataset');
+});
+
+$graphfilter.change(function () {
+    show_cites(this.value, 'all');
+});
 
 /************** collapse ego-graph **************/
 // stores state of the collapse target
 var hidden = false;
 
-var ego_header = $('#ego-header');
+var ego_header = $('#ego_header');
 
 $(ego_header).click(function () {
     hidden = !hidden;
     if (hidden) {
         $(this).children('.drop_indicator').text('arrow_drop_down');
-        $('#ego-graph-content').hide(200);
+        $('#ego_graph_content').hide(200);
 
     } else {
         $(this).children('.drop_indicator').text('arrow_drop_up');
-        $('#ego-graph-content').show(200);
+        $('#ego_graph_content').show(200);
 
     }
 });

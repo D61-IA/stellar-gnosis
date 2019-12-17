@@ -32,16 +32,16 @@
     background-color: #59d143;
 }
 
-.ego-button-container .material-icons {
+.ego_button_container .material-icons {
     display: block;
 }
 
-.ego-button {
+.ego_button {
     text-align: center;
     margin: 2px;
 }
 
-.ego-button-container {
+.ego_button_container {
     display: flex;
     z-index: 1000;
     flex-direction: row;
@@ -49,7 +49,7 @@
     background-color: ghostwhite;
 }
 
-#ego-header {
+#ego_header {
     display: flex;
     flex-direction: row;
     justify-content: space-between
@@ -84,7 +84,7 @@
     justify-content: flex-end;
 }
 
-#ego-header:hover {
+#ego_header:hover {
     cursor: pointer;
 }
 
@@ -116,7 +116,7 @@
 }
 
 @media only screen and (max-width: 678px) {
-    #hide-refresh {
+    #hide_refresh {
         position: absolute;
         flex-direction: column;
         top: 130px;
