@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from catalog.models import Paper
@@ -25,4 +24,8 @@ class Bookmark(models.Model):
     # Methods
     def get_absolute_url(self):
         return reverse('bookmarks')
+
+    class Meta:
+        ordering = ['created_at']
+
 
