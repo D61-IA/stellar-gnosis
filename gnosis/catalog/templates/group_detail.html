@@ -110,18 +110,18 @@
 </div>
 
 {% if user.id == group.owner.id  or is_member%} 
-{% if group.videoconferencing  %}
-<div class="card shadow-sm mt-5">
-        <div class="card-header">
-            <h3>Video/Web Conference Details (<a data-toggle="collapse" href="#card-body" aria-expanded="true" aria-controls="card-body">view/hide</a>)</h3>
+    {% if group.videoconferencing  %}
+        <div class="card shadow-sm mt-5">
+            <div class="card-header">
+                <h3>Video/Web Conference Details (<a data-toggle="collapse" href="#card-body" aria-expanded="true" aria-controls="card-body">view/hide</a>)</h3>
+            </div>
+            <div id="card-body" class="collapse">
+                <div class="card-body">
+                    {{ group.videoconferencing|safe|linebreaks }}
+                </div>
+            </div>
         </div>
-        <div id="card-body" class="collapse">
-            <div class="card-body">
-                {{ group.videoconferencing|safe|linebreaks }}        
-            </div>  
-        </div>
-    </div>    
-{% endif %}
+    {% endif %}
 {% endif %}
 
 <div class="card shadow-sm mt-5">
@@ -141,79 +141,77 @@
             <div class="tab-pane fade show active" id="navdiscussed" role="tabpanel"
                  aria-labelledby="nav-discussed-tab">
                 {% if papers_discussed %}
-                {% paginate papers_discussed %}
-                <ul class="list-group list-group-flush">
-                    {% for paper_entry in papers_discussed %}
-                    {% if paper_entry.date_discussed %}
-                        {% if paper_entry.date_discussed < today %}
-                        <li class="list-group-item"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                            discussed on {{ paper_entry.date_discussed }} and proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
-                        </li>
-                    {% endif %}
-                    {% endif %}
-                    {% endfor %}
-                </ul>
-                {% get_pages %}
-                <!-- Center-aligned -->
-                <ul class="pagination justify-content-center" style="margin:20px 0">
-                    {% if not pages.current.is_first %}
-                    <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-                    {% endif %}
-                    {% for page in pages %}
-                    {% if page.is_current %}
-                    <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                    {% else %}
-                    <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                    {% endif %}
-                    {% endfor %}
-                    {% if not pages.current.is_last %}
-                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                    {% endif %}
-                </ul>
-
+                    {% paginate papers_discussed %}
+                    <ul class="list-group list-group-flush">
+                        {% for paper_entry in papers_discussed %}
+                            {% if paper_entry.date_discussed %}
+                                {% if paper_entry.date_discussed < today %}
+                                    <li class="list-group-item"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                        discussed on {{ paper_entry.date_discussed }} and proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
+                                    </li>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% get_pages %}
+                    <!-- Center-aligned -->
+                    <ul class="pagination justify-content-center" style="margin:20px 0">
+                        {% if not pages.current.is_first %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+                        {% endif %}
+                        {% for page in pages %}
+                            {% if page.is_current %}
+                                <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                        {% if not pages.current.is_last %}
+                        <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+                        {% endif %}
+                    </ul>
                 {% endif %}
             </div>
             <div class="tab-pane fade" id="navproposed" role="tabpanel" aria-labelledby="nav-proposed-tab">
                 {% if papers_proposed %}
-                {% paginate papers_proposed %}
-                <ul class="list-group list-group-flush">
-                    {% for paper_entry in papers_proposed %}
-                    {% if not paper.date_discussed %}
-                    <li class="list-group-item">
-                        <div class="d-flex flex-row">
-                            <div class="mr-auto p-2"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                        proposed on {{ paper_entry.date_proposed}} by {{ paper_entry.proposed_by }}.</div>
-                        {% if user.id == group.owner.id %}
-                            <div class="p-2">
-                                <a class="btn btn-sm btn-primary"  href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a></div>
-                            <div class="p-2">
-                                <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_remove' paper_entry.reading_group.id paper_entry.id %}">Remove</a>
-                            </div>
+                    {% paginate papers_proposed %}
+                    <ul class="list-group list-group-flush">
+                        {% for paper_entry in papers_proposed %}
+                            {% if not paper.date_discussed %}
+                            <li class="list-group-item">
+                                <div class="d-flex flex-row">
+                                    <div class="mr-auto p-2"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                proposed on {{ paper_entry.date_proposed}} by {{ paper_entry.proposed_by }}.</div>
+                                {% if user.id == group.owner.id %}
+                                    <div class="p-2">
+                                        <a class="btn btn-sm btn-primary"  href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a></div>
+                                    <div class="p-2">
+                                        <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_remove' paper_entry.reading_group.id paper_entry.id %}">Remove</a>
+                                    </div>
+                                {% endif %}
+                                </div>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% get_pages %}
+                    <!-- Center-aligned -->
+                    <ul class="pagination justify-content-center" style="margin:20px 0">
+                        {% if not pages.current.is_first %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
                         {% endif %}
-                        </div>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
-                {% get_pages %}
+                        {% for page in pages %}
+                            {% if page.is_current %}
+                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if not pages.current.is_last %}
+                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+                        {% endif %}
+                    </ul>
                 {% endif %}
-                        <!-- Center-aligned -->
-                <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
-
             </div>
 
         </div>
@@ -221,19 +219,19 @@
     </div>
 </div>
 {% elif has_requested_access %}
-<div class="card text-left shadow-sm mb-5 mt-3">
+    <div class="card text-left shadow-sm mb-5 mt-3">
+            <div class="card-header"><strong>Private Group</strong></div>
+            <div class="card-body">
+                You have requested to join this group.
+            </div>
+        </div>
+{% else %}
+    <div class="card text-left shadow-sm mb-5 mt-3">
         <div class="card-header"><strong>Private Group</strong></div>
         <div class="card-body">
-            You have requested to join this group.
+            This is a private group. You need to request and be granted access to view. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
         </div>
-    </div>    
-{% else %}
-<div class="card text-left shadow-sm mb-5 mt-3">
-    <div class="card-header"><strong>Private Group</strong></div>
-    <div class="card-body">
-        This is a private group. You need to request and be granted access to view. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
     </div>
-</div>
 {% endif %}
 
 {% if user.is_authenticated %}
