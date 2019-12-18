@@ -4,7 +4,7 @@
 
 <div class="card shadow-sm mt-3">
     <div class="card-header">
-        <h4>{{ group.name }} Group Members</h4>
+        <h4><a href="{% url 'group_detail' group.id %}">{{ group.name }}</a> Group Members</h4>
     </div>
 
     <div class="card-body">
@@ -74,7 +74,9 @@
                             {% endif %}
                         </ul>
                     {% else %}
-                        <p><h4><i>No members.</i></h4></p>
+                    <dv class="p-2 mt-3">
+                        <p><i>No members.</i></p>
+                    </dv>
                     {% endif %}
                 </div>
                 {#              tab content of applicants tab#}
@@ -138,7 +140,9 @@
                             {% endif %}
                         </ul>
                     {% else %}
-                        <p><h5><i>No applicants</i></h5></p>
+                    <dv class="p-2 mt-3">
+                        <p><i>No applicants</i></p>
+                    </dv>
                     {% endif %}
                 </div>
                 {% endif %}

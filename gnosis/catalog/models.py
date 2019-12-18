@@ -486,7 +486,7 @@ class ReadingGroup(models.Model):
                              null=False,
                              blank=False)
 
-    address = models.CharField(max_length=255, default='', blank=False, null=False)
+    address = models.CharField(max_length=255, default='', blank=True)
 
     city = models.CharField(max_length=75,
                             default="Sydney",
