@@ -68,7 +68,7 @@
         <!-- Tab panes -->
         <div class="tab-content">
             <div class="tab-pane container active" id="upcoming">
-                <ul class="list-group list-group-flush">
+                <ul class="list-group mt-3">
                     {% for paper_entry in papers_discussed %}
                         {% if paper_entry.date_discussed %}
                             {% if paper_entry.date_discussed >= today %}
@@ -91,6 +91,7 @@
             </div>
 
             <div class="tab-pane container fade" id="location">
+                <div class="p-2 mt-3">
                 {% if group.room|length > 0 %}
                     <strong>Room:</strong><br/>{{ group.room }} <br/><br/>
                 {% endif %}
@@ -99,6 +100,7 @@
                 {% else %}
                     <strong>Address:</strong> {{ group.city }}, {{ group.country.name }}
                 {% endif %}
+                </div>
             </div>
         </div>
         {% else %}
