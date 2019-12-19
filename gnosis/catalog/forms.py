@@ -251,10 +251,10 @@ class ProfileForm(ModelForm):
         self.fields["job"].label = "Job title"
         self.fields["city"].label = "City"
         self.fields["country"].label = "Country"
-        self.fields["website"].label = "Website"
-        self.fields["github"].label = "Github"
-        self.fields["linkedin"].label = "LinkedIn"
-        self.fields["twitter"].label = "Twitter"
+        self.fields["website"].label = "Website (requires http:// or https://)"
+        self.fields["github"].label = "Github (requires http:// or https://)"
+        self.fields["linkedin"].label = "LinkedIn (requires http:// or https://)"
+        self.fields["twitter"].label = "Twitter (requires http:// or https://)"
 
         self.fields["about"].widget = forms.Textarea()    
         self.fields["about"].widget.attrs.update({"rows": "5"})
