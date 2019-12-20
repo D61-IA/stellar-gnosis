@@ -27,11 +27,12 @@
                     <ul class="list-group">
                         <li class="list-group-item mt-1">
                             <div class="d-flex flex-row">
-                                <div class="mr-auto p-2"><a
-                                        href="{% url 'paper_detail' endorsement.paper.id %}">{{ endorsement.paper.title }}</a>
+                                <div class="mr-auto p-2"><a class="paper_link"
+                                                            href="{% url 'paper_detail' endorsement.paper.id %}">{{ endorsement.paper.title }}</a>
                                 </div>
                                 <div class="p-2"><a href="{% url 'endorsement_delete' endorsement.paper.id %}"
-                                                    class="btn btn-outline-danger btn-sm" role="button">Remove</a></div>
+                                                    class="btn btn-outline-danger btn-sm rm" role="button">Remove</a>
+                                </div>
                             </div>
                         </li>
                     </ul>
