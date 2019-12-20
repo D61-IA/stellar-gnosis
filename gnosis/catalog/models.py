@@ -467,7 +467,7 @@ class ReadingGroup(models.Model):
         ("Sunday", "Sunday")
     )
 
-    city_validator = RegexValidator(r'^[a-zA-Z]*$', 'Only alphabetic characters are allowed.')
+    city_validator = RegexValidator(r'^[a-zA-Z\s]*$', 'Only alphabetic characters are allowed.')
 
     # Fields
     name = models.CharField(max_length=100, blank=False)
