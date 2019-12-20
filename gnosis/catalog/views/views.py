@@ -139,7 +139,7 @@ def paper_remove_author(request, id, rid):
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("paper_authors", kwargs={"id": id}))
     # TO DO
-    # What does this return? How can I make certain that the paper was deleted?
+    # What does this return? How can I make certain that the author was deleted?
 
     return HttpResponseRedirect(reverse("paper_authors", kwargs={"id": id}))
 
@@ -177,7 +177,6 @@ def paper_detail(request, id):
     notes = []
     if request.user.is_authenticated:
         notes = Note.objects.filter(paper=paper, created_by=request.user)
-
         # Get if paper is endorsed or bookmarked by the user
         endorsed = paper.endorsements.filter(user=request.user).exists()
         bookmarked = paper.bookmarks.filter(owner=request.user).exists()
@@ -185,8 +184,6 @@ def paper_detail(request, id):
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
     # ToDo: Improve this code to correctly handle middle names that are more than one word.
-    #authors_set = paper.person_set.all()
-
     authors_set = PaperAuthorRelationshipData.objects.filter(paper=paper).order_by('order')
     print(f"** Retrieved authors {authors_set}")
 
@@ -208,8 +205,6 @@ def paper_detail(request, id):
     print(datasets)
     venue = paper.was_published_at
 
-    #request.session["last-viewed-paper"] = id
-
     ego_network_json = _get_node_ego_network(paper.id)
 
     # Comment / Note form
@@ -224,8 +219,6 @@ def paper_detail(request, id):
                 comment_form.save()
                 # Create a new empty form for display
                 comment_form = CommentForm()
-            # comment.discusses.connect(paper)
-            # success = True
         elif "note_form" in request.POST:
             note = Note(created_by=request.user, paper_id=paper.id)
             note_form = NoteForm(instance=note, data=request.POST)
@@ -234,12 +227,8 @@ def paper_detail(request, id):
                 note_form = NoteForm()
 
     comments = paper.comment_set.all()
-
     flag_form = FlaggedCommentForm()
 
-
-
-    # print("ego_network_json: {}".format(ego_network_json))
     return render(
         request,
         "paper_detail.html",
@@ -1377,7 +1366,7 @@ def venue_detail(request, id):
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("venues_index"))
 
-    print(f"Papers published at this venue {venue.paper_set.all()}")
+    print(f"Papers published at this venue {venue.paper_set.all()}")  
 
     request.session["last-viewed-venue"] = id
     return render(
