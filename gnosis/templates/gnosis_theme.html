@@ -35,29 +35,20 @@
         </button>
 
         <div class="collapse navbar-collapse" id="myNavbar">
-            <ul class="nav navbar-nav mr-auto">
-                <li class="nav-item"><a class="nav-link"
-                                        href="{% url 'groups_index' %}">Groups</a></li>
-                {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link"
-                                            href="{% url 'collections' %}">Collections</a></li>
-                    <li class="nav-item"><a class="nav-link"
-                                            href="{% url 'bookmarks' %}">Bookmarks</a></li>
-                    <li class="nav-item"><a class="nav-link"
-                                            href="{% url 'endorsements' %}">Endorsements</a></li>
-                    <li class="nav-item"><a class="nav-link"
-                                            href="{% url 'note_index' %}">Notes</a></li>
-                {% endif %}
-            </ul>
-
-            <ul class="nav navbar-nav">
+            <ul class="nav navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                     <div class="dropdown">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown">
                             {{ user }}
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="{% url 'profile' user.id %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
+                            <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
+                            <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
+                            <a class="dropdown-item" href="{% url 'note_index' %}">My Notes</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'profile' user.id %}">My Profile</a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a>
                             <a class="dropdown-item" href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
                         </div>
@@ -106,7 +97,16 @@
 <div class="container-fluid  max-width float-container" style="margin-top:30px ">
     <div class="row float-right" style="margin-right:30px">
         {% if user.is_authenticated %}
-           <div class="btn-group">
+            <div class="btn-group">
+                <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
+                   title="View all groups">Groups&nbsp&nbsp</a>
+                <div class="btn-group">
+                    <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
+                       title="Create a new group">+</a>
+                </div>
+           </div>
+
+           <div class="btn-group ml-1">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all papers">Papers&nbsp&nbsp</a>
                 <div class="btn-group">
@@ -148,6 +148,10 @@
             </div>
         {% else %}
             <div class="btn-group">
+                <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
+                   title="View all papers">Groups&nbsp&nbsp</a>
+           </div>
+            <div class="btn-group ml-1">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all papers">Papers&nbsp&nbsp</a>
             </div>
