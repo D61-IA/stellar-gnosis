@@ -72,7 +72,7 @@ for index, row in df_paper.iterrows():
     title = get_title_from_pdf_name(pdf_name)
 
     # get 'abstract' with an optional ':' inside linebreaks, ignoring case
-    start_text = re.search(r'\\n(?i)(abstract)(:)*?\\n', text)
+    start_text = re.search(r'\\n(?i)(abstract)(:)*?', text)
     if start_text is not None:
         start = start_text.start()
     if start != -1:
