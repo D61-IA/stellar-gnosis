@@ -95,6 +95,7 @@ for index, row in df_paper.iterrows():
 
     # if there is issue with getting the abstract, add to 'other' list
     if start == -1 or end == -1:
+    	entry['paper_text'] = repr(row['paper_text'])
         other.append(entry)
         print("-------" + str(paper_id) + "--------")
     else:
