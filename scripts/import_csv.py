@@ -7,7 +7,6 @@ df_paper = pd.read_csv('papers.csv')
 df_author = pd.read_csv('authors.csv')
 df_paper_author = pd.read_csv('paper_authors.csv')
 
-
 # get author names that are tainted with random question marks
 df_qst_author = df_author[df_author['name'].str.contains(r'\?')]
 df_qst_author.to_csv('df_qst_author')
@@ -66,6 +65,7 @@ for index, row in df_paper.iterrows():
     paper_id = row['id']
     year = row['year']
     pdf_link = "https://papers.nips.cc/paper/" + pdf_name
+    src_link = pdf_link[:-4]
     abstract = "Abstract not available"
 
     # get title from pdf_name
@@ -90,8 +90,8 @@ for index, row in df_paper.iterrows():
 
     # get the author names
     author_names = add_author(paper_id)
-    entry = {'paper_id': paper_id, 'year': year, 'title': title, 'pdf_link': pdf_link, 'abstract': abstract,
-                 'names': author_names}
+    entry = {'paper_id': paper_id, 'title': title, 'pdf_link': pdf_link, 'source_link': src_link,
+             'abstract': abstract, 'names': author_names}
 
     # if there is issue with getting the abstract, add to 'other' list
     if start == -1 or end == -1:
@@ -148,9 +148,9 @@ def add_psql():
             title = row['title']
             abstract = row['abstract']
             download_link = row['pdf_link']
+            source_link = row['source_link']
             keywords = ''
             is_public = True
-            source_link = download_link
             created_at = datetime.now()
             record = (title, abstract, keywords, download_link, is_public, source_link, created_at)
             cursor.execute(sql_paper, record)
