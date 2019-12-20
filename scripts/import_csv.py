@@ -20,7 +20,7 @@ def get_title_from_pdf_name(pdf_name):
     n = pdf_name[idx:]
     n = n.replace('-', ' ').strip()
 
-    return n.capitalize()
+    return n.title()
 
 
 def add_author(paper_id):
