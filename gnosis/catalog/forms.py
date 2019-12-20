@@ -464,16 +464,12 @@ class CommentForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:100%"})
-            #print(visible.field.widget.attrs.items())
 
     def clean_text(self):
         return self.cleaned_data["text"]
 
     def clean_publication_date(self):
         return self.cleaned_data["publication_date"]
-
-    # def clean_author(self):
-    #      return self.cleaned_data['author']
 
     # recaptcha checkbox, by default it uses checkbox keys at settings.py
     captcha = ReCaptchaField(

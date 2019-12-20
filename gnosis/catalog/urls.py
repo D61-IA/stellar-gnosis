@@ -35,6 +35,7 @@ urlpatterns += [
     path('paper/<int:id>/collection/add/<int:cid>', views.paper_add_to_collection_selected, name='paper_add_to_collection_selected'),
     path('paper/<int:id>/bookmark', views.paper_bookmark, name='paper_bookmark'),
     path('paper/<int:id>/add/note/', views.paper_add_note, name='paper_add_note'),
+    path('paper/<int:id>/add/comment/', views.paper_add_comment, name='paper_add_comment'),
     path('paper/<int:id>/comment/<int:cid>/flag', views.paper_flag_comment, name='paper_flag_comment'),
 
 ]
@@ -72,7 +73,6 @@ urlpatterns += [
 # for updating/creating a new Comment node
 urlpatterns += [
     path('comments/', views.comments, name='comments_index'),
-    path('comment/create/', views.comment_create, name='comment_create'),
     path('comment/<int:id>/', views.comment_detail, name='comment_detail'),
     path('comment/<int:id>/update', views.comment_update, name='comment_update'),
     path('comment/<int:id>/delete', views.comment_delete, name='comment_delete'),

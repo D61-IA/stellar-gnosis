@@ -670,11 +670,40 @@ def paper_bookmark(request, id):
 
 
 @login_required
+def paper_add_comment(request, id):
+    """
+    Adds a comment to a paper.
+    """
+    print("\n===============================================")
+    print(f"In paper_add_comment for paper with id={id}")
+    print("===============================================\n")
+
+    paper = get_object_or_404(Paper, pk=id)
+
+    if request.method == "POST":
+        comment = Comment()
+        comment.created_by = request.user
+        comment.paper = paper
+        form = CommentForm(instance=comment, data=request.POST)
+        if form.is_valid():
+            # add link from new comment to paper
+            form.save()
+            return redirect("paper_detail", id=paper.id)
+    else:  # GET
+        form = CommentForm()
+
+    return render(request, "comment_form.html", {"form": form})
+
+
+@login_required
 def paper_add_note(request, id):
     """
     Adds a note to a paper.
     """
+    print("\n===============================================")
     print(f"In paper_add_note for paper with id={id}")
+    print("\n===============================================")
+
     paper = get_object_or_404(Paper, pk=id)
 
     if request.method == "POST":
