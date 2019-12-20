@@ -44,33 +44,6 @@ def comment_detail(request, id):
     return render(request, "comment_detail.html", {"comment": comment})
 
 
-# @login_required
-# def comment_create(request):
-#     user = request.user
-#
-#     # Retrieve paper using paper id
-#     paper_id = request.session["last-viewed-paper"]
-#     try:
-#         paper = Paper.objects.get(pk=paper_id)
-#     except ObjectDoesNotExist:
-#         return HttpResponseRedirect("papers_index")
-#
-#     if request.method == "POST":
-#         comment = Comment()
-#         comment.created_by = user
-#         comment.paper = paper
-#         form = CommentForm(instance=comment, data=request.POST)
-#         if form.is_valid():
-#             # add link from new comment to paper
-#             form.save()
-#             del request.session["last-viewed-paper"]
-#             return redirect("paper_detail", id=paper_id)
-#     else:  # GET
-#         form = CommentForm()
-#
-#     return render(request, "comment_form.html", {"form": form})
-
-
 @login_required
 def comment_update(request, id):
     # retrieve paper by ID
