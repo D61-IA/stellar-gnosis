@@ -1,5 +1,5 @@
 from django.test import TestCase
-from catalog.models import ReadingGroup, Paper
+from catalog.models import ReadingGroup, Paper, ReadingGroupEntry, ReadingGroupMember
 from django.urls import reverse
 from django.contrib.auth.models import User
 from datetime import datetime
@@ -20,6 +20,15 @@ class ReadingGroupViewsTestCase(TestCase):
             abstract="The nature of gravity.",
             download_link="https://google.com",
             created_by=self.user,
+        )
+
+
+        # Create a second paper
+        self.paper2 = Paper.objects.create(
+            title="The meaning of life",
+            abstract="To be or not to be, that is the question.",
+            download_link="https://google.com",
+            created_by=self.admin,
         )
 
         current_time = datetime.now()
@@ -482,4 +491,180 @@ class ReadingGroupViewsTestCase(TestCase):
         )  # no applicants to join the group.
 
         # Logout user admin
+        self.client.logout()
+
+
+    def test_group_public_propose_paper(self):
+        """Testing a user proposing a paper to a public group"""
+
+        # Anonymous users should not be able to propose a paper.
+        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/group/add/{self.ml_group_public.id}"
+        response = self.client.get(
+            reverse(
+                "paper_add_to_group_selected",
+                kwargs={"id": self.paper.id, "gid": self.ml_group_public.id},
+            )
+        )
+        # We should be redirected to the account login page
+        self.assertRedirects(
+            response, expected_url=target_url, status_code=302, target_status_code=200
+        )
+
+        # login user testuser; note that this user is not the owner of the public reading group (admin is).
+        login = self.client.login(username="testuser", password="12345")
+
+        # Check if testuser is a member of the public group. He should not be.
+        # The public group now has one owner (admin) and no members 
+        self.assertEqual(self.ml_group_public.members.all().count(), 0)
+
+        # testuser is not a member of the public group so he should not be able to propose a paper to this group
+        target_url = f"/catalog/paper/{self.paper.id}/"
+        response = self.client.get(
+            reverse(
+                "paper_add_to_group_selected",
+                kwargs={"id": self.paper.id, "gid": self.ml_group_public.id},
+            )
+        )
+
+        # First, let's make sure that he is redirected to the paper detail view
+        self.assertRedirects(
+            response, expected_url=target_url, status_code=302, target_status_code=200
+        )
+
+        # Now check the number of proposed papers for the public group. It should be 0 as the above
+        # call to add the paper to the group should fail since testuser is not a member of the group.
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_public, paper=self.paper).count(), 0)
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_public, paper=self.paper, proposed_by=self.user).count(), 0)
+        
+        self.client.logout()
+
+        #
+        # Just to make sure, have admin who owns the group propose the same paper.
+        #
+
+        # Login as admin who is the owner of the group
+        login = self.client.login(username="admin", password="abcdefg")
+
+        target_url = f"/catalog/paper/{self.paper.id}/"
+        response = self.client.get(
+            reverse(
+                "paper_add_to_group_selected",
+                kwargs={"id": self.paper.id, "gid": self.ml_group_public.id},
+            )
+        )
+
+        # First, let's make sure that he is redirected to the paper detail view
+        self.assertRedirects(
+            response, expected_url=target_url, status_code=302, target_status_code=200
+        )
+
+        # Now check the number of proposed papers for the public group. It should be 1.
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_public, paper=self.paper).count(), 1)
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_public,paper=self.paper, proposed_by=self.admin).count(), 1)
+        
+        self.client.logout()
+
+
+    def test_group_private_propose_paper(self):
+        """Testing a user proposing a paper to a private group"""
+
+        # Anonymous users should not be able to propose a paper.
+        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/group/add/{self.ml_group_private.id}"
+        response = self.client.get(
+            reverse(
+                "paper_add_to_group_selected",
+                kwargs={"id": self.paper.id, "gid": self.ml_group_private.id},
+            )
+        )
+        # We should be redirected to the account login page
+        self.assertRedirects(
+            response, expected_url=target_url, status_code=302, target_status_code=200
+        )
+
+        # login user testuser; note that this user is not the owner or a member of the private reading group (admin is owner).
+        login = self.client.login(username="testuser", password="12345")
+
+        # Check if testuser is a member of the private group. He should not be.
+        # The private group now has one owner (admin) and no members 
+        self.assertEqual(self.ml_group_private.members.all().count(), 0)
+
+        # testuser is not a member of the private group so he should not be able to propose a paper to this group
+        target_url = f"/catalog/paper/{self.paper.id}/"
+        response = self.client.get(
+            reverse(
+                "paper_add_to_group_selected",
+                kwargs={"id": self.paper.id, "gid": self.ml_group_private.id},
+            )
+        )
+
+        # First, let's make sure that he is redirected to the paper detail view
+        self.assertRedirects(
+            response, expected_url=target_url, status_code=302, target_status_code=200
+        )
+
+        # Now check the number of proposed papers for the private group. It should be 0 as the above
+        # call to add the paper to the group should fail since testuser is not a member of the group.
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_private, paper=self.paper).count(), 0)
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_private, paper=self.paper, proposed_by=self.user).count(), 0)
+        
+        self.client.logout()
+
+        #
+        # Just to make sure, have admin who owns the group propose the same paper.
+        #
+
+        # Login as admin who is the owner of the group
+        login = self.client.login(username="admin", password="abcdefg")
+
+        target_url = f"/catalog/paper/{self.paper.id}/"
+        response = self.client.get(
+            reverse(
+                "paper_add_to_group_selected",
+                kwargs={"id": self.paper.id, "gid": self.ml_group_private.id},
+            )
+        )
+
+        # First, let's make sure that he is redirected to the paper detail view
+        self.assertRedirects(
+            response, expected_url=target_url, status_code=302, target_status_code=200
+        )
+
+        # Now check the number of proposed papers for the private group. It should be 1.
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_private, paper=self.paper).count(), 1)
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_private, paper=self.paper, proposed_by=self.admin).count(), 1)
+        
+        self.client.logout()
+
+        # Now make testuser a member of the private group, and have him propose a paper. This time, he should
+        # be able to propose a paper.
+        member = ReadingGroupMember(member=self.user, access_type="granted")
+        member.save()
+        self.ml_group_private.members.add(member)      
+
+        
+        # login user testuser; note that this user is not the owner or a member of the private reading group (admin is owner).
+        login = self.client.login(username="testuser", password="12345")
+
+        # Check if testuser is a member of the private group. He should be now.
+        self.assertEqual(self.ml_group_private.members.all().count(), 1)
+
+        target_url = f"/catalog/paper/{self.paper2.id}/"
+        response = self.client.get(
+            reverse(
+                "paper_add_to_group_selected",
+                kwargs={"id": self.paper2.id, "gid": self.ml_group_private.id},
+            )
+        )
+
+        # First, let's make sure that he is redirected to the paper detail view
+        self.assertRedirects(
+            response, expected_url=target_url, status_code=302, target_status_code=200
+        )
+
+        # Now check the number of proposed papers for the private group. It should be 2.
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_private).count(), 2)
+        # Check for the specific paper propose by the test user.
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_private, paper=self.paper2).count(), 1)
+        self.assertEqual(ReadingGroupEntry.objects.filter(reading_group=self.ml_group_private, paper=self.paper2, proposed_by=self.user).count(), 1)
+        
         self.client.logout()
