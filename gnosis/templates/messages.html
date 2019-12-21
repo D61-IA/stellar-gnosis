@@ -1,9 +1,12 @@
 {% if messages %}
 <div class="card  shadow-sm text-center mt-3" id="message_container">
     <div class="card-body">
-        {% for message in messages %}
-            <p class="bg-success">{{ message }}</p>
+        {% for msg in messages %}
+            <p class="bg-success">{{ msg }}</p>
         {% endfor %}
+        {% if message %}       
+            <p class="bg-success">{{ message }}</p>        
+        {% endif %}
     </div>
 </div>
 {% endif %}
