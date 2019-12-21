@@ -1,0 +1,10 @@
+{% if messages %}
+<div class="card  shadow-sm text-center mt-3" id="message_container">
+    <div class="card-body">
+        {% for message in messages %}
+            <p class="bg-success">{{ message }}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+

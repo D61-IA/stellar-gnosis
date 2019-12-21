@@ -153,6 +153,8 @@ STATICFILES_DIRS = (
 # After user login and logout, she will be re-directed to home page instead of accounts/profile
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+# After changing password, the user is logged out
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
 # This is for checking the password reset email when the email server is not configured
 if DEBUG:
