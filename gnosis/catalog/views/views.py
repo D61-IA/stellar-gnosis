@@ -686,31 +686,29 @@ def paper_add_note(request, id):
 
 @login_required
 def paper_add_to_group_selected(request, id, gid):
-    try:
-        paper = Paper.objects.get(pk=id)
-        group = ReadingGroup.objects.get(pk=gid)
-    except ObjectDoesNotExist:
-        return Http404
 
-    print("Found group {}".format(group))
+    paper = get_object_or_404(Paper, pk=id)
+    group = get_object_or_404(ReadingGroup, pk=gid)
     # Check if the user has permission to propose a paper for this group.
     # If group is public then all good.
     # If the group is private then check if user is a member of this group.
     q_set = group.members.filter(member=request.user).all()
-    if group.owner==request.user or group.is_public or (q_set.count()==1 and q_set[0].access_type=='granted'):
+    # user can only propose a paper for a group if she is the group owner or has joined a public group
+    # or has been granted access to a private group.
+    if group.owner==request.user  or (q_set.count()==1 and q_set[0].access_type=='granted'):
         paper_in_group = group.papers.filter(paper=paper)
         if paper_in_group:
             # message = "Paper already exists in group {}".format(group.name)
-            print(f"Paper {paper} already exists in group {group}")
+            messages.add_message(request, messages.INFO, f"Paper {paper} has already been proposed for group {group}.")
         else:
             group_entry = ReadingGroupEntry()
             group_entry.reading_group = group
             group_entry.proposed_by = request.user
             group_entry.paper = paper
             group_entry.save()
-            print(f"Added paper {paper} to group {group}.")
+            messages.add_message(request, messages.INFO, f"Paper successfully proposed for group {group}. Thank you!")
     else:
-        print("You don't have permission to propose papers for this group.")
+        messages.add_message(request, messages.INFO, "You must join the group before you can propose papers.")
 
     return HttpResponseRedirect(reverse("paper_detail", kwargs={"id": id}))
 
@@ -718,14 +716,12 @@ def paper_add_to_group_selected(request, id, gid):
 @login_required
 def paper_add_to_group(request, id):
     message = None
-    # Get all reading groups that this person has created
-
-    # The public reading groups
-    groups = ReadingGroup.objects.filter(is_public=True).all()
+    # The public reading groups that the user has joined
+    groups = ReadingGroup.objects.filter(is_public=True, members__member=request.user, members__access_type='granted')
     # The private reading groups the user has been granted access to.
     # This excludes the user who owns/created the group!
     groups_private = ReadingGroup.objects.filter(is_public=False, members__member=request.user, members__access_type='granted')
-    groups_owner = ReadingGroup.objects.filter(is_public=False, owner=request.user)
+    groups_owner = ReadingGroup.objects.filter(owner=request.user)
     # Combine the Query sets
     groups = list(chain(groups, groups_owner, groups_private))
 
