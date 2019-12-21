@@ -92,12 +92,6 @@
                 </p>
             {% endif %}
 
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="bg-success">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-
             <h4 class="text-right">
                 {% if not user.is_authenticated %}
                     <a href="{% url 'account_login' %}?next={{ request.path }}">Endorse</a>{% endif %}
