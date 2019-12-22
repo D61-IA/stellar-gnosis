@@ -496,6 +496,8 @@ class ReadingGroup(models.Model):
 
     country = CountryField(default='AU', blank=False, null=False)
 
+    slack = models.URLField(blank=True, null=True)
+
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
     owner = models.ForeignKey(
