@@ -467,7 +467,9 @@ class ReadingGroup(models.Model):
         ("Sunday", "Sunday")
     )
 
-    city_validator = RegexValidator(r'^[a-zA-Z\s]*$', 'Only alphabetic characters are allowed.')
+    city_validator = RegexValidator(regex=r'^[a-zA-Z\s]*$', message='Only alphabetic characters are allowed.')
+    slack_validator = RegexValidator(regex=r'\Ahttps?://[a-zA-Z0-9-]+(.slack.com([/?].*)?\Z)', message='Invalid slack community URL.')
+
 
     # Fields
     name = models.CharField(max_length=100, blank=False)
@@ -496,7 +498,7 @@ class ReadingGroup(models.Model):
 
     country = CountryField(default='AU', blank=False, null=False)
 
-    slack = models.URLField(blank=True, null=True)
+    slack = models.URLField(blank=True, null=True, validators=[slack_validator])
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)

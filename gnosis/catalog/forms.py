@@ -561,7 +561,7 @@ class GroupForm(ModelForm):
         self.fields["end_time"].label = "Finish Time (HH/MM/SS)*"
         self.fields["timezone"].label = "Timezone*"
         self.fields["keywords"].label = "Keywords*"
-        self.fields["slack"].label = "Slack"
+        self.fields["slack"].label = "Slack (requires https://)"
         self.fields["videoconferencing"].label = "WebEx, Skype, etc."
         self.fields["room"].lable="Room"
         self.fields["description"].label = "Description*"
