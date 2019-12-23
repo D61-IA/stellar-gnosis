@@ -19,21 +19,6 @@ jQuery.fn.preventDoubleSubmission = function () {
 
 $('form').preventDoubleSubmission();
 
-// apply loader to all ajax forms
-// var form = $(document);
-//
-// $(document).ajaxStart(function () {
-//     console.log("job starts!");
-//     $('#loader').attr('hidden', false);
-// });
-//
-//
-// $(document).ajaxStop(function () {
-//     console.log("job ends!");
-//     $('#loader').attr('hidden', true);
-//
-// });
-
 /************** Django basic setup for accepting ajax requests. **************/
 function getCookie(name) {
     var cookieValue = null;
@@ -68,3 +53,13 @@ $.ajaxSetup({
         }
     }
 );
+
+/************** JS functions that apply to elements in gnosis_theme.html **************/
+$('.toggle-nav').click(function () {
+    $('.dropdown-menu').slideToggle(100);
+});
+
+$('.cus-toggle').click(function (e) {
+    e.stopPropagation();
+    $('#cus-dropdown').slideToggle(100);
+});

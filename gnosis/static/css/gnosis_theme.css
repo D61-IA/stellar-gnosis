@@ -41,12 +41,18 @@
     display: flex;
 }
 
-.header_icons .material-icons{
+.header_icons .material-icons {
     font-size: 48px;
 }
 
 .header_icons {
     margin-right: 20px;
+}
+
+
+.btn:active, .btn:focus {
+    outline: none; !important;
+    box-shadow: none; !important;
 }
 
 @keyframes spin {
@@ -62,6 +68,7 @@
     #big {
         display: none;
     }
+
     .flex-item {
         margin-top: 10px;
     }
