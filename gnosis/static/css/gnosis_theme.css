@@ -49,10 +49,30 @@
     margin-right: 20px;
 }
 
-
 .btn:active, .btn:focus {
-    outline: none; !important;
-    box-shadow: none; !important;
+    outline: none;
+!important;
+    box-shadow: none;
+!important;
+}
+
+#nav-small-content, #nav-big-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nav-link {
+    padding: 10px;
+    color: black;
+}
+
+.auth-link .nav-link {
+    color: #39acff;
+}
+
+#toggle-nav::after {
+    display: none;
 }
 
 @keyframes spin {
@@ -65,8 +85,9 @@
 }
 
 @media screen and (max-width: 679px) {
-    #big {
+    #nav-big-content {
         display: none;
+    !important;
     }
 
     .flex-item {
@@ -75,8 +96,9 @@
 }
 
 @media screen and (min-width: 680px) {
-    #small {
+    #nav-small-content {
         display: none;
+    !important;
     }
 
 }
