@@ -56,7 +56,11 @@
 !important;
 }
 
-#nav-small-content, #nav-big-content {
+#nav-small-content {
+    display: none;
+}
+
+#nav-big-content {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -90,17 +94,15 @@
     !important;
     }
 
+    #nav-small-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
     .flex-item {
         margin-top: 10px;
     }
-}
-
-@media screen and (min-width: 680px) {
-    #nav-small-content {
-        display: none;
-    !important;
-    }
-
 }
 
 .float-container::after {

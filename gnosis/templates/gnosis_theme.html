@@ -105,7 +105,7 @@
                     {% if user.is_authenticated %}
                         <div class="dropdown-divider"></div>
                         <button class="dropdown-item dropdown-toggle cus-toggle" type="button"
-                                style="outline: none"> {{ user }}
+                                style="outline: none"><strong>{{ user }}</strong>
                         </button>
                         <div id="cus-dropdown" style="padding: .5rem 5px;">
                             <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
