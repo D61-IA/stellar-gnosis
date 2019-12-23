@@ -27,10 +27,10 @@
 <body>
 
 <nav class="navbar navbar-expand-sm mb-2 shadow bg-white navbar-light sticky-top">
-    <div class="container-fluid">
+    <div class="container-fluid" style="height: 44px;">
         <a class="navbar-brand"
            href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
-        <div id="nav-big-content">
+        <div id="nav_big">
             <ul class="nav ml-auto">
                 <li class="nav-item"><a class="nav-link"
                                         href="{% url 'home' %}">Home</a></li>
@@ -64,7 +64,7 @@
                             </div>
                         </div>
                     {% else %}
-                        <ul class="nav auth-link">
+                        <ul class="nav auth_link">
                             <li class="nav-item"><a class="nav-link"
                                                     href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a>
                             </li>
@@ -78,8 +78,8 @@
             </div>
         </div>
 
-        <div id="nav-small-content">
-            <ul class="nav ml-auto auth-link">
+        <div id="nav_small">
+            <ul class="nav ml-auto auth_link">
                 {% if not user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link"
                                             href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a>
@@ -90,12 +90,12 @@
             </ul>
 
             <div class="dropdown">
-                <a id='toggle-nav' class="btn dropdown-toggle" href="#" role="button"
-                   data-toggle="dropdown">
+                <button id='toggle_nav' class="btn dropdown-toggle vertical_center" role="button"
+                        data-toggle="dropdown">
                     <i class="material-icons" style="display: block">
                         menu
                     </i>
-                </a>
+                </button>
 
                 <div class="dropdown-menu dropdown-menu-right" style="min-width: 190px">
                     <a class="dropdown-item" href="{% url 'home' %}">Home</a>
@@ -104,7 +104,7 @@
 
                     {% if user.is_authenticated %}
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item dropdown-toggle cus-toggle" type="button"
+                        <button class="dropdown-item dropdown-toggle cus_toggle" type="button"
                                 style="outline: none"><strong>{{ user }}</strong>
                         </button>
                         <div id="cus-dropdown" style="padding: .5rem 5px;">
@@ -126,7 +126,7 @@
     </div>
 </nav>
 
-<div class="container-fluid  max-width float-container" style="margin-top:30px ">
+<div class="container-fluid  max-width float_container" style="margin-top:30px">
     <div class="row float-right" style="margin-right:30px">
         {% if user.is_authenticated %}
             <div class="btn-group">
@@ -219,8 +219,6 @@
     </div>
 
     <script>setButton();</script>
-
-    <script src="{% static 'js/gnosis_theme.js' %}"></script>
 </div>
 
 <!-- response dialog for flag report -->
@@ -231,38 +229,30 @@
             we will remove it.</span>
             </div>
 
-            <div class="ok-container">
-                <span class="response-ok" onclick="$('#flag_response').attr('hidden', true)">Ok</span>
+            <div class="ok_container">
+                <span class="response_ok">Ok</span>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- spinner loader -->
-{#<div id="loader" class="cover" hidden>#}
-{#    <div class="loader_container">#}
-{#        <div class="loader_icon">#}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
-
 <!-- growing circles loader -->
 <div id="loader" class="cover" hidden>
     <div class="loader_container">
-        <div class="spinner-grow paper" role="status">
+        <div class="spinner_grow paper" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow person" role="status">
+        <div class="spinner_grow person" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow venue" role="status">
+        <div class="spinner_grow venue" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow code" role="status">
+        <div class="spinner_grow code" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow dataset" role="status">
+        <div class="spinner_grow dataset" role="status">
             <span class="sr-only">Loading...</span>
         </div>
     </div>
@@ -327,5 +317,8 @@
         message_ele.style.display = "none";
     }, 2000);
 </script>
+
+<script src="{% static 'js/gnosis_theme.js' %}"></script>
+
 </body>
 </html>

@@ -24,7 +24,7 @@
     animation: spin 2s linear infinite;
 }
 
-.spinner-grow {
+.spinner_grow {
     animation: spinner-grow 1.0s linear infinite;
     opacity: 0.5;
 }
@@ -56,11 +56,11 @@
 !important;
 }
 
-#nav-small-content {
+#nav_small {
     display: none;
 }
 
-#nav-big-content {
+#nav_big {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -71,12 +71,18 @@
     color: black;
 }
 
-.auth-link .nav-link {
+.auth_link .nav-link {
     color: #39acff;
 }
 
-#toggle-nav::after {
+#toggle_nav::after {
     display: none;
+}
+
+.vertical_center {
+    height: 100%;
+    margin-top: auto;
+    margin-bottom: auto
 }
 
 @keyframes spin {
@@ -89,12 +95,12 @@
 }
 
 @media screen and (max-width: 679px) {
-    #nav-big-content {
+    #nav_big {
         display: none;
     !important;
     }
 
-    #nav-small-content {
+    #nav_small {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -105,7 +111,7 @@
     }
 }
 
-.float-container::after {
+.float_container::after {
     display: block;
     content: "";
     clear: both;

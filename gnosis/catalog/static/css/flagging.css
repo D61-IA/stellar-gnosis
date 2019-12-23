@@ -72,19 +72,19 @@
     padding: 0;
 }
 
-.ok-container {
+.ok_container {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     user-select: none;
 }
 
-.response-ok {
+.response_ok {
     color: darkseagreen;
     cursor: pointer;
 }
 
-.response-ok:hover {
+.response_ok:hover {
     color: olivedrab;
 }
 
