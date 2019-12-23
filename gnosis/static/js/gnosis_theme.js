@@ -55,10 +55,6 @@ $.ajaxSetup({
 );
 
 /************** JS functions that apply to elements in gnosis_theme.html **************/
-$('.toggle-nav').click(function () {
-    $('#nav-small-content .dropdown-menu').slideToggle(100);
-});
-
 $('.cus-toggle').click(function (e) {
     e.stopPropagation();
     $('#cus-dropdown').slideToggle(100);
