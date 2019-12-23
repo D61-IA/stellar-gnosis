@@ -22,6 +22,14 @@ def valid_code_website(value):
             params={"value": value},
         )
 
+def telegram_validator(value):
+    """Validates a telegram community URL"""
+    if not value.startswith("https://t.me/"):
+        raise ValidationError(
+            _("Invalid telegram community website %(value)s."),
+            params={"value": value},
+        )
+
 ###########################################
 #                                         #
 # These are models for the SQL database   #
@@ -469,8 +477,7 @@ class ReadingGroup(models.Model):
 
     city_validator = RegexValidator(regex=r'^[a-zA-Z\s]*$', message='Only alphabetic characters are allowed.')
     slack_validator = RegexValidator(regex=r'\Ahttps?://[a-zA-Z0-9-]+(.slack.com([/?].*)?\Z)', message='Invalid slack community URL.')
-
-
+    
     # Fields
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=False)
@@ -499,6 +506,7 @@ class ReadingGroup(models.Model):
     country = CountryField(default='AU', blank=False, null=False)
 
     slack = models.URLField(blank=True, null=True, validators=[slack_validator])
+    telegram = models.URLField(blank=True, null=True, validators=[telegram_validator])
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)

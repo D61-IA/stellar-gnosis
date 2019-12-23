@@ -562,6 +562,7 @@ class GroupForm(ModelForm):
         self.fields["timezone"].label = "Timezone*"
         self.fields["keywords"].label = "Keywords*"
         self.fields["slack"].label = "Slack (requires https://)"
+        self.fields["telegram"].label = "Telegram (requires https://)"
         self.fields["videoconferencing"].label = "WebEx, Skype, etc."
         self.fields["room"].lable="Room"
         self.fields["description"].label = "Description*"
@@ -621,11 +622,14 @@ class GroupForm(ModelForm):
     
     def clean_slack(self):
         return self.cleaned_data["slack"]
+    
+    def clean_telegram(self):
+        return self.cleaned_data["telegram"]
 
     class Meta:
         model = ReadingGroup
         fields = ["name", "description", "keywords", "address", "city", "country", "room",
-                  "day", "timezone", "start_time", "end_time", "is_public", "slack", "videoconferencing"]
+                  "day", "timezone", "start_time", "end_time", "is_public", "slack", "telegram", "videoconferencing"]
 
 
 class GroupEntryForm(ModelForm):
