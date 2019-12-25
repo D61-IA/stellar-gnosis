@@ -50,7 +50,9 @@
 }
 
 .nav_theme {
-    color: rgba(0,0,0,.5)
+    color: rgba(0,0,0,.5);
+    padding-right: .5rem;
+    padding-left: .5rem
 }
 
 .nav_theme:hover {
