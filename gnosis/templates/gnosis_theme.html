@@ -52,7 +52,7 @@
                             <a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a>
                             <a class="dropdown-item" href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
                         </div>
-                    </div> 
+                    </div>
                 {% else %}
                     <li class="nav-item"><a class="nav-link"
                                             href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a></li>
@@ -206,14 +206,6 @@
         </div>
     </div>
 </div>
-
-<!-- spinner loader -->
-{#<div id="loader" class="cover" hidden>#}
-{#    <div class="loader_container">#}
-{#        <div class="loader_icon">#}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
 
 <!-- growing circles loader -->
 <div id="loader" class="cover" hidden>
