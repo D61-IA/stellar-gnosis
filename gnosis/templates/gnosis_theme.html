@@ -30,99 +30,36 @@
     <div class="container-fluid" style="height: 44px;">
         <a class="navbar-brand"
            href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
-        <div id="nav_big">
-            <ul class="nav ml-auto">
-                <li class="nav-item"><a class="nav-link"
-                                        href="{% url 'home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link"
-                                        href="#">About</a></li>
-                <li class="nav-item"><a class="nav-link"
-                                        href="#">Contact</a></li>
-            </ul>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
 
-            <div class="collapse navbar-collapse" id="myNavbar">
-                <ul class="nav ml-auto">
-                    {% if user.is_authenticated %}
-                        <div class="dropdown">
-                            <button type="button" class="btn btn-outline-primary dropdown-toggle"
-                                    data-toggle="dropdown">
-                                {{ user }}
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
-                                <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
-                                <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
-                                <a class="dropdown-item" href="{% url 'note_index' %}">My Notes</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'profile' user.id %}">My Profile</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a>
-                                <a class="dropdown-item" href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <ul class="nav auth_link">
-                            <li class="nav-item"><a class="nav-link"
-                                                    href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a>
-                            </li>
-
-                            <li class="nav-item"><a class="nav-link"
-                                                    href="{% url 'account_login' %}?next={{ request.path }}">Login</a>
-                            </li>
-                        </ul>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-
-        <div id="nav_small">
-            <ul class="nav ml-auto auth_link">
-                {% if not user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link"
-                                            href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a>
-                    </li>
-                    <li class="nav-item"><a
-                            class="nav-link" href="{% url 'account_login' %}?next={{ request.path }}">Login</a></li>
-                {% endif %}
-            </ul>
-
+        {% if user.is_authenticated %}
             <div class="dropdown">
-                <button id='toggle_nav' class="btn dropdown-toggle vertical_center" role="button"
+                <button type="button" class="btn btn-outline-primary dropdown-toggle"
                         data-toggle="dropdown">
-                    <i class="material-icons" style="display: block">
-                        menu
-                    </i>
+                    {{ user }}
                 </button>
-
-                <div class="dropdown-menu dropdown-menu-right" style="min-width: 190px">
-                    <a class="dropdown-item" href="{% url 'home' %}">Home</a>
-                    <a class="dropdown-item" href="#">About</a>
-                    <a class="dropdown-item" href="#">Contact</a>
-
-                    {% if user.is_authenticated %}
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item dropdown-toggle cus_toggle" type="button"
-                                style="outline: none"><strong>{{ user }}</strong>
-                        </button>
-                        <div id="cus-dropdown" style="padding: .5rem 5px;">
-                            <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
-                            <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
-                            <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
-                            <a class="dropdown-item" href="{% url 'note_index' %}">My Notes</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'profile' user.id %}">My Profile</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a>
-                            <a class="dropdown-item"
-                               href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
-                        </div>
-                    {% endif %}
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
+                    <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
+                    <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
+                    <a class="dropdown-item" href="{% url 'note_index' %}">My Notes</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'profile' user.id %}">My Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a>
+                    <a class="dropdown-item"
+                       href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
                 </div>
             </div>
-        </div>
+        {% else %}
+            <div class="nav">
+                <a class="nav-link nav_theme"
+                   href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a>
+
+                <a class="nav-link nav_theme"
+                   href="{% url 'account_login' %}?next={{ request.path }}">Login</a>
+            </div>
+        {% endif %}
+
     </div>
 </nav>
 

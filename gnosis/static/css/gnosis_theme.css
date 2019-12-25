@@ -49,40 +49,17 @@
     margin-right: 20px;
 }
 
-.btn:active, .btn:focus {
-    outline: none;
-!important;
-    box-shadow: none;
-!important;
-}
-
-#nav_small {
-    display: none;
-}
-
-#nav_big {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
 .nav-link {
     padding: 10px;
     color: black;
 }
 
-.auth_link .nav-link {
-    color: #39acff;
+.nav_theme {
+    color: rgba(0,0,0,.5)
 }
 
-#toggle_nav::after {
-    display: none;
-}
-
-.vertical_center {
-    height: 100%;
-    margin-top: auto;
-    margin-bottom: auto
+.nav_theme:hover {
+    color: rgba(0,0,0,.9);
 }
 
 @keyframes spin {
@@ -95,16 +72,6 @@
 }
 
 @media screen and (max-width: 678px) {
-    #nav_big {
-        display: none;
-    !important;
-    }
-
-    #nav_small {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
 
     .flex-item {
         margin-top: 10px;
