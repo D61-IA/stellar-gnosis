@@ -1,3 +1,5 @@
+{% load flatpages %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,6 +243,7 @@
     {% block footer %}
     {% endblock %}
     {% load static %}
+    {% get_flatpages as flatpages %}
     <!-- Footer Links -->
     <div class="container-fluid max-width text-center text-sm-center">
 
@@ -261,12 +264,9 @@
                 <!-- Links -->
                 <h5 class="text-uppercase">Links</h5>
                 <ul class="list-unstyled">
-                    <li>
-                        <a href="#">About</a>
-                    </li>
-                    <li>
-                        <a href="#">Contact</a>
-                    </li>
+                    {% for page in flatpages %}
+                    <li><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
+                    {% endfor %}
                     {% if user.is_authenticated and user.is_superuser %}
                     <li>
                         <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
