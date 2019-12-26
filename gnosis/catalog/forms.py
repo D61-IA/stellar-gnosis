@@ -316,7 +316,6 @@ class PersonForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
-            #print(visible.field.widget.attrs.items())
 
     def clean_first_name(self):
         return self.cleaned_data["first_name"]
@@ -357,9 +356,6 @@ class DatasetForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
-
-        #print(type(self.fields["description"].widget))
-        #print(self.fields["description"].widget.attrs.items())
 
     def clean_name(self):
         return self.cleaned_data["name"]
@@ -412,7 +408,6 @@ class VenueForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
-            #print(visible.field.widget.attrs.items())
 
     def clean_name(self):
         return self.cleaned_data["name"]
@@ -464,16 +459,12 @@ class CommentForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:100%"})
-            #print(visible.field.widget.attrs.items())
 
     def clean_text(self):
         return self.cleaned_data["text"]
 
     def clean_publication_date(self):
         return self.cleaned_data["publication_date"]
-
-    # def clean_author(self):
-    #      return self.cleaned_data['author']
 
     # recaptcha checkbox, by default it uses checkbox keys at settings.py
     captcha = ReCaptchaField(
@@ -570,6 +561,8 @@ class GroupForm(ModelForm):
         self.fields["end_time"].label = "Finish Time (HH/MM/SS)*"
         self.fields["timezone"].label = "Timezone*"
         self.fields["keywords"].label = "Keywords*"
+        self.fields["slack"].label = "Slack (requires https://)"
+        self.fields["telegram"].label = "Telegram (requires https://)"
         self.fields["videoconferencing"].label = "WebEx, Skype, etc."
         self.fields["room"].lable="Room"
         self.fields["description"].label = "Description*"
@@ -626,11 +619,17 @@ class GroupForm(ModelForm):
 
     def clean_name(self):
         return self.cleaned_data["name"]
+    
+    def clean_slack(self):
+        return self.cleaned_data["slack"]
+    
+    def clean_telegram(self):
+        return self.cleaned_data["telegram"]
 
     class Meta:
         model = ReadingGroup
         fields = ["name", "description", "keywords", "address", "city", "country", "room",
-                  "day", "timezone", "start_time", "end_time", "is_public", "videoconferencing"]
+                  "day", "timezone", "start_time", "end_time", "is_public", "slack", "telegram", "videoconferencing"]
 
 
 class GroupEntryForm(ModelForm):

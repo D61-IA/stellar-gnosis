@@ -6,10 +6,6 @@
         <h3>Select a collection</h3>
     </div>
     <div class="card-body">
-
-        {% if message %}
-        <p class="bg-danger">{{ message }}</p>
-        {% endif %}
         {% if collections %}
         <ul class="list-group">
             {% for collection, collection_url in collections %}

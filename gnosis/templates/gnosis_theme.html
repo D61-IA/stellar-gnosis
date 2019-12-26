@@ -26,75 +26,44 @@
 </style>
 <body>
 
-<nav id="big" class="navbar navbar-expand-sm mb-2 shadow bg-white navbar-light sticky-top">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-sm mb-2 shadow bg-white navbar-light sticky-top">
+    <div class="container-fluid" style="height: 44px;">
         <a class="navbar-brand"
            href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse" id="myNavbar">
-            <ul class="nav navbar-nav ml-auto">
-                {% if user.is_authenticated %}
-                    <div class="dropdown">
-                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown">
-                            {{ user }}
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
-                            <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
-                            <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
-                            <a class="dropdown-item" href="{% url 'note_index' %}">My Notes</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'profile' user.id %}">My Profile</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a>
-                            <a class="dropdown-item" href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
-                        </div>
-                    </div> 
-                {% else %}
-                    <li class="nav-item"><a class="nav-link"
-                                            href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a></li>
+        {% if user.is_authenticated %}
+            <div class="dropdown">
+                <button type="button" class="btn btn-outline-primary dropdown-toggle"
+                        data-toggle="dropdown">
+                    {{ user }}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
+                    <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
+                    <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
+                    <a class="dropdown-item" href="{% url 'note_index' %}">My Notes</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'profile' user.id %}">My Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a>
+                    <a class="dropdown-item"
+                       href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="nav">
+                <a class="nav-link nav_theme"
+                   href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a>
 
-                    <li class="nav-item"><a class="nav-link"
-                                            href="{% url 'account_login' %}?next={{ request.path }}">Login</a></li>
-                {% endif %}
-            </ul>
-        </div>
+                <a class="nav-link nav_theme"
+                   href="{% url 'account_login' %}?next={{ request.path }}">Login</a>
+            </div>
+        {% endif %}
+
     </div>
 </nav>
 
-<nav id="small" class="navbar navbar-expand-md shadow bg-white navbar-light sticky-top mb-2">
-    <a class="navbar-brand"
-       href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-    <span style="height: 3vh; color: black;
-    width: 5vw;" class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="nav navbar-nav mr-auto">
-            <li class="nav-item"><a class="nav-link"
-                                    href="{% url 'home' %}">Home</a></li>
-            <li class="nav-item"><a class="nav-link"
-                                    href="#">About</a></li>
-            <li class="nav-item"><a class="nav-link"
-                                    href="#">Contact</a></li>
-        </ul>
-        <ul class="nav navbar-nav">
-            {% if user.is_authenticated %}
-                <li class="nav-item"><a
-                        class="nav-link" href="{% url 'account_logout' %}?next={{ request.path }}">Logout</a>
-                </li>
-            {% else %}
-                <li class="nav-item"><a
-                        class="nav-link" href="{% url 'account_login' %}?next={{ request.path }}">Login</a></li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
-
-<div class="container-fluid  max-width float-container" style="margin-top:30px ">
+<div class="container-fluid  max-width float_container" style="margin-top:30px">
     <div class="row float-right" style="margin-right:30px">
         {% if user.is_authenticated %}
             <div class="btn-group">
@@ -104,16 +73,16 @@
                     <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
                        title="Create a new group">+</a>
                 </div>
-           </div>
+            </div>
 
-           <div class="btn-group ml-1">
+            <div class="btn-group ml-1">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all papers">Papers&nbsp&nbsp</a>
                 <div class="btn-group">
                     <a href="{% url 'paper_create_from_url' %}" class="btn btn-primary flex-item" role="button"
                        title="Add new paper">+</a>
                 </div>
-           </div>
+            </div>
 
             <div class="btn-group ml-1">
                 <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
@@ -150,7 +119,7 @@
             <div class="btn-group">
                 <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all papers">Groups&nbsp&nbsp</a>
-           </div>
+            </div>
             <div class="btn-group ml-1">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
                    title="View all papers">Papers&nbsp&nbsp</a>
@@ -180,14 +149,13 @@
 
     <div class="row float-left w-100 mb-3">
         <div class="col-sm-12">
+            {% include "messages.html" %}
             {% block content %}
             {% endblock %}
         </div>
     </div>
 
     <script>setButton();</script>
-
-    <script src="{% static 'js/gnosis_theme.js' %}"></script>
 </div>
 
 <!-- response dialog for flag report -->
@@ -198,38 +166,30 @@
             we will remove it.</span>
             </div>
 
-            <div class="ok-container">
-                <span class="response-ok" onclick="$('#flag_response').attr('hidden', true)">Ok</span>
+            <div class="ok_container">
+                <span class="response_ok">Ok</span>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- spinner loader -->
-{#<div id="loader" class="cover" hidden>#}
-{#    <div class="loader_container">#}
-{#        <div class="loader_icon">#}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
-
 <!-- growing circles loader -->
 <div id="loader" class="cover" hidden>
     <div class="loader_container">
-        <div class="spinner-grow paper" role="status">
+        <div class="spinner_grow paper" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow person" role="status">
+        <div class="spinner_grow person" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow venue" role="status">
+        <div class="spinner_grow venue" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow code" role="status">
+        <div class="spinner_grow code" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <div class="spinner-grow dataset" role="status">
+        <div class="spinner_grow dataset" role="status">
             <span class="sr-only">Loading...</span>
         </div>
     </div>
@@ -267,9 +227,9 @@
                         <a href="#">Contact</a>
                     </li>
                     {% if user.is_authenticated and user.is_superuser %}
-                    <li>
-                        <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
-                    </li>
+                        <li>
+                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
@@ -287,5 +247,15 @@
 
 </footer>
 <!-- Footer -->
+<script>
+    var message_ele = document.getElementById("message_container");
+
+    setTimeout(function () {
+        message_ele.style.display = "none";
+    }, 2000);
+</script>
+
+<script src="{% static 'js/gnosis_theme.js' %}"></script>
+
 </body>
 </html>

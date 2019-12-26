@@ -5,10 +5,6 @@
     <h4>Find a dataset</h4>
     <h5>Search by dataset name <strong>or</strong> keyword</h5>
 
-    {% if message %}
-    <p class="bg-info">{{ message }}</p>
-    {% endif %}
-
     <form action="" method="post">
         {% csrf_token %}
         {{ form }}

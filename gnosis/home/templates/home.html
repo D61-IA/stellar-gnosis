@@ -15,18 +15,12 @@
 
 <div class="card shadow-sm mt-3">
     <div class="card-body text-center">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="bg-info">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        <br>
         <form action="" method="post">
             {% csrf_token %}
             {% for field in form %}
-            <span class="rounded-lg">
-        {{ field }}
-        </span>
+                <span class="rounded-lg">
+                {{ field }}
+                </span>
             {% endfor %}
             <br>
             <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>

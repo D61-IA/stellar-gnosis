@@ -50,7 +50,7 @@
 
             <h4>
                 <div style="display: flex; align-content: space-between; justify-content: space-between">
-                    <div><a href={{ paper.download_link }} class="btn btn-primary" role="button"
+                    <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
                         target="_blank">Download</a>
                         {% if user.is_authenticated %}
                             <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
@@ -92,17 +92,11 @@
                 </p>
             {% endif %}
 
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="bg-success">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-
             <h4 class="text-right">
                 {% if not user.is_authenticated %}
                     <a href="{% url 'account_login' %}?next={{ request.path }}">Endorse</a>{% endif %}
 
-                {% if user.is_authenticated %}
+                {% if user.is_superuser %}
                     <div>
                         <div>Connect with:
                             <a href="{% url 'paper_connect_paper' paper.id %}">Paper</a>
@@ -143,12 +137,10 @@
 
     <div class="card mt-3 shadow-sm">
         <div id="ego_header" class="card-header">
-            <h4>Ego-graph</h4>
-
+            <h4>Knowledge Graph</h4>
             <i class="material-icons drop_indicator">
                 arrow_drop_up
             </i>
-
         </div>
 
         <div id="ego_graph_content">

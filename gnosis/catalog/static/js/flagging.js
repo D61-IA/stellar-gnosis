@@ -1,14 +1,3 @@
-/************** click anywhere on page to cancel popups **************/
-$(document).click(function (e) {
-    var $container = $(".popup");
-    // element that triggers popup
-    var $target = $(".popup_opener");
-    // if the target of the click isn't the container nor a descendant of the container.
-    if (!$target.is(e.target) && $target.has(e.target).length === 0 && $container.has(e.target).length === 0) {
-        $container.attr('hidden', true);
-    }
-});
-
 var $this_url;
 var $this_comment;
 var comment_id;
