@@ -50,7 +50,7 @@
 
             <h4>
                 <div style="display: flex; align-content: space-between; justify-content: space-between">
-                    <div><a href={{ paper.download_link }} class="btn btn-primary" role="button"
+                    <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
                         target="_blank">Download</a>
                         {% if user.is_authenticated %}
                             <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"

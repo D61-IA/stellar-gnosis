@@ -164,7 +164,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         flag_response = browser.find_element_by_id('flag_response')
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
-        self.browser.find_element_by_class_name("response-ok").click()
+        self.browser.find_element_by_class_name("response_ok").click()
 
         # test the flagged comment has a filled flag icon attached
         arr = first_comment.find_elements_by_class_name("flagged")
