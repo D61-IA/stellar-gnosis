@@ -49,3 +49,7 @@ urlpatterns += [
     path('note/<int:id>/update', note_views.note_update, name='note_update'),
     path('note/<int:id>/delete', note_views.note_delete, name='note_delete'),
 ]
+
+urlpatterns += [
+        url(r'^pages/', include('django.contrib.flatpages.urls')),
+]

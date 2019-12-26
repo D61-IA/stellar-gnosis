@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_countries',
     'timezone_field',
+    'django.contrib.flatpages',
 ]
 
 MIDDLEWARE = [
