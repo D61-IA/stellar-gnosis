@@ -14,6 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.3.3/cytoscape.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://kit.fontawesome.com/8b8bc6986f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.css">
     {% load static %}
     <script src={% static 'js/antispam.js' %}></script>
     <script src={% static 'js/ego_util.js' %}></script>
@@ -288,6 +289,17 @@
 
 </footer>
 <!-- Footer -->
+
+    <!-- START Bootstrap-Cookie-Alert -->
+    <div class="alert text-center cookiealert" role="alert">
+        We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/" target="_blank">Learn more</a>
+    
+        <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
+            I agree
+        </button>
+    </div>
+    <!-- END Bootstrap-Cookie-Alert -->
+    
 <script>
 var message_ele = document.getElementById("message_container");
 
@@ -295,5 +307,8 @@ setTimeout(function(){
    message_ele.style.display = "none";
 }, 2000);
 </script>
+
+<!-- Include cookiealert script -->
+<script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script>
 </body>
 </html>
