@@ -117,7 +117,8 @@ urlpatterns += [
 
 # for updating/creating a Endorsement
 urlpatterns += [
-    path('endorsements', views.endorsements, name='endorsements'),
+    path('endorsements/', views.endorsements, name='endorsements'),
+    path('endorsements/search/', views.endorsement_search, name='endorsement_search'),
     path('endorsements/create/<int:id>', views.endorsement_create, name='endorsement_create'),
     path('endorsements/delete/<int:id>', views.endorsement_delete, name='endorsement_delete'),
 ]

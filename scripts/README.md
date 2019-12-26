@@ -5,5 +5,4 @@ the website.
 
 Example of scripts include those written for processing data before
 uploading to the DB or pulling data from remote servers, e.g.,
-the latest papers from arXiv.org.
-
+the latest papers from arXiv.org. 
