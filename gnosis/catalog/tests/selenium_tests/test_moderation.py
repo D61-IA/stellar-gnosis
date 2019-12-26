@@ -103,7 +103,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
         # remove response overlay
-        self.browser.find_element_by_class_name("response-ok").click()
+        self.browser.find_element_by_class_name("response_ok").click()
 
         # go to moderation page
         mod_link = self.browser.find_element_by_id('moderation_link')
