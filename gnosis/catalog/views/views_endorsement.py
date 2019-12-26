@@ -17,6 +17,19 @@ def endorsements(request):
     print(all_endorsements)
     return render(request, "endorsement.html", {"endorsements": all_endorsements, })
 
+@login_required
+def endorsement_search(request):
+    """Search for an endorsement"""
+    endors = request.user.endorsements.all()
+
+    if request.method == 'POST':
+        keywords = request.POST.get("keywords", "")
+
+        endors = endors.filter(paper__title__icontains=keywords)
+
+    return render(request, 'endorsement.html', {"endorsements": endors})
+
+
 
 @login_required
 def endorsement_create(request, id):
