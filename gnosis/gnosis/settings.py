@@ -186,6 +186,6 @@ SITE_ID = 1
 ACCOUNT_EMAIL_REQUIRED = True 
 ACCOUNT_UNIQUE_EMAIL = True 
 
-DEFAULT_FROM_EMAIL = 'admin@gnosis.stellargraph.io'
+DEFAULT_FROM_EMAIL = 'support@thejournal.club'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
