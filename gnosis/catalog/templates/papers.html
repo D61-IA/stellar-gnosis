@@ -37,54 +37,12 @@
 
             {% get_pages %}
 
-            <ul class="pagination justify-content-center" style="margin:20px 0">
+            {% include "pagination.html" %}
 
-                {% if not pages.current.is_first %}
-                    <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-                    <li class="page-item"><a class="page-link"
-                                             href="{{ pages.first.path }}">{{ pages.first.number }}</a></li>
-
-                {% endif %}
-
-                <strong class="first_ellipsis">. . .</strong>
-
-                {% if not pages.current.is_first and not pages.previous.is_first %}
-                    <li class="page-item"><a class="page-link"
-                                             href="{{ pages.previous.path }}">{{ pages.previous.number }}</a></li>
-                {% endif %}
-
-                <li class="page-item active"><a class="page-link"
-                                                href="{{ pages.current.path }}">{{ pages.current.number }}</a></li>
-
-                {% if not pages.current.is_last and not pages.next.is_last %}
-                    <li class="page-item"><a class="page-link"
-                                             href="{{ pages.next.path }}">{{ pages.next.number }}</a></li>
-                {% endif %}
-
-                <strong class="last_ellipsis">. . .</strong>
-
-                {% if not pages.current.is_last %}
-                    {#                    {% paginate entries starting from page -1 %}#}
-                    <li class="page-item"><a class="page-link"
-                                             href="{{ pages.last.path }}">{{ pages.last.number }}</a></li>
-                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                {% endif %}
-            </ul>
-            {#          {{ pages.current_end_index }}#}
         </div>
 
         <script>
-            var current = parseInt('{{ pages.current.number }}');
-
-            var j = parseInt('{{ pages.first.number }}');
-            if (current <= j + 2) {
-                $('.first_ellipsis').css('display', 'none');
-            }
-
-            j = parseInt('{{ pages.last.number }}');
-            if (current >= j - 2) {
-                $('.last_ellipsis').css('display', 'none');
-            }
+            pagination(parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'))
         </script>
     {% endif %}
 {% endblock %}
