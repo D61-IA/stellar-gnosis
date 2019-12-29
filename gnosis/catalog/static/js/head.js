@@ -36,10 +36,18 @@ function pagination(current, first, last) {
             $page_items.eq(4).children('a').text(last).attr('href', path + last);
         }
 
+        if (current <= first + 2) {
+            $('.first_ellipsis').css('display', 'none');
+        }
+
+        if (current >= last - 2) {
+            $('.last_ellipsis').css('display', 'none');
+        }
+
     } else {
         $($page_items).each(function (index) {
             if (index + 1 <= last) {
-                $(this).children('a').text(index + 1).attr('href', path + (index+1));
+                $(this).children('a').text(index + 1).attr('href', path + (index + 1));
                 if (current === index + 1) {
                     $(this).addClass('active');
                 }
@@ -47,14 +55,10 @@ function pagination(current, first, last) {
                 $(this).css('display', 'none');
             }
         });
-    }
-
-    if (current <= first + 2) {
         $('.first_ellipsis').css('display', 'none');
+        $('.last_ellipsis').css('display', 'none');
+
     }
 
-    if (current >= last - 2) {
-        $('.last_ellipsis').css('display', 'none');
-    }
 
 }
