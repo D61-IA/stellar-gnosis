@@ -36,13 +36,7 @@
             </div>
 
             {% get_pages %}
-
             {% include "pagination.html" %}
-
         </div>
-
-        <script>
-            pagination(parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'))
-        </script>
     {% endif %}
 {% endblock %}
