@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from catalog.models import Paper
-from bookmark.models import Bookmark
+from catalog.models import Paper, Endorsement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
@@ -51,16 +50,16 @@ class ChromeTestCase(StaticLiveServerTestCase):
             created_by=self.user1
         )
 
-        # create a bookmark for paper1
-        self.bookmark1 = Bookmark.objects.create(
+        # create a endorsement for paper1
+        self.endorsement1 = Endorsement.objects.create(
             paper=self.paper1,
-            owner=self.user1
+            user=self.user1
         )
 
-        # create a bookmark for paper2
-        self.bookmark2 = Bookmark.objects.create(
+        # create a endorsement for paper2
+        self.endorsement2 = Endorsement.objects.create(
             paper=self.paper2,
-            owner=self.user1
+            user=self.user1
         )
 
         # login as user1
@@ -76,8 +75,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
 
-        # go to bookmark view page
-        self.browser.get(self.live_server_url + '/bookmark/')
+        # go to endosement view page
+        self.browser.get(self.live_server_url + '/catalog/endorsements')
 
     @classmethod
     def tearDownClass(cls):
@@ -87,13 +86,13 @@ class ChromeTestCase(StaticLiveServerTestCase):
         cls.browser.quit()
 
     def test_search(self):
-        """test bookmark search function returns the correct links to papers"""
+        """test endorsement search function returns the correct links to papers"""
 
         # test on key shared by both papers
-        search_bar = self.browser.find_element_by_id('id_bm_search')
+        search_bar = self.browser.find_element_by_id('id_en_search')
         search_bar.send_keys('best')
 
-        submit = self.browser.find_element_by_id('bm_submit')
+        submit = self.browser.find_element_by_id('en_submit')
         submit.click()
 
         # wait for page to reload
@@ -102,7 +101,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # verify the correct links are present
         items = self.browser.find_elements_by_class_name('list-group-item')
-        # should be only 2 bookmarks in total
+        # should be only 2 endorsements in total
         self.assertEqual(len(items), 2)
 
         text = items[0].find_element_by_class_name('paper_link').text
@@ -112,10 +111,10 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(text, '2nd Best paper in the world')
 
         # test on key unique to a paper
-        search_bar = self.browser.find_element_by_id('id_bm_search')
+        search_bar = self.browser.find_element_by_id('id_en_search')
         search_bar.send_keys('2nd')
 
-        submit = self.browser.find_element_by_id('bm_submit')
+        submit = self.browser.find_element_by_id('en_submit')
         submit.click()
 
         # wait for page to reload
@@ -128,7 +127,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(text, '2nd Best paper in the world')
 
     def test_click(self):
-        """test click on a bookmark redirects to its paper page"""
+        """test click on a endorsement redirects to its paper page"""
         links = self.browser.find_elements_by_class_name('paper_link')
         links[0].click()
 
@@ -141,7 +140,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(title, 'Best paper in the world')
 
     def test_remove(self):
-        """test bookmark is removed when click on remove button"""
+        """test endorsement is removed when click on remove button"""
         rm_button = self.browser.find_elements_by_class_name('rm')
         self.assertEqual(len(rm_button), 2)
 
@@ -153,10 +152,10 @@ class ChromeTestCase(StaticLiveServerTestCase):
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
 
         items = self.browser.find_elements_by_class_name('list-group-item')
-        # should be only 1 bookmarks left
+        # should be only 1 endorsement left
         self.assertEqual(len(items), 1)
 
-        # check the bookmark has the right title
+        # check the endorsement has the right title
         self.assertEqual(items[0].find_element_by_class_name('paper_link').text, "2nd Best paper in the world")
 
 

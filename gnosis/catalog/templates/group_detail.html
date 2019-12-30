@@ -22,7 +22,7 @@
                         <a href="{% url 'group_leave' group.id %}" class="btn btn-danger btn-sm" role="button">
                             Leave
                         </a>
-                    </p>    
+                    </p>
                 {% endif %}
             {% endif %}
         </h3>
@@ -35,6 +35,18 @@
         <p class="text-right">
             <small>Keywords: {{ group.keywords|truncatechars:75 }}</small>
         </p>
+        {% if user.is_authenticated %}
+            {% if user.id == group.owner.id or is_member %}
+                <p class="text-center">
+                    {% if group.slack %}
+                        <a href="{{ group.slack }}" target="_blank"><i class='fab fa-slack' style='font-size:36px;color:black'></i></a>
+                    {% endif %}
+                    {% if group.telegram %}
+                        <a href="{{ group.telegram }}" target="_blank"><i class='fab fa-telegram' style='font-size:36px;color:light-blue'></i></a>
+                    {% endif %}                        
+                </p>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 

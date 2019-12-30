@@ -11,33 +11,36 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from dotenv import read_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+read_dotenv(override=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6pph^ipk8sow@%nw)s!l@klg4q8lnar2k6k$&e=26pqrm(zg^a'
+SECRET_KEY = os.getenv("SECRET_KEY", '6pph^ipk8sow@%nw)s!l@klg4q8lnar2k6k$&e=26pqrm(zg^a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-print(f"GNOSIS_DEBUG={os.environ.get('GNOSIS_DEBUG', False)}")
-DEBUG = os.environ.get('GNOSIS_DEBUG', False)
+print(f"DEBUG_DJANGO={os.getenv('DEBUG_DJANGO')}")
+DEBUG = os.getenv("DEBUG_DJANGO", False) 
 
 ALLOWED_HOSTS = []
 
 SESSION_SAVE_EVERY_REQUEST = True
 
 # keys for reCaptcha v2 checkbox
-RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', '6Ld6z7IUAAAAAC-qA5q5CC58YJx8Td_g6wPJs_Pk')
-RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', '6Ld6z7IUAAAAAPgCXtYcOjFMKo4CSx_WY2YAxIaC')
+RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", '6Ld6z7IUAAAAAC-qA5q5CC58YJx8Td_g6wPJs_Pk')
+RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY",'6Ld6z7IUAAAAAPgCXtYcOjFMKo4CSx_WY2YAxIaC')
 
-RECAPTCHA_PUBLIC_KEY_INV = os.environ.get('RECAPTCHA_PUBLIC_KEY_INV', '6LdbXLQUAAAAAGynHciK-BML9CthUvtrUm_Aim24')
-RECAPTCHA_PRIVATE_KEY_INV = os.environ.get('RECAPTCHA_PRIVATE_KEY_INV', '6LdbXLQUAAAAACLkjt-f0tZ0mY1aXR6jghMg2tBw')
+RECAPTCHA_PUBLIC_KEY_INV = os.getenv("RECAPTCHA_PUBLIC_KEY_INV", '6LdbXLQUAAAAAGynHciK-BML9CthUvtrUm_Aim24')
+RECAPTCHA_PRIVATE_KEY_INV = os.getenv("RECAPTCHA_PRIVATE_KEY_INV", '6LdbXLQUAAAAACLkjt-f0tZ0mY1aXR6jghMg2tBw')
 
-RECAPTCHA_PUBLIC_KEY_V3 = os.environ.get('RECAPTCHA_PUBLIC_KEY_V3', '6LfdR7UUAAAAAC9WK09i_tRLtNQq4aIaIQjWQ-4i')
-RECAPTCHA_PRIVATE_KEY_V3 = os.environ.get('RECAPTCHA_PRIVATE_KEY_V3', '6LfdR7UUAAAAACkwrd0ae-3kkNWnRFgFcuU0m3Rv')
+RECAPTCHA_PUBLIC_KEY_V3 = os.getenv("RECAPTCHA_PUBLIC_KEY_V3", '6LfdR7UUAAAAAC9WK09i_tRLtNQq4aIaIQjWQ-4i')
+RECAPTCHA_PRIVATE_KEY_V3 = os.getenv("RECAPTCHA_PRIVATE_KEY_V3", '6LfdR7UUAAAAACkwrd0ae-3kkNWnRFgFcuU0m3Rv')
 
 # Application definition
 
@@ -61,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_countries',
     'timezone_field',
+    'django.contrib.flatpages',
 ]
 
 MIDDLEWARE = [
@@ -101,11 +105,11 @@ EL_PAGINATION_PER_PAGE = 3
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gnosistest',  # gnosis_db
-        'USER': 'gnosisuser',      # gnosis
-        'PASSWORD': 'gnosis',
-        'HOST': 'localhost',
-        'PORT': os.environ.get('GNOSIS_DB_PORT', 5432),  #'5433',
+        'NAME': os.getenv("DB_NAME", 'gnosistest'),
+        'USER': os.getenv("DB_USER", 'gnosisuser'),
+        'PASSWORD': os.getenv("DB_PASSWORD", 'gnosis'),
+        'HOST': os.getenv("DB_HOST", 'localhost'),
+        'PORT': os.getenv("DB_PORT", 5432),  # '5433' on WSL
     }
 }
 
@@ -185,6 +189,6 @@ SITE_ID = 1
 ACCOUNT_EMAIL_REQUIRED = True 
 ACCOUNT_UNIQUE_EMAIL = True 
 
-DEFAULT_FROM_EMAIL = 'admin@gnosis.stellargraph.io'
+DEFAULT_FROM_EMAIL = 'support@thejournal.club'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

@@ -7,14 +7,14 @@
         {% if group.name %}
         <h3>Update <a href="{% url 'group_detail' group.id %}">{{ group.name }}</a> Group</h3>
         {% else %}
-            <h3>New Group</h3>
+            <h3>New Journal Club</h3>
         {% endif %}
     </div>
     <div class="card-body">
         <form action="" method="post">
             {% csrf_token %}
             <table class="w-100">
-                {{ form }}
+                {{ form|crispy }}
             </table>
             <br/>
             <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>

@@ -1,46 +1,64 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
-{% load el_pagination_tags %}
+    {% load el_pagination_tags %}
 
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h4>Endorsements</h4>
+    <div class="card shadow-sm text-center mt-3">
+        <div class="card-body">
+            <form action="{% url 'endorsement_search' %}" method="post">
+                {% csrf_token %}
 
+                <input type="text" name="keywords" size="60" class="form-control" required="" id="id_en_search">
+
+                <br>
+                <input type="submit" id="en_submit" class="btn btn-primary btn-lg" value="Search Endorsements">
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-        {% if endorsements %}
-        {% paginate endorsements %}
-        {% for endorsement in endorsements %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                <div class="d-flex flex-row">
-                    <div class="mr-auto p-2"><a href="{% url 'paper_detail' endorsement.paper.id %}">{{ endorsement.paper.title }}</a></div>
-                    <div class="p-2"><a href="{% url 'endorsement_delete' endorsement.paper.id %}" class="btn btn-outline-danger btn-sm" role="button">Remove</a></div>
-                </div>
-            </li>
-        </ul>
-        {% endfor %}
 
-        {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h4>Endorsements</h4>
+
+        </div>
+        <div class="card-body">
+            {% if endorsements %}
+                {% paginate endorsements %}
+                {% for endorsement in endorsements %}
+                    <ul class="list-group">
+                        <li class="list-group-item mt-1">
+                            <div class="d-flex flex-row">
+                                <div class="mr-auto p-2"><a class="paper_link"
+                                                            href="{% url 'paper_detail' endorsement.paper.id %}">{{ endorsement.paper.title }}</a>
+                                </div>
+                                <div class="p-2"><a href="{% url 'endorsement_delete' endorsement.paper.id %}"
+                                                    class="btn btn-outline-danger btn-sm rm" role="button">Remove</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                {% endfor %}
+
+                {% get_pages %}
+                <!-- Center-aligned -->
+                <ul class="pagination justify-content-center" style="margin:20px 0">
+                {% if not pages.current.is_first %}
+                    <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+                {% endif %}
+                {% for page in pages %}
+                    {% if page.is_current %}
+                        <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if not pages.current.is_last %}
+                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
+                {% endif %}
             {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                <p class="font-heavy-light font-italic">No endorsed paper(s) found.</p>
             {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        {% else %}
-        <p class="font-heavy-light font-italic">You have not endorsed any paper yet.</p>
-        {% endif %}
-        </ul>
+            </ul>
+        </div>
     </div>
-</div>
 {% endblock %}

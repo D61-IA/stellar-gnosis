@@ -231,6 +231,8 @@ def group_update(request, id):
                 group.keywords = form.cleaned_data["keywords"]
                 group.description = form.cleaned_data["description"]
                 group.is_public = form.cleaned_data["is_public"]
+                group.slack = form.clean_slack()
+                group.telegram = form.clean_telegram()
                 group.videoconferencing = form.clean_videoconferencing()
                 group.address = form.clean_address()
                 group.city = form.clean_city()
@@ -259,6 +261,8 @@ def group_update(request, id):
                     "start_time": group.start_time,
                     "end_time": group.end_time,
                     "timezone": group.timezone,
+                    "slack": group.slack,
+                    "telegram": group.telegram,
                     "videoconferencing": group.videoconferencing,
                 }
             )
