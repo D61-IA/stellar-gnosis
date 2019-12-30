@@ -28,12 +28,7 @@ function pagination(current, first, last) {
                 }
             })
         } else {
-            $page_items.eq(0).children('a').text(first).attr('href', path + first);
-            $page_items.eq(1).children('a').text((current - 1)).attr('href', path + (current - 1));
-            $page_items.eq(2).children('a').text((current)).attr('href', path + (current));
             $page_items.eq(2).addClass('active');
-            $page_items.eq(3).children('a').text((current + 1)).attr('href', path + (current + 1));
-            $page_items.eq(4).children('a').text(last).attr('href', path + last);
         }
 
         if (current <= first + 2) {
