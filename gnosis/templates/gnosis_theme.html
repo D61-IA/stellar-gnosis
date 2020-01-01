@@ -253,24 +253,23 @@
 
 
 <!-- Footer -->
-<footer class="footer max-width mt-5">
+<footer class="footer max-width mt-5 pt-5">
     {% block footer %}
     {% endblock %}
     {% get_flatpages as flatpages %}
     <!-- Footer Links -->
-    <div class="container-fluid text-center text-md-left">
+    <div class="container-fluid text-center text-md-left mt-5 pt-4">
         <!-- Grid row -->
-        <div class="row justify-content-center w-100">
+        <div class="row justify-content-center w-100 mt-4 pt-4">
             <!-- Grid column -->
-            <div class="col-sm-6 mt-md-0 mt-3">
+            <div class="col-sm-6 mt-md-0 mt-5 pt-4">
                 <!-- Content -->
-                <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block"
-                alt="CSIRO and Data61 Logos">
+                <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
             </div>
             <!-- Grid column -->
             <!-- <hr class="clearfix w-100 d-md-none pb-3"> -->
             <!-- Grid column -->
-            <div class="col-sm-6  mb-md-0 mb-3">
+            <div class="col-sm-6  mt-md-0 mt-5 pt-4">
                 <!-- Links -->
                 <h5 class="text-uppercase">Links</h5>
                 <ul class="list-unstyled">
@@ -287,14 +286,12 @@
             <!-- Grid column -->
         </div>
         <!-- Grid row -->
-            <!-- Copyright -->
-    <!-- <div class="footer-copyright text-center py-3"> -->
-    <div class="row justify-content-center w-100 mt-5">
-        © 2019 Copyright: <a href="https://data61.csiro.au"> CSIRO's Data61</a>
+        <!-- Copyright -->
+        <div class="row justify-content-center w-100 mt-2 pt-4">
+            © 2019 Copyright: <a href="https://data61.csiro.au"> CSIRO's Data61</a>
+        </div>
+        <!-- Copyright -->    
     </div>
-    <!-- Copyright -->    
-    </div>
-
 </footer>
 <!-- Footer -->
 
