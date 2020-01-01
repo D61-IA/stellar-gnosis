@@ -11,4 +11,33 @@
     {% endif %}
 </div>
 
+{% load static %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 mt-md-0 mt-5 pt-4">
+            <!-- Content -->
+            <img src="{% static 'catalog/group.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
+            <p class="text-center mt-5">The easiest, most intuitive, and powerful online tool for managing your journal club.</p>
+        </div>
+
+        <div class="col-sm-4 mt-md-0 mt-5 pt-4">
+            <!-- Content -->
+            <img src="{% static 'catalog/papers.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
+            <p class="text-center mt-5">Take advantage of our large research paper databases indexing all papers from arXiv.org and other
+                open source conferences and journals. And if a paper is missing, then you can add it with just a couple of clicks.
+            </p>
+        </div>
+
+        <div class="col-sm-4 mt-md-0 mt-5 pt-4">
+            <!-- Content -->
+            <img src="{% static 'catalog/globe.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
+            <p class="text-center mt-5">Organize local and global journal clubs with no restriction on who can join. The Journal club is open
+                to everyone including academics, industry professionals, and citizen scientists who want to keep up with the state-of-the-art
+                in research.
+            </p>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
