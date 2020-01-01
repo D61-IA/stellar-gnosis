@@ -1,53 +1,14 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-<div class="card shadow-sm mt-3">
-    <div class="card-body">
-        <h1>&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</h1>
-        <h2>A knowledge management system for technical documents.</h2>
-        {% if not user.is_authenticated %}
-        <h3> Hi, <a href="{% url 'account_login' %}?next={{request.path}}">login</a> to make full use of &gamma;&nu;&#974;&sigma;&iota;&sigmaf;.
-        </h3>
+<div class="jumbotron" style="background:transparent !important">
+    <h1 class="display-4">The Journal Club</h1>
+    <p class="lead">An essential tool for organizing journal clubs.</p>
+    <hr class="my-4">
+    {% if not user.is_authenticated %}
+        <h4> Hi, <a href="{% url 'account_login' %}?next={{request.path}}">login</a> to make full use of The Journal Club.</h4>
         <h4>If you are new here then why not <a href="{% url 'account_signup' %}">register a new account!</a></h4>
-        {% endif %}
-    </div>
+    {% endif %}
 </div>
-
-<div class="card shadow-sm mt-3">
-    <div class="card-body text-center">
-        <form action="" method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <span class="rounded-lg">
-                {{ field }}
-                </span>
-            {% endfor %}
-            <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
-        </form>
-    </div>
-</div>
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h4>Recently added papers</h4>
-    </div>
-    <div class="card-body">
-        {% for paper in papers %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
-                <p>{{ paper.abstract|truncatewords:50 }}</p>
-            </li>
-        </ul>
-        {% endfor %}
-    </div>
-</div>
-
-{% if user.is_superuser %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header"><strong>Admin Functions</strong></div>
-    <div class="card-body"><a href="{% url 'build_db' %}">Populate test DB</a></div>
-</div>
-{% endif %}
 
 {% endblock %}

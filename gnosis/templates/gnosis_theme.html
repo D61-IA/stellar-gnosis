@@ -251,6 +251,53 @@
     <script>setButton();</script>
 </div>
 
+
+<!-- Footer -->
+<footer class="footer max-width mt-5">
+    {% block footer %}
+    {% endblock %}
+    {% get_flatpages as flatpages %}
+    <!-- Footer Links -->
+    <div class="container-fluid text-center text-md-left">
+        <!-- Grid row -->
+        <div class="row justify-content-center w-100">
+            <!-- Grid column -->
+            <div class="col-sm-6 mt-md-0 mt-3">
+                <!-- Content -->
+                <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block"
+                alt="CSIRO and Data61 Logos">
+            </div>
+            <!-- Grid column -->
+            <!-- <hr class="clearfix w-100 d-md-none pb-3"> -->
+            <!-- Grid column -->
+            <div class="col-sm-6  mb-md-0 mb-3">
+                <!-- Links -->
+                <h5 class="text-uppercase">Links</h5>
+                <ul class="list-unstyled">
+                    {% for page in flatpages %}
+                    <li><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
+                    {% endfor %}
+                    {% if user.is_authenticated and user.is_superuser %}
+                        <li>
+                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- Grid column -->
+        </div>
+        <!-- Grid row -->
+            <!-- Copyright -->
+    <!-- <div class="footer-copyright text-center py-3"> -->
+    <div class="row justify-content-center w-100 mt-5">
+        © 2019 Copyright: <a href="https://data61.csiro.au"> CSIRO's Data61</a>
+    </div>
+    <!-- Copyright -->    
+    </div>
+
+</footer>
+<!-- Footer -->
+
 <!-- response dialog for flag report -->
 <div id="flag_response" class="cover popup" hidden>
     <div id="flag_response_dialog" class="card box_shadow">
@@ -288,65 +335,15 @@
     </div>
 </div>
 
-<!-- Footer -->
-<footer class="page-footer text-center font-small blue pt-4 mt-5">
-    {% block footer %}
-    {% endblock %}
-    {% get_flatpages as flatpages %}
-    <!-- Footer Links -->
-    <div class="container-fluid max-width text-center text-sm-center">
-
-        <!-- Grid row -->
-        <div class="row">
-
-            <!-- Grid column -->
-            <div class="col-sm-6 mt-sm-0 mt-3">
-                <!-- Content -->
-                <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block"
-                     alt="CSIRO and Data61 Logos">
-            </div>
-            <!-- Grid column -->
-
-            <hr class="clearfix w-100 d-md-none pb-3">
-            <!-- Grid column -->
-            <div class="col-sm-6 mb-md-0 mb-3">
-                <!-- Links -->
-                <h5 class="text-uppercase">Links</h5>
-                <ul class="list-unstyled">
-                    {% for page in flatpages %}
-                    <li><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
-                    {% if user.is_authenticated and user.is_superuser %}
-                        <li>
-                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-            <!-- Grid column -->
-        </div>
-        <!-- Grid row -->
-    </div>
-    <!-- Footer Links -->
-
-    <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">© 2019 Copyright:
-        <a href="https://data61.csiro.au"> CSIRO's Data61</a>
-    </div>
-    <!-- Copyright -->
-
-</footer>
-<!-- Footer -->
-
-    <!-- START Bootstrap-Cookie-Alert -->
-    <div class="alert text-center cookiealert" role="alert">
-        We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/" target="_blank">Learn more</a>
+<!-- START Bootstrap-Cookie-Alert -->
+<div class="alert text-center cookiealert" role="alert">
+    We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/" target="_blank">Learn more</a>
     
-        <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
-            I agree
-        </button>
-    </div>
-    <!-- END Bootstrap-Cookie-Alert -->
+    <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
+        I agree
+    </button>
+</div>
+<!-- END Bootstrap-Cookie-Alert -->
     
 <script>
     var message_ele = document.getElementById("message_container");
