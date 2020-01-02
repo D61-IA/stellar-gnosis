@@ -50,13 +50,33 @@
 }
 
 .nav_theme {
-    color: rgba(0,0,0,.5);
+    color: rgba(0, 0, 0, .5);
     padding-right: .5rem;
     padding-left: .5rem
 }
 
 .nav_theme:hover {
-    color: rgba(0,0,0,.9);
+    color: rgba(0, 0, 0, .9);
+}
+
+
+.first_ellipsis, .last_ellipsis {
+    padding: 0 2px;
+    height: 7px;
+    vertical-align: middle
+}
+
+.page_prev i {
+    margin-right: 5px;
+}
+
+.page_next i {
+    margin-left: 5px;
+}
+
+.pagination.mobile .page-item{
+    text-align: center;
+    width: 105px;
 }
 
 @keyframes spin {

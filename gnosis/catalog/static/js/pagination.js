@@ -54,6 +54,4 @@ function pagination(current, first, last) {
         $('.last_ellipsis').css('display', 'none');
 
     }
-
-
 }
