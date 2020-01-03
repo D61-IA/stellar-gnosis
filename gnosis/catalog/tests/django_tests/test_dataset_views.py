@@ -63,7 +63,7 @@ class DatasetViewsTestCase(TestCase):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(reverse("dataset_delete", kwargs={'id': self.dataset_cora.id}))
-        target_url = f"/admin/login/?next=/catalog/dataset/{self.dataset_cora.id}/delete"
+        target_url = f"/admin/login/?next=/catalog/dataset/{self.dataset_cora.id}/delete/"
 
         # You have to be logged in to access the delete view.
         # However, only an admin can delete and object so we should be redirected to the admin login page

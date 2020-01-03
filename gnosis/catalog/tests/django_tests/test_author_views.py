@@ -42,7 +42,7 @@ class PersonViewsTestCase(TestCase):
         response = self.client.get(reverse("person_update", kwargs={'id': person.id}))
         # Only an admin user can access the update view. A logged in user should be redirected
         # to the login page.
-        target_url = f"/admin/login/?next=/catalog/person/{person.id}/update"
+        target_url = f"/admin/login/?next=/catalog/person/{person.id}/update/"
         self.assertRedirects(response,
                              expected_url=target_url,
                              status_code=302,
@@ -64,7 +64,7 @@ class PersonViewsTestCase(TestCase):
 
         response = self.client.get(reverse("person_delete", kwargs={'id': person.id}))
         # print(response['Location'])
-        target_url = f"/admin/login/?next=/catalog/person/{person.id}/delete"
+        target_url = f"/admin/login/?next=/catalog/person/{person.id}/delete/"
         # print(f"target_url={target_url}")
 
         # You have to be logged in to access the delete view.
