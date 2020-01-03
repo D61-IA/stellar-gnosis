@@ -88,6 +88,9 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # using get allows webdriver to wait for html to be fully ready
         self.browser.get(self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/')
 
+        # remove cookies popup
+        self.browser.execute_script("return document.getElementsByClassName('cookiealert')[0].remove()")
+
         # find and save the id of the comment as global
         first_comment = self.browser.find_element_by_css_selector('#navcomment li.list-group-item')
 
@@ -116,10 +119,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # remove response overlay
         self.browser.find_element_by_class_name("response_ok").click()
 
-        # scroll to bottom of page
-        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-        #time.sleep(1)
         # go to moderation page
         mod_link = self.browser.find_element_by_id('moderation_link')
         mod_link.click()
