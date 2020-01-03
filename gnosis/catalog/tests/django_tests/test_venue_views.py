@@ -62,7 +62,7 @@ class VenueViewsTestCase(TestCase):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(reverse("venue_delete", kwargs={'id': self.venue.id}))
-        target_url = f"/admin/login/?next=/catalog/venue/{self.venue.id}/delete"
+        target_url = f"/admin/login/?next=/catalog/venue/{self.venue.id}/delete/"
 
         # You have to be logged in to access the delete view.
         # However, only an admin can delete and object so we should be redirected to the admin login page
