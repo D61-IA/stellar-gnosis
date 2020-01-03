@@ -34,7 +34,7 @@
 <nav class="navbar navbar-expand-sm mb-2 shadow bg-white navbar-light sticky-top">
     <div class="container-fluid" style="height: 44px;">
         <a class="navbar-brand"
-           href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
+           href="{% url 'home' %}">The Journal Club</a>
         {% if user.is_authenticated %}
             <div class="dropdown">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle"
@@ -72,7 +72,7 @@
         {% if user.is_authenticated %}
             <div class="btn-group">
                 <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
-                   title="View all groups">Groups</a>
+                   title="View all groups">Clubs</a>
                 <div class="btn-group">
                     <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
                        title="Create a new group">+</a>
@@ -122,7 +122,7 @@
         {% else %}
             <div class="btn-group">
                 <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
-                   title="View all papers">Groups</a>
+                   title="View all papers">Clubs</a>
             </div>
             <div class="btn-group">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
@@ -160,7 +160,7 @@
             <div class="btn-group-vertical">
                 {% if user.is_authenticated %}    
                 <div class="btn-group">
-                    <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button" title="View all groups">Groups&nbsp&nbsp</a>
+                    <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button" title="View all groups">Clubs&nbsp&nbsp</a>
                     <div class="btn-group">
                         <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
                             title="Create a new group">+</a>
@@ -209,7 +209,7 @@
                 {% else %}
                 <div class="btn-group">
                     <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all papers">Groups&nbsp&nbsp</a>
+                       title="View all papers">Clubs&nbsp&nbsp</a>
                 </div>
                 <div class="btn-group">
                     <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"

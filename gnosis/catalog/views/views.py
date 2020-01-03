@@ -725,12 +725,15 @@ def paper_add_to_group(request, id):
     # Combine the Query sets
     groups = list(chain(groups, groups_owner, groups_private))
 
-    group_urls = [
-        reverse("paper_add_to_group_selected", kwargs={"id": id, "gid": group.id})
-        for group in groups
-    ]
+    if len(groups) > 0:
+        group_urls = [
+            reverse("paper_add_to_group_selected", kwargs={"id": id, "gid": group.id})
+            for group in groups
+        ]
 
-    all_groups = zip(groups, group_urls)
+        all_groups = zip(groups, group_urls)
+    else:
+        all_groups = None
 
     return render(
         request, "paper_add_to_group.html", {"groups": all_groups, "message": message}

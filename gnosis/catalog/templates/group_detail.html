@@ -53,9 +53,9 @@
 {% if user.id != group.owner.id %}
     {% if group.is_public and not is_member %}
     <div class="card text-left shadow-sm mb-5 mt-3">
-            <div class="card-header"><strong>Public Group</strong></div>
+            <div class="card-header"><strong>Public Journal Club</strong></div>
             <div class="card-body">
-                Join this group and be part of the conversation. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
+                Join this journal club and be part of the conversation. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
             </div>
         </div>    
     {% endif %}
