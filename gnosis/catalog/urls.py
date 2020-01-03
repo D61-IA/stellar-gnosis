@@ -29,8 +29,8 @@ urlpatterns += [
     path('paper/create/', views.paper_create, name='paper_create'),
     path('paper/import/', views.paper_create_from_url, name='paper_create_from_url'),
     path('paper/find/', views.paper_find, name='paper_find'),
-    path('paper/<int:id>/group/add/', views.paper_add_to_group, name='paper_add_to_group'),
-    path('paper/<int:id>/group/add/<int:gid>/', views.paper_add_to_group_selected, name='paper_add_to_group_selected'),
+    path('paper/<int:id>/club/add/', views.paper_add_to_group, name='paper_add_to_group'),
+    path('paper/<int:id>/club/add/<int:gid>/', views.paper_add_to_group_selected, name='paper_add_to_group_selected'),
     path('paper/<int:id>/collection/add/', views.paper_add_to_collection, name='paper_add_to_collection'),
     path('paper/<int:id>/collection/add/<int:cid>/', views.paper_add_to_collection_selected, name='paper_add_to_collection_selected'),
     path('paper/<int:id>/bookmark/', views.paper_bookmark, name='paper_bookmark'),
@@ -90,19 +90,19 @@ urlpatterns += [
 
 # for updating/creating a ReadingGroup object
 urlpatterns += [
-    path('groups/', views.groups, name='groups_index'),
-    path('group/create/', views.group_create, name='group_create'),
-    path('group/<int:id>/', views.group_detail, name='group_detail'),
-    path('group/<int:id>/update/', views.group_update, name='group_update'),
-    path('group/<int:id>/join/', views.group_join, name='group_join'),
-    path('group/<int:id>/leave/', views.group_leave, name='group_leave'),
-    path('group/<int:id>/managemembers/', views.group_manage_members, name='group_manage_members'),
-    path('group/<int:id>/delete/', views.group_delete, name='group_delete'),
-    path('group/<int:id>/entry/<int:eid>/update/', views.group_entry_update, name='group_entry_update'),
-    path('group/<int:id>/entry/<int:eid>/remove/', views.group_entry_remove, name='group_entry_remove'),
-    path('group/<int:id>/entry/<int:eid>/unschedule/', views.group_entry_unschedule, name='group_entry_unschedule'),
-    path('group/<int:id>/user/<int:aid>/grant/', views.group_grant_access, name='group_grant_access'),
-    path('group/<int:id>/user/<int:aid>/deny/', views.group_deny_access, name='group_deny_access'),
+    path('clubs/', views.groups, name='groups_index'),
+    path('clubs/create/', views.group_create, name='group_create'),
+    path('clubs/<int:id>/', views.group_detail, name='group_detail'),
+    path('clubs/<int:id>/update/', views.group_update, name='group_update'),
+    path('clubs/<int:id>/join/', views.group_join, name='group_join'),
+    path('clubs/<int:id>/leave/', views.group_leave, name='group_leave'),
+    path('clubs/<int:id>/managemembers/', views.group_manage_members, name='group_manage_members'),
+    path('clubs/<int:id>/delete/', views.group_delete, name='group_delete'),
+    path('clubs/<int:id>/entry/<int:eid>/update/', views.group_entry_update, name='group_entry_update'),
+    path('clubs/<int:id>/entry/<int:eid>/remove/', views.group_entry_remove, name='group_entry_remove'),
+    path('clubs/<int:id>/entry/<int:eid>/unschedule/', views.group_entry_unschedule, name='group_entry_unschedule'),
+    path('clubs/<int:id>/user/<int:aid>/grant/', views.group_grant_access, name='group_grant_access'),
+    path('clubs/<int:id>/user/<int:aid>/deny/', views.group_deny_access, name='group_deny_access'),
 ]
 
 # for updating/creating a Collection
