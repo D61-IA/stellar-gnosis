@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
+import time
 
 class ChromeTestCase(StaticLiveServerTestCase):
     """test with Chrome webdriver"""
@@ -71,9 +71,10 @@ class ChromeTestCase(StaticLiveServerTestCase):
         pwd.clear()
         pwd.send_keys(user1password)
         self.browser.find_element_by_tag_name('form').submit()
+        time.sleep(0.1)
         # confirm ajax response is received by checking correct page redirect
         wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
 
         # go to endosement view page
         self.browser.get(self.live_server_url + '/catalog/endorsements')
