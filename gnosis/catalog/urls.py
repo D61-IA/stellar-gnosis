@@ -91,18 +91,18 @@ urlpatterns += [
 # for updating/creating a ReadingGroup object
 urlpatterns += [
     path('clubs/', views.groups, name='groups_index'),
-    path('clubs/create/', views.group_create, name='group_create'),
-    path('clubs/<int:id>/', views.group_detail, name='group_detail'),
-    path('clubs/<int:id>/update/', views.group_update, name='group_update'),
-    path('clubs/<int:id>/join/', views.group_join, name='group_join'),
-    path('clubs/<int:id>/leave/', views.group_leave, name='group_leave'),
-    path('clubs/<int:id>/managemembers/', views.group_manage_members, name='group_manage_members'),
-    path('clubs/<int:id>/delete/', views.group_delete, name='group_delete'),
-    path('clubs/<int:id>/entry/<int:eid>/update/', views.group_entry_update, name='group_entry_update'),
-    path('clubs/<int:id>/entry/<int:eid>/remove/', views.group_entry_remove, name='group_entry_remove'),
-    path('clubs/<int:id>/entry/<int:eid>/unschedule/', views.group_entry_unschedule, name='group_entry_unschedule'),
-    path('clubs/<int:id>/user/<int:aid>/grant/', views.group_grant_access, name='group_grant_access'),
-    path('clubs/<int:id>/user/<int:aid>/deny/', views.group_deny_access, name='group_deny_access'),
+    path('club/create/', views.group_create, name='group_create'),
+    path('club/<int:id>/', views.group_detail, name='group_detail'),
+    path('club/<int:id>/update/', views.group_update, name='group_update'),
+    path('club/<int:id>/join/', views.group_join, name='group_join'),
+    path('club/<int:id>/leave/', views.group_leave, name='group_leave'),
+    path('club/<int:id>/managemembers/', views.group_manage_members, name='group_manage_members'),
+    path('club/<int:id>/delete/', views.group_delete, name='group_delete'),
+    path('club/<int:id>/entry/<int:eid>/update/', views.group_entry_update, name='group_entry_update'),
+    path('club/<int:id>/entry/<int:eid>/remove/', views.group_entry_remove, name='group_entry_remove'),
+    path('club/<int:id>/entry/<int:eid>/unschedule/', views.group_entry_unschedule, name='group_entry_unschedule'),
+    path('club/<int:id>/user/<int:aid>/grant/', views.group_grant_access, name='group_grant_access'),
+    path('club/<int:id>/user/<int:aid>/deny/', views.group_deny_access, name='group_deny_access'),
 ]
 
 # for updating/creating a Collection
