@@ -74,7 +74,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
         wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-body')))
 
         # go to bookmark view page
         self.browser.get(self.live_server_url + '/bookmark/')

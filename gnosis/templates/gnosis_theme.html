@@ -261,34 +261,30 @@
     <div class="container-fluid text-center text-md-left mt-5 pt-4">
         <!-- Grid row -->
         <div class="row justify-content-center w-100 mt-4 pt-4" >
-            <!-- Grid column -->
-            <div class="col-sm-6 mt-md-0 mt-5 pt-4">
-                <!-- Content -->
-                <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
-            </div>
-            <!-- Grid column -->
-            <!-- <hr class="clearfix w-100 d-md-none pb-3"> -->
-            <!-- Grid column -->
-            <div class="col-sm-6  mt-md-0 mt-5 pt-4">
-                <!-- Links -->
-                <h5 class="text-uppercase">Links</h5>
-                <ul class="list-unstyled">
-                    {% for page in flatpages %}
-                    <li><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
+            <ul class="list-unstyled list-inline text-center">
                     {% if user.is_authenticated and user.is_superuser %}
-                        <li>
-                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+                        <li class="list-inline-item">
+                            <a id="moderation_link3" href="{% url 'flagged_comments_index' %}">Comment Moderation</a>
                         </li>
+                        <li  class="list-inline-item">
+                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Comment Moderation</a>
+                        </li>
+
                     {% endif %}
                 </ul>
-            </div>
-            <!-- Grid column -->
         </div>
+        <div class="row justify-content-center w-100 mt-4 pt-4" >
+            <ul class="list-unstyled list-inline text-center">
+                    {% for page in flatpages %}
+                    <li class="list-inline-item"><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
+                    {% endfor %}
+            </ul>
+      </div>
+
         <!-- Grid row -->
         <!-- Copyright -->
         <div class="row justify-content-center w-100 mt-2 pt-4">
-            © 2019 Copyright: <a href="https://data61.csiro.au"> CSIRO's Data61</a>
+            © 2020 Copyright: <a href="https://www.thejournal.club"> The Journal Club</a>
         </div>
         <!-- Copyright -->    
     </div>
