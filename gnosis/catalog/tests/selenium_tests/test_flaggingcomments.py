@@ -90,6 +90,9 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.paper_url = self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/'
         self.browser.get(self.paper_url)
 
+        # remove cookies popup
+        self.browser.execute_script("return document.getElementsByClassName('cookiealert')[0].remove()")
+
         comment_container = self.browser.find_element_by_css_selector('ul.list-group')
         # there should be only one comment in this fictional paper
         self.first_comment = comment_container.find_element_by_css_selector('li.list-group-item')

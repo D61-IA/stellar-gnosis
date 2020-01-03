@@ -77,6 +77,9 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # using get allows webdriver to wait for html to be fully ready
         self.browser.get(self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/')
 
+        # remove cookies popup
+        self.browser.execute_script("return document.getElementsByClassName('cookiealert')[0].remove()")
+
         # find and save the id of the comment as global
         first_comment = self.browser.find_element_by_css_selector('#navcomment li.list-group-item')
 
