@@ -253,43 +253,56 @@
 
 
 <!-- Footer -->
-<footer class="footer max-width mt-5 pt-5">
+<footer class="page-footer text-center font-small blue pt-4 mt-5">
     {% block footer %}
     {% endblock %}
+    {% load static %}
     {% get_flatpages as flatpages %}
     <!-- Footer Links -->
-    <div class="container-fluid text-center text-md-left mt-5 pt-4">
-        <!-- Grid row -->
-        <div class="row justify-content-center w-100 mt-4 pt-4" >
-            <ul class="list-unstyled list-inline text-center">
-                    {% if user.is_authenticated and user.is_superuser %}
-                        <li class="list-inline-item">
-                            <a id="moderation_link3" href="{% url 'flagged_comments_index' %}">Comment Moderation</a>
-                        </li>
-                        <li  class="list-inline-item">
-                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Comment Moderation</a>
-                        </li>
+    <div class="container-fluid max-width text-center text-sm-center">
 
+        <!-- Grid row -->
+        <div class="row">
+
+            <!-- Grid column -->
+            <div class="col-sm-6 mt-sm-0 mt-3">
+                <!-- Content -->
+                <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block"
+                     alt="CSIRO and Data61 Logos">
+            </div>
+            <!-- Grid column -->
+
+            <hr class="clearfix w-100 d-md-none pb-3">
+            <!-- Grid column -->
+            <div class="col-sm-6 mb-md-0 mb-3">
+                <!-- Links -->
+                <h5 class="text-uppercase">Links</h5>
+                <ul class="list-unstyled">
+                    {% for page in flatpages %}
+                    <li><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
+                    {% endfor %}
+                    {% if user.is_authenticated and user.is_superuser %}
+                        <li>
+                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+                        </li>
                     {% endif %}
                 </ul>
+            </div>
+            <!-- Grid column -->
         </div>
-        <div class="row justify-content-center w-100 mt-4 pt-4" >
-            <ul class="list-unstyled list-inline text-center">
-                    {% for page in flatpages %}
-                    <li class="list-inline-item"><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
-            </ul>
-      </div>
-
         <!-- Grid row -->
-        <!-- Copyright -->
-        <div class="row justify-content-center w-100 mt-2 pt-4">
-            © 2020 Copyright: <a href="https://www.thejournal.club"> The Journal Club</a>
-        </div>
-        <!-- Copyright -->    
     </div>
+    <!-- Footer Links -->
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2019 Copyright:
+        <a href="https://data61.csiro.au"> CSIRO's Data61</a>
+    </div>
+    <!-- Copyright -->
+
 </footer>
 <!-- Footer -->
+
 
 <!-- response dialog for flag report -->
 <div id="flag_response" class="cover popup" hidden>
