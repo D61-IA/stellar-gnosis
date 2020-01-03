@@ -234,14 +234,14 @@
     <div class="card text-left shadow-sm mb-5 mt-3">
             <div class="card-header"><strong>Private Group</strong></div>
             <div class="card-body">
-                You have requested to join this group.
+                You have requested to join this club.
             </div>
         </div>
 {% else %}
     <div class="card text-left shadow-sm mb-5 mt-3">
         <div class="card-header"><strong>Private Group</strong></div>
         <div class="card-body">
-            This is a private group. You need to request and be granted access to view. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
+            This is a private journal club. You need to request and be granted access to view. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
         </div>
     </div>
 {% endif %}
@@ -251,7 +251,7 @@
 <div class="card text-left shadow-sm mb-5 mt-3">
     <div class="card-header"><strong>Admin functions</strong></div>
     <div class="card-body">
-        <a href="{% url 'group_delete' group.id %}" class="btn btn-danger btn-sm" role="button">Delete Group</a>
+        <a href="{% url 'group_delete' group.id %}" class="btn btn-danger btn-sm" role="button">Delete Journal Club</a>
     </div>
 </div>
 {% endif %}
