@@ -105,6 +105,9 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # remove response overlay
         self.browser.find_element_by_class_name("response_ok").click()
 
+        # scroll to bottom of page
+        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
         # go to moderation page
         mod_link = self.browser.find_element_by_id('moderation_link')
         mod_link.click()
