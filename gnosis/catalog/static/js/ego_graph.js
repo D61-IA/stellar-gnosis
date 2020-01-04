@@ -167,7 +167,7 @@ cy.on('click', 'node', function (evt) {
             // what is shown on the tooltip
             if (node.data('type') === 'Person') {
                 // combine individual names to one
-                tip_item = node.data('first_name') + node.data('middle_name') + ' ' + node.data('last_name');
+                tip_item = node.data('name'); //node.data('first_name') + node.data('middle_name') + ' ' + node.data('last_name');
             }
             // for paper showing title only
             if (node.data('type') === 'Paper' || node.data('type') === 'Venue' || node.data('type') === 'Dataset') {
