@@ -128,6 +128,7 @@ class Paper(models.Model):
         max_length=2000, blank=False, null=False, validators=[URLValidator()]
     )
 
+    doi = models.TextField(null=False, blank=True, default='')
     is_public = models.BooleanField(default=True, null=False, blank=False)
     # added source link for a paper to record the source website which the information of paper is collected
     source_link = models.CharField(max_length=250, blank=True)
