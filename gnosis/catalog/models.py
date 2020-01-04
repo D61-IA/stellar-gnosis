@@ -273,9 +273,7 @@ class Comment(models.Model):
 class Person(models.Model):
 
     # These are always required
-    first_name = models.CharField(max_length=100, blank=False)
-    last_name = models.CharField(max_length=100, blank=False)
-    middle_name = models.CharField(max_length=100, blank=True, null=True)
+    name = models.TextField(max_length=1024, blank=False, null=False, default='')
     affiliation = models.CharField(max_length=250, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
 
@@ -296,14 +294,10 @@ class Person(models.Model):
 
     class Meta:
         app_label = "catalog"
-        ordering = ["last_name", "first_name", "affiliation"]
+        ordering = ["name", "affiliation"]
 
     def __str__(self):
-        # print("--- middle name ---")
-        # print(self.middle_name)
-        if self.middle_name is not None and len(self.middle_name) > 0:
-            return "{} {} {}".format(self.first_name, self.middle_name, self.last_name)
-        return "{} {}".format(self.first_name, self.last_name)
+        return "{}".format(self.name)
 
     def get_absolute_url(self):
         return reverse("person_detail", args=[self.id])

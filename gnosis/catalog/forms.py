@@ -307,9 +307,10 @@ class PersonForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
 
-        self.fields["first_name"].label = "First Name*"
-        self.fields["middle_name"].label = "Middle Name"
-        self.fields["last_name"].label = "Last Name*"
+        self.fields["name"].label = "Name*"
+        # self.fields["first_name"].label = "First Name*"
+        # self.fields["middle_name"].label = "Middle Name"
+        # self.fields["last_name"].label = "Last Name*"
         self.fields["affiliation"].label = "Affiliation"
         self.fields["website"].label = "Website"
 
@@ -317,14 +318,17 @@ class PersonForm(ModelForm):
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:25em"})
 
-    def clean_first_name(self):
-        return self.cleaned_data["first_name"]
+    def clean_name(self):
+        return self.cleaned_data["name"]
 
-    def clean_middle_name(self):
-        return self.cleaned_data["middle_name"]
+    # def clean_first_name(self):
+    #     return self.cleaned_data["first_name"]
 
-    def clean_last_name(self):
-        return self.cleaned_data["last_name"]
+    # def clean_middle_name(self):
+    #     return self.cleaned_data["middle_name"]
+
+    # def clean_last_name(self):
+    #     return self.cleaned_data["last_name"]
 
     def clean_affiliation(self):
         return self.cleaned_data["affiliation"]
@@ -334,7 +338,7 @@ class PersonForm(ModelForm):
 
     class Meta:
         model = Person
-        fields = ["first_name", "middle_name", "last_name", "affiliation", "website"]
+        fields = ["name", "affiliation", "website"]
 
 
 class DatasetForm(ModelForm):
