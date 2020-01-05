@@ -2,12 +2,12 @@
 // simulate stop resizing using timer
 var resizeTimer;
 
-// centering only happens after 250ms each time resize stops (mouse is released)
+// centering only happens after 250ms each time resize stops
 $(window).on('resize', function (e) {
     clearTimeout(resizeTimer);
+    $('#cy').css('height', $('#cy').css('width'));
     resizeTimer = setTimeout(function () {
-        center()
-        // Run code here, resizing has "stopped"
+        center();
     }, 250);
 
 });

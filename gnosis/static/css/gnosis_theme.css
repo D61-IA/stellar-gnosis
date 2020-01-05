@@ -1,8 +1,9 @@
 #cy {
-    width: auto;
-    height: 600px;
+    max-height: 600px; !important;
     display: block;
 }
+
+
 
 .loader_container {
     position: fixed;
@@ -74,9 +75,13 @@
     margin-left: 5px;
 }
 
-.pagination.mobile .page-item{
+.pagination.mobile .page-item {
     text-align: center;
     width: 108px;
+}
+
+.comments_notes {
+    width: 100%;
 }
 
 @keyframes spin {
@@ -88,10 +93,21 @@
     }
 }
 
-@media screen and (max-width: 678px) {
-
+/* Extra small devices (phones, 600px and down) */
+@media screen and (max-width: 600px) {
     .flex-item {
         margin-top: 10px;
+    }
+
+}
+
+/* min width of desktop browser*/
+@media screen and (max-width: 483px) {
+    .g-recaptcha {
+        transform: scale(0.74);
+        -webkit-transform: scale(0.74);
+        transform-origin: 0 0;
+        -webkit-transform-origin: 0 0;
     }
 }
 
