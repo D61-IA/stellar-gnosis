@@ -253,7 +253,7 @@
                         <br/>
                         {#                    show comments#}
                         {% if comments %}
-                            <ul class="list-group list-group-flush">
+                            <ul class="list-group list-group-flush comments_notes">
                             {% paginate comments %}
                             {% for comment in comments %}
 
@@ -331,7 +331,7 @@
                         </div>
                         <br/>
                         {% if notes %}
-                            <ul class="list-group list-group-flush">
+                            <ul class="list-group list-group-flush comments_notes">
                                 {% paginate notes %}
                                 {% for note in notes %}
                                     <li class="list-group-item shadow-sm mt-1">
@@ -380,7 +380,7 @@
                     up</a> or <a href="{% url 'account_login' %}?next={{ request.path }}">login</a> to leave
                     a comment</h4>
                 {% if comments %}
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush comments_notes">
                         {% for comment in comments %}
                             <li class="list-group-item shadow-sm mt-1">
                                 <p><strong>{{ comment.created_by }}</strong>
@@ -440,6 +440,10 @@
     <!-- end-flagging -->
 
     {% load static %}
+
+    <script>
+        $('#cy').css('height', $('#cy').css('width'));
+    </script>
 
     <script type="text/javascript">
 
