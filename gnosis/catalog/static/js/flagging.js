@@ -23,7 +23,7 @@ function cancel_form() {
     $('.popup').attr('hidden', true);
 }
 
-$('#cancel_button').click(function(){
+$('#cancel_button').click(function () {
     cancel_form();
 });
 
@@ -69,3 +69,4 @@ form.submit(function (e) {
         alert("Undefined comment id.");
     }
 });
+
