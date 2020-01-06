@@ -3,9 +3,9 @@ import re
 import psycopg2
 from datetime import datetime
 
-df_paper = pd.read_csv('papers.csv')
-df_author = pd.read_csv('authors.csv')
-df_paper_author = pd.read_csv('paper_authors.csv')
+df_paper = pd.read_csv('src/papers.csv')
+df_author = pd.read_csv('src/authors.csv')
+df_paper_author = pd.read_csv('src/paper_authors.csv')
 
 # get author names that are tainted with random question marks
 df_qst_author = df_author[df_author['name'].str.contains(r'\?')]
@@ -82,7 +82,8 @@ for index, row in df_paper.iterrows():
 
     # if there is issue with getting the abstract, add to 'other' list
     if start == -1 or end == -1:
-    	entry['paper_text'] = repr(row['paper_text'])
+        # add paper text to entry
+        entry['paper_text'] = repr(row['paper_text'])
         other.append(entry)
         print("-------" + str(paper_id) + "--------")
     else:
@@ -100,8 +101,8 @@ df_other.to_csv('df_other')
 
 def add_psql():
     connection = None
-    sql_author = """INSERT INTO catalog_person(first_name, last_name, middle_name, created_at) VALUES (%s, %s, %s, %s) RETURNING id"""
-    sql_paper = """INSERT INTO catalog_paper(title, abstract, keywords, download_link, is_public, source_link, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id"""
+    sql_author = """INSERT INTO catalog_person(name, created_at) VALUES (%s, %s) RETURNING id"""
+    sql_paper = """INSERT INTO catalog_paper(title, abstract, keywords, download_link, is_public, source_link, created_at, doi) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id"""
     sql_paper_author = """INSERT INTO catalog_paperauthorrelationshipdata("order", author_id, paper_id) VALUES (%s, %s, %s)"""
 
     # set up postgres database connection
@@ -120,11 +121,8 @@ def add_psql():
             names = row['names']
             a_ids = []
             for name in names:
-                first_name = name['first_name']
-                last_name = name['last_name']
-                middle_name = name['middle_name']
                 created_at = datetime.now()
-                record = (first_name, last_name, middle_name, created_at)
+                record = (name, created_at)
                 cursor.execute(sql_author, record)
 
                 author_id = cursor.fetchone()[0]
@@ -140,7 +138,7 @@ def add_psql():
             keywords = ''
             is_public = True
             created_at = datetime.now()
-            record = (title, abstract, keywords, download_link, is_public, source_link, created_at)
+            record = (title, abstract, keywords, download_link, is_public, source_link, created_at, title)
             cursor.execute(sql_paper, record)
 
             paper_id = cursor.fetchone()[0]
@@ -163,3 +161,4 @@ def add_psql():
 
 if __name__ == '__main__':
     add_psql()
+
