@@ -3,6 +3,7 @@
 # the database.
 
 import os
+import click
 import pandas as pd
 import xml.etree.ElementTree as ET
 
@@ -10,7 +11,35 @@ input_dir = '/home/elinas/Projects/stellar-gnosis/arxiv_data'
 
 # Requires input and output directory command line arguments, csv output filename as well as whether 
 # to append to the output file or not (latter case creates a new file even if one already exists)
-if __name__=="__main__":
+@click.command()
+@click.option(
+    "--input-dir",
+    type=click.Path(file_okay=False, dir_okay=True, exists=True),
+    default='/home/elinas/Projects/stellar-gnosis/arxiv_data',
+    help="Input directory",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, dir_okay=True, exists=True),
+    default='/home/elinas/Projects/stellar-gnosis/arxiv_data',
+    help="Output directory",
+)
+@click.option(
+    "--csv",
+    default='paper_data.csv',
+    type=click.File('w')
+)
+@click.option(
+    "--append/--create",
+    default=False,
+    help="Whether to append data to the output csv file or create a new one (overwrites if it already exists)",
+)
+def main(input_dir, output_dir, csv, append):
+    print("Parameters:")
+    print(f"input_dir: {input_dir}")
+    print(f"output_dir: {output_dir}")
+    print(f"csv: f{csv}")
+    print(f"append: {append}")
 
     input_dir = os.path.abspath(input_dir)
     print(f"In main() with input dir {input_dir}")
@@ -54,4 +83,7 @@ if __name__=="__main__":
     print(df.head())
     df.to_csv("papers.csv")
 
-    
+    return 0
+
+if __name__=="__main__":
+    exit(main())
