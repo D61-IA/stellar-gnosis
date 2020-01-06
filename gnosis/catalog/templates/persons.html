@@ -2,11 +2,11 @@
 
 {% block content %}
 <div class="mt-5">
-    <h2>People in our DB</h2>
+    <h2>Authors in our DB</h2>
     {% if people %}
     <ul class="list-group">
         {% for person in persons %}
-        <li class="list-group-item mt-1">{{ person.first_name }} {{ person.last_name }}</li>
+            <li class="list-group-item mt-1">{{ person.name }}</li>
         {% endfor %}
     </ul>
     {% endif %}

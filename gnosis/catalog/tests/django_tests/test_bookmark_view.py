@@ -25,7 +25,7 @@ class BookmarkViewTestCase(TestCase):
         """ Only a logged in user can bookmark a paper or delete the bookmark"""
 
         # Expects a redirect to the login page if user is not logged in
-        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/bookmark"
+        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/bookmark/"
         response = self.client.post(reverse("paper_bookmark", kwargs={'id': self.paper.id}))
         self.assertRedirects(response, expected_url=target_url, status_code=302, target_status_code=200)
 

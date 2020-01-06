@@ -15,12 +15,10 @@ class VenueViewsTestCase(TestCase):
 
         # Create two people
         self.pantelis = Person.objects.create(
-            first_name="Pantelis", last_name="Elinas", created_by=None
+            name="Pantelis Elinas", created_by=None
         )
         self.fiona = Person.objects.create(
-            first_name="Fiona",
-            middle_name="Anne",
-            last_name="Elliott",
+            name="Fiona Anne Elliot",
             created_by=self.user,
         )
 
@@ -62,7 +60,7 @@ class VenueViewsTestCase(TestCase):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(reverse("venue_delete", kwargs={'id': self.venue.id}))
-        target_url = f"/admin/login/?next=/catalog/venue/{self.venue.id}/delete"
+        target_url = f"/admin/login/?next=/catalog/venue/{self.venue.id}/delete/"
 
         # You have to be logged in to access the delete view.
         # However, only an admin can delete and object so we should be redirected to the admin login page
@@ -111,7 +109,7 @@ class VenueViewsTestCase(TestCase):
         self.client.logout()
 
     def test_venue_create(self):
-        """Only logged in users can create a new person object"""
+        """Only logged in users can create a new venue object"""
         target_url = "/accounts/login/?next=/catalog/venue/create/"
 
         response = self.client.get(reverse("venue_create"))

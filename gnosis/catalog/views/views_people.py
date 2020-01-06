@@ -28,7 +28,7 @@ def persons(request):
             query = form.cleaned_data["person_name"].lower()
             print(f"Searching for people using keywords {query}")
             people = Person.objects.annotate(
-                 search=SearchVector('first_name', 'last_name', 'middle_name')
+                 search=SearchVector('name')
             ).filter(search=SearchQuery(query, search_type='plain'))
 
             print(people)
@@ -88,9 +88,7 @@ def person_update(request, id):
     if request.method == "POST":
         form = PersonForm(request.POST)
         if form.is_valid():
-            person_inst.first_name = form.cleaned_data["first_name"]
-            person_inst.middle_name = form.cleaned_data["middle_name"]
-            person_inst.last_name = form.cleaned_data["last_name"]
+            person_inst.name = form.cleaned_data["name"]            
             person_inst.affiliation = form.cleaned_data["affiliation"]
             person_inst.website = form.cleaned_data["website"]
             person_inst.save()
@@ -100,9 +98,7 @@ def person_update(request, id):
     else:
         form = PersonForm(
             initial={
-                "first_name": person_inst.first_name,
-                "middle_name": person_inst.middle_name,
-                "last_name": person_inst.last_name,
+                "name": person_inst.name,
                 "affiliation": person_inst.affiliation,
                 "website": person_inst.website,
             }

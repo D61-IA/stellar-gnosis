@@ -55,7 +55,7 @@
                         {% if user.is_authenticated %}
                             <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
                                role="button">
-                                Add to Group</a>
+                                Add to Journal Club</a>
                             <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
                                role="button">
                                 Add to Collection</a>
@@ -488,7 +488,7 @@
                     selector: 'node[type="Person"]',
                     style: getCustomNodeStyle({
                         'background-color': '#ffb836',
-                        'label': 'data(last_name)',
+                        'label': 'data(name)',
                     }),
 
                 },

@@ -1,22 +1,23 @@
 {% extends "gnosis_theme.html" %}
+{% load crispy_forms_tags %}
+
 
 {% block content %}
 <div class="card shadow-sm mt-5">
     <div class="card-header">
-    <h2>New Person/Author</h2>
+    <h2>New Author</h2>
     </div>
 
     <div class="card-body">
         <form action="" method="post">
             {% csrf_token %}
-            <table class="w-75">
-                {{ form.as_table }}
+            <table class="w-100">
+                {{ form|crispy }}
             </table>
             <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
 
         </form>
         <p>*required</p>
     </div>
-
 </div>
 {% endblock %}

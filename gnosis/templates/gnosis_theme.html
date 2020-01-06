@@ -34,7 +34,7 @@
 <nav class="navbar navbar-expand-sm mb-2 shadow bg-white navbar-light sticky-top">
     <div class="container-fluid" style="height: 44px;">
         <a class="navbar-brand"
-           href="{% url 'home' %}">&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</a>
+           href="{% url 'home' %}">The Journal Club</a>
         {% if user.is_authenticated %}
             <div class="dropdown">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle"
@@ -72,7 +72,7 @@
         {% if user.is_authenticated %}
             <div class="btn-group">
                 <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
-                   title="View all groups">Groups</a>
+                   title="View all groups">Clubs</a>
                 <div class="btn-group">
                     <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
                        title="Create a new group">+</a>
@@ -90,7 +90,7 @@
 
             <div class="btn-group">
                 <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
-                   title="View all people">People</a>
+                   title="View all people">Authors</a>
             </div>
 
             <div class="btn-group">
@@ -122,7 +122,7 @@
         {% else %}
             <div class="btn-group">
                 <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
-                   title="View all papers">Groups</a>
+                   title="View all papers">Clubs</a>
             </div>
             <div class="btn-group">
                 <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
@@ -160,7 +160,7 @@
             <div class="btn-group-vertical">
                 {% if user.is_authenticated %}    
                 <div class="btn-group">
-                    <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button" title="View all groups">Groups&nbsp&nbsp</a>
+                    <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button" title="View all groups">Clubs&nbsp&nbsp</a>
                     <div class="btn-group">
                         <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
                             title="Create a new group">+</a>
@@ -209,7 +209,7 @@
                 {% else %}
                 <div class="btn-group">
                     <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all papers">Groups&nbsp&nbsp</a>
+                       title="View all papers">Clubs&nbsp&nbsp</a>
                 </div>
                 <div class="btn-group">
                     <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
@@ -251,6 +251,36 @@
     <script>setButton();</script>
 </div>
 
+<!-- Footer -->
+<footer class="text-center  pt-3 mt-5">
+    {% block footer %}
+    {% endblock %}
+    {% load static %}
+    {% get_flatpages as flatpages %}
+    <!-- Footer Links -->
+    <!-- Footer Links -->
+    <div class="text-center">
+        <ul class="list-unstyled">
+            {% for page in flatpages %}
+                <li class="list-inline-item"><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
+            {% endfor %}
+            {% if user.is_authenticated and user.is_superuser %}
+            <li class="list-inline-item">
+                <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+        <a href="https://www.thejournal.club">The Journal Club</a>
+    </div>
+    <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+
 <!-- response dialog for flag report -->
 <div id="flag_response" class="cover popup" hidden>
     <div id="flag_response_dialog" class="card box_shadow">
@@ -288,66 +318,15 @@
     </div>
 </div>
 
-<!-- Footer -->
-<footer class="page-footer text-center font-small blue pt-4 mt-5">
-    {% block footer %}
-    {% endblock %}
-    {% load static %}
-    {% get_flatpages as flatpages %}
-    <!-- Footer Links -->
-    <div class="container-fluid max-width text-center text-sm-center">
-
-        <!-- Grid row -->
-        <div class="row">
-
-            <!-- Grid column -->
-            <div class="col-sm-6 mt-sm-0 mt-3">
-                <!-- Content -->
-                <img src="{% static 'catalog/csiro-data61-logos.png' %}" class="mx-auto d-block"
-                     alt="CSIRO and Data61 Logos">
-            </div>
-            <!-- Grid column -->
-
-            <hr class="clearfix w-100 d-md-none pb-3">
-            <!-- Grid column -->
-            <div class="col-sm-6 mb-md-0 mb-3">
-                <!-- Links -->
-                <h5 class="text-uppercase">Links</h5>
-                <ul class="list-unstyled">
-                    {% for page in flatpages %}
-                    <li><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                    {% endfor %}
-                    {% if user.is_authenticated and user.is_superuser %}
-                        <li>
-                            <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-            <!-- Grid column -->
-        </div>
-        <!-- Grid row -->
-    </div>
-    <!-- Footer Links -->
-
-    <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">© 2019 Copyright:
-        <a href="https://data61.csiro.au"> CSIRO's Data61</a>
-    </div>
-    <!-- Copyright -->
-
-</footer>
-<!-- Footer -->
-
-    <!-- START Bootstrap-Cookie-Alert -->
-    <div class="alert text-center cookiealert" role="alert">
-        We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/" target="_blank">Learn more</a>
+<!-- START Bootstrap-Cookie-Alert -->
+<div class="alert text-center cookiealert" role="alert">
+    We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/" target="_blank">Learn more</a>
     
-        <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
-            I agree
-        </button>
-    </div>
-    <!-- END Bootstrap-Cookie-Alert -->
+    <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
+        I agree
+    </button>
+</div>
+<!-- END Bootstrap-Cookie-Alert -->
     
 <script>
     var message_ele = document.getElementById("message_container");

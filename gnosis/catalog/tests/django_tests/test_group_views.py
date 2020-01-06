@@ -92,8 +92,8 @@ class ReadingGroupViewsTestCase(TestCase):
         response = self.client.get(
             reverse("group_delete", kwargs={"id": self.ml_group_private.id})
         )
-        # target_url = f"/admin/login/?next=/catalog/group/{self.ml_group_private.id}/delete"
-        target_url = f"/catalog/groups"
+        # target_url = f"/admin/login/?next=/catalog/club/{self.ml_group_private.id}/delete/"
+        target_url = f"/catalog/clubs/"
 
         # You have to be logged in to access the delete view.
         # However, only the group owner can delete a group so we should be redirected to the groups index page
@@ -109,7 +109,7 @@ class ReadingGroupViewsTestCase(TestCase):
             reverse("group_delete", kwargs={"id": self.ml_group_private.id})
         )
         # Calling delete redirects to the groups index view after deleting the group
-        target_url = f"/catalog/groups"
+        target_url = f"/catalog/clubs/"
         self.assertRedirects(
             response, expected_url=target_url, status_code=302, target_status_code=200
         )
@@ -125,7 +125,7 @@ class ReadingGroupViewsTestCase(TestCase):
 
     def test_group_create(self):
         """Only logged in users can create a new ReadingGroup object"""
-        target_url = "/accounts/login/?next=/catalog/group/create/"
+        target_url = "/accounts/login/?next=/catalog/club/create/"
         response = self.client.get(reverse("group_create"))
 
         # We should be redirected to the account login page
@@ -160,7 +160,7 @@ class ReadingGroupViewsTestCase(TestCase):
             reverse("group_update", kwargs={"id": self.ml_group_private.id})
         )
         # Only the group owner can access the update view.
-        target_url = f"/catalog/group/{self.ml_group_private.id}"
+        target_url = f"/catalog/club/{self.ml_group_private.id}/"
         self.assertRedirects(
             response, expected_url=target_url, status_code=302, target_status_code=200
         )
@@ -170,7 +170,7 @@ class ReadingGroupViewsTestCase(TestCase):
             reverse("group_update", kwargs={"id": self.ml_group_public.id})
         )
         # Only the group owner can access the update view.
-        target_url = f"/catalog/group/{self.ml_group_public.id}"
+        target_url = f"/catalog/club/{self.ml_group_public.id}/"
         self.assertRedirects(
             response, expected_url=target_url, status_code=302, target_status_code=200
         )
@@ -261,7 +261,7 @@ class ReadingGroupViewsTestCase(TestCase):
 
         # a user must login before s/he can join a group
         target_url = (
-            f"/accounts/login/?next=/catalog/group/{self.ml_group_public.id}/join"
+            f"/accounts/login/?next=/catalog/club/{self.ml_group_public.id}/join/"
         )
         response = self.client.get(
             reverse("group_join", kwargs={"id": self.ml_group_public.id})
@@ -289,7 +289,7 @@ class ReadingGroupViewsTestCase(TestCase):
         response = self.client.get(
             reverse("group_join", kwargs={"id": self.ml_group_public.id})
         )
-        target_url = f"/catalog/group/{self.ml_group_public.id}"
+        target_url = f"/catalog/club/{self.ml_group_public.id}/"
 
         # We should be redirected to the group detail page
         self.assertRedirects(
@@ -318,7 +318,7 @@ class ReadingGroupViewsTestCase(TestCase):
         # We have tested this earlier when joining a public group but for sanity, let's test again
         # for a private group.
         target_url = (
-            f"/accounts/login/?next=/catalog/group/{self.ml_group_private.id}/join"
+            f"/accounts/login/?next=/catalog/club/{self.ml_group_private.id}/join/"
         )
         response = self.client.get(
             reverse("group_join", kwargs={"id": self.ml_group_private.id})
@@ -348,7 +348,7 @@ class ReadingGroupViewsTestCase(TestCase):
         response = self.client.get(
             reverse("group_join", kwargs={"id": self.ml_group_private.id})
         )
-        target_url = f"/catalog/group/{self.ml_group_private.id}"
+        target_url = f"/catalog/club/{self.ml_group_private.id}/"
 
         # We should be redirected to the group detail page
         self.assertRedirects(
@@ -376,7 +376,7 @@ class ReadingGroupViewsTestCase(TestCase):
                 kwargs={"id": self.ml_group_private.id, "aid": self.user.id},
             )
         )
-        target_url = f"/catalog/group/{self.ml_group_private.id}"
+        target_url = f"/catalog/club/{self.ml_group_private.id}/"
 
         # We should be redirected to the group detail page
         self.assertRedirects(
@@ -415,7 +415,7 @@ class ReadingGroupViewsTestCase(TestCase):
         """Testing a user requesting to join a private group but denied by the group owner"""
 
         # Anonymous users should not be able to call the group deny access for a group applicant.
-        target_url = f"/accounts/login/?next=/catalog/group/{self.ml_group_private.id}/user/{self.user.id}/deny"
+        target_url = f"/accounts/login/?next=/catalog/club/{self.ml_group_private.id}/user/{self.user.id}/deny/"
         response = self.client.get(
             reverse(
                 "group_deny_access",
@@ -437,7 +437,7 @@ class ReadingGroupViewsTestCase(TestCase):
         response = self.client.get(
             reverse("group_join", kwargs={"id": self.ml_group_private.id})
         )
-        target_url = f"/catalog/group/{self.ml_group_private.id}"
+        target_url = f"/catalog/club/{self.ml_group_private.id}/"
 
         # We should be redirected back to the group detail page
         self.assertRedirects(
@@ -457,7 +457,7 @@ class ReadingGroupViewsTestCase(TestCase):
                 kwargs={"id": self.ml_group_private.id, "aid": self.user.id},
             )
         )
-        target_url = f"/catalog/group/{self.ml_group_private.id}"
+        target_url = f"/catalog/club/{self.ml_group_private.id}/"
         # We should be redirected to the account login page
         self.assertRedirects(
             response, expected_url=target_url, status_code=302, target_status_code=200
@@ -498,7 +498,7 @@ class ReadingGroupViewsTestCase(TestCase):
         """Testing a user proposing a paper to a public group"""
 
         # Anonymous users should not be able to propose a paper.
-        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/group/add/{self.ml_group_public.id}"
+        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/club/add/{self.ml_group_public.id}/"
         response = self.client.get(
             reverse(
                 "paper_add_to_group_selected",
@@ -569,7 +569,7 @@ class ReadingGroupViewsTestCase(TestCase):
         """Testing a user proposing a paper to a private group"""
 
         # Anonymous users should not be able to propose a paper.
-        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/group/add/{self.ml_group_private.id}"
+        target_url = f"/accounts/login/?next=/catalog/paper/{self.paper.id}/club/add/{self.ml_group_private.id}/"
         response = self.client.get(
             reverse(
                 "paper_add_to_group_selected",

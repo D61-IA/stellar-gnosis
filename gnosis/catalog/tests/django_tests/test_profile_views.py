@@ -27,7 +27,7 @@ class ProfileViewsTestCase(TestCase):
         response = self.client.get(reverse("profile", kwargs={'id': self.user.id}))
 
         # Only logged in user can view a user's profile; other get redirected to the login page
-        target_url = f"/accounts/login/?next=/catalog/profile/{self.user.id}"
+        target_url = f"/accounts/login/?next=/catalog/profile/{self.user.id}/"
 
         self.assertRedirects(response,
                              expected_url=target_url,
@@ -60,7 +60,7 @@ class ProfileViewsTestCase(TestCase):
         # User must be logged in to access the update view
         # The user should be redirected to login
         response = self.client.get(reverse("profile_update"))
-        target_url = f"/accounts/login/?next=/catalog/profile/update"
+        target_url = f"/accounts/login/?next=/catalog/profile/update/"
 
         self.assertRedirects(response,
                              expected_url=target_url,

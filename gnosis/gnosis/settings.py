@@ -26,9 +26,10 @@ SECRET_KEY = os.getenv("SECRET_KEY", '6pph^ipk8sow@%nw)s!l@klg4q8lnar2k6k$&e=26p
 
 # SECURITY WARNING: don't run with debug turned on in production!
 print(f"DEBUG_DJANGO={os.getenv('DEBUG_DJANGO')}")
-DEBUG = os.getenv("DEBUG_DJANGO", False) 
+DEBUG = os.getenv("DEBUG_DJANGO", False) == 'True' 
+print(f"DEBUG={DEBUG}")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 SESSION_SAVE_EVERY_REQUEST = True
 

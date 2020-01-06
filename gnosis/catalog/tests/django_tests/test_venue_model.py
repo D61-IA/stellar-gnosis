@@ -10,12 +10,10 @@ class VenueTestCase(TestCase):
 
         # Create two people
         self.pantelis = Person.objects.create(
-            first_name="Pantelis", last_name="Elinas", created_by=None
+            name="Pantelis Elinas", created_by=None
         )
         self.fiona = Person.objects.create(
-            first_name="Fiona",
-            middle_name="Anne",
-            last_name="Elliott",
+            name="Fiona Anne Elliott",
             created_by=self.user,
         )
 
