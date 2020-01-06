@@ -74,23 +74,3 @@ $(document).click(function (e) {
 $('.response_ok').click(function () {
     $('#flag_response').attr('hidden', true)
 });
-
-
-/************** hide/show elements depending on current display width **************/
-if ($(window).width() <= 678) {
-    $('.mobile').css('display', '');
-    $('.desktop').css('display', 'none');
-} else {
-    $('.mobile').css('display', 'none');
-    $('.desktop').css('display', '');
-}
-
-$(window).resize(function () {
-    if ($(window).width() <= 678) {
-        $('.mobile').css('display', '');
-        $('.desktop').css('display', 'none');
-    } else {
-        $('.mobile').css('display', 'none');
-        $('.desktop').css('display', '');
-    }
-});
