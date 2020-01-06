@@ -214,5 +214,3 @@ cy.on('click', 'node', function (evt) {
         edge.style('opacity', 1);
 
     });
-
-// attach functions to events
