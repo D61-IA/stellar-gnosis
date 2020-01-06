@@ -465,9 +465,6 @@
 
             layout: layout,
 
-            // max zoom factor
-            maxZoom: 2.0,
-
             style: [ // styling the graph
                 {
                     selector: 'node[type="Paper"]',
@@ -584,9 +581,6 @@
             ],
 
         });
-
-        // setting the minimum zoom factor to 50% of its initial zoom
-        cy.minZoom(cy.zoom() * 0.5);
     </script>
 
     <script src="{% static "js/ego_graph.js" %}"></script>
