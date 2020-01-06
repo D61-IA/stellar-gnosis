@@ -84,11 +84,14 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
         wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
 
         # using get allows webdriver to wait for html to be fully ready
         self.paper_url = self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/'
         self.browser.get(self.paper_url)
+
+        # remove cookies popup
+        self.browser.execute_script("return document.getElementsByClassName('cookiealert')[0].remove()")
 
         comment_container = self.browser.find_element_by_css_selector('ul.list-group')
         # there should be only one comment in this fictional paper
@@ -164,7 +167,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         flag_response = browser.find_element_by_id('flag_response')
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
-        self.browser.find_element_by_class_name("response-ok").click()
+        self.browser.find_element_by_class_name("response_ok").click()
 
         # test the flagged comment has a filled flag icon attached
         arr = first_comment.find_elements_by_class_name("flagged")

@@ -8,12 +8,6 @@
         <h3>Confirm your account.</h3>
     </div>
     <div class="card-body mt-3">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="bg-info">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-
         {% if confirmation %}
         {% user_display confirmation.email_address.user as user_display %}
             

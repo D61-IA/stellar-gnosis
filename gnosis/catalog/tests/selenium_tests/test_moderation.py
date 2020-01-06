@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
+import time
 
 class ChromeTestCase(StaticLiveServerTestCase):
     """test with Chrome webdriver"""
@@ -72,10 +72,24 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
         wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
+
+        # Check for cookie alert and hit agree if present.
+        # has_cookie_banner = self.browser.findElements(self.browser.find_element_by_xpath('//button[text()="I agree"]')).size() > 0
+        # if has_cookie_banner:
+        #     agree_button = self.browser.find_element_by_xpath('//button[text()="I agree"]')
+        #     agree_button.click()
+        # try:
+        #     agree_button = self.browser.find_element_by_xpath('//button[text()="I agree"]')
+        #     agree_button.click()
+        # except:
+        #     pass
 
         # using get allows webdriver to wait for html to be fully ready
         self.browser.get(self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/')
+
+        # remove cookies popup
+        self.browser.execute_script("return document.getElementsByClassName('cookiealert')[0].remove()")
 
         # find and save the id of the comment as global
         first_comment = self.browser.find_element_by_css_selector('#navcomment li.list-group-item')
@@ -103,7 +117,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
         # remove response overlay
-        self.browser.find_element_by_class_name("response-ok").click()
+        self.browser.find_element_by_class_name("response_ok").click()
 
         # go to moderation page
         mod_link = self.browser.find_element_by_id('moderation_link')
@@ -148,6 +162,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         a = self.first_flag.find_element_by_tag_name('a')
         a.click()
 
+        time.sleep(1)
         # wait for page to load
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
@@ -166,6 +181,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         del_button = self.first_flag.find_element_by_class_name('mod_del')
         del_button.click()
 
+        time.sleep(1)
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))

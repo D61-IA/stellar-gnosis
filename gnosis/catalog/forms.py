@@ -307,25 +307,17 @@ class PersonForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
 
-        self.fields["first_name"].label = "First Name*"
-        self.fields["middle_name"].label = "Middle Name"
-        self.fields["last_name"].label = "Last Name*"
+        self.fields["name"].label = "Name"
+        self.fields["name"].widget.attrs.update({"rows": "1"})
+
         self.fields["affiliation"].label = "Affiliation"
         self.fields["website"].label = "Website"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:25em"})
-            #print(visible.field.widget.attrs.items())
 
-    def clean_first_name(self):
-        return self.cleaned_data["first_name"]
-
-    def clean_middle_name(self):
-        return self.cleaned_data["middle_name"]
-
-    def clean_last_name(self):
-        return self.cleaned_data["last_name"]
+    def clean_name(self):
+        return self.cleaned_data["name"]
 
     def clean_affiliation(self):
         return self.cleaned_data["affiliation"]
@@ -335,7 +327,7 @@ class PersonForm(ModelForm):
 
     class Meta:
         model = Person
-        fields = ["first_name", "middle_name", "last_name", "affiliation", "website"]
+        fields = ["name", "affiliation", "website"]
 
 
 class DatasetForm(ModelForm):
@@ -346,20 +338,16 @@ class DatasetForm(ModelForm):
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
 
-        self.fields["name"].label = "Name*"
-        self.fields["keywords"].label = "Keywords*"
-        self.fields["description"].label = "Description*"
-        self.fields["dataset_type"].label = "Type*"
-        self.fields["publication_year"].label = "Publication Year*"
+        self.fields["name"].label = "Name"
+        self.fields["keywords"].label = "Keywords"
+        self.fields["description"].label = "Description"
+        self.fields["dataset_type"].label = "Type"
+        self.fields["publication_year"].label = "Publication Year"
         self.fields["publication_month"].label = "Publication Month"
-        self.fields["website"].label = "Website (http:// or https://)*"
+        self.fields["website"].label = "Website (http:// or https://)"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:25em"})
-
-        #print(type(self.fields["description"].widget))
-        #print(self.fields["description"].widget.attrs.items())
 
     def clean_name(self):
         return self.cleaned_data["name"]
@@ -399,20 +387,17 @@ class VenueForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
 
-        self.fields["name"].label = "Name*"
-        self.fields["publisher"].label = "Publisher"
-        # self.fields['publication_date'].help_text = 'YYYY-MM-DD'
-        self.fields["publication_year"].label = "Publication Year (yyyy)*"
-        self.fields["publication_month"].label = "Publication Month (mm)*"
-        self.fields["venue_type"].label = "Type*"
-        self.fields["peer_reviewed"].label = "Peer Reviewed*"
-        self.fields["keywords"].label = "Keywords*"
+        self.fields["name"].label = "Name"
+        self.fields["publisher"].label = "Publisher"   
+        self.fields["publication_year"].label = "Publication Year (yyyy)"
+        self.fields["publication_month"].label = "Publication Month (mm)"
+        self.fields["venue_type"].label = "Type"
+        self.fields["peer_reviewed"].label = "Peer Reviewed"
+        self.fields["keywords"].label = "Keywords"
         self.fields["website"].label = "Website (http:// or https://)"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:25em"})
-            #print(visible.field.widget.attrs.items())
 
     def clean_name(self):
         return self.cleaned_data["name"]
@@ -464,16 +449,12 @@ class CommentForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs.update({"style": "width:100%"})
-            #print(visible.field.widget.attrs.items())
 
     def clean_text(self):
         return self.cleaned_data["text"]
 
     def clean_publication_date(self):
         return self.cleaned_data["publication_date"]
-
-    # def clean_author(self):
-    #      return self.cleaned_data['author']
 
     # recaptcha checkbox, by default it uses checkbox keys at settings.py
     captcha = ReCaptchaField(
@@ -519,14 +500,13 @@ class CodeForm(ModelForm):
         # more than one rows so we replace it with a Textarea widget.
         self.fields["description"].widget = forms.Textarea()
         self.fields["description"].widget.attrs.update({"rows": "5"})
-        self.fields["name"].label = "Name*"
-        self.fields["website"].label = "Website (http:// or https://)*"
-        self.fields["keywords"].label = "Keywords*"
-        self.fields["description"].label = "Description*"
+        self.fields["name"].label = "Name"
+        self.fields["website"].label = "Website (http:// or https://)"
+        self.fields["keywords"].label = "Keywords"
+        self.fields["description"].label = "Description"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:25em"})
 
     def clean_keywords(self):
         return self.cleaned_data["keywords"]
@@ -560,25 +540,26 @@ class GroupForm(ModelForm):
         self.fields["address"].widget.attrs.update({"rows": "3"})
 
         self.fields["address"].label = "Building/Street/Suburb/Postcode"
-        self.fields["city"].label = "City*"
+        self.fields["city"].label = "City"
         self.fields["country"].label = "Country*"
         self.fields["room"].widget = forms.Textarea()
         self.fields["room"].widget.attrs.update({"rows": "1"})
 
-        self.fields["day"].label = "Day*"
-        self.fields["start_time"].label = "Start Time (HH/MM/SS)*"
-        self.fields["end_time"].label = "Finish Time (HH/MM/SS)*"
-        self.fields["timezone"].label = "Timezone*"
-        self.fields["keywords"].label = "Keywords*"
+        self.fields["day"].label = "Day"
+        self.fields["start_time"].label = "Start Time (HH/MM/SS)"
+        self.fields["end_time"].label = "Finish Time (HH/MM/SS)"
+        self.fields["timezone"].label = "Timezone"
+        self.fields["keywords"].label = "Keywords"
+        self.fields["slack"].label = "Slack (requires https://)"
+        self.fields["telegram"].label = "Telegram (requires https://)"
         self.fields["videoconferencing"].label = "WebEx, Skype, etc."
         self.fields["room"].lable="Room"
-        self.fields["description"].label = "Description*"
-        self.fields["name"].label = "Name*"
-        self.fields["is_public"].label = "Public*"
+        self.fields["description"].label = "Description"
+        self.fields["name"].label = "Name"
+        self.fields["is_public"].label = "Public"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs.update({"style": "width:25em"})
 
     def clean(self):
         """Overriding in order to validate the start and finish times."""
@@ -626,11 +607,17 @@ class GroupForm(ModelForm):
 
     def clean_name(self):
         return self.cleaned_data["name"]
+    
+    def clean_slack(self):
+        return self.cleaned_data["slack"]
+    
+    def clean_telegram(self):
+        return self.cleaned_data["telegram"]
 
     class Meta:
         model = ReadingGroup
         fields = ["name", "description", "keywords", "address", "city", "country", "room",
-                  "day", "timezone", "start_time", "end_time", "is_public", "videoconferencing"]
+                  "day", "timezone", "start_time", "end_time", "is_public", "slack", "telegram", "videoconferencing"]
 
 
 class GroupEntryForm(ModelForm):

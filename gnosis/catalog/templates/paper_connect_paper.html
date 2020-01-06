@@ -3,11 +3,7 @@
 {% block content %}
 <div class="mt-5">
     <h2>Find a Paper</h2>
-
-    {% if message %}
-    <p class="bg-danger">{{ message }}</p>
-    {% endif %}
-
+    
     <form action="" method="post">
         {% csrf_token %}
         {{ form }}

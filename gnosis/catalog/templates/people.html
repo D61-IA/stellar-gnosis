@@ -1,64 +1,44 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-{% load el_pagination_tags %}
+    {% load el_pagination_tags %}
 
-<div class="card shadow-sm mt-3">
-    <div class="card-body text-center">
-        {% if message %}
-        <p class="bg-info">{{ message }}</p>
-        {% endif %}
-        <form action="" method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            {{ field }}
-            {% endfor %}
-            <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search People"/>
-        </form>
-    </div>
-</div>
-
-{% if people %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>People</h4></div>
-    {% paginate people %}
-    <div class="card-body">
-
-        {% for person in people %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                {% if person.middle_name %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{person.middle_name}}
-                    {{ person.last_name }}</a>
-                </p>
-                {% else %}
-                <p><a href="{{ person.get_absolute_url }}">{{person.first_name}} {{ person.last_name }}</a></p>
-                {% endif %}
-                {% if person.affiliation %}<p>Affiliation: {{ person.affiliation }}</p>{% endif %}
-            </li>
-        </ul>
-        {% endfor %}
+    <div class="card shadow-sm mt-3">
+        <div class="card-body text-center">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    {{ field }}
+                {% endfor %}
+                <br>
+                <input type="submit" class="btn btn-primary btn-lg" value="Search Authors"/>
+            </form>
+        </div>
     </div>
 
-        {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
+    {% if people %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header"><h4>Authors</h4></div>
+            {% paginate people %}
+            <div class="card-body">
 
-</div>
-{% endif %}
+                {% for person in people %}
+                    <ul class="list-group">
+                        <li class="list-group-item mt-1">
+                            <p>
+                                <a href="{{ person.get_absolute_url }}">{{ person.name }} {{ person.middle_name }}</a>
+                            </p>
+                            {% if person.affiliation %}
+                                <p>Affiliation: {{ person.affiliation }}</p>
+                            {% endif %}
+                        </li>
+                    </ul>
+                {% endfor %}
+            </div>
+
+            {% get_pages %}
+            <!-- Center-aligned -->
+            {% include "pagination.html" %}
+        </div>
+    {% endif %}
 {% endblock %}

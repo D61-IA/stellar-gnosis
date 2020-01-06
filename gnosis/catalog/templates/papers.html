@@ -1,63 +1,42 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
-{% load el_pagination_tags %}
+    {% load el_pagination_tags %}
 
-<div class="card shadow-sm text-center mt-3">
-    <div class="card-body">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="bg-info">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-
-        <form action="" method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            {{ field }}
-            {% endfor %}
-            <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
-        </form>
-    </div>
-</div>
-
-{% if papers %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>Papers</h4></div>
-    {% paginate papers %}
-    <div class="card-body">
-        {% for paper in papers %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                {% if paper.is_public %}
-                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
-                {% else %}
-                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a> <i><small>(Private)</small></i></h4>
-                {% endif %}
-                <p>{{ paper.abstract|truncatewords:50 }}</p>
-            </li>
-        </ul>
-        {% endfor %}
+    <div class="card shadow-sm text-center mt-3">
+        <div class="card-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    {{ field }}
+                {% endfor %}
+                <br>
+                <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
+            </form>
+        </div>
     </div>
 
-        {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
+    {% if papers %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header"><h4>Papers</h4></div>
+            {% paginate papers %}
+            <div class="card-body">
+                {% for paper in papers %}
+                    <ul class="list-group">
+                        <li class="list-group-item mt-1">
+                            {% if paper.is_public %}
+                                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
+                            {% else %}
+                                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>
+                                    <i><small>(Private)</small></i></h4>
+                            {% endif %}
+                            <p>{{ paper.abstract|truncatewords:50 }}</p>
+                        </li>
+                    </ul>
+                {% endfor %}
+            </div>
 
-</div>
-{% endif %}
+            {% get_pages %}
+            {% include "pagination.html" %}
+        </div>
+    {% endif %}
 {% endblock %}

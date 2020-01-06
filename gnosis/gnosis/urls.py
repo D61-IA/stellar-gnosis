@@ -46,6 +46,10 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 # Add url pattern for note app
 urlpatterns += [
     # path('note/create/', note_views.note_create, name='note_create'),
-    path('note/<int:id>/update', note_views.note_update, name='note_update'),
-    path('note/<int:id>/delete', note_views.note_delete, name='note_delete'),
+    path('note/<int:id>/update/', note_views.note_update, name='note_update'),
+    path('note/<int:id>/delete/', note_views.note_delete, name='note_delete'),
+]
+
+urlpatterns += [
+        url(r'^pages/', include('django.contrib.flatpages.urls')),
 ]

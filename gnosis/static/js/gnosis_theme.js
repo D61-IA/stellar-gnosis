@@ -19,21 +19,6 @@ jQuery.fn.preventDoubleSubmission = function () {
 
 $('form').preventDoubleSubmission();
 
-// apply loader to all ajax forms
-// var form = $(document);
-//
-// $(document).ajaxStart(function () {
-//     console.log("job starts!");
-//     $('#loader').attr('hidden', false);
-// });
-//
-//
-// $(document).ajaxStop(function () {
-//     console.log("job ends!");
-//     $('#loader').attr('hidden', true);
-//
-// });
-
 /************** Django basic setup for accepting ajax requests. **************/
 function getCookie(name) {
     var cookieValue = null;
@@ -68,3 +53,44 @@ $.ajaxSetup({
         }
     }
 );
+
+/************** JS functions that apply to elements in gnosis_theme.html **************/
+$('.cus_toggle').click(function (e) {
+    e.stopPropagation();
+    $('#cus-dropdown').slideToggle(100);
+});
+
+/************** click anywhere on page to cancel popups **************/
+$(document).click(function (e) {
+    var $container = $(".popup");
+    // element that triggers popup
+    var $target = $(".popup_opener");
+    // if the target of the click isn't the container nor a descendant of the container.
+    if (!$target.is(e.target) && $target.has(e.target).length === 0 && $container.has(e.target).length === 0) {
+        $container.attr('hidden', true);
+    }
+});
+
+$('.response_ok').click(function () {
+    $('#flag_response').attr('hidden', true)
+});
+
+
+/************** hide/show elements depending on current display width **************/
+if ($(window).width() <= 678) {
+    $('.mobile').css('display', '');
+    $('.desktop').css('display', 'none');
+} else {
+    $('.mobile').css('display', 'none');
+    $('.desktop').css('display', '');
+}
+
+$(window).resize(function () {
+    if ($(window).width() <= 678) {
+        $('.mobile').css('display', '');
+        $('.desktop').css('display', 'none');
+    } else {
+        $('.mobile').css('display', 'none');
+        $('.desktop').css('display', '');
+    }
+});

@@ -1,59 +1,52 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-<div class="card shadow-sm mt-3">
-    <div class="card-body">
-        <h1>&gamma;&nu;&#974;&sigma;&iota;&sigmaf;</h1>
-        <h2>A knowledge management system for technical documents.</h2>
-        {% if not user.is_authenticated %}
-        <h3> Hi, <a href="{% url 'account_login' %}?next={{request.path}}">login</a> to make full use of &gamma;&nu;&#974;&sigma;&iota;&sigmaf;.
-        </h3>
-        <h4>If you are new here then why not <a href="{% url 'account_signup' %}">register a new account!</a></h4>
-        {% endif %}
-    </div>
+<div class="jumbotron" style="background:transparent !important">
+    <h1 class="display-4">The Journal Club</h1>
+    <p class="lead">The most essential tool for organizing your next journal club.</p>
+    {% if not user.is_authenticated %}
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <a class="btn btn-primary" role="button" href="{% url 'account_signup' %}?next={{ request.path }}">Signup</a>
+                <a class="btn btn-primary" role="button" href="{% url 'account_login' %}?next={{ request.path }}">Login</a>
+            </div>
+        </div>
+      </div>
+    {% endif %}
+    <hr class="my-4">
 </div>
 
-<div class="card shadow-sm mt-3">
-    <div class="card-body text-center">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="bg-info">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        <br>
-        <form action="" method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            <span class="rounded-lg">
-        {{ field }}
-        </span>
-            {% endfor %}
-            <br>
-            <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
-        </form>
-    </div>
-</div>
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h4>Recently added papers</h4>
-    </div>
-    <div class="card-body">
-        {% for paper in papers %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                <h4><a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a></h4>
-                <p>{{ paper.abstract|truncatewords:50 }}</p>
-            </li>
-        </ul>
-        {% endfor %}
-    </div>
-</div>
+{% load static %}
 
-{% if user.is_superuser %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header"><strong>Admin Functions</strong></div>
-    <div class="card-body"><a href="{% url 'build_db' %}">Populate test DB</a></div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 mt-md-0 mt-5 pt-4">
+            <!-- Content -->
+            <img src="{% static 'catalog/group.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
+            <p class="text-center mt-5">The easiest, most intuitive, and powerful online tool for managing your journal club. Create
+                public or private journal clubs, set time and place of meeting, allow members to propose papers, and schedule
+                papers for discussion. All these features are just a few clicks away!
+            </p>
+        </div>
+
+        <div class="col-sm-4 mt-md-0 mt-5 pt-4">
+            <!-- Content -->
+            <img src="{% static 'catalog/papers.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
+            <p class="text-center mt-5">Take advantage of our large research paper database indexing all papers from arXiv.org and several other
+                open source conferences and journals. And if a paper is missing, then you can add it with just a couple of clicks.
+            </p>
+        </div>
+
+        <div class="col-sm-4 mt-md-0 mt-5 pt-4">
+            <!-- Content -->
+            <img src="{% static 'catalog/globe.png' %}" class="mx-auto d-block" alt="CSIRO and Data61 Logos">
+            <p class="text-center mt-5">Organize local and global journal clubs with no restriction on who can join. The Journal club is open
+                to everyone including academics, industry professionals, and citizen scientists who want to keep up with the state-of-the-art
+                in research.
+            </p>
+        </div>
+    </div>
 </div>
-{% endif %}
 
 {% endblock %}

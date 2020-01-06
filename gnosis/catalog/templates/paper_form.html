@@ -6,11 +6,6 @@
         <h3>Import Paper</h3>
     </div>
     <div class="card-body">
-
-        {% if message %}
-        <p class="bg-info text-center">{{ message }}</p>
-        {% endif %}
-
         <form action="" method="post">
             {% csrf_token %}
             <table class="w-100">

@@ -24,7 +24,7 @@
     animation: spin 2s linear infinite;
 }
 
-.spinner-grow {
+.spinner_grow {
     animation: spinner-grow 1.0s linear infinite;
     opacity: 0.5;
 }
@@ -41,12 +41,42 @@
     display: flex;
 }
 
-.header_icons .material-icons{
+.header_icons .material-icons {
     font-size: 48px;
 }
 
 .header_icons {
     margin-right: 20px;
+}
+
+.nav_theme {
+    color: rgba(0, 0, 0, .5);
+    padding-right: .5rem;
+    padding-left: .5rem
+}
+
+.nav_theme:hover {
+    color: rgba(0, 0, 0, .9);
+}
+
+
+.first_ellipsis, .last_ellipsis {
+    padding: 0 2px;
+    height: 7px;
+    vertical-align: middle
+}
+
+.page_prev i {
+    margin-right: 5px;
+}
+
+.page_next i {
+    margin-left: 5px;
+}
+
+.pagination.mobile .page-item{
+    text-align: center;
+    width: 108px;
 }
 
 @keyframes spin {
@@ -58,23 +88,14 @@
     }
 }
 
-@media screen and (max-width: 679px) {
-    #big {
-        display: none;
-    }
+@media screen and (max-width: 678px) {
+
     .flex-item {
         margin-top: 10px;
     }
 }
 
-@media screen and (min-width: 680px) {
-    #small {
-        display: none;
-    }
-
-}
-
-.float-container::after {
+.float_container::after {
     display: block;
     content: "";
     clear: both;

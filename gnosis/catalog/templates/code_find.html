@@ -3,11 +3,6 @@
 {% block content %}
 <div class="mt-5">
     <h4>Find Code</h4>
-
-    {% if message %}
-    <p class="bg-info">{{ message }}</p>
-    {% endif %}
-
     <form action="" method="post">
         {% csrf_token %}
         {{ form }}
