@@ -34,21 +34,8 @@ def add_author(paper_id):
         author_name = df_author.loc[df_author['id'] == author_id]['name'].iloc[0]
 
         if author_name is not None:
-            name = author_name.split(' ')
 
-            name_dict = {}
-
-            # if a name has at least one first name and one last name separated by space
-            if len(name) > 1:
-                name_dict['first_name'] = name[0]
-                name_dict['last_name'] = name[-1]
-                name_dict['middle_name'] = ' '.join(name[1:-1])
-
-            # if an author only has one name
-            else:
-                name_dict['last_name'] = name[-1]
-
-            names.append(name_dict)
+            names.append(author_name.strip())
 
     return names
 
