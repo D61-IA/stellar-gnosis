@@ -11,11 +11,7 @@
         {% for author, author_url in authors %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
-                {% if author.middle_name %}
-                <h4><a href="{{ author.get_absolute_url }}">{{ author.first_name }} {{ author.middle_name }} {{ author.last_name }}</a></h4>
-                {% else %}
-                <h4><a href="{{ author.get_absolute_url }}">{{ author.first_name }} {{ author.last_name }}</a></h4>
-                {% endif %}
+                <h4><a href="{{ author.get_absolute_url }}">{{ author.name }}</a></h4>
                 {% if author.affiliation %}
                 <p>Affiliation: {{ author.affiliation }}</p>
                 {% endif %}

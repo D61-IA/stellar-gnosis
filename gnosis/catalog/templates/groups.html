@@ -12,7 +12,7 @@
                 {% endfor %}
                 <br>
                 <div>
-                    <input type="submit" class="btn btn-primary btn-lg" value="Search Groups"/>
+                    <input type="submit" class="btn btn-primary btn-lg" value="Search Clubs"/>
                 </div>
             </form>
         </div>
@@ -21,9 +21,9 @@
 
     <div class="card shadow-sm mt-3">
         <div class="card-header">
-            <h4>Study/Reading Groups</h4>
+            <h4>Journal Clubs</h4>
             {% if user.is_authenticated %}
-                <a href="{% url 'group_create' %}" class="btn btn-primary float-right">Create Group</a>
+                <a href="{% url 'group_create' %}" class="btn btn-primary float-right">Create a Journal Club</a>
             {% endif %}
         </div>
 
@@ -35,7 +35,7 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#navmygroups">My Groups</a>
+                        <a class="nav-link" data-toggle="tab" href="#navmygroups">My Journal Clubs</a>
                     </li>
                 {% endif %}
             </ul>
@@ -75,7 +75,7 @@
                         </ul>
                     {% else %}
                         <div class="p-5">
-                            <p><i>No groups matching your query found.</i></p>
+                            <p><i>No matching journal clubs found.</i></p>
                         </div>
                     {% endif %}
                 </div>
@@ -98,7 +98,7 @@
                             {% include "pagination.html" %}
                         {% else %}
                             <dv class="p-5">
-                                <p><i>You have not joined any groups.</i></p>
+                                <p><i>You have not joined any journal clubs.</i></p>
                             </dv>
                         {% endif %}
                     </div>

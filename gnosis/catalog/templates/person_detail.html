@@ -8,17 +8,9 @@
     <div class="card-header">
         <h3>
             {% if person.website %}
-            {% if person.middle_name %}
-            <p><a href={{ person.website }}>{{ person.first_name}} {{person.middle_name}} {{person.last_name}}</a></p>
+                <p><a href={{ person.website }}>{{ person.name}}</a></p>
             {% else %}
-            <p><a href={{ person.website }}>{{ person.first_name}} {{person.last_name}}</a></p>
-            {% endif %}
-            {% else %}
-            {% if person.middle_name %}
-            <p>{{ person.first_name}} {{person.middle_name}} {{person.last_name}}</p>
-            {% else %}
-            <p>{{ person.first_name}} {{person.last_name}}</p>
-            {% endif %}
+                <p>{{ person.name}}</p>
             {% endif %}
             {% if user.is_authenticated %}
             <p><a href="{% url 'person_update' person.id %}" class="btn btn-sm btn-danger" role="button">Edit

@@ -18,7 +18,7 @@
             </div>
             <br>
            <div>
-              <input type="submit" class="btn btn-primary" value="Search"/>
+              <input type="submit" class="btn btn-primary" value="Search Authors"/>
           </div>
         </form>
     </div>
@@ -30,18 +30,11 @@
     {% paginate person_results %}
     <div class="card-body">
         {% for person in person_results %}
-
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                {% if person.middle_name %}
-                <p><a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.middle_name }}
-                    {{ person.last_name }}</a>
-                </p>
-                {% else %}
-                <p><a href="{{ person.get_absolute_url }}">{{ person.first_name }} {{ person.last_name }}</a></p>
-                {% endif %}
-            </li>
-        </ul>
+            <ul class="list-group">
+                <li class="list-group-item mt-1">
+                    <p><a href="{{ person.get_absolute_url }}">{{ person.name }}</a></p>
+                </li>
+            </ul>
         {% endfor %}
     </div>
 

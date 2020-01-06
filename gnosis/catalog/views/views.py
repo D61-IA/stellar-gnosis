@@ -183,21 +183,21 @@ def paper_detail(request, id):
 
     # Retrieve the paper's authors
     # authors is a list of strings so just concatenate the strings.
-    # ToDo: Improve this code to correctly handle middle names that are more than one word.
     authors_set = PaperAuthorRelationshipData.objects.filter(paper=paper).order_by('order')
     print(f"** Retrieved authors {authors_set}")
 
     authors = []
     for author in authors_set:
-        author = author.author
-        author_name = str(author)  # author.first_name[0]+'. '+author.middle_name
-        author_name = author_name.split()
-        if len(author_name) > 2:
-            authors.append(
-                author_name[0][0] + ". " + author_name[1][0] + ". " + author_name[2]
-            )
-        else:
-            authors.append(author_name[0][0] + ". " + author_name[1])
+        # author = author.author
+        # author_name = str(author)
+        # author_name = author_name.split()
+        # if len(author_name) > 2:
+        #     authors.append(
+        #         author_name[0][0] + ". " + author_name[1][0] + ". " + author_name[2]
+        #     )
+        # else:
+        #     authors.append(author_name[0][0] + ". " + author_name[1])
+        authors.append(author.author.name)
     authors = ", ".join(authors)
 
     codes = paper.code_set.all()
@@ -329,25 +329,16 @@ def _get_paper_author_network(main_paper, ego_json, offset=101):
     :return:
     """
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
-    author_str = ", {{data : {{id: '{}', first_name: '{}', middle_name: '{}', last_name: '{}', href: '{}', type: '{}', label: '{}'}} }}"
+    author_str = ", {{data : {{id: '{}', name: '{}', href: '{}', type: '{}', label: '{}'}} }}"
     # query for everything that points to the paper
     paper_authors = main_paper.person_set.all()
     print(f"paper authors {paper_authors}")
 
     line = "dashed"
     for author in paper_authors:
-        # reformat middle name from string "['mn1', 'mn2', ...]" to array ['mn1', 'mn2', ...]
-        middle_name = ""
-        if author.middle_name is not None:
-            middle_name = author.middle_name.replace("'", r"\'")
-            middle_name = middle_name.replace("[", r"")
-            middle_name = middle_name.replace("]", r"")
-
         ego_json += author_str.format(
             author.id + offset,
-            author.first_name,
-            middle_name,
-            author.last_name,
+            author.name,
             reverse("person_detail", kwargs={"id": author.id}),
             "Person",
             "authors",
@@ -725,12 +716,15 @@ def paper_add_to_group(request, id):
     # Combine the Query sets
     groups = list(chain(groups, groups_owner, groups_private))
 
-    group_urls = [
-        reverse("paper_add_to_group_selected", kwargs={"id": id, "gid": group.id})
-        for group in groups
-    ]
+    if len(groups) > 0:
+        group_urls = [
+            reverse("paper_add_to_group_selected", kwargs={"id": id, "gid": group.id})
+            for group in groups
+        ]
 
-    all_groups = zip(groups, group_urls)
+        all_groups = zip(groups, group_urls)
+    else:
+        all_groups = None
 
     return render(
         request, "paper_add_to_group.html", {"groups": all_groups, "message": message}
@@ -768,7 +762,7 @@ def paper_connect_author(request, id):
             name = form.cleaned_data["person_name"]
             # Search for people matching the name
             people_found = Person.objects.annotate(
-                search=SearchVector("first_name", "last_name", "middle_name")
+                search=SearchVector("name")
             ).filter(search=SearchQuery(name, search_type="plain"))
 
             print(people_found)
@@ -777,8 +771,8 @@ def paper_connect_author(request, id):
                 print("Found {} people that match".format(len(people_found)))
                 for person in people_found:
                     print(
-                        "\t{} {} {}".format(
-                            person.first_name, person.middle_name, person.last_name
+                        "\t{}".format(
+                            person.name
                         )
                     )
 
@@ -1108,47 +1102,44 @@ def _add_author(author, paper=None, order=1):
     :param paper:
     """
     link_with_paper = False
-    author_name = author.strip().split(" ")
+    # author_name = author.strip().split(" ")
 
-    if len(author_name) > 2:
-        people_found = Person.objects.filter(
-            first_name=author_name[0],
-            middle_name=author_name[1],
-            last_name=author_name[2],
-        )
-    else:
-        people_found = Person.objects.filter(
-            first_name=author_name[0], last_name=author_name[1]
-        )
+    people_found = Person.objects.filter(name=author, )
 
-    print("**** People matching query {} ****".format(author_name))
+    # if len(author_name) > 2:
+    #     people_found = Person.objects.filter(
+    #         first_name=author_name[0],
+    #         middle_name=author_name[1],
+    #         last_name=author_name[2],
+    #     )
+    # else:
+    #     people_found = Person.objects.filter(
+    #         first_name=author_name[0], last_name=author_name[1]
+    #     )
+
+    print("**** People matching query {} ****".format(author))
     print(people_found)
 
     if people_found.count() == 0:  # not in DB
         print("Author {} not in DB".format(author))
         p = Person()
-        p.first_name = author_name[0]
-
-        if len(author_name) > 2:  # has middle name(s)
-            p.middle_name = author_name[1:-1]
-        # else:
-        #     p.middle_name = None
-        p.last_name = author_name[-1]
+        p.name = author
         print("**** Person {} ***".format(p))
         p.save()  # save to DB
         link_with_paper = True
     elif people_found.count() == 1:
         # Exactly one person found. Check if name is an exact match.
         p = people_found[0]
-        print("Author {} found in DB with name {}".format(author_name, p))
+        print("Author {} found in DB with name {}".format(author, p))
         # NOTE: The problem with this simple check is that if two people have
         # the same name then the wrong person will be linked to the paper.
-        if p.first_name == author_name[0] and p.last_name == author_name[-1]:
-            if len(author_name) > 2:
-                if p.middle_name == author_name[1:-1]:
-                    link_with_paper = True
-            else:
-                link_with_paper = True
+        link_with_paper = True
+        # if p.first_name == author_name[0] and p.last_name == author_name[-1]:
+        #     if len(author_name) > 2:
+        #         if p.middle_name == author_name[1:-1]:
+        #             link_with_paper = True
+        #     else:
+        #         link_with_paper = True
     else:
         print("Person with similar but not exactly the same name is already in DB.")
 
