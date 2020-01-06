@@ -51,7 +51,7 @@
             <h4>
                 <div style="display: flex; align-content: space-between; justify-content: space-between">
                     <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
-                        target="_blank">Download</a>
+                            target="_blank">Download</a>
                         {% if user.is_authenticated %}
                             <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
                                role="button">
@@ -146,62 +146,55 @@
         <div id="ego_graph_content">
 
             <div class="ego_button_container">
-                <div class="flex_layout_row legend_container">
-                    <div id="paper_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend paper"></span> Paper
-                    </div>
-                    <div id="person_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend person"></span> Person
-                    </div>
-                    <div id="venue_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend venue"></span> Venue
-                    </div>
-                    <div id="code_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend code"></span> Code
-                    </div>
-                    <div id="dataset_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend dataset"></span>
-                        Dataset
-                    </div>
+                <div id="paper_filter" class="flex_layout_col legend_ele"><span
+                        class="color_legend paper"></span> Paper
                 </div>
-
-                <div class="flex_layout_row widget_container">
-                    <div id="hide_refresh" class="flex_layout_row" style="padding: 5px">
-                        <button id="ego_button_reset" type="button"
-                                class="btn btn-primary ego_button" title="Reset">
-                            <i class="material-icons">
-                                refresh
-                            </i>
-                        </button>
-                        <button id="ego_button_toggle" type="button"
-                                class="btn btn-primary ego_button" title="Hide relationships"
-                                data-toggle="button"
-                                aria-pressed="false">
-                            <i class="material-icons" id="rela_toggle">
-                                visibility
-                            </i>
-                        </button>
-
-                    </div>
-
-                    <div class="flex_layout_row" style="padding-right: 5px">
-                        <select id="graphfilter"
-                                style="height: 35px; margin-top: auto; margin-bottom: auto">
-                            <option value="all"> all</option>
-                            <option value="cites"> cites</option>
-                            <option value="uses"> uses</option>
-                            <option value="extends"> extends</option>
-                            <option value="authors"> authors</option>
-                            <option value="was published at"> was published at</option>
-                            <option value="evaluates on"> evaluates on</option>
-                            <option value="published"> published</option>
-                            <option value="implements"> implements</option>
-                        </select>
-                    </div>
+                <div id="person_filter" class="flex_layout_col legend_ele"><span
+                        class="color_legend person"></span> Person
+                </div>
+                <div id="venue_filter" class="flex_layout_col legend_ele"><span
+                        class="color_legend venue"></span> Venue
+                </div>
+                <div id="code_filter" class="flex_layout_col legend_ele"><span
+                        class="color_legend code"></span> Code
+                </div>
+                <div id="dataset_filter" class="flex_layout_col legend_ele"><span
+                        class="color_legend dataset"></span>
+                    Dataset
                 </div>
             </div>
 
-            <div class="card-body" style="padding-top: 0">
+            <div class="ego_button_container" style="justify-content: center">
+                <div class="widget_container">
+                    <button id="ego_button_reset" type="button"
+                            class="btn btn-primary ego_button" title="Reset">
+                        <i class="material-icons">
+                            refresh
+                        </i>
+                    </button>
+                    <select id="graphfilter">
+                        <option value="all"> all</option>
+                        <option value="cites"> cites</option>
+                        <option value="uses"> uses</option>
+                        <option value="extends"> extends</option>
+                        <option value="authors"> authors</option>
+                        <option value="was published at"> was published at</option>
+                        <option value="evaluates on"> evaluates on</option>
+                        <option value="published"> published</option>
+                        <option value="implements"> implements</option>
+                    </select>
+                    <button id="ego_button_toggle" type="button"
+                            class="btn btn-primary ego_button" title="Hide relationships"
+                            data-toggle="button"
+                            aria-pressed="false">
+                        <i class="material-icons" id="rela_toggle">
+                            visibility
+                        </i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body" style="padding: 0">
 
                 <div id="cy">
                     <div id="tooltip" hidden>

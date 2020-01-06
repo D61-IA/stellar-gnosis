@@ -1,3 +1,10 @@
+#cy {
+    max-height: 600px;
+!important;
+    display: block;
+}
+
+
 .color_legend {
     display: inline-block;
     width: 25px;
@@ -6,10 +13,6 @@
     vertical-align: bottom;
     margin-left: auto;
     margin-right: auto
-}
-
-.legend_label {
-    font-size: 100%;
 }
 
 .paper {
@@ -41,6 +44,7 @@
     margin: 2px;
 }
 
+
 .ego_button_container {
     display: flex;
     z-index: 1000;
@@ -49,10 +53,27 @@
     background-color: ghostwhite;
 }
 
+#hide_refresh {
+    z-index: 1000;
+}
+
 #ego_header {
     display: flex;
     flex-direction: row;
     justify-content: space-between
+}
+
+#graphfilter {
+    z-index: 1000;
+    height: 30px;
+    font-size: 80%;
+
+    margin-top: auto;
+    margin-bottom: auto
+}
+
+.ego_button {
+    padding: .2rem .25rem;
 }
 
 .flex_layout_row {
@@ -70,8 +91,9 @@
 }
 
 .legend_ele {
-    padding: 5px 20px;
+    padding: 5px 5px;
     user-select: none;
+    font-size: 80%;
 }
 
 .legend_ele:hover {
@@ -80,8 +102,10 @@
     cursor: pointer;
 }
 
+
 .widget_container {
-    justify-content: flex-end;
+    justify-content: center;
+
 }
 
 #ego_header:hover {
@@ -109,29 +133,39 @@
     text-align: left
 }
 
-@media only screen and (max-width: 768px) {
-    .legend_ele {
-        padding: 5px 10px;
-    }
-}
 
-@media only screen and (max-width: 678px) {
-    #hide_refresh {
-        position: absolute;
-        flex-direction: column;
-        top: 130px;
-    }
+/*@media only screen and (max-width: 678px) {*/
+/*    #hide_refresh {*/
+/*        position: absolute;*/
+/*        flex-direction: column;*/
+/*        top: 110px;*/
+/*        right: 0;*/
+/*    }*/
 
-    .widget_container {
-        width: auto;
-    }
-}
+/*    #graphfilter {*/
+/*        position: absolute;*/
+/*        top: 110px;*/
+/*        left: 5px;*/
+/*    }*/
 
-@media only screen and (max-width: 550px) {
-    .legend_ele {
-        padding: 5px;
-    }
-}
+/*    .color_legend {*/
+/*        width: 20px;*/
+/*        height: 20px;*/
+/*    }*/
+
+/*    .legend_container {*/
+/*        width: 100%;*/
+/*    }*/
+
+/*}*/
+
+/*@media only screen and (max-width: 500px) {*/
+/*    .legend_ele {*/
+/*        padding: 5px 5px;*/
+/*        user-select: none;*/
+/*        font-size: 80%;*/
+/*    }*/
+/*}*/
 
 
 
