@@ -633,3 +633,29 @@ class Endorsement(models.Model):
 
     def __str__(self):
         return str(self.user) + " endorse " + str(self.paper.title)
+
+
+# class PaperFeedback(models.Model):
+#
+#     #Fields
+#     title = models.CharField(max_length=500, blank=False)
+#     abstract = models.TextField(blank=False)
+#     keywords = models.CharField(max_length=125, blank=True)
+#     # download_link = models.CharField(max_length=250, blank=False)
+#     download_link = models.CharField(
+#         max_length=2000, blank=False, null=False, validators=[URLValidator()]
+#     )
+#
+# class Feedback(models.Model):
+#
+#     ratings = (
+#         ("dislike", "dislike"),
+#         ("unsatisfied", "unsatisfied"),
+#         ("neutral", "neutral"),
+#         ("happy", "happy"),
+#         ("enjoy", "enjoy"),
+#     )
+#
+#     #Fields
+#     feedback = models.TextField(blank=False)
+#     rating = models.CharField(choices=ratings, null=False, blank=False)
