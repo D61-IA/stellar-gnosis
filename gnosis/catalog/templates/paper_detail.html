@@ -109,7 +109,15 @@
                         </div>
                     </div>
                 {% endif %}</h4>
-            <button id="report_error" class="btn btn-danger btn-sm" data-url="{% url 'paper_error_report' paper.id%}">Report</button>
+
+            {% if user.is_authenticated %}
+                <button id="report_error" class="btn btn-danger btn-sm popup_opener"
+                        data-url="{% url 'paper_error_report' paper.id %}">
+                    Report
+                </button>
+            {% else %}
+                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report</a>
+            {% endif %}
         </div>
     </div>
     {% if user.is_authenticated and user.is_superuser %}

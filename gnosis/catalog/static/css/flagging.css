@@ -36,7 +36,7 @@
 
 }
 
-#flag_form_dialog {
+#flag_form_dialog, #error_form_dialog {
     position: fixed;
     background-color: white;
     padding: 20px;
@@ -45,6 +45,11 @@
     margin-left: -181.5px;
     margin-top: -240px;
     z-index: 3000;
+}
+
+#id_violation, #id_error_field {
+    list-style-type: none;
+    padding: 0;
 }
 
 #msg_dialog {
@@ -67,10 +72,6 @@
     justify-content: flex-end;
 }
 
-#id_violation {
-    list-style-type: none;
-    padding: 0;
-}
 
 .ok_container {
     display: flex;

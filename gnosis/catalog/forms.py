@@ -724,19 +724,19 @@ class PaperFeedbackForm(ModelForm):
             ("venue", "Venue"),
         )
 
-        self.fields["error_field"].widget = forms.ChoiceField(choices=options, widget=forms.RadioSelect())
-        self.fields["description"].widget = forms.Textarea()
-        self.fields["description"].widget.attrs.update({"rows": "5"})
+        self.fields["error_field"] = forms.ChoiceField(choices=options, widget=forms.RadioSelect())
+        self.fields["description_fb"].widget = forms.Textarea()
+        self.fields["description_fb"].widget.attrs.update({"rows": "5"})
 
-        self.fields["description"].label = "Description"
+        self.fields["description_fb"].label = "Description"
         self.fields["error_field"].label = "Error field"
 
     def clean_error_field(self):
         return self.cleaned_data["error_field"]
 
     def clean_description(self):
-        return self.cleaned_data["description"]
+        return self.cleaned_data["description_fb"]
 
     class Meta:
         model = PaperFeedback
-        fields = ['error_field', 'description']
+        fields = ['error_field', 'description_fb']

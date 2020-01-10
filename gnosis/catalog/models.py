@@ -642,10 +642,10 @@ class PaperFeedback(models.Model):
         ("venue", "Venue"),
     )
     # user must select where the error occurs
-    error_field = models.CharField(maxlength=20, choices=options, null=False, blank=False)
+    error_field = models.CharField(max_length=20, choices=options, null=False, blank=False)
     # The description is made optional
-    description = models.TextField(null=False, blank=True)
-    # user who flagged the comment
+    description_fb = models.TextField(null=False, blank=True)
+    # user who made the feedback
     proposed_by = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name="paper_feedback"
     )
@@ -658,3 +658,6 @@ class PaperFeedback(models.Model):
     class Meta:
         ordering = ["error_field", "-created_at"]
         verbose_name = "paper feedback"
+
+    def __str__(self):
+        return str(self.error_field)

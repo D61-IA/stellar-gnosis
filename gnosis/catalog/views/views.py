@@ -252,16 +252,16 @@ def paper_detail(request, id):
     )
 
 
-def paper_error_report(request, pid):
+def paper_error_report(request, id):
     """upload error information to DB"""
-    paper = get_object_or_404(Paper, pk=pid)
+    paper = get_object_or_404(Paper, pk=id)
     paper_feedback = PaperFeedback()
     if request.method == "POST":
         print("POST")
         form = PaperFeedbackForm(request.POST)
         if form.is_valid():
             paper_feedback.error_field = form.cleaned_data["error_field"]
-            paper_feedback.description = form.cleaned_data["description"]
+            paper_feedback.description_fb = form.cleaned_data["description_fb"]
             paper_feedback.made_for = paper
             paper_feedback.proposed_by = request.user
             paper_feedback.save()

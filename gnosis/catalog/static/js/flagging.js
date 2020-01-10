@@ -19,7 +19,6 @@ $('.open_flag_dialog').click(function () {
 
 $('#report_error').click(function () {
     $this_url = $(this).attr('data-url');
-
     // hide all current popups
     $('.popup').attr('hidden', true);
     $('#error_form_container').attr('hidden', false);
@@ -119,5 +118,10 @@ form.submit(function (e) {
     } else {
         alert('unidentified paper. Please refresh')
     }
+});
+
+// remove response message by clicking on ok button
+$('.response_ok').click(function () {
+    $('#response_msg').attr('hidden', true)
 });
 
