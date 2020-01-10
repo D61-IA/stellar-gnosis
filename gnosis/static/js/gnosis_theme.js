@@ -71,3 +71,7 @@ $(document).click(function (e) {
         $container.attr('hidden', true);
     }
 });
+
+$('.response_ok').click(function () {
+    $('#response_msg').attr('hidden', true)
+});

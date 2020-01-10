@@ -120,8 +120,3 @@ form.submit(function (e) {
     }
 });
 
-// remove response message by clicking on ok button
-$('.response_ok').click(function () {
-    $('#response_msg').attr('hidden', true)
-});
-
