@@ -51,7 +51,7 @@
             <h4>
                 <div style="display: flex; align-content: space-between; justify-content: space-between">
                     <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
-                        target="_blank">Download</a>
+                            target="_blank">Download</a>
                         {% if user.is_authenticated %}
                             <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
                                role="button">
@@ -107,10 +107,9 @@
                             <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
                             <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>
                         </div>
-
-
                     </div>
                 {% endif %}</h4>
+            <button id="report_error" class="btn btn-danger btn-sm" data-url="{% url 'paper_error_report' paper.id%}">Report</button>
         </div>
     </div>
     {% if user.is_authenticated and user.is_superuser %}
@@ -422,7 +421,39 @@
                 </table>
                 <br/>
                 <div class="form_button_container">
-                    <button id="cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                    <button id="flag_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                        Cancel
+                    </button>
+                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="error_form_container" class="cover popup" hidden>
+        <div id="error_form_dialog" class="box_shadow">
+            <form id="error_form" action="" method="post">
+                {% csrf_token %}
+                <table class="w-75">
+                    {% for field in error_form %}
+                        <div style="font-weight: bold">
+                            {{ field.label_tag }}
+                        </div>
+                        <div style="padding: 0 10px">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                            {{ field.help_text }}
+                        {% endif %}
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+                <br/>
+                <div class="form_button_container">
+                    <button id="error_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
                         Cancel
                     </button>
                     <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
