@@ -720,8 +720,8 @@ class PaperFeedbackForm(ModelForm):
             ("title", "Title"),
             ("abstract", "Abstract"),
             ("authors", "Authors"),
-            ("download", "Download link"),
             ("venue", "Venue"),
+            ("download", "Download link"),
         )
 
         self.fields["error_field"] = forms.ChoiceField(choices=options, widget=forms.RadioSelect())
@@ -729,7 +729,7 @@ class PaperFeedbackForm(ModelForm):
         self.fields["description_fb"].widget.attrs.update({"rows": "5"})
 
         self.fields["description_fb"].label = "Description"
-        self.fields["error_field"].label = "Error field"
+        self.fields["error_field"].label = "Where"
 
     def clean_error_field(self):
         return self.cleaned_data["error_field"]

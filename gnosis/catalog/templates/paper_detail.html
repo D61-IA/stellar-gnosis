@@ -113,10 +113,10 @@
             {% if user.is_authenticated %}
                 <button id="report_error" class="btn btn-danger btn-sm popup_opener"
                         data-url="{% url 'paper_error_report' paper.id %}">
-                    Report
+                    Report Error
                 </button>
             {% else %}
-                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report</a>
+                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report Error</a>
             {% endif %}
         </div>
     </div>
