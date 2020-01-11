@@ -1,6 +1,6 @@
 import pandas as pd
 from sys import exit
-from catalog.models import Person
+from catalog.models import Person, Paper
 from time import time
 
 
@@ -17,14 +17,41 @@ def load_authors(authors_ser):
         # count += 1
         # if count > 3:
         #     break
-    print(person_objects)
+    # print(person_objects)
     time_before = time()
     Person.objects.bulk_create(person_objects, ignore_conflicts=True)
     time_after = time()
     print(f"Insert took time {time_after-time_before} secs")
     print(f"Number of authors: {len(person_objects)}")
-    print(f"Insert time per author: {(time_after-time_before)/len(person_objects)} secs")
+    print(
+        f"Insert time per author: {(time_after-time_before)/len(person_objects)} secs"
+    )
 
+
+def load_papers(df):
+    paper_objects = []
+    # count = 0
+
+    for index, row in df.iterrows():
+        # count += 1
+        paper_objects.append(
+            Paper(
+                title=row["title"],
+                abstract=row["abstract"].replace('\n', ' '),
+                download_link=row["pdf"],
+                source_link=row["url"],
+            )
+        )
+        # if count > 3:
+        #     break
+    time_before = time()
+    Paper.objects.bulk_create(paper_objects, ignore_conflicts=True)
+    time_after = time()
+    print(f"Insert took time {time_after-time_before} secs")
+    print(f"Number of papers: {len(paper_objects)}")
+    print(
+        f"Insert time per paper: {(time_after-time_before)/len(paper_objects)} secs"
+    )
 
 def test_load_authors():
     """ Simple test for script's behavior on duplicate names"""
@@ -44,8 +71,9 @@ def main():
 
     df = pd.read_csv(filename)
 
-    load_authors(authors_ser=df['authors'])
-    #test_load_authors()
+    # load_authors(authors_ser=df["authors"])
+    # test_load_authors()
+    load_papers(df)
 
 
 if __name__ == "__main__":

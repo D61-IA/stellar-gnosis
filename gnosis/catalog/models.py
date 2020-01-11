@@ -121,7 +121,7 @@ def save_user_profile(sender, instance, **kwargs):
 class Paper(models.Model):
 
     # These are always required
-    title = models.CharField(max_length=500, blank=False)
+    title = models.CharField(max_length=2048, blank=False, unique=True)
     abstract = models.TextField(blank=False)
     keywords = models.CharField(max_length=125, blank=True)
     # download_link = models.CharField(max_length=250, blank=False)
@@ -132,7 +132,7 @@ class Paper(models.Model):
     doi = models.TextField(null=False, blank=True, default='')
     is_public = models.BooleanField(default=True, null=False, blank=False)
     # added source link for a paper to record the source website which the information of paper is collected
-    source_link = models.CharField(max_length=250, blank=True)
+    source_link = models.CharField(max_length=2000, blank=True)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
