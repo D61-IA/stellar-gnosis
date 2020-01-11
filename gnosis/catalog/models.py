@@ -273,7 +273,7 @@ class Comment(models.Model):
 class Person(models.Model):
 
     # These are always required
-    name = models.TextField(max_length=1024, blank=False, null=False, default='')
+    name = models.TextField(max_length=1024, unique=True, blank=False, null=False, default='')
     affiliation = models.CharField(max_length=250, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
 
