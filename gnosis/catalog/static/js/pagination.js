@@ -54,4 +54,23 @@ function pagination(current, first, last) {
         $('.last_ellipsis').css('display', 'none');
 
     }
+
+    /************** hide/show elements depending on current display width **************/
+    if ($(window).width() <= 678) {
+        $('.mobile').css('display', '');
+        $('.desktop').css('display', 'none');
+    } else {
+        $('.mobile').css('display', 'none');
+        $('.desktop').css('display', '');
+    }
+
+    $(window).resize(function () {
+        if ($(window).width() <= 678) {
+            $('.mobile').css('display', '');
+            $('.desktop').css('display', 'none');
+        } else {
+            $('.mobile').css('display', 'none');
+            $('.desktop').css('display', '');
+        }
+    });
 }
