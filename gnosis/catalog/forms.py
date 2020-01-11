@@ -344,7 +344,7 @@ class DatasetForm(ModelForm):
         self.fields["dataset_type"].label = "Type"
         self.fields["publication_year"].label = "Publication Year"
         self.fields["publication_month"].label = "Publication Month"
-        self.fields["website"].label = "Website (http:// or https://)"
+        self.fields["website"].label = "Website ( requires http:// or https://)"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
@@ -389,12 +389,12 @@ class VenueForm(ModelForm):
 
         self.fields["name"].label = "Name"
         self.fields["publisher"].label = "Publisher"   
-        self.fields["publication_year"].label = "Publication Year (yyyy)"
-        self.fields["publication_month"].label = "Publication Month (mm)"
+        self.fields["publication_year"].label = "Publication Year"
+        self.fields["publication_month"].label = "Publication Month"
         self.fields["venue_type"].label = "Type"
         self.fields["peer_reviewed"].label = "Peer Reviewed"
         self.fields["keywords"].label = "Keywords"
-        self.fields["website"].label = "Website (http:// or https://)"
+        self.fields["website"].label = "Website (required http:// or https://)"
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
