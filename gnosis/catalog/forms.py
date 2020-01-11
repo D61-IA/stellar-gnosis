@@ -546,8 +546,8 @@ class GroupForm(ModelForm):
         self.fields["room"].widget.attrs.update({"rows": "1"})
 
         self.fields["day"].label = "Day"
-        self.fields["start_time"].label = "Start Time (HH/MM/SS)"
-        self.fields["end_time"].label = "Finish Time (HH/MM/SS)"
+        self.fields["start_time"].label = "Start Time (HH:MM:SS)"
+        self.fields["end_time"].label = "Finish Time (HH:MM:SS)"
         self.fields["timezone"].label = "Timezone"
         self.fields["keywords"].label = "Keywords"
         self.fields["slack"].label = "Slack (requires https://)"
