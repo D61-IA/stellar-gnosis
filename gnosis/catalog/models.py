@@ -329,6 +329,8 @@ class Dataset(models.Model):
         for month in range(1, 13)
     ]
 
+    years = list(zip(range(2020,1974, -1), range(2020, 1974, -1)))
+
     # These are always required
     name = models.CharField(max_length=300, blank=False)
     # keywords that describe the dataset
@@ -337,7 +339,8 @@ class Dataset(models.Model):
     description = models.TextField(blank=False, null=False)
     # The date of publication.
     publication_year = models.SmallIntegerField(
-        blank=False, validators=[MaxValueValidator(2020), MinValueValidator(1900)]
+        blank=False,
+        choices=years,
     )
     publication_month = models.CharField(max_length=25, blank=True, choices=months)
 
