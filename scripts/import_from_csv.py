@@ -32,6 +32,9 @@ def load_authors(authors_ser):
         f"Insert time per author: {(time_after-time_before)/len(person_objects)} secs"
     )
 
+    # TODO: Create a dictionary mapping author names in author_names set to their corresponding DB
+    # IDs so that we can quickly lookup the author ids when associating authors with papers.
+
     return person_models
 
 
