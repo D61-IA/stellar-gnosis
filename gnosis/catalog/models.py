@@ -121,7 +121,7 @@ def save_user_profile(sender, instance, **kwargs):
 class Paper(models.Model):
 
     # These are always required
-    title = models.CharField(max_length=2048, blank=False, unique=True)
+    title = models.CharField(max_length=2048, blank=False)
     abstract = models.TextField(blank=False)
     keywords = models.CharField(max_length=125, blank=True)
     # download_link = models.CharField(max_length=250, blank=False)
