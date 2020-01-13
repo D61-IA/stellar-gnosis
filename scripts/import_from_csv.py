@@ -1,6 +1,6 @@
 import pandas as pd
 from sys import exit
-from catalog.models import Person, Paper
+from catalog.models import Person, Paper, PaperAuthorRelationshipData
 from time import time
 
 
@@ -64,11 +64,33 @@ def load_papers(df):
     return paper_models
 
 
+def test_load_papers():
+    """Simple test for loading a paper"""
+
+    papers = [
+        Paper(
+            title="This is a paper",
+            abstract="The meaning of life, universe and everything else.",
+            download_link="https://scholar.google.com",
+            source_link="https://scholar.google.com",
+        )
+    ]
+
+    time_before = time()
+    paper_models = Paper.objects.bulk_create(papers, ignore_conflicts=False)
+    time_after = time()
+    print(f"Insert took time {time_after-time_before} secs")
+    print(f"Number of papers: {len(paper_models)}")
+    print(f"Insert time per paper: {(time_after-time_before)/len(paper_models)} secs")
+
+    return paper_models
+
+
 def test_load_authors():
     """ Simple test for script's behavior on duplicate names"""
-    num_authors = 1
     print("in test_load_authors()")
-    authors = [Person(name="Pantelis Elinas"),] * num_authors
+    authors = [Person(name="Pantelis Elinas"), Person(name="Fiona Elliott")]
+    num_authors = len(authors)
     # print(f"authors: {authors}")
     time_before = time()
     person_models = Person.objects.bulk_create(authors, ignore_conflicts=False)
@@ -76,6 +98,23 @@ def test_load_authors():
     print(f"Insert took time {time_after-time_before} secs")
     print(f"Insert time per author: {(time_after-time_before)/num_authors} secs")
     return person_models
+
+
+def test_load_paper_author_relationships(paper_models, person_models):
+
+    paper_and_authors = [
+        PaperAuthorRelationshipData(
+            order=1, paper=paper_models[0], author=person_models[0]
+        ),
+        PaperAuthorRelationshipData(
+            order=2, paper=paper_models[0], author=person_models[1]
+        ),
+    ]
+    paper_and_author_models = PaperAuthorRelationshipData.objects.bulk_create(
+        paper_and_authors, ignore_conflicts=False
+    )
+
+    return paper_and_author_models
 
 
 def main():
@@ -86,6 +125,7 @@ def main():
     # just delete all the papers and authors before moving on.
     Person.objects.all().delete()
     Paper.objects.all().delete()
+    PaperAuthorRelationshipData.objects.all().delete()
 
     # load_authors(authors_ser=df["authors"])
     person_models = test_load_authors()
@@ -94,6 +134,18 @@ def main():
         print(f"{model}")
         print(f"{model.pk} {model.id}")
         print(f"{type(model)}")
+    #
+    paper_models = test_load_papers()
+    for model in paper_models:
+        print(f"{model}")
+        print(f"{model.pk} {model.id}")
+        print(f"{type(model)}")
+
+    paper_author_models = test_load_paper_author_relationships(
+        paper_models, person_models
+    )
+    print(f"{paper_author_models}")
+
     # load_papers(df)
 
 
