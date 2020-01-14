@@ -7,7 +7,6 @@ from time import time
 def load_authors(authors_ser):
 
     person_objects = []
-    count = 0
     author_names = []
     for authors in authors_ser:
         # if more than one authors the names are comma separated
@@ -32,18 +31,19 @@ def load_authors(authors_ser):
         f"Insert time per author: {(time_after-time_before)/len(person_objects)} secs"
     )
 
-    # TODO: Create a dictionary mapping author names in author_names set to their corresponding DB
+    # Create a dictionary mapping author names in author_names set to their corresponding DB
     # IDs so that we can quickly lookup the author ids when associating authors with papers.
+    person_name_to_model_dict = dict(zip(author_names, person_models))
 
-    return person_models
+    return person_name_to_model_dict
 
 
-def load_papers(df):
+def load_papers(df, limit=True):
     paper_objects = []
-    # count = 0
+    count = 0
 
     for index, row in df.iterrows():
-        # count += 1
+        count += 1
         paper_objects.append(
             Paper(
                 title=row["title"],
@@ -52,8 +52,8 @@ def load_papers(df):
                 source_link=row["url"],
             )
         )
-        # if count > 3:
-        #     break
+        if limit and count > 3:
+            break
     time_before = time()
     # NOTE: We have to set ignore_conflicts to False if we want to get back the id for each
     # entry loaded into the DB. We need to make sure that paper titles are unique before
@@ -104,7 +104,6 @@ def test_load_authors():
 
 
 def test_load_paper_author_relationships(paper_models, person_models):
-
     paper_and_authors = [
         PaperAuthorRelationshipData(
             order=1, paper=paper_models[0], author=person_models[0]
@@ -120,36 +119,64 @@ def test_load_paper_author_relationships(paper_models, person_models):
     return paper_and_author_models
 
 
-def main():
-    filename = "/home/elinas/Projects/stellar-gnosis/scripts/papers.csv"
+def load_paper_author_relationships(df, paper_models, person_name_to_model_dict, limit=True):
+    count = 0
+    paper_and_authors = []
+    # for each paper in the data
+    for index, row in df.iterrows():
+        count += 1
+        # iterate over the authors keeping track of the order, 1st, 2nd, 3rd, etc.
+        # print(f"row['authors']: {row['authors']}")
+        for order, author in enumerate(row["authors"].split(",")):
+            # print(f"\t\t author: {author}  order: {order}")
+            paper_and_authors.append(
+                PaperAuthorRelationshipData(
+                    order=order+1, paper=paper_models[index], author=person_name_to_model_dict[author]
+                ),
+            )
+        if limit and count > 3:
+            break
 
-    df = pd.read_csv(filename)
+    paper_and_author_models = PaperAuthorRelationshipData.objects.bulk_create(
+        paper_and_authors, ignore_conflicts=False
+    )
+
+    return paper_and_author_models
+
+
+def main():
+    use_test_data = False
+    filename = "/home/elinas/Projects/stellar-gnosis/scripts/papers.csv"
 
     # just delete all the papers and authors before moving on.
     Person.objects.all().delete()
     Paper.objects.all().delete()
     PaperAuthorRelationshipData.objects.all().delete()
 
-    # load_authors(authors_ser=df["authors"])
-    person_models = test_load_authors()
-    print(f"{person_models}")
-    for model in person_models:
-        print(f"{model}")
-        print(f"{model.pk} {model.id}")
-        print(f"{type(model)}")
-    #
-    paper_models = test_load_papers()
-    for model in paper_models:
-        print(f"{model}")
-        print(f"{model.pk} {model.id}")
-        print(f"{type(model)}")
+    if use_test_data:
+        person_models = test_load_authors()
+        print(f"{person_models}")
+        for model in person_models:
+            print(f"{model}")
+            print(f"{model.pk} {model.id}")
+            print(f"{type(model)}")
+        #
+        paper_models = test_load_papers()
+        for model in paper_models:
+            print(f"{model}")
+            print(f"{model.pk} {model.id}")
+            print(f"{type(model)}")
 
-    paper_author_models = test_load_paper_author_relationships(
-        paper_models, person_models
-    )
-    print(f"{paper_author_models}")
-
-    # load_papers(df)
+        paper_author_models = test_load_paper_author_relationships(
+            paper_models, person_models
+        )
+        print(f"{paper_author_models}")
+    else:
+        limit=False
+        df = pd.read_csv(filename)
+        person_name_to_model_dict = load_authors(authors_ser=df["authors"])
+        paper_models = load_papers(df, limit=limit)
+        load_paper_author_relationships(df, paper_models, person_name_to_model_dict, limit=limit)
 
 
 if __name__ == "__main__":

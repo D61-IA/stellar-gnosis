@@ -66,7 +66,7 @@ def papers(request):
     all_papers = Paper.objects.filter(is_public=True).order_by("-created_at")[:100]
 
     if request.method == "POST":
-        form = SearchPapersForm(request.POST)
+        form = SearchPapersForm(request.POST) 
         print("papers: Received POST request")
         if form.is_valid():
             paper_title = form.cleaned_data["paper_title"].lower()
