@@ -152,6 +152,7 @@ def main():
     Person.objects.all().delete()
     Paper.objects.all().delete()
     PaperAuthorRelationshipData.objects.all().delete()
+    print("Deleted all existing objects from database.")
 
     if use_test_data:
         person_models = test_load_authors()
@@ -173,11 +174,14 @@ def main():
         print(f"{paper_author_models}")
     else:
         limit=False
-        df = pd.read_csv(filename)
+        df = pd.read_csv(filename, encoding='utf-8')
+        print("Read pdf file.")
         person_name_to_model_dict = load_authors(authors_ser=df["authors"])
+        print("Loaded authors")
         paper_models = load_papers(df, limit=limit)
+        print("Loaded papers")
         load_paper_author_relationships(df, paper_models, person_name_to_model_dict, limit=limit)
-
+        print("Done!")
 
 if __name__ == "__main__":
     exit(main())

@@ -188,15 +188,6 @@ def paper_detail(request, id):
 
     authors = []
     for author in authors_set:
-        # author = author.author
-        # author_name = str(author)
-        # author_name = author_name.split()
-        # if len(author_name) > 2:
-        #     authors.append(
-        #         author_name[0][0] + ". " + author_name[1][0] + ". " + author_name[2]
-        #     )
-        # else:
-        #     authors.append(author_name[0][0] + ". " + author_name[1])
         authors.append(author.author.name)
     authors = ", ".join(authors)
 

@@ -49,8 +49,10 @@ def main(input_dir, output_dir, csv, append):
 
     data = []  # list of dictionaries holding data for each paper
 
-    for xml_file in xml_files:
+    for index, xml_file in enumerate(xml_files):
         #print(f"File: {xml_file}")
+        if index % 1000:
+            print(f"Processed {index} xml files.")
         tree = ET.parse(os.path.join(input_dir, xml_file))
         root = tree.getroot()
         paper_data = {}
@@ -68,7 +70,7 @@ def main(input_dir, output_dir, csv, append):
             elif child.tag.endswith('authors'):
                 author_names = []
                 for author in child:
-                    print(author)
+                    # print(author)
                     name = []
                     for name_part in author:
                         if name_part.tag.endswith('forenames'):
@@ -81,7 +83,7 @@ def main(input_dir, output_dir, csv, append):
     
     df = pd.DataFrame(data)
     print(df.head())
-    df.to_csv("papers.csv")
+    df.to_csv(csv)
 
     return 0
 
