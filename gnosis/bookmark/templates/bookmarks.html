@@ -4,7 +4,7 @@
 
     <div class="card shadow-sm text-center mt-3">
         <div class="card-body">
-            <form action="{% url 'bookmark_search' %}" method="post">
+            <form action="" id="bm_form" method="post">
                 {% csrf_token %}
 
                 <input type="text" name="keywords" size="60" class="form-control" required="" id="id_bm_search">
@@ -14,6 +14,13 @@
             </form>
         </div>
     </div>
+
+    <script>
+        $('#bm_submit').click(function(e){
+            e.preventDefault();
+            $('#bm_form').attr('action', $('#id_bm_search').val()).submit();
+        })
+    </script>
 
     <div class="card shadow-sm mt-3">
         <div class="card-header">
