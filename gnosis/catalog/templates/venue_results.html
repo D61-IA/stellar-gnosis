@@ -21,6 +21,7 @@
 <div class="card shadow-sm mt-3">
     <div class="card-header"><h4>Venues that match your query</h4></div>
     <div class="card-body">
+        <h6>{{ results_message }} </h6>
         {% for venue in venues %}
         <ul class="list-group">
             <li class="list-group-item mt-1">

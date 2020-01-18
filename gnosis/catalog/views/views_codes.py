@@ -18,24 +18,37 @@ def codes(request):
     all_codes = Code.objects.all()
 
     message = None
+    results_message = ""
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SearchCodesForm(request.POST)
         print("Received POST request")
         if form.is_valid():
             keywords = form.cleaned_data["keywords"].lower()  # comma separated list
             print(f"Searching for code using keywords {keywords}")
 
-            codes = Code.objects.annotate(
-                search=SearchVector('keywords')
-            ).filter(search=SearchQuery(keywords, search_type='plain'))
+            codes = Code.objects.annotate(search=SearchVector("keywords")).filter(
+                search=SearchQuery(keywords, search_type="plain")
+            )
 
+            num_codes_found = len(codes)
             if codes:
-                return render(request, "codes.html", {"codes": codes, "form": form, "message": ""})
+                if num_codes_found > 25:
+                    codes = codes[:25]
+                    results_message = f"Showing 25 out of {num_codes_found} codes found. For best results, please narrow your search."
             else:
-                message = "No results found. Please try again!"
+                results_message = "No results found. Please try again!"
 
-        print(message);
+            return render(
+                request,
+                "code_results.html",
+                {
+                    "codes": codes,
+                    "form": form,
+                    "message": "",
+                    "results_message": results_message,
+                },
+            )
 
     elif request.method == "GET":
         print("Received GET request")
@@ -58,7 +71,9 @@ def code_detail(request, id):
     #
     # request.session["last-viewed-code"] = id
 
-    return render(request, "code_detail.html", {"code": code, "papers": code.papers.all()})
+    return render(
+        request, "code_detail.html", {"code": code, "papers": code.papers.all()}
+    )
 
 
 def code_find(request):
@@ -75,9 +90,9 @@ def code_find(request):
             keywords = form.cleaned_data["keywords"].lower()  # comma separated list
             print(f"Searching for code using keywords {keywords}")
 
-            codes = Code.objects.annotate(
-                search=SearchVector('keywords')
-            ).filter(search=SearchQuery(keywords, search_type='plain'))
+            codes = Code.objects.annotate(search=SearchVector("keywords")).filter(
+                search=SearchQuery(keywords, search_type="plain")
+            )
 
             print(codes)
 
@@ -148,7 +163,7 @@ def code_update(request, id):
 def code_delete(request, id):
     print("WARNING: Deleting code repo id {} and all related edges".format(id))
 
-    code = get_object_or_404(Code, pk=id)    
+    code = get_object_or_404(Code, pk=id)
     code.delete()
-    
+
     return HttpResponseRedirect(reverse("codes_index"))
