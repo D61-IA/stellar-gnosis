@@ -14,20 +14,27 @@ def endorsements(request):
 
     all_endorsements = Endorsement.objects.filter(user=request.user).order_by('-created_at')
 
-    print(all_endorsements)
     return render(request, "endorsement.html", {"endorsements": all_endorsements, })
 
 @login_required
 def endorsement_search(request):
     """Search for an endorsement"""
     endors = request.user.endorsements.all()
-
+    results_message = ''
     if request.method == 'POST':
+        print("POST request")
         keywords = request.POST.get("keywords", "")
 
         endors = endors.filter(paper__title__icontains=keywords)
-
-    return render(request, 'endorsement.html', {"endorsements": endors})
+        num_endors = len(endors)
+        if endors:
+            if num_endors > 25:
+                results_message = f"Showing 25 out of {num_endors} paper endorsements found. For best results, please narrow your search."
+                endors = endors[:25]
+        else:
+            results_message = "No results found. Please try again!"
+        
+    return render(request, 'endorsement_results.html', {"endorsements": endors, "results_message": results_message})
 
 
 
