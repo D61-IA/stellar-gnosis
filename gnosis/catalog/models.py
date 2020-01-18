@@ -121,10 +121,9 @@ def save_user_profile(sender, instance, **kwargs):
 class Paper(models.Model):
 
     # These are always required
-    title = models.CharField(max_length=2048, blank=False)
+    title = models.CharField(max_length=8192, db_index=True, blank=False)
     abstract = models.TextField(blank=False)
-    keywords = models.CharField(max_length=125, blank=True)
-    # download_link = models.CharField(max_length=250, blank=False)
+    keywords = models.CharField(max_length=256, blank=True)
     download_link = models.CharField(
         max_length=2000, blank=False, null=False, validators=[URLValidator()]
     )
@@ -311,7 +310,7 @@ class PaperAuthorRelationshipData(models.Model):
         blank=False,
         default=1,
         validators=[
-            MaxValueValidator(40),  # allows up to 40 authors
+            MaxValueValidator(128),  # allows up to 128 authors
             MinValueValidator(1),
         ],  # minimum is at least a first author
     )
