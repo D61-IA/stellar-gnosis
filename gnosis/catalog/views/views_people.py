@@ -16,15 +16,15 @@ from django.http import HttpResponseRedirect
 # Person Views
 #
 def persons(request):
-    people = Person.objects.order_by("-created_at")[:100]  # nodes.order_by("-created")[:50]
-    message = None
+    people = Person.objects.order_by("-created_at")[:100]
+    # message = None
 
     if request.method == 'POST':
         form = SearchPeopleForm(request.POST)
         print("Received POST request")
+        results_message = ''
         if form.is_valid():
-            print("Valid form")
-            people_found = None  # _person_find(form.cleaned_data["person_name"])
+            # print("Valid form")
             query = form.cleaned_data["person_name"].lower()
             print(f"Searching for people using keywords {query}")
             people = Person.objects.annotate(
@@ -32,16 +32,28 @@ def persons(request):
             ).filter(search=SearchQuery(query, search_type='plain'))
 
             print(people)
+            num_people_found = len(people)            
+            print(f"Found {num_people_found} people for query {query}")
+            if people:
+                if num_people_found > 25:
+                    people = people[:25]
+                    results_message = f"Showing 25 out of {num_people_found} authors found. For best results, please narrow your search."
+            else:
+                results_message = "No results found. Please try again!"
 
-            if people is None:
-                message = "No results found. Please try again!"
+            print(f"results_message: {results_message}. Rendering people_results.html")            
+            return render(
+                    request,
+                    "people_results.html",
+                    {"people": people, "form": form, "results_message": results_message},
+                )
 
     elif request.method == "GET":
         print("Received GET request")
         form = SearchPeopleForm()
 
     return render(
-        request, "people.html", {"people": people, "form": form, "message": message}
+        request, "people.html", {"people": people, "form": form}
     )
 
 
