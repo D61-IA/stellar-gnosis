@@ -19,10 +19,11 @@
 
 {% if papers %}
 <div class=" card shadow-sm mt-3">
-    <div class="card-header"><h4>Papers that match your query </h4></div>
-
-    {% paginate papers %}
+    <div class="card-header">
+        <h4>Papers that match your query </h4>
+    </div>
     <div class="card-body">
+        <h6>{{ results_message }} </h6>
         {% for paper in papers %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
@@ -35,24 +36,13 @@
         </ul>
         {% endfor %}
     </div>
+</div>
+{% else %}
+<div class=" card shadow-sm mt-3">
 
-    {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
+    <div class="card-body">
+        <p>No papers found.</p>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

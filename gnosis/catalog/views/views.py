@@ -76,16 +76,19 @@ def papers(request):
                 search=SearchQuery(paper_title, search_type="plain"), is_public=True,
             )
             print(papers)
-
+            num_papers_found = len(papers)            
             if papers:
-                return render(
+                if num_papers_found > 25:
+                    papers = papers[:25]
+                    results_message = f"Showing 25 out of {num_papers_found} paper found. For best results, please narrow your search."
+            else:
+                results_message = "No results found. Please try again!"
+            
+            return render(
                     request,
                     "paper_results.html",
-                    {"papers": papers, "form": form, "message": ""},
+                    {"papers": papers, "form": form, "results_message": results_message},
                 )
-            else:
-                message = "No results found. Please try again!"
-                messages.add_message(request, messages.INFO, message)        
 
     elif request.method == "GET":
         print("papers: Received GET request")
