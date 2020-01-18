@@ -25,23 +25,19 @@ def datasets(request):
                 "keywords"
             ].lower()  # comma separated list
 
-            print(f"Searching for dataset using keywords {keywords}")
-
             datasets = Dataset.objects.annotate(
                 search=SearchVector('keywords', 'name')
             ).filter(search=SearchQuery(keywords, search_type='plain'))
 
-            print(datasets)
             num_datasets_found = len(datasets)           
-            print(f"Found {num_datasets_found} datasets matching query {keywords}.") 
             if datasets:
                 if num_datasets_found > 25:
                     datasets = datasets[:25]
                     results_message = f"Showing 25 out of {num_datasets_found} datasets found. For best results, please narrow your search."
-                else:
-                    results_message = "No results found. Please try again!"
+            else:
+                results_message = "No results found. Please try again!"
 
-                return render(
+            return render(
                     request,
                     "dataset_results.html",
                     {"datasets": datasets, "form": form, "results_message": results_message},

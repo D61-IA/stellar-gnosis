@@ -1303,6 +1303,7 @@ def venues(request):
     all_venues = Venue.objects.all()
 
     message = None
+    results_message = ''
 
     if request.method == "POST":
         form = SearchVenuesForm(request.POST)
@@ -1312,23 +1313,24 @@ def venues(request):
             # if venue found, then link with paper and go back to paper view
             # if not, ask the user to create a new venue
             venue_name = form.cleaned_data["keywords"].lower()
-            # venue_publication_year = form.cleaned_data["venue_publication_year"]
-
-            print(f"Searching for venue using keywords {venue_name}")
 
             venues_found = Venue.objects.annotate(
                 search=SearchVector("name", "keywords")
             ).filter(search=SearchQuery(venue_name, search_type="plain"))
 
-            if venues_found.count() > 0:
-                print("Found {} venues that match".format(venues_found.count()))
-                return render(
-                    request,
-                    "venues.html",
-                    {"venues": venues_found, "form": form, "message": message},
-                )
+            num_venues_found = len(venues_found)
+            if venues_found:
+                if num_venues_found > 25:
+                    venues_found = venues_found[:25]
+                    results_message = f"Showing 25 out of {num_venues_found} venues found. For best results, please narrow your search."
             else:
-                message = "No results found. Please try again!"
+                results_message = "No results found. Please try again!"
+
+            return render(
+                    request,
+                    "venue_results.html",
+                    {"venues": venues_found, "form": form, "results_message": results_message},
+                )
 
     if request.method == "GET":
         form = SearchVenuesForm()

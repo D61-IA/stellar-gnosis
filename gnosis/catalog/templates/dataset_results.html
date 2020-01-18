@@ -18,7 +18,9 @@
 
 {% if datasets %}
 <div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>Datasets that match your query</h4></div>
+    <div class="card-header">
+        <h4>Datasets that match your query</h4>
+    </div>
     <div class="card-body">
         <h6>{{ results_message }} </h6>
         {% for dataset in datasets %}
