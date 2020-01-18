@@ -33,6 +33,9 @@ def endorsement_search(request):
                 endors = endors[:25]
         else:
             results_message = "No results found. Please try again!"
+    
+    else:
+        return HttpResponseRedirect(reverse("endorsements", ))
         
     return render(request, 'endorsement_results.html', {"endorsements": endors, "results_message": results_message})
 
