@@ -1,3 +1,4 @@
+import click
 import pandas as pd
 from sys import exit
 from catalog.models import Person, Paper, PaperAuthorRelationshipData
@@ -143,10 +144,16 @@ def load_paper_author_relationships(df, paper_models, person_name_to_model_dict,
 
     return paper_and_author_models
 
-
-def main():
+@click.command()
+@click.option(
+    "--csv",
+    default='/home/elinas/Projects/stellar-gnosis/scripts/paper_data.csv',
+    type=click.File('r'),
+    help="Input file, should include directory if file not in current running directory",
+)
+def main(csv):
     use_test_data = False
-    filename = "/home/elinas/Projects/stellar-gnosis/scripts/papers.csv"
+    filename = csv # "/home/elinas/Projects/stellar-gnosis/scripts/paper_data.csv"
 
     # just delete all the papers and authors before moving on.
     Person.objects.all().delete()
@@ -182,6 +189,8 @@ def main():
         print("Loaded papers")
         load_paper_author_relationships(df, paper_models, person_name_to_model_dict, limit=limit)
         print("Done!")
+
+    return 0
 
 if __name__ == "__main__":
     exit(main())
