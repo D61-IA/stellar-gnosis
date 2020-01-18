@@ -15,7 +15,7 @@ from django.http import HttpResponseRedirect
 # Code Views
 #
 def codes(request):
-    all_codes = Code.objects.all()
+    all_codes = Code.objects.all()[:100]
 
     message = None
     results_message = ""

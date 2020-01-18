@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 @login_required
 def endorsements(request):
 
-    all_endorsements = Endorsement.objects.filter(user=request.user).order_by('-created_at')
+    all_endorsements = Endorsement.objects.filter(user=request.user).order_by('-created_at')[:100]
 
     return render(request, "endorsement.html", {"endorsements": all_endorsements, })
 

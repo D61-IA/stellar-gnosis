@@ -1300,7 +1300,7 @@ def paper_flag_comment(request, id, cid):
 # Venue Views
 #
 def venues(request):
-    all_venues = Venue.objects.all()
+    all_venues = Venue.objects.all()[:100]
 
     message = None
     results_message = ''

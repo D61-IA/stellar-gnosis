@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect
 # Dataset Views
 #
 def datasets(request):
-    all_datasets = Dataset.objects.all()
+    all_datasets = Dataset.objects.all()[:100]
 
     message = None
     results_message = ''
