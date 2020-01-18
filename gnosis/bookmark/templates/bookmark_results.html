@@ -1,0 +1,43 @@
+{% extends "gnosis_theme.html" %}
+{% block content %}
+
+    <div class="card shadow-sm text-center mt-3">
+        <div class="card-body">
+            <form action="{% url 'bookmark_search' %}" method="post">
+                {% csrf_token %}
+
+                <input type="text" name="keywords" size="60" class="form-control" required="" id="id_bm_search">
+
+                <br>
+                <input type="submit" id="bm_submit" class="btn btn-primary btn-lg" value="Search Bookmarks">
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h4>Bookmarks</h4>
+        </div>
+
+        <div class="card-body">
+            <h6>{{ results_message }} </h6>
+            {% if bookmarks %}
+                {% for bookmark in bookmarks %}
+                    <ul class="list-group">
+                        <li class="list-group-item mt-1">
+                            <div class="d-flex flex-row">
+                                <div class="mr-auto p-2"><a class="paper_link"
+                                                            href="{% url 'paper_detail' bookmark.paper.id %}">{{ bookmark.paper.title }}</a>
+                                </div>
+                                <div class="p-2"><a href="{% url 'bookmark_delete' bookmark.id %}"
+                                                    class="btn btn-outline-danger btn-sm rm"
+                                                    role="button">Remove</a></div>
+                            </div>
+                        </li>
+                    </ul>
+                {% endfor %}
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
