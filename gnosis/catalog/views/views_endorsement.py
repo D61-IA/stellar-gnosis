@@ -22,7 +22,6 @@ def endorsement_search(request):
     endors = request.user.endorsements.all()
     results_message = ''
     if request.method == 'POST':
-        print("POST request")
         keywords = request.POST.get("keywords", "")
 
         endors = endors.filter(paper__title__icontains=keywords)
