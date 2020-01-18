@@ -16,6 +16,7 @@ def datasets(request):
     all_datasets = Dataset.objects.all()
 
     message = None
+    results_message = ''
     if request.method == "POST":
         form = SearchDatasetsForm(request.POST)
         print("Received POST request")
@@ -31,15 +32,21 @@ def datasets(request):
             ).filter(search=SearchQuery(keywords, search_type='plain'))
 
             print(datasets)
+            num_datasets_found = len(datasets)           
+            print(f"Found {num_datasets_found} datasets matching query {keywords}.") 
+            if datasets:
+                if num_datasets_found > 25:
+                    datasets = datasets[:25]
+                    results_message = f"Showing 25 out of {num_datasets_found} datasets found. For best results, please narrow your search."
+                else:
+                    results_message = "No results found. Please try again!"
 
-            if datasets.count() > 0:
                 return render(
                     request,
-                    "datasets.html",
-                    {"datasets": datasets, "form": form, "message": ""},
+                    "dataset_results.html",
+                    {"datasets": datasets, "form": form, "results_message": results_message},
                 )
-            else:
-                message = "No results found. Please try again!"
+
     elif request.method == "GET":
         print("Received GET request")
         form = SearchDatasetsForm()
