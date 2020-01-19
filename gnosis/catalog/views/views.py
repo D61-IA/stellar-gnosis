@@ -64,7 +64,7 @@ def papers(request):
     # the number of papers retrieved for speed, especially when the
     # the DB grows large.
     all_papers = Paper.objects.filter(is_public=True).order_by("-created_at")[:100]
-
+    results_message = ''
     if request.method == "POST":
         form = SearchPapersForm(request.POST) 
         print("papers: Received POST request")
