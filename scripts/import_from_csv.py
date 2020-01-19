@@ -47,7 +47,7 @@ def load_papers(df, limit=True):
         count += 1
         paper_objects.append(
             Paper(
-                title=row["title"],
+                title=row["title"].replace("\n", " "),
                 abstract=row["abstract"].replace("\n", " "),
                 download_link=row["pdf"],
                 source_link=row["url"],
