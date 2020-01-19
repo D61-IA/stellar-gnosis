@@ -4,10 +4,9 @@
 
     <div class="card shadow-sm text-center mt-3">
         <div class="card-body">
-            <form action="" id="bm_form" method="post">
-                {% csrf_token %}
+            <form action="{% url 'bookmark_search' %}" id="bm_form" method="get">
 
-                <input type="text" name="keywords" size="60" class="form-control" required="" id="id_bm_search">
+                <input type="text" name="q" size="60" class="form-control" required="" id="id_bm_search">
 
                 <br>
                 <input type="submit" id="bm_submit" class="btn btn-primary btn-lg" value="Search Bookmarks">
@@ -15,12 +14,6 @@
         </div>
     </div>
 
-    <script>
-        $('#bm_submit').click(function(e){
-            e.preventDefault();
-            $('#bm_form').attr('action', $('#id_bm_search').val()).submit();
-        })
-    </script>
 
     <div class="card shadow-sm mt-3">
         <div class="card-header">

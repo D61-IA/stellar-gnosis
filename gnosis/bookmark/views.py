@@ -25,8 +25,9 @@ def bookmark_delete(request, id):
 
 
 @login_required
-def bookmark_search(request, keywords):
+def bookmark_search(request):
     """Search for a bookmark by its title"""
+    keywords = request.GET.get('q','')
 
     bms = request.user.bookmarks.all()
 
