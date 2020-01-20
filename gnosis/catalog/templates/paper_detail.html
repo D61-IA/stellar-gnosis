@@ -180,17 +180,11 @@
                             refresh
                         </i>
                     </button>
-                    <select id="graphfilter">
-                        <option value="all"> all</option>
-                        <option value="cites"> cites</option>
-                        <option value="uses"> uses</option>
-                        <option value="extends"> extends</option>
-                        <option value="authors"> authors</option>
-                        <option value="was published at"> was published at</option>
-                        <option value="evaluates on"> evaluates on</option>
-                        <option value="published"> published</option>
-                        <option value="implements"> implements</option>
-                    </select>
+
+                    <button id="ego_button_select" type="button" class="btn btn-primary ego_button"
+                            aria-expanded="false">
+                        Select
+                    </button>
                     <button id="ego_button_toggle" type="button"
                             class="btn btn-primary ego_button" title="Hide relationships"
                             data-toggle="button"
@@ -202,8 +196,68 @@
                 </div>
             </div>
 
+            <div id="select_menu" class="dropdown-menu" style="position: absolute; min-width: 190px;" >
+                <button class="dropdown-item dropdown-toggle cus_toggle" type="button"
+                        style="outline: none"><strong>Relationships</strong>
+                </button>
+                <div class="cus-dropdown" style="padding: .5rem 5px;">
+                    <div class="dropdown-item">
+                        <select id="graphfilter">
+                            <option value="all"> all</option>
+                            <option value="cites"> cites</option>
+                            <option value="uses"> uses</option>
+                            <option value="extends"> extends</option>
+                            <option value="authors"> authors</option>
+                            <option value="was published at"> was published at</option>
+                            <option value="evaluates on"> evaluates on</option>
+                            <option value="published"> published</option>
+                            <option value="implements"> implements</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+
+                <button class="dropdown-item dropdown-toggle cus_toggle" type="button"
+                        style="outline: none"><strong>Nodes</strong>
+                </button>
+                <div class="cus-dropdown" style="padding: .5rem 5px;">
+                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
+                                                      value="paper">
+                        <span class="color_legend paper"></span>Paper
+                    </div>
+
+                    <div class="dropdown-item">
+                        <input type="checkbox" name="vehicle1" value="person">
+                        <span class="color_legend person"></span>Person
+                    </div>
+
+                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
+                                                      value="venue">
+                        <span class="color_legend venue"></span>Venue
+                    </div>
+                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
+                                                      value="code">
+                        <span class="color_legend code"></span>Code
+                    </div>
+                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
+                                                      value="dataset">
+                        <span class="color_legend dataset"></span>Dataset
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <script>
+        $('#ego_button_select').click(function (e) {
+            var position = $(this).position();
+            $('#select_menu').css({
+                'top': position.top - 350,
+                'left': position.left- 60,
+            }).fadeToggle(100)
+        })
+    </script>
 
 
     <div class="card shadow-sm mt-5">

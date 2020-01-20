@@ -11,8 +11,8 @@
     height: 25px;
     border-radius: 50%;
     vertical-align: bottom;
-    margin-left: auto;
-    margin-right: auto
+    margin: 0 4px;
+
 }
 
 .paper {
