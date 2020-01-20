@@ -4,9 +4,7 @@
 
     <div class="card shadow-sm text-center mt-3">
         <div class="card-body">
-            <form action="{% url 'endorsement_search' %}" method="post">
-                {% csrf_token %}
-
+            <form action="{% url 'endorsement_search' %}" method="get">
                 <input type="text" name="keywords" size="60" class="form-control" required="" id="id_en_search">
 
                 <br>

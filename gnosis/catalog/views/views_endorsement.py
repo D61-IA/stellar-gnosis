@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from catalog.models import Endorsement, Paper
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+
+
 #
 # Endorsement views
 #
@@ -11,24 +13,22 @@ from django.http import HttpResponseRedirect
 
 @login_required
 def endorsements(request):
-
     all_endorsements = Endorsement.objects.filter(user=request.user).order_by('-created_at')
 
     print(all_endorsements)
     return render(request, "endorsement.html", {"endorsements": all_endorsements, })
+
 
 @login_required
 def endorsement_search(request):
     """Search for an endorsement"""
     endors = request.user.endorsements.all()
 
-    if request.method == 'POST':
-        keywords = request.POST.get("keywords", "")
+    keywords = request.GET.get("keywords", "")
 
-        endors = endors.filter(paper__title__icontains=keywords)
+    endors = endors.filter(paper__title__icontains=keywords)
 
     return render(request, 'endorsement.html', {"endorsements": endors})
-
 
 
 @login_required
@@ -58,7 +58,6 @@ def endorsement_create(request, id):
 
 @login_required
 def endorsement_delete(request, id):
-
     user = request.user
     paper = get_object_or_404(Paper, pk=id)
     e = Endorsement.objects.filter(user=user, paper=paper)
