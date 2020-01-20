@@ -1091,6 +1091,13 @@ def paper_create_from_url(request):
         # retrieve paper info. If the information cannot be retrieved from remote
         # server, then we will return an error message and redirect to paper_form.html.
         title, authors, abstract, download_link = get_paper_info(url, source_website)
+        # Sometimes the title has new line characters that cause an JS error when drawing the
+        # knowledge graph.
+        # Strangely, the below does not work 
+        # title = title.replace(r"\n","").replace(r"\r", "")
+        # but the join below does!
+        title = ' '.join(title.splitlines())
+        print(f"title: {title}")
         if title is None or authors is None or abstract is None:
             print("missing information for paper")
             form = PaperImportForm()
