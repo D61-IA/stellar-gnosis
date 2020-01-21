@@ -9,7 +9,7 @@ df_paper_author = pd.read_csv('src/paper_authors.csv')
 
 # get author names that are tainted with random question marks
 # df_qst_author = df_author[df_author['name'].str.contains(r'\?')]
-# df_qst_author.to_csv('df_qst_author')
+# df_qst_author.to_csv('csv_qst_author')
 
 
 def get_title_from_pdf_name(pdf_name):
@@ -93,8 +93,8 @@ for index, row in df_paper.iterrows():
 df_info = pd.DataFrame(info)
 # df_other = pd.DataFrame(other)
 
-df_info.to_csv('df_info')
-# df_other.to_csv('df_other')
+df_info.to_csv('csv_result')
+# df_other.to_csv('csv_other')
 
 
 def add_psql():
