@@ -5,8 +5,9 @@ function pagination(current, first, last, current_path) {
 
     if (current_path.indexOf('?keywords=') !== -1) {
         current_path = current_path.replace('&amp;', '&');
-        if (current_path.indexOf('&page=') !== -1) {
-            path = current_path.slice(0, -1)
+        var i = current_path.indexOf('&page=');
+        if (i !== -1) {
+            path = current_path.slice(0, i+6)
         } else {
             path = current_path;
             path += '&page=';
