@@ -80,8 +80,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
     def test_search(self):
         """test pagination on search results"""
 
-        page_links = self.browser.find_elements_by_class_name('page_link')
-
         search = self.browser.find_element_by_css_selector('input[name="keywords"]')
         search.clear()
         search.send_keys('world')
@@ -91,6 +89,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # wait for page to reload after submit
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'footer')))
+
+        page_links = self.browser.find_elements_by_class_name('page_link')
 
         # assert the pagination has the right url links
         for idx, pl in enumerate(page_links):
