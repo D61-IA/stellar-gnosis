@@ -62,6 +62,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
 
     def test_non_search(self):
+        """test pagination on non-search results"""
+
         page_links = self.browser.find_elements_by_class_name('page_link')
 
         # assert the pagination has the right url links
@@ -76,6 +78,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
 
     def test_search(self):
+        """test pagination on search results"""
+
         page_links = self.browser.find_elements_by_class_name('page_link')
 
         search = self.browser.find_element_by_css_selector('input[name="keywords"]')
