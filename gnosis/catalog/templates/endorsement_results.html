@@ -1,0 +1,39 @@
+{% extends "gnosis_theme.html" %}
+{% block content %}
+    <div class="card shadow-sm text-center mt-3">
+        <div class="card-body">
+            <form action="{% url 'endorsement_search' %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="keywords" size="60" class="form-control" required="" id="id_en_search">
+                <br>
+                <input type="submit" id="en_submit" class="btn btn-primary btn-lg" value="Search Endorsements">
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h4>Endorsements that match your query</h4>
+        </div>
+
+        <div class="card-body">
+            <h6>{{ results_message }} </h6>
+            {% if endorsements %}
+                {% for endorsement in endorsements %}
+                    <ul class="list-group">
+                        <li class="list-group-item mt-1">
+                            <div class="d-flex flex-row">
+                                <div class="mr-auto p-2"><a class="paper_link"
+                                                            href="{% url 'paper_detail' endorsement.paper.id %}">{{ endorsement.paper.title }}</a>
+                                </div>
+                                <div class="p-2"><a href="{% url 'endorsement_delete' endorsement.paper.id %}"
+                                                    class="btn btn-outline-danger btn-sm rm" role="button">Remove</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

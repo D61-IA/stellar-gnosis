@@ -13,9 +13,10 @@ from django.http import HttpResponseRedirect
 # Dataset Views
 #
 def datasets(request):
-    all_datasets = Dataset.objects.all()
+    all_datasets = Dataset.objects.all()[:100]
 
     message = None
+    results_message = ''
     if request.method == "POST":
         form = SearchDatasetsForm(request.POST)
         print("Received POST request")
@@ -24,22 +25,24 @@ def datasets(request):
                 "keywords"
             ].lower()  # comma separated list
 
-            print(f"Searching for dataset using keywords {keywords}")
-
             datasets = Dataset.objects.annotate(
                 search=SearchVector('keywords', 'name')
             ).filter(search=SearchQuery(keywords, search_type='plain'))
 
-            print(datasets)
-
-            if datasets.count() > 0:
-                return render(
-                    request,
-                    "datasets.html",
-                    {"datasets": datasets, "form": form, "message": ""},
-                )
+            num_datasets_found = len(datasets)           
+            if datasets:
+                if num_datasets_found > 25:
+                    datasets = datasets[:25]
+                    results_message = f"Showing 25 out of {num_datasets_found} datasets found. For best results, please narrow your search."
             else:
-                message = "No results found. Please try again!"
+                results_message = "No results found. Please try again!"
+
+            return render(
+                    request,
+                    "dataset_results.html",
+                    {"datasets": datasets, "form": form, "results_message": results_message},
+                )
+
     elif request.method == "GET":
         print("Received GET request")
         form = SearchDatasetsForm()

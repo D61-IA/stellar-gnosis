@@ -26,7 +26,6 @@ urlpatterns += [
     path('paper/<int:id>/connect/code/<int:cid>/', views.paper_connect_code_selected, name='paper_connect_code_selected'),
     path('paper/<int:id>/authors/', views.paper_authors, name='paper_authors'),
     path('paper/<int:id>/remove/author/<int:rid>/', views.paper_remove_author, name='paper_remove_author'),
-    path('paper/create/', views.paper_create, name='paper_create'),
     path('paper/import/', views.paper_create_from_url, name='paper_create_from_url'),
     path('paper/search/', views.paper_find, name='paper_find'),
     path('paper/<int:id>/club/add/', views.paper_add_to_group, name='paper_add_to_group'),
