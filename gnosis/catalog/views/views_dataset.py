@@ -63,34 +63,21 @@ def dataset_detail(request, id):
     return render(request, "dataset_detail.html", {"dataset": dataset, "papers": papers})
 
 
-# def dataset_find(request):
-#     """
-#     Searching for a dataset in the DB.
-#
-#     :param request:
-#     :return:
-#     """
-#     message = None
-#     if request.method == "POST":
-#         form = SearchDatasetsForm(request.POST)
-#         print("Received POST request")
-#         if form.is_valid():
-#             dataset_name = form.cleaned_data["name"].lower()
-#             dataset_keywords = form.cleaned_data[
-#                 "keywords"
-#             ].lower()  # comma separated list
-#
-#             datasets = _dataset_find(dataset_name, dataset_keywords)
-#
-#             if len(datasets) > 0:
-#                 return render(request, "datasets.html", {"datasets": datasets})
-#             else:
-#                 message = "No results found. Please try again!"
-#     elif request.method == "GET":
-#         print("Received GET request")
-#         form = SearchDatasetsForm()
-#
-#     return render(request, "dataset_find.html", {"form": form, "message": message})
+def dataset_find(request):
+    """
+    Searching for a dataset in the DB.
+
+    :param request:
+    :return:
+    """
+    keywords = request.GET.get("keywords", "")
+    datasets = Dataset.objects.filter(name__icontains=keywords)
+
+    return render(
+        request,
+        "datasets.html",
+        {"datasets": datasets},
+    )
 
 
 @login_required

@@ -44,14 +44,14 @@ urlpatterns += [
     path('author/<int:id>/', views.person_detail, name='person_detail'),
     path('author/<int:id>/update/', views.person_update, name='person_update'),
     path('author/<int:id>/delete/', views.person_delete, name='person_delete'),
-    # path('person/find/', views.person_find, name='person_find'),
+    path('person/search/', views.person_find, name='person_find'),
 ]
 
 # for updating/creating a new Dataset node
 urlpatterns += [
     path('datasets/', views.datasets, name='datasets_index'),
     path('dataset/create/', views.dataset_create, name='dataset_create'),
-    # path('dataset/find/', views.dataset_find, name='dataset_find'),
+    path('dataset/find/', views.dataset_find, name='dataset_find'),
     path('dataset/<int:id>/', views.dataset_detail, name='dataset_detail'),
     path('dataset/<int:id>/update/', views.dataset_update, name='dataset_update'),
     path('dataset/<int:id>/delete/', views.dataset_delete, name='dataset_delete'),
@@ -82,7 +82,7 @@ urlpatterns += [
 urlpatterns += [
     path('codes/', views.codes, name='codes_index'),
     path('code/create/', views.code_create, name='code_create'),
-    path('code/find/', views.code_find, name='code_find'),
+    path('code/search/', views.code_find, name='code_find'),
     path('code/<int:id>/', views.code_detail, name='code_detail'),
     path('code/<int:id>/update/', views.code_update, name='code_update'),
     path('code/<int:id>/delete/', views.code_delete, name='code_delete'),

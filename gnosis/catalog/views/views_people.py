@@ -28,7 +28,7 @@ def persons(request):
             query = form.cleaned_data["person_name"].lower()
             print(f"Searching for people using keywords {query}")
             people = Person.objects.annotate(
-                 search=SearchVector('name')
+                search=SearchVector('name')
             ).filter(search=SearchQuery(query, search_type='plain'))
 
             print(people)
@@ -61,7 +61,6 @@ def person_detail(request, id):
 @login_required
 @staff_member_required
 def person_create(request):
-
     if request.method == "POST":
         person = Person()
         person.created_by = request.user
@@ -78,7 +77,6 @@ def person_create(request):
 @login_required
 @staff_member_required
 def person_update(request, id):
-
     try:
         person_inst = Person.objects.get(pk=id)
     except ObjectDoesNotExist:
@@ -88,7 +86,7 @@ def person_update(request, id):
     if request.method == "POST":
         form = PersonForm(request.POST)
         if form.is_valid():
-            person_inst.name = form.cleaned_data["name"]            
+            person_inst.name = form.cleaned_data["name"]
             person_inst.affiliation = form.cleaned_data["affiliation"]
             person_inst.website = form.cleaned_data["website"]
             person_inst.save()
@@ -110,7 +108,6 @@ def person_update(request, id):
 # access limited to admin users only!!
 @staff_member_required
 def person_delete(request, id):
-
     try:
         person = Person.objects.get(pk=id)
         person.delete()
@@ -118,3 +115,14 @@ def person_delete(request, id):
         return HttpResponseRedirect(reverse("persons_index"))
 
     return HttpResponseRedirect(reverse("persons_index"))
+
+
+def person_find(request):
+    keywords = request.GET.get("keywords", "")
+    people = Person.objects.filter(name__icontains=keywords)
+
+    return render(
+        request,
+        "people.html",
+        {"people": people},
+    )

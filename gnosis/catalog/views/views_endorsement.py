@@ -22,11 +22,9 @@ def endorsements(request):
 @login_required
 def endorsement_search(request):
     """Search for an endorsement"""
-    endors = request.user.endorsements.all()
-
     keywords = request.GET.get("keywords", "")
 
-    endors = endors.filter(paper__title__icontains=keywords)
+    endors = request.user.endorsements.filter(paper__title__icontains=keywords)
 
     return render(request, 'endorsement.html', {"endorsements": endors})
 

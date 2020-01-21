@@ -35,7 +35,7 @@ def codes(request):
             else:
                 message = "No results found. Please try again!"
 
-        print(message);
+        print(message)
 
     elif request.method == "GET":
         print("Received GET request")
@@ -67,33 +67,14 @@ def code_find(request):
 
     :param request:
     """
-    message = None
-    if request.method == "POST":
-        form = SearchCodesForm(request.POST)
-        print("Received POST request")
-        if form.is_valid():
-            keywords = form.cleaned_data["keywords"].lower()  # comma separated list
-            print(f"Searching for code using keywords {keywords}")
+    keywords = request.GET.get("keywords", "")
+    codes = Code.objects.filter(name__icontains=keywords)
 
-            codes = Code.objects.annotate(
-                search=SearchVector('keywords')
-            ).filter(search=SearchQuery(keywords, search_type='plain'))
-
-            print(codes)
-
-            if codes:
-                return render(
-                    request,
-                    "codes.html",
-                    {"codes": codes, "form": form, "message": message},
-                )
-            else:
-                message = "No results found. Please try again!"
-    elif request.method == "GET":
-        print("Received GET request")
-        form = SearchCodesForm()
-
-    return render(request, "code_find.html", {"form": form, "message": message})
+    return render(
+        request,
+        "codes.html",
+        {"codes": codes},
+    )
 
 
 @login_required
