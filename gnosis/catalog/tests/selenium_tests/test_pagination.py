@@ -90,7 +90,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         form.submit()
 
         # wait for page to reload after submit
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.pagination')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'footer')))
 
         # assert the pagination has the right url links
         for idx, pl in enumerate(page_links):
