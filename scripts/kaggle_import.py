@@ -8,8 +8,8 @@ df_author = pd.read_csv('src/authors.csv')
 df_paper_author = pd.read_csv('src/paper_authors.csv')
 
 # get author names that are tainted with random question marks
-df_qst_author = df_author[df_author['name'].str.contains(r'\?')]
-df_qst_author.to_csv('df_qst_author')
+# df_qst_author = df_author[df_author['name'].str.contains(r'\?')]
+# df_qst_author.to_csv('df_qst_author')
 
 
 def get_title_from_pdf_name(pdf_name):
@@ -38,7 +38,6 @@ def add_author(paper_id):
             names.append(author_name.strip())
 
     return names
-
 
 start = -1
 end = -1
@@ -77,8 +76,7 @@ for index, row in df_paper.iterrows():
 
     # get the author names
     author_names = add_author(paper_id)
-    entry = {'paper_id': paper_id, 'title': title, 'pdf_link': pdf_link, 'source_link': src_link,
-             'abstract': abstract, 'names': author_names}
+    entry = {'title': title, 'abstract': abstract, 'download_link': pdf_link, 'source_link': src_link, 'names': author_names}
 
     # if there is issue with getting the abstract, add to 'other' list
     if start == -1 or end == -1:
@@ -93,10 +91,10 @@ for index, row in df_paper.iterrows():
     end = -1
 
 df_info = pd.DataFrame(info)
-df_other = pd.DataFrame(other)
+# df_other = pd.DataFrame(other)
 
 df_info.to_csv('df_info')
-df_other.to_csv('df_other')
+# df_other.to_csv('df_other')
 
 
 def add_psql():
@@ -133,7 +131,7 @@ def add_psql():
             # insert paper
             title = row['title']
             abstract = row['abstract']
-            download_link = row['pdf_link']
+            download_link = row['download_link']
             source_link = row['source_link']
             keywords = ''
             is_public = True
@@ -159,6 +157,7 @@ def add_psql():
             connection.close()
 
 
-if __name__ == '__main__':
-    add_psql()
+## uncomment the following if wish to add to database
+# if __name__ == '__main__':
+#     add_psql()
 
