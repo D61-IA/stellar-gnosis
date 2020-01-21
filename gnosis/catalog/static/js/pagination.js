@@ -1,7 +1,7 @@
 function pagination(current, first, last, current_path) {
 
     var $page_items = $('.num_item');
-    var path = '?page=';
+    var path = '/catalog/papers/?page=';
 
     if (current_path.indexOf('?keywords=') !== -1) {
         current_path = current_path.replace('&amp;', '&');
@@ -13,7 +13,6 @@ function pagination(current, first, last, current_path) {
             path += '&page=';
         }
     }
-
 
     if (last > 5) {
         if (current <= first + 2) {

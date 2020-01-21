@@ -25,7 +25,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
     def setUp(self):
         """create testing assets"""
 
-        # create a regular user and an admin user
+        # create regular users
         user1name = 'user1'
         user1password = '12345'
         user1email = 'user1@gnosis.stellargraph.io'
@@ -67,8 +67,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # assert the pagination has the right url links
         for idx, pl in enumerate(page_links):
             url = pl.get_attribute('href')
-            print(url)
-            self.assertEqual(url, '?page=' + str(idx+1))
+            self.assertEqual(url, self.live_server_url + '/catalog/papers/?page=' + str(idx+1))
 
         num_items = self.browser.find_elements_by_class_name('num_item')
         classes = num_items[0].get_attribute('class')
@@ -92,12 +91,25 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # assert the pagination has the right url links
         for idx, pl in enumerate(page_links):
             url = pl.get_attribute('href')
-            self.assertEqual(url, '/catalog/paper/search/?keywords=world&page=' + str(idx+1))
+            self.assertEqual(url, self.live_server_url + '/catalog/paper/search/?keywords=world&page=' + str(idx+1))
 
         num_items = self.browser.find_elements_by_class_name('num_item')
         classes = num_items[0].get_attribute('class')
         # assert the first element has class active
         self.assertTrue('active' in classes)
+
+    def test_previous_next(self):
+        next = self.browser.find_element_by_css_selector('.page_next.desktop')
+        page_link = next.find_element_by_class_name('page-link')
+        self.assertEqual(page_link.get_attribute('href'), self.live_server_url + "/catalog/papers/?page=2")
+
+        page_link.click()
+        # wait for page to reload
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.pagination')))
+
+        previous = self.browser.find_element_by_css_selector('.page_prev.desktop')
+        page_link = previous.find_element_by_class_name('page-link')
+        self.assertEqual(page_link.get_attribute('href'), self.live_server_url + "/catalog/papers/")
 
 
 class FirefoxTestCase(ChromeTestCase):
