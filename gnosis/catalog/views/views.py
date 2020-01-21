@@ -463,7 +463,7 @@ def paper_find(request):
     keywords = request.GET.get("keywords", "")
     papers = Paper.objects.filter(title__icontains=keywords)
 
-    return render(request, "papers.html", {"papers", papers})
+    return render(request, "papers.html", {"papers": papers})
 
 
 @login_required

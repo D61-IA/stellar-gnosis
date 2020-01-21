@@ -18,7 +18,7 @@ function pagination(current, first, last, current_path) {
         if (current <= first + 2) {
             $($page_items).each(function (index) {
                 if (index === 4) {
-                    $(this).children('a').text(last).attr('href', last);
+                    $(this).children('a').text(last).attr('href', path + last);
                 } else {
                     $(this).children('a').text(index + 1).attr('href', path + (index + 1));
                     if (current === index + 1) {
