@@ -47,13 +47,13 @@ from catalog.forms import (
     PaperConnectionForm,
 )
 
-
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from django.contrib import messages
 from itertools import chain
+
 
 #
 # Paper Views
@@ -89,6 +89,7 @@ def papers(request):
                     "paper_results.html",
                     {"papers": papers, "form": form, "results_message": results_message},
                 )
+
 
     elif request.method == "GET":
         print("papers: Received GET request")
@@ -163,7 +164,6 @@ def paper_delete(request, id):
 
 
 def paper_detail(request, id):
-
     # Retrieve the paper from the database
     paper = get_object_or_404(Paper, pk=id)
 
@@ -246,7 +246,6 @@ def paper_detail(request, id):
 
 
 def _get_paper_paper_network(main_paper, ego_json):
-
     # type refers to what node type the object is associated with.
     # label refers to the text on the object.
     node_temp = (
@@ -263,7 +262,7 @@ def _get_paper_paper_network(main_paper, ego_json):
     # line property for out
     line = "solid"
     for paper_out in papers_out:
-        paper=paper_out.paper_to
+        paper = paper_out.paper_to
         ego_json += node_temp.format(
             paper.id,
             paper.title,
@@ -299,12 +298,11 @@ def _get_paper_paper_network(main_paper, ego_json):
             "-",
             paper.id,
             "Paper",
-            paper_in.relationship_type, 
+            paper_in.relationship_type,
             paper.id,
             main_paper.id,
             line,
         )
-
 
     return ego_json
 
@@ -348,7 +346,6 @@ def _get_paper_author_network(main_paper, ego_json, offset=101):
 
 
 def _get_paper_venue_network(main_paper, ego_json, offset=50):
-
     node_temp = (
         ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
     )
@@ -357,25 +354,24 @@ def _get_paper_venue_network(main_paper, ego_json, offset=50):
     venue = main_paper.was_published_at
 
     if venue:
-        ego_json += node_temp.format(venue.id+offset,
+        ego_json += node_temp.format(venue.id + offset,
                                      venue.name,
                                      reverse("venue_detail", kwargs={"id": venue.id}),
                                      'Venue', 'was published at')
 
         ego_json += rela_temp.format(main_paper.id,
                                      '-',
-                                     venue.id+offset,
+                                     venue.id + offset,
                                      'Venue',
                                      'was published at',
                                      main_paper.id,
-                                     venue.id+offset,
+                                     venue.id + offset,
                                      'solid')
 
     return ego_json
 
 
 def _get_paper_dataset_network(main_paper, ego_json, offset=150):
-
     node_temp = (
         ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
     )
@@ -384,7 +380,7 @@ def _get_paper_dataset_network(main_paper, ego_json, offset=150):
     datasets = main_paper.dataset_set.all()
 
     for dataset in datasets:
-        ego_json += node_temp.format(dataset.id+offset,
+        ego_json += node_temp.format(dataset.id + offset,
                                      dataset.name,
                                      reverse("dataset_detail", kwargs={"id": dataset.id}),
                                      'Dataset',
@@ -392,17 +388,16 @@ def _get_paper_dataset_network(main_paper, ego_json, offset=150):
 
         ego_json += rela_temp.format(main_paper.id,
                                      '-',
-                                     dataset.id+offset,
+                                     dataset.id + offset,
                                      'Dataset',
                                      'evaluates on',
                                      main_paper.id,
-                                     dataset.id+offset, 'solid')
+                                     dataset.id + offset, 'solid')
 
     return ego_json
 
 
 def _get_paper_code_network(main_paper, ego_json, offset=200):
-
     node_temp = (
         ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
     )
@@ -411,17 +406,17 @@ def _get_paper_code_network(main_paper, ego_json, offset=200):
     codes = main_paper.code_set.all()
 
     for code in codes:
-        ego_json += node_temp.format(code.id+offset,
+        ego_json += node_temp.format(code.id + offset,
                                      'Code',
                                      reverse("code_detail", kwargs={"id": code.id}),
                                      'Code',
                                      'implements')
         ego_json += rela_temp.format(main_paper.id,
                                      '-',
-                                     code.id+offset,
+                                     code.id + offset,
                                      'Code',
                                      'implements',
-                                     code.id+offset,
+                                     code.id + offset,
                                      main_paper.id,
                                      'dashed')
 
@@ -455,37 +450,14 @@ def _get_node_ego_network(id):
 
 
 def paper_find(request):
-    message = None
-    if request.method == "POST":
-        form = SearchPapersForm(request.POST)
-        if form.is_valid():
-            paper_title = form.cleaned_data["paper_title"].lower()
-            papers = Paper.objects.filter(title__contains=paper_title)
-            # papers = Paper.objects.annotate(
-            #     search=SearchVector('title')
-            # ).filter(search=SearchQuery(paper_title, search_type='plain'))
-            print(papers)
-            if papers:
-                return render(
-                    request,
-                    "papers_index.html",
-                    {"papers": papers, "form": form, "message": message},
-                )
-            else:
-                message = "No results found. Please try again!"
-        else:
-            print("form is not valid!")
+    keywords = request.GET.get("keywords", "")
+    papers = Paper.objects.filter(title__icontains=keywords)
 
-    elif request.method == "GET":
-        print("paper_find: Received GET request")
-        form = SearchPapersForm()
-
-    return render(request, "papers_index.html", {"form": form, "message": message})
+    return render(request, "papers.html", {"papers": papers})
 
 
 @login_required
 def paper_connect_venue_selected(request, id, vid):
-
     try:
         paper = Paper.objects.get(pk=id)
         venue = Venue.objects.get(pk=vid)
@@ -651,7 +623,6 @@ def paper_add_note(request, id):
 
 @login_required
 def paper_add_to_group_selected(request, id, gid):
-
     paper = get_object_or_404(Paper, pk=id)
     group = get_object_or_404(ReadingGroup, pk=gid)
     # Check if the user has permission to propose a paper for this group.
@@ -660,7 +631,7 @@ def paper_add_to_group_selected(request, id, gid):
     q_set = group.members.filter(member=request.user).all()
     # user can only propose a paper for a group if she is the group owner or has joined a public group
     # or has been granted access to a private group.
-    if group.owner==request.user  or (q_set.count()==1 and q_set[0].access_type=='granted'):
+    if group.owner == request.user or (q_set.count() == 1 and q_set[0].access_type == 'granted'):
         paper_in_group = group.papers.filter(paper=paper)
         if paper_in_group:
             # message = "Paper already exists in group {}".format(group.name)
@@ -685,7 +656,8 @@ def paper_add_to_group(request, id):
     groups = ReadingGroup.objects.filter(is_public=True, members__member=request.user, members__access_type='granted')
     # The private reading groups the user has been granted access to.
     # This excludes the user who owns/created the group!
-    groups_private = ReadingGroup.objects.filter(is_public=False, members__member=request.user, members__access_type='granted')
+    groups_private = ReadingGroup.objects.filter(is_public=False, members__member=request.user,
+                                                 members__access_type='granted')
     groups_owner = ReadingGroup.objects.filter(owner=request.user)
     # Combine the Query sets
     groups = list(chain(groups, groups_owner, groups_private))
@@ -781,10 +753,9 @@ def paper_connect_author(request, id):
 
 @login_required
 def paper_connect_paper_selected(request, id, pid):
-
     paper_from = get_object_or_404(Paper, pk=id)
     paper_to = get_object_or_404(Paper, pk=pid)
-    
+
     if paper_from == paper_to:
         messages.add_message(request, messages.INFO, "You cannot connect a paper with itself.")
     else:
@@ -868,7 +839,6 @@ def paper_connect_paper(request, id):
 
 @login_required
 def paper_connect_dataset_selected(request, id, did):
-
     try:
         paper = Paper.objects.get(pk=id)
         dataset = Dataset.objects.get(pk=did)
@@ -938,7 +908,6 @@ def paper_connect_dataset(request, id):
 
 @login_required
 def paper_connect_code_selected(request, id, cid):
-
     paper = get_object_or_404(Paper, pk=id)
     code = get_object_or_404(Code, pk=cid)
     code.papers.add(paper)
@@ -1009,14 +978,12 @@ def paper_connect_code(request, id):
 @login_required
 @staff_member_required
 def paper_update(request, id):
-
     paper = get_object_or_404(Paper, pk=id)
 
     # if this is POST request then process the Form data
     if request.method == "POST":
         form = PaperForm(request.POST)
         if form.is_valid():
-
             # ToDo: Check that the paper does not exist in the database
             #
             paper.title = form.cleaned_data["title"]
@@ -1136,7 +1103,6 @@ def paper_create_from_url(request):
 
 @login_required
 def paper_flag_comment(request, id, cid):
-
     comment = get_object_or_404(Comment, pk=cid)
 
     # Check that the same user has not flagged the exact same comment already
@@ -1238,40 +1204,18 @@ def venue_find(request):
     :param request:
     :return:
     """
-    message = None
-    if request.method == "POST":
-        form = SearchVenuesForm(request.POST)
-        if form.is_valid():
-            # search the db for the venue
-            # if venue found, then link with paper and go back to paper view
-            # if not, ask the user to create a new venue
-            venue_name = form.cleaned_data["venue_name"].lower()
-            venue_publication_year = form.cleaned_data["venue_publication_year"]
+    keywords = request.GET.get("keywords", "")
+    venues = Venue.objects.filter(name__icontains=keywords)
 
-            print(
-                f"Searching for venue using keywords {venue_name} and year {venue_publication_year}"
-            )
-
-            venues_found = Venue.objects.annotate(
-                search=SearchVector("name", "keywords")
-            ).filter(search=SearchQuery(venue_name, search_type="plain"))
-
-            if venues_found.count() > 0:
-                return render(request, "venues.html", {"venues": venues})
-            else:
-                # render new Venue form with the searched name as
-                message = "No matching venues found"
-
-    if request.method == "GET":
-        form = SearchVenuesForm()
-        message = None
-
-    return render(request, "venue_find.html", {"form": form, "message": message})
+    return render(
+        request,
+        "venues.html",
+        {"venues": venues},
+    )
 
 
 @login_required
 def venue_create(request):
-
     if request.method == "POST":
         venue = Venue()
         venue.created_by = request.user
@@ -1298,7 +1242,6 @@ def venue_create(request):
 # should limit access to admin users only!!
 @staff_member_required
 def venue_delete(request, id):
-
     print("WARNING: Deleting venue id {} and all related edges".format(id))
     try:
         venue = Venue.objects.get(pk=id)
@@ -1311,7 +1254,6 @@ def venue_delete(request, id):
 
 @login_required
 def venue_update(request, id):
-
     try:
         venue = Venue.objects.get(pk=id)
     except ObjectDoesNotExist:

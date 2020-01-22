@@ -27,21 +27,8 @@ def bookmark_delete(request, id):
 @login_required
 def bookmark_search(request):
     """Search for a bookmark by its title"""
+    keywords = request.GET.get('keywords','')
 
-    bms = request.user.bookmarks.all()
-    results_message = ''
-    if request.method == 'POST':
-        keywords = request.POST.get("keywords", "")
+    bms = request.user.bookmarks.filter(paper__title__icontains=keywords)
 
-        bms = bms.filter(paper__title__icontains=keywords)
-        num_bms = len(bms)
-        if bms:
-            if num_bms > 25:
-                results_message = f"Showing 25 out of {num_bms} bookmarks found. For best results, please narrow your search."
-                bms = bms[:25]
-        else:
-            results_message = "No results found. Please try again!"
-    else:
-        return HttpResponseRedirect(reverse("bookmarks", ))
-
-    return render(request, "bookmark_results.html", {"bookmarks": bms, "results_message": results_message,})
+    return render(request, "bookmarks.html", {"bookmarks": bms})

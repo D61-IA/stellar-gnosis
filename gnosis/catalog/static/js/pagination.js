@@ -1,8 +1,18 @@
-function pagination(current, first, last) {
+function pagination(current, first, last, current_path) {
 
     var $page_items = $('.num_item');
-
     var path = '?page=';
+
+    if (current_path.indexOf('?keywords=') !== -1) {
+        current_path = current_path.replace('&amp;', '&');
+        var i = current_path.indexOf('&page=');
+        if (i !== -1) {
+            path = current_path.slice(0, i+6)
+        } else {
+            path = current_path;
+            path += '&page=';
+        }
+    }
 
     if (last > 5) {
         if (current <= first + 2) {

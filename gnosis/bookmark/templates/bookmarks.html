@@ -4,8 +4,7 @@
 
     <div class="card shadow-sm text-center mt-3">
         <div class="card-body">
-            <form action="{% url 'bookmark_search' %}" method="post">
-                {% csrf_token %}
+            <form action="{% url 'bookmark_search' %}" id="bm_form" method="get">
 
                 <input type="text" name="keywords" size="60" class="form-control" required="" id="id_bm_search">
 
@@ -14,6 +13,7 @@
             </form>
         </div>
     </div>
+
 
     <div class="card shadow-sm mt-3">
         <div class="card-header">
