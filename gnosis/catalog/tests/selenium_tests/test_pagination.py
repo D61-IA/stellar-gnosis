@@ -58,7 +58,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         """delete testing assets and quit webdriver and browser"""
 
         super().tearDownClass()
-        # cls.browser.quit()
+        cls.browser.quit()
 
 
     def test_non_search(self):
