@@ -58,7 +58,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         """delete testing assets and quit webdriver and browser"""
 
         super().tearDownClass()
-        cls.browser.quit()
+        # cls.browser.quit()
 
 
     def test_non_search(self):
@@ -88,7 +88,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         form.submit()
 
         # wait for page to reload after submit
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'footer')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.pagination')))
 
         page_links = self.browser.find_elements_by_class_name('page_link')
 
@@ -96,6 +96,9 @@ class ChromeTestCase(StaticLiveServerTestCase):
         for idx, pl in enumerate(page_links):
             url = pl.get_attribute('href')
             self.assertEqual(url, self.live_server_url + '/catalog/paper/search/?keywords=world&page=' + str(idx+1))
+
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.active')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.num_item')))
 
         num_items = self.browser.find_elements_by_class_name('num_item')
         classes = num_items[0].get_attribute('class')
