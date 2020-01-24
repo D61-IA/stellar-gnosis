@@ -1,7 +1,8 @@
 #cy {
-    max-height: 600px;
+    max-height: 490px;
 !important;
     display: block;
+    grid-column: 2 / 17
 }
 
 
@@ -12,7 +13,11 @@
     border-radius: 50%;
     vertical-align: bottom;
     margin: 0 4px;
+}
 
+.legend_ele .color_legend {
+    display: table;
+    margin: 0 auto;
 }
 
 .paper {
@@ -44,9 +49,8 @@
     margin: 2px;
 }
 
-
 .ego_button_container {
-    display: flex;
+    display: none;
     z-index: 1000;
     flex-direction: row;
     justify-content: space-between;
@@ -63,7 +67,7 @@
     justify-content: space-between
 }
 
-#graphfilter {
+.graphfilter {
     z-index: 1000;
     height: 30px;
     font-size: 80%;
@@ -72,18 +76,14 @@
     margin-bottom: auto
 }
 
-.ego_button {
-    padding: .2rem .25rem;
-}
-
-.flex_layout_row {
+.flex_row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 
 }
 
-.flex_layout_col {
+.flex_col {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -91,7 +91,7 @@
 }
 
 .legend_ele {
-    padding: 5px 5px;
+    padding: 5px;
     user-select: none;
     font-size: 80%;
 }
@@ -100,12 +100,6 @@
     background-color: #eeeeee;
     transition: background-color 0.2s;
     cursor: pointer;
-}
-
-
-.widget_container {
-    justify-content: center;
-
 }
 
 #ego_header:hover {
@@ -131,6 +125,47 @@
     border-radius: 6px;
     opacity: 0.9;
     text-align: left
+}
+
+#side_menu {
+    flex-direction: column;
+    grid-column: 1 / 2;
+    background-color: ghostwhite
+}
+
+.node_item {
+    padding: 5px;
+    text-align: center;
+}
+
+.node_item button {
+    width: 103px;
+    text-align: left;
+}
+
+.node_item input {
+    margin-left: 5px;
+}
+
+.filter_btn {
+    padding: 5px;
+    border-style: inset;
+}
+
+
+/* Extra small devices (phones, 600px and down) */
+@media screen and (max-width: 678px) {
+    #side_menu {
+        display: none;
+    }
+
+    .ego_button_container {
+        display: flex;
+    }
+
+    .ego_button {
+        padding: .2rem .25rem;
+    }
 }
 
 

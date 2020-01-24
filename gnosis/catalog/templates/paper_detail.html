@@ -145,25 +145,98 @@
 
         <div id="ego_graph_content">
             <div class="ego_button_container">
-                <div id="paper_filter" class="flex_layout_col legend_ele"><span
-                        class="color_legend paper"></span> Paper
+                <div class="flex_col legend_ele filter_btn" data-name="paper_filter" data-pressed="true" data-type="Paper">
+                    <span class="color_legend paper"></span>Paper
                 </div>
-                <div id="person_filter" class="flex_layout_col legend_ele"><span
-                        class="color_legend person"></span> Person
+                <div class="flex_col legend_ele filter_btn" data-name="person_filter" data-pressed="true" data-type="Person">
+                    <span class="color_legend person"></span>Person
                 </div>
-                <div id="venue_filter" class="flex_layout_col legend_ele"><span
-                        class="color_legend venue"></span> Venue
+                <div class="flex_col legend_ele filter_btn" data-name="venue_filter" data-pressed="true" data-type="Venue">
+                    <span class="color_legend venue"></span>Venue
                 </div>
-                <div id="code_filter" class="flex_layout_col legend_ele"><span
-                        class="color_legend code"></span> Code
+                <div class="flex_col legend_ele filter_btn" data-name="code_filter" data-pressed="true" data-type="Code">
+                    <span class="color_legend code"></span>Code
                 </div>
-                <div id="dataset_filter" class="flex_layout_col legend_ele"><span
-                        class="color_legend dataset"></span>
-                    Dataset
+                <div class="flex_col legend_ele filter_btn" data-name="dataset_filter" data-pressed="true" data-type="Dataset">
+                    <span class="color_legend dataset"></span>Dataset
                 </div>
             </div>
 
-            <div class="card-body" style="padding: 0">
+            <div class="card-body" style="padding: 0; display: grid; grid-template-columns: repeat(16, 1fr)">
+                <div id="side_menu">
+                    <div class="dropdown-toggle" style="padding: 10px">
+                        <strong>Relationships</strong>
+                    </div>
+                    <div style="padding: 10px">
+                        <select class="graphfilter">
+                            <option value="all">all</option>
+                            <option value="cites"> cites</option>
+                            <option value="uses"> uses</option>
+                            <option value="extends"> extends</option>
+                            <option value="authors"> authors</option>
+                            <option value="was published at"> was published at</option>
+                            <option value="evaluates on"> evaluates on</option>
+                            <option value="implements"> implements</option>
+                        </select>
+
+                    </div>
+                    <div class="dropdown-divider"></div>
+
+                    <div class="dropdown-toggle" style="padding: 10px">
+                        <strong>Nodes</strong>
+                    </div>
+                    <div id="node_container">
+                        <div class="node_item">
+                            <button class="filter_btn" data-name="paper_filter" data-pressed="true" data-type="Paper"><span
+                                    class="color_legend paper"></span>Paper
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="filter_btn" data-name="person_filter" data-pressed="true" data-type="Person"><span
+                                    class="color_legend person"></span>Person
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="venue_filter filter_btn" data-name="venue_filter" data-pressed="true" data-type="Venue"><span
+                                    class="color_legend venue"></span>Venue
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="code_filter filter_btn" data-name="code_filter" data-pressed="true" data-type="Code"><span
+                                    class="color_legend code"></span>Code
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="dataset_filter filter_btn" data-name="dataset_filter" data-pressed="true" data-type="Dataset"><span
+                                    class="color_legend dataset"></span>Dataset
+                            </button>
+                        </div>
+
+                    </div>
+                    <div class="dropdown-divider"></div>
+
+                    <div style="text-align: center">
+                        <button type="button"
+                                class="btn btn-primary ego_button ego_button_reset" title="Reset">
+                            <i class="material-icons">
+                                refresh
+                            </i>
+                        </button>
+                        <button type="button"
+                                class="btn btn-primary ego_button ego_button_toggle" title="Hide relationships"
+                                data-toggle="button"
+                                aria-pressed="false">
+                            <i class="material-icons">
+                                title
+                            </i>
+                        </button>
+                    </div>
+
+                </div>
 
                 <div id="cy">
                     <div id="tooltip" hidden>
@@ -172,92 +245,38 @@
                 </div>
             </div>
 
-            <div class="ego_button_container" style="justify-content: center">
-                <div class="widget_container">
-                    <button id="ego_button_reset" type="button"
-                            class="btn btn-primary ego_button" title="Reset">
+            <div class="ego_button_container" style="justify-content: center;">
+                <div class="flex_row">
+                    <button type="button"
+                            class="btn btn-primary ego_button ego_button_reset" title="Reset">
                         <i class="material-icons">
                             refresh
                         </i>
                     </button>
-
-                    <button id="ego_button_select" type="button" class="btn btn-primary ego_button"
-                            aria-expanded="false">
-                        Select
-                    </button>
-                    <button id="ego_button_toggle" type="button"
-                            class="btn btn-primary ego_button" title="Hide relationships"
+                    <select class="graphfilter">
+                        <option value="all"> all</option>
+                        <option value="cites"> cites</option>
+                        <option value="uses"> uses</option>
+                        <option value="extends"> extends</option>
+                        <option value="authors"> authors</option>
+                        <option value="was published at"> was published at</option>
+                        <option value="evaluates on"> evaluates on</option>
+                        <option value="published"> published</option>
+                        <option value="implements"> implements</option>
+                    </select>
+                    <button type="button"
+                            class="btn btn-primary ego_button ego_button_toggle" title="Hide relationships"
                             data-toggle="button"
                             aria-pressed="false">
-                        <i class="material-icons" id="rela_toggle">
-                            visibility
+                        <i class="material-icons">
+                            title
                         </i>
                     </button>
-                </div>
-            </div>
-
-            <div id="select_menu" class="dropdown-menu" style="position: absolute; min-width: 190px;" >
-                <button class="dropdown-item dropdown-toggle cus_toggle" type="button"
-                        style="outline: none"><strong>Relationships</strong>
-                </button>
-                <div class="cus-dropdown" style="padding: .5rem 5px;">
-                    <div class="dropdown-item">
-                        <select id="graphfilter">
-                            <option value="all"> all</option>
-                            <option value="cites"> cites</option>
-                            <option value="uses"> uses</option>
-                            <option value="extends"> extends</option>
-                            <option value="authors"> authors</option>
-                            <option value="was published at"> was published at</option>
-                            <option value="evaluates on"> evaluates on</option>
-                            <option value="published"> published</option>
-                            <option value="implements"> implements</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-
-                <button class="dropdown-item dropdown-toggle cus_toggle" type="button"
-                        style="outline: none"><strong>Nodes</strong>
-                </button>
-                <div class="cus-dropdown" style="padding: .5rem 5px;">
-                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
-                                                      value="paper">
-                        <span class="color_legend paper"></span>Paper
-                    </div>
-
-                    <div class="dropdown-item">
-                        <input type="checkbox" name="vehicle1" value="person">
-                        <span class="color_legend person"></span>Person
-                    </div>
-
-                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
-                                                      value="venue">
-                        <span class="color_legend venue"></span>Venue
-                    </div>
-                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
-                                                      value="code">
-                        <span class="color_legend code"></span>Code
-                    </div>
-                    <div class="dropdown-item"><input type="checkbox" name="vehicle1"
-                                                      value="dataset">
-                        <span class="color_legend dataset"></span>Dataset
-                    </div>
                 </div>
             </div>
 
         </div>
     </div>
-
-    <script>
-        $('#ego_button_select').click(function (e) {
-            var position = $(this).position();
-            $('#select_menu').css({
-                'top': position.top - 350,
-                'left': position.left- 60,
-            }).fadeToggle(100)
-        })
-    </script>
 
 
     <div class="card shadow-sm mt-5">
@@ -497,7 +516,7 @@
         var paper_count = 50;
 
         // define layout options
-        var layout = {
+        var cy_layout = {
             name: 'concentric',
             concentric: (node) => {
                 if (node.data('label') === "origin") return paper_count + 50;
@@ -517,7 +536,7 @@
             // mouse wheel sensitivity, used for zooming
             wheelSensitivity: 0.1,
 
-            layout: layout,
+            layout: cy_layout,
 
             // max zoom factor
             maxZoom: 2.0,

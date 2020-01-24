@@ -2,10 +2,12 @@
 // simulate stop resizing using timer
 var resizeTimer;
 
+var $cy = $('#cy');
+
 // centering only happens after 250ms each time resize stops
 $(window).on('resize', function (e) {
     clearTimeout(resizeTimer);
-    $('#cy').css('height', $('#cy').css('width'));
+    $cy.css('height', $cy.css('width'));
     resizeTimer = setTimeout(function () {
         center();
     }, 250);
@@ -43,75 +45,99 @@ function center() {
 
 /************** reset and re-render layout **************/
 
-var $graphfilter = $('#graphfilter');
+var $graphfilter = $('.graphfilter');
 
-// reset layout, all nodes return to initial positions
-function reset_layout() {
-    cy.layout(layout).run();
-    center();
-}
+var $buttons = $('.filter_btn');
 
 function reset_nodes() {
     collection = cy.elements();
     cy.style().selector('node').style('visibility', 'visible').update();
     cy.style().selector('edge').style('visibility', 'visible').update();
-    reset_layout();
+    collection.layout(cy_layout).run();
 
+    center();
+
+    $buttons.attr('data-pressed', 'true').css('border-style', 'inset');
     // sync select menu option to 'all'
     $graphfilter.val('all');
 }
 
-$('#ego_button_reset').click(function () {
+
+$('.ego_button_reset').click(function () {
     reset_nodes();
 });
 
-$('#ego_button_toggle').click(function () {
+$('.ego_button_toggle').click(function () {
     toggle_relas();
 });
 
-/************** graph filtering function **************/
-function show_cites(label, type) {
 
-    if (label === "all" && type === "all") {
+/************** graph filtering function **************/
+// filter for single node type or relationship type
+// labels indicated relas, types indicate nodes
+function show_cites(relas, node) {
+    if (node === "all" && relas === "all") {
         collection = cy.elements();
         cy.style().selector('node').style('visibility', 'visible').update();
         cy.style().selector('edge').style('visibility', 'visible').update();
     } else {
         // get all elements on the graph
         collection = cy.filter((element) => {
-            return element.data('label') === label || element.data('type') === type
+            return element.data('label') === relas || element.data('type') === node
                 || element.data('label') === "origin"
         });
         cy.style().selector('node').style('visibility', 'hidden').update();
         cy.style().selector('edge').style('visibility', 'hidden').update();
-        cy.style().selector('[type="' + type + '"]').style('visibility', 'visible').update();
-        cy.style().selector('[label="' + label + '"]').style('visibility', 'visible').update();
+        cy.style().selector('[type="' + node + '"]').style('visibility', 'visible').update();
+        cy.style().selector('[label="' + relas + '"]').style('visibility', 'visible').update();
         cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
     }
 
-    collection.layout(layout).run();
+    collection.layout(cy_layout).run();
     center();
 }
 
-$('#paper_filter').click(function () {
-    show_cites('all', 'Paper');
+$buttons.click(function () {
+    var type = $(this).attr('data-type');
+    var data_name = $(this).attr('data-name');
+    // get buttons in mobile view and desk view.
+    var $these = $('[data-name="' + data_name + '"]');
+
+    if ($(this).attr('data-pressed') === 'false') {
+
+        // update the graph
+        cy.style().selector('[type="' + type + '"]').style('visibility', 'visible').update();
+
+        // set the state of the buttons to 'pressed'
+        $these.attr('data-pressed', 'true');
+        // update the button style
+        $these.css('border-style', 'inset');
+    } else {
+        //update the graph
+        cy.style().selector('[type="' + type + '"]').style('visibility', 'hidden').update();
+        cy.style().selector('[label="origin"]').style('visibility', 'visible').update();
+
+        // set the state of the buttons to 'not pressed'
+        $these.attr('data-pressed', 'false');
+        // update the button style
+        $these.css('border-style', 'outset');
+
+    }
+
+    collection = cy.filter((element) => {
+        // console.log(this.name);
+        return element.visible() === true;
+    });
+    collection.layout(cy_layout).run();
+
+    center();
 });
-$('#person_filter').click(function () {
-    show_cites('all', 'Person');
-});
-$('#venue_filter').click(function () {
-    show_cites('all', 'Venue');
-});
-$('#code_filter').click(function () {
-    show_cites('all', 'Code');
-});
-$('#dataset_filter').click(function () {
-    show_cites('all', 'Dataset');
-});
+
 
 $graphfilter.change(function () {
     show_cites(this.value, 'all');
 });
+
 
 /************** collapse ego-graph **************/
 // stores state of the collapse target
@@ -128,7 +154,6 @@ $(ego_header).click(function () {
     } else {
         $(this).children('.drop_indicator').text('arrow_drop_up');
         $('#ego_graph_content').show(200);
-
     }
 });
 
