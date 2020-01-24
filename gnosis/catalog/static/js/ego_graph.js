@@ -57,7 +57,7 @@ function reset_nodes() {
 
     center();
 
-    $buttons.attr('data-pressed', 'true').css('border-style', 'inset');
+    $buttons.attr('data-pressed', 'true').addClass('active');
     // sync select menu option to 'all'
     $graphfilter.val('all');
 }
@@ -111,7 +111,7 @@ $buttons.click(function () {
         // set the state of the buttons to 'pressed'
         $these.attr('data-pressed', 'true');
         // update the button style
-        $these.css('border-style', 'inset');
+        $these.addClass('active')
     } else {
         //update the graph
         cy.style().selector('[type="' + type + '"]').style('visibility', 'hidden').update();
@@ -120,7 +120,7 @@ $buttons.click(function () {
         // set the state of the buttons to 'not pressed'
         $these.attr('data-pressed', 'false');
         // update the button style
-        $these.css('border-style', 'outset');
+        $these.removeClass('active')
 
     }
 

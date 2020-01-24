@@ -145,21 +145,26 @@
 
         <div id="ego_graph_content">
             <div class="ego_button_container">
-                <div class="flex_col legend_ele filter_btn" data-name="paper_filter" data-pressed="true" data-type="Paper">
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="paper_filter" data-pressed="true"
+                     data-type="Paper">
                     <span class="color_legend paper"></span>Paper
-                </div>
-                <div class="flex_col legend_ele filter_btn" data-name="person_filter" data-pressed="true" data-type="Person">
+                </button>
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="person_filter" data-pressed="true"
+                     data-type="Person">
                     <span class="color_legend person"></span>Person
-                </div>
-                <div class="flex_col legend_ele filter_btn" data-name="venue_filter" data-pressed="true" data-type="Venue">
+                </button>
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="venue_filter" data-pressed="true"
+                     data-type="Venue">
                     <span class="color_legend venue"></span>Venue
-                </div>
-                <div class="flex_col legend_ele filter_btn" data-name="code_filter" data-pressed="true" data-type="Code">
+                </button>
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="code_filter" data-pressed="true"
+                     data-type="Code">
                     <span class="color_legend code"></span>Code
-                </div>
-                <div class="flex_col legend_ele filter_btn" data-name="dataset_filter" data-pressed="true" data-type="Dataset">
+                </button>
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="dataset_filter" data-pressed="true"
+                     data-type="Dataset">
                     <span class="color_legend dataset"></span>Dataset
-                </div>
+                </button>
             </div>
 
             <div class="card-body" style="padding: 0; display: grid; grid-template-columns: repeat(16, 1fr)">
@@ -178,7 +183,6 @@
                             <option value="evaluates on"> evaluates on</option>
                             <option value="implements"> implements</option>
                         </select>
-
                     </div>
                     <div class="dropdown-divider"></div>
 
@@ -187,32 +191,41 @@
                     </div>
                     <div id="node_container">
                         <div class="node_item">
-                            <button class="filter_btn" data-name="paper_filter" data-pressed="true" data-type="Paper"><span
-                                    class="color_legend paper"></span>Paper
+                            <button class="btn btn-outline-secondary filter_btn active" data-name="paper_filter"
+                                    data-pressed="true"
+                                    data-type="Paper">
+                                <span class="color_legend paper"></span>Paper
                             </button>
                         </div>
 
                         <div class="node_item">
-                            <button class="filter_btn" data-name="person_filter" data-pressed="true" data-type="Person"><span
-                                    class="color_legend person"></span>Person
+                            <button class="btn btn-outline-secondary filter_btn active" data-name="person_filter"
+                                    data-pressed="true" data-type="Person">
+                                <span class="color_legend person"></span>Person
                             </button>
                         </div>
 
                         <div class="node_item">
-                            <button class="venue_filter filter_btn" data-name="venue_filter" data-pressed="true" data-type="Venue"><span
-                                    class="color_legend venue"></span>Venue
+                            <button class="btn btn-outline-secondary filter_btn active" data-name="venue_filter"
+                                    data-pressed="true"
+                                    data-type="Venue">
+                                <span class="color_legend venue"></span>Venue
                             </button>
                         </div>
 
                         <div class="node_item">
-                            <button class="code_filter filter_btn" data-name="code_filter" data-pressed="true" data-type="Code"><span
-                                    class="color_legend code"></span>Code
+                            <button class="btn btn-outline-secondary filter_btn active" data-name="code_filter"
+                                    data-pressed="true"
+                                    data-type="Code">
+                                <span class="color_legend code"></span>Code
                             </button>
                         </div>
 
                         <div class="node_item">
-                            <button class="dataset_filter filter_btn" data-name="dataset_filter" data-pressed="true" data-type="Dataset"><span
-                                    class="color_legend dataset"></span>Dataset
+                            <button class="btn btn-outline-secondary filter_btn active" data-name="dataset_filter"
+                                    data-pressed="true"
+                                    data-type="Dataset">
+                                <span class="color_legend dataset"></span>Dataset
                             </button>
                         </div>
 
@@ -274,6 +287,7 @@
                     </button>
                 </div>
             </div>
+
 
         </div>
     </div>

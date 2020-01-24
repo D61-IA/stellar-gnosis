@@ -149,7 +149,6 @@
 
 .filter_btn {
     padding: 5px;
-    border-style: inset;
 }
 
 
@@ -165,6 +164,11 @@
 
     .ego_button {
         padding: .2rem .25rem;
+    }
+
+    .color_legend {
+        width: 18px;
+        height: 18px;
     }
 }
 
