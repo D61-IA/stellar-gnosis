@@ -62,7 +62,6 @@ function reset_nodes() {
     $graphfilter.val('all');
 }
 
-
 $('.ego_button_reset').click(function () {
     reset_nodes();
 });
@@ -131,11 +130,10 @@ $buttons.click(function () {
     center();
 });
 
-
 $graphfilter.change(function () {
     show_relas(this.value, 'all');
     var data_type = $('option:selected', this).attr('data-type');
-    // console.log(data_type);
+
     $buttons.each(function (index, element) {
         if (data_type === 'all') {
             $(element).addClass('active')
