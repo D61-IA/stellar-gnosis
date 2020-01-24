@@ -12,6 +12,7 @@ from itertools import chain
 from django.utils import timezone
 import pytz
 
+
 @login_required
 def groups_user(request):
     """My Groups index view."""
@@ -26,15 +27,15 @@ def groups_user(request):
     # Combine the Query sets
     my_groups = list(chain(my_groups, my_groups_owned))
 
-    if request.method == 'POST':
+    if request.method == "POST":
         # user is searching for a group
         form = SearchGroupsForm(request.POST)
         if form.is_valid():
             query = form.clean_query()
             # print(f"Searching for groups using keywords {query}")
             all_groups = ReadingGroup.objects.annotate(
-                 search=SearchVector('keywords')
-            ).filter(search=SearchQuery(query, search_type='plain'))
+                search=SearchVector("keywords")
+            ).filter(search=SearchQuery(query, search_type="plain"))
 
             print(all_groups)
 
@@ -44,7 +45,7 @@ def groups_user(request):
                 return render(
                     request,
                     "groups.html",
-                    {"groups": all_groups, "message": message, "form": form },
+                    {"groups": all_groups, "message": message, "form": form},
                 )
 
     elif request.method == "GET":
@@ -53,23 +54,24 @@ def groups_user(request):
     return render(
         request,
         "groups_user.html",
-        {"mygroups": my_groups, "message": message, "form": form, },
+        {"mygroups": my_groups, "message": message, "form": form,},
     )
+
 
 def groups(request):
     """Groups index view."""
     message = ""
     all_groups = ReadingGroup.objects.all().order_by("-created_at")[:200]
 
-    if request.method == 'POST':
+    if request.method == "POST":
         # user is searching for a group
         form = SearchGroupsForm(request.POST)
         if form.is_valid():
             query = form.clean_query()
             # print(f"Searching for groups using keywords {query}")
             all_groups = ReadingGroup.objects.annotate(
-                 search=SearchVector('keywords')
-            ).filter(search=SearchQuery(query, search_type='plain'))
+                search=SearchVector("keywords")
+            ).filter(search=SearchQuery(query, search_type="plain"))
 
             # print(all_groups)
 
@@ -82,8 +84,18 @@ def groups(request):
     return render(
         request,
         "groups.html",
-        {"groups": all_groups, "message": message, "form": form },
+        {"groups": all_groups, "message": message, "form": form},
     )
+
+
+def group_find(request):
+    keywords = request.GET.get("keywords", "")
+
+    all_groups = ReadingGroup.objects.annotate(search=SearchVector("keywords")).filter(
+        search=SearchQuery(keywords, search_type="plain")
+    )
+
+    return render(request, "groups.html", {"groups": all_groups, "message": "",},)
 
 
 @login_required
@@ -120,7 +132,7 @@ def group_grant_access(request, id, aid):
         applicant = get_object_or_404(User, pk=aid)
         # How do we change the applicant's status?
         applicant_request_entry = group.members.filter(member=applicant).all()
-        if applicant_request_entry.count() == 1:                        
+        if applicant_request_entry.count() == 1:
             # I don't know if this is the best way to do this, but I will delete the existing entry
             # with access_type set to 'requested' and add a new one with access_type 'granted'.
             applicant_request_entry.delete()
@@ -139,9 +151,9 @@ def group_deny_access(request, id, aid):
     if group.owner == request.user:
         applicant = get_object_or_404(User, pk=aid)
         applicant_request_entry = group.members.filter(member=applicant).all()
-        if applicant_request_entry.count() == 1:                        
+        if applicant_request_entry.count() == 1:
             applicant_request_entry.delete()
-    
+
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
 
 
@@ -159,7 +171,7 @@ def group_join(request, id):
             # print(f"{request.user} joining public group.")
             member = ReadingGroupMember(member=request.user, access_type="granted")
             member.save()
-            group.members.add(member)        
+            group.members.add(member)
         # else:
         #     print(f"{request.user} has status {member[0].access_type} for this group")
     else:
@@ -168,11 +180,12 @@ def group_join(request, id):
             # print(f"{request.user} requesting access to group.")
             member = ReadingGroupMember(member=request.user, access_type="requested")
             member.save()
-            group.members.add(member)        
+            group.members.add(member)
         # else:
         #     print(f"{request.user} has status {member[0].access_type} for this group")
 
     return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
 
 @login_required
 def group_leave(request, id):
@@ -210,11 +223,11 @@ def group_detail(request, id):
 
     if not request.user.is_anonymous:
         member = group.members.filter(member=request.user).all()
-        if member.count() == 1 :
+        if member.count() == 1:
             print(f"{request.user} has status {member[0].access_type} for this group")
-            if member[0].access_type == 'granted':
+            if member[0].access_type == "granted":
                 is_member = True
-            elif member[0].access_type == 'requested':
+            elif member[0].access_type == "requested":
                 has_requested_access = True
 
     return render(
@@ -284,7 +297,7 @@ def group_update(request, id):
                     "keywords": group.keywords,
                     "description": group.description,
                     "is_public": group.is_public,
-                    "address": group.address, 
+                    "address": group.address,
                     "city": group.city,
                     "country": group.country,
                     "room": group.room,

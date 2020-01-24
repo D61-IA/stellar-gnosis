@@ -4,15 +4,10 @@
 
     <div class="card shadow-sm mt-3">
         <div class="card-body text-center">
-            <form action="" method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                    {{ field }}
-                {% endfor %}
+            <form action="{% url 'group_find' %}" method="get">
+                <input type="text" name="keywords" size="60" class="form-control" required="">
                 <br>
-                <div>
-                    <input type="submit" class="btn btn-primary btn-lg" value="Search Journal Clubs"/>
-                </div>
+                <input type="submit" class="btn btn-primary btn-lg" value="Search Journal Clubs"/>
             </form>
         </div>
     </div>

@@ -103,6 +103,7 @@ urlpatterns += [
     path('club/<int:id>/entry/<int:eid>/unschedule/', views.group_entry_unschedule, name='group_entry_unschedule'),
     path('club/<int:id>/user/<int:aid>/grant/', views.group_grant_access, name='group_grant_access'),
     path('club/<int:id>/user/<int:aid>/deny/', views.group_deny_access, name='group_deny_access'),
+    path('club/search/', views.group_find, name='group_find'),
 ]
 
 # for updating/creating a Collection
