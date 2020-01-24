@@ -16,7 +16,6 @@ import pytz
 @login_required
 def groups_user(request):
     """My Groups index view."""
-    message = ""
     my_groups = []
 
     # First, we find all the groups the user is a member or owner
@@ -27,64 +26,21 @@ def groups_user(request):
     # Combine the Query sets
     my_groups = list(chain(my_groups, my_groups_owned))
 
-    if request.method == "POST":
-        # user is searching for a group
-        form = SearchGroupsForm(request.POST)
-        if form.is_valid():
-            query = form.clean_query()
-            # print(f"Searching for groups using keywords {query}")
-            all_groups = ReadingGroup.objects.annotate(
-                search=SearchVector("keywords")
-            ).filter(search=SearchQuery(query, search_type="plain"))
-
-            print(all_groups)
-
-            if all_groups is None:
-                message = "No results found. Please try again!"
-            else:
-                return render(
-                    request,
-                    "groups.html",
-                    {"groups": all_groups, "message": message, "form": form},
-                )
-
-    elif request.method == "GET":
-        form = SearchGroupsForm()
-
     return render(
         request,
         "groups_user.html",
-        {"mygroups": my_groups, "message": message, "form": form,},
+        {"mygroups": my_groups,},
     )
 
 
 def groups(request):
     """Groups index view."""
-    message = ""
     all_groups = ReadingGroup.objects.all().order_by("-created_at")[:200]
-
-    if request.method == "POST":
-        # user is searching for a group
-        form = SearchGroupsForm(request.POST)
-        if form.is_valid():
-            query = form.clean_query()
-            # print(f"Searching for groups using keywords {query}")
-            all_groups = ReadingGroup.objects.annotate(
-                search=SearchVector("keywords")
-            ).filter(search=SearchQuery(query, search_type="plain"))
-
-            # print(all_groups)
-
-            if all_groups is None:
-                message = "No results found. Please try again!"
-
-    elif request.method == "GET":
-        form = SearchGroupsForm()
 
     return render(
         request,
         "groups.html",
-        {"groups": all_groups, "message": message, "form": form},
+        {"groups": all_groups,},
     )
 
 
