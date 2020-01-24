@@ -145,24 +145,29 @@
 
         <div id="ego_graph_content">
             <div class="ego_button_container">
-                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="paper_filter" data-pressed="true"
-                     data-type="Paper">
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="paper_filter"
+                        data-pressed="true"
+                        data-type="Paper">
                     <span class="color_legend paper"></span>Paper
                 </button>
-                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="person_filter" data-pressed="true"
-                     data-type="Person">
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active"
+                        data-name="person_filter" data-pressed="true"
+                        data-type="Person">
                     <span class="color_legend person"></span>Person
                 </button>
-                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="venue_filter" data-pressed="true"
-                     data-type="Venue">
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="venue_filter"
+                        data-pressed="true"
+                        data-type="Venue">
                     <span class="color_legend venue"></span>Venue
                 </button>
-                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="code_filter" data-pressed="true"
-                     data-type="Code">
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="code_filter"
+                        data-pressed="true"
+                        data-type="Code">
                     <span class="color_legend code"></span>Code
                 </button>
-                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active" data-name="dataset_filter" data-pressed="true"
-                     data-type="Dataset">
+                <button class="flex_col legend_ele filter_btn btn btn-outline-secondary active"
+                        data-name="dataset_filter" data-pressed="true"
+                        data-type="Dataset">
                     <span class="color_legend dataset"></span>Dataset
                 </button>
             </div>
@@ -174,14 +179,14 @@
                     </div>
                     <div style="padding: 10px">
                         <select class="graphfilter">
-                            <option value="all">all</option>
-                            <option value="cites"> cites</option>
-                            <option value="uses"> uses</option>
-                            <option value="extends"> extends</option>
-                            <option value="authors"> authors</option>
-                            <option value="was published at"> was published at</option>
-                            <option value="evaluates on"> evaluates on</option>
-                            <option value="implements"> implements</option>
+                            <option value="all" data-type="all"> all</option>
+                            <option value="cites" data-type="Paper"> cites</option>
+                            <option value="uses" data-type="Paper"> uses</option>
+                            <option value="extends" data-type="Paper"> extends</option>
+                            <option value="authors" data-type="Person"> authors</option>
+                            <option value="was published at" data-type="Venue"> was published at</option>
+                            <option value="evaluates on" data-type="Dataset"> evaluates on</option>
+                            <option value="implements" data-type="Code"> implements</option>
                         </select>
                     </div>
                     <div class="dropdown-divider"></div>
@@ -267,15 +272,14 @@
                         </i>
                     </button>
                     <select class="graphfilter">
-                        <option value="all"> all</option>
-                        <option value="cites"> cites</option>
-                        <option value="uses"> uses</option>
-                        <option value="extends"> extends</option>
-                        <option value="authors"> authors</option>
-                        <option value="was published at"> was published at</option>
-                        <option value="evaluates on"> evaluates on</option>
-                        <option value="published"> published</option>
-                        <option value="implements"> implements</option>
+                        <option value="all" data-type="all"> all</option>
+                        <option value="cites" data-type="Paper"> cites</option>
+                        <option value="uses" data-type="Paper"> uses</option>
+                        <option value="extends" data-type="Paper"> extends</option>
+                        <option value="authors" data-type="Person"> authors</option>
+                        <option value="was published at" data-type="Venue"> was published at</option>
+                        <option value="evaluates on" data-type="Dataset"> evaluates on</option>
+                        <option value="implements" data-type="Code"> implements</option>
                     </select>
                     <button type="button"
                             class="btn btn-primary ego_button ego_button_toggle" title="Hide relationships"

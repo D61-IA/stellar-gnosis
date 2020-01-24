@@ -1,5 +1,5 @@
 #cy {
-    max-height: 490px;
+    max-height: 465px;
 !important;
     display: block;
     grid-column: 2 / 17
@@ -151,6 +151,15 @@
     padding: 5px;
 }
 
+/* Gray */
+.default {
+  border-color: #e7e7e7;
+  color: black;
+}
+
+.default:hover {
+  background: #e7e7e7;
+}
 
 /* Extra small devices (phones, 600px and down) */
 @media screen and (max-width: 678px) {

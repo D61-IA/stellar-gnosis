@@ -75,20 +75,19 @@ $('.ego_button_toggle').click(function () {
 /************** graph filtering function **************/
 // filter for single node type or relationship type
 // labels indicated relas, types indicate nodes
-function show_cites(relas, node) {
-    if (node === "all" && relas === "all") {
+function show_relas(relas) {
+    if (relas === "all") {
         collection = cy.elements();
         cy.style().selector('node').style('visibility', 'visible').update();
         cy.style().selector('edge').style('visibility', 'visible').update();
     } else {
         // get all elements on the graph
         collection = cy.filter((element) => {
-            return element.data('label') === relas || element.data('type') === node
+            return element.data('label') === relas
                 || element.data('label') === "origin"
         });
         cy.style().selector('node').style('visibility', 'hidden').update();
         cy.style().selector('edge').style('visibility', 'hidden').update();
-        cy.style().selector('[type="' + node + '"]').style('visibility', 'visible').update();
         cy.style().selector('[label="' + relas + '"]').style('visibility', 'visible').update();
         cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
     }
@@ -125,8 +124,7 @@ $buttons.click(function () {
     }
 
     collection = cy.filter((element) => {
-        // console.log(this.name);
-        return element.visible() === true;
+        return element.visible();
     });
     collection.layout(cy_layout).run();
 
@@ -135,7 +133,18 @@ $buttons.click(function () {
 
 
 $graphfilter.change(function () {
-    show_cites(this.value, 'all');
+    show_relas(this.value, 'all');
+    var data_type = $('option:selected', this).attr('data-type');
+    // console.log(data_type);
+    $buttons.each(function (index, element) {
+        if (data_type === 'all') {
+            $(element).addClass('active')
+        } else if (data_type !== $(element).attr('data-type')) {
+            $(element).removeClass('active')
+        } else {
+            $(element).addClass('active')
+        }
+    })
 });
 
 
