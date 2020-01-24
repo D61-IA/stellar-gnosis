@@ -1,7 +1,8 @@
 <ul class="pagination justify-content-center" style="margin:20px 0">
 
     {% if not pages.current.is_first %}
-        <li class="page-item page_prev desktop"><a class="page-link" href="{{ pages.previous.path }}"><i class='fas fa-step-backward'></i>Previous</a>
+        <li class="page-item page_prev desktop"><a class="page-link" href="{{ pages.previous.path }}"><i
+                class='fas fa-step-backward'></i>Previous</a>
         </li>
     {% endif %}
 
@@ -25,7 +26,8 @@
                                       href="{{ pages.last.path }}">{{ pages.last.number }}</a></li>
 
     {% if not pages.current.is_last %}
-        <li class="page-item page_next desktop"><a class="page-link" href="{{ pages.next.path }}">Next<i class='fas fa-step-forward'></i></a>
+        <li class="page-item page_next desktop"><a class="page-link" href="{{ pages.next.path }}">Next<i
+                class='fas fa-step-forward'></i></a>
         </li>
     {% endif %}
 </ul>
@@ -33,17 +35,19 @@
 <ul class="pagination justify-content-center mobile">
 
     {% if not pages.current.is_first %}
-        <li class="page-item page_prev"><a class="page-link" href="{{ pages.previous.path }}"><i class='fas fa-step-backward'></i>Previous</a>
+        <li class="page-item page_prev"><a class="page-link" href="{{ pages.previous.path }}"><i
+                class='fas fa-step-backward'></i>Previous</a>
         </li>
     {% endif %}
 
     {% if not pages.current.is_last %}
-        <li class="page-item page_next"><a class="page-link" href="{{ pages.next.path }}">Next<i class='fas fa-step-forward'></i></a>
+        <li class="page-item page_next"><a class="page-link" href="{{ pages.next.path }}">Next<i
+                class='fas fa-step-forward'></i></a>
         </li>
     {% endif %}
 </ul>
 
 
 <script>
-    pagination(parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'))
+    pagination(parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
 </script>

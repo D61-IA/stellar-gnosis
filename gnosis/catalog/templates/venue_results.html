@@ -1,20 +1,14 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-{% load el_pagination_tags %}
 
 <div class="card shadow-sm mt-3">
     <div class="card-body text-center">
         <form action="" method="post">
             {% csrf_token %}
-           <div class="row row-no-gutters">
-                <div class="col-2" style="padding-right: 0px">
-                    {{ form.search_type }}
-                </div>
-                <div class="col-10" style="padding-left: 0px">
-                    {{ form.search_keywords }}
-                </div>
-            </div>
+            {% for field in form %}
+                {{ field }}
+            {% endfor %}            
             <br>
            <div>
               <input type="submit" class="btn btn-primary" value="Search"/>
@@ -23,39 +17,30 @@
     </div>
 </div>
 
-{% if venue_results %}
+{% if venues %}
 <div class="card shadow-sm mt-3">
     <div class="card-header"><h4>Venues that match your query</h4></div>
-    {% paginate venue_results %}
     <div class="card-body">
-        {% for venue in venue_results %}
+        <h6>{{ results_message }} </h6>
+        {% for venue in venues %}
         <ul class="list-group">
             <li class="list-group-item mt-1">
                 <p><a href="{{ venue.get_absolute_url }}">{{ venue.name }}</a></p>
-                <p>Published on {{ venue.publication_date }} by {{ venue.publisher }}</p>
+                {% if venue.publisher %}
+                    <p>Published in {{ venue.publication_year }} by {{ venue.publisher }}</p>
+                {% else %}
+                    <p>Published in {{ venue.publication_year }}</p>
+                {% endif %}
             </li>
         </ul>
         {% endfor %}
     </div>
-
-        {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
-
+</div>
+{% else %}
+<div class=" card shadow-sm mt-3">
+    <div class="card-body">
+        <p>No venues found.</p>
+    </div>
 </div>
 
 {% endif %}

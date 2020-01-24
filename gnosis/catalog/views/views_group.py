@@ -17,7 +17,7 @@ def groups(request):
 
     message = ""
     my_groups = []
-    all_groups = ReadingGroup.objects.all().order_by("-created_at")[:50]
+    all_groups = ReadingGroup.objects.all().order_by("-created_at")[:100]
     nav_tab_label = "All Journal Clubs"
 
     # First, we find all the groups the user is a member or owner
