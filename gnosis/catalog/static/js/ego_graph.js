@@ -57,7 +57,7 @@ function reset_nodes() {
 
     center();
 
-    $buttons.attr('data-pressed', 'true').addClass('active');
+    $buttons.attr('data-pressed', 'true').css('background-color', '#e7e7e7');
     // sync select menu option to 'all'
     $graphfilter.val('all');
 }
@@ -109,7 +109,7 @@ $buttons.click(function () {
         // set the state of the buttons to 'pressed'
         $these.attr('data-pressed', 'true');
         // update the button style
-        $these.addClass('active')
+        $these.css('background-color', '#e7e7e7');
     } else {
         //update the graph
         cy.style().selector('[type="' + type + '"]').style('visibility', 'hidden').update();
@@ -118,8 +118,7 @@ $buttons.click(function () {
         // set the state of the buttons to 'not pressed'
         $these.attr('data-pressed', 'false');
         // update the button style
-        $these.removeClass('active')
-
+        $these.css('background-color', 'ghostwhite');
     }
 
     collection = cy.filter((element) => {
@@ -132,15 +131,16 @@ $buttons.click(function () {
 
 $graphfilter.change(function () {
     show_relas(this.value, 'all');
+    $graphfilter.val(this.value);
     var data_type = $('option:selected', this).attr('data-type');
 
     $buttons.each(function (index, element) {
         if (data_type === 'all') {
-            $(element).addClass('active')
+            $(element).css('background-color', '#e7e7e7')
         } else if (data_type !== $(element).attr('data-type')) {
-            $(element).removeClass('active')
+            $(element).css('background-color', 'ghostwhite')
         } else {
-            $(element).addClass('active')
+            $(element).css('background-color', '#e7e7e7')
         }
     })
 });
