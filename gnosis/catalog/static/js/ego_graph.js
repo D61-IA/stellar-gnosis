@@ -174,7 +174,7 @@ var hoverTimeout;
 
 
 /************** Node clicking **************/
-cy.on('click', 'node', function (evt) {
+cy.on('vclick', 'node', function (evt) {
     var node = evt.target;
     console.log('tapped ' + node.data('href'));
     try {
