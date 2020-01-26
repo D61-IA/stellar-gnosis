@@ -95,6 +95,7 @@ function show_relas(relas) {
     center();
 }
 
+// when a node buttons is clicked
 $buttons.click(function () {
     var type = $(this).attr('data-type');
     var data_name = $(this).attr('data-name');
@@ -107,18 +108,15 @@ $buttons.click(function () {
         cy.style().selector('[type="' + type + '"]').style('visibility', 'visible').update();
 
         // set the state of the buttons to 'pressed'
-        $these.attr('data-pressed', 'true');
-        // update the button style
-        $these.css('background-color', '#e7e7e7');
+        $these.attr('data-pressed', 'true').css('background-color', '#e7e7e7');
+
     } else {
         //update the graph
         cy.style().selector('[type="' + type + '"]').style('visibility', 'hidden').update();
         cy.style().selector('[label="origin"]').style('visibility', 'visible').update();
 
         // set the state of the buttons to 'not pressed'
-        $these.attr('data-pressed', 'false');
-        // update the button style
-        $these.css('background-color', 'ghostwhite');
+        $these.attr('data-pressed', 'false').css('background-color', 'ghostwhite');
     }
 
     collection = cy.filter((element) => {
@@ -136,11 +134,12 @@ $graphfilter.change(function () {
 
     $buttons.each(function (index, element) {
         if (data_type === 'all') {
-            $(element).css('background-color', '#e7e7e7')
+            $(element).attr('data-pressed', 'true').css('background-color', '#e7e7e7')
         } else if (data_type !== $(element).attr('data-type')) {
-            $(element).css('background-color', 'ghostwhite')
+            // if the element is not the filter element, set pressed to false, its color to ghostwhite
+            $(element).attr('data-pressed', 'false').css('background-color', 'ghostwhite')
         } else {
-            $(element).css('background-color', '#e7e7e7')
+            $(element).attr('data-pressed', 'true').css('background-color', '#e7e7e7')
         }
     })
 });
@@ -170,11 +169,11 @@ if ($(window).width() < 600) {
     $(ego_header).click()
 }
 
-/************** tooltip **************/
-// interactivity with the ego graph
-// timeout for delaying tooltip
 var time_out = 300;
 var hoverTimeout;
+
+
+/************** Node clicking **************/
 cy.on('click', 'node', function (evt) {
     var node = evt.target;
     console.log('tapped ' + node.data('href'));
@@ -185,6 +184,9 @@ cy.on('click', 'node', function (evt) {
     }
 })
 
+/************** tooltip **************/
+// interactivity with the ego graph
+// timeout for delaying tooltip
 // drawing tooltip upon mouseover
     .on('mouseover', 'node', function (evt) {
         var node = evt.target;
@@ -246,3 +248,4 @@ cy.on('click', 'node', function (evt) {
         edge.style('opacity', 1);
 
     });
+
