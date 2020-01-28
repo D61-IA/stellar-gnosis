@@ -634,7 +634,7 @@ class Endorsement(models.Model):
         return str(self.user) + " endorse " + str(self.paper.title)
 
 
-class PaperFeedback(models.Model):
+class PaperReport(models.Model):
     options = (
         ("title", "Title"),
         ("abstract", "Abstract"),
@@ -648,17 +648,17 @@ class PaperFeedback(models.Model):
     description_fb = models.TextField(null=False, blank=True)
     # user who made the feedback
     proposed_by = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name="paper_feedback"
+        to=User, on_delete=models.CASCADE, related_name="paper_report"
     )
-    made_for = models.ForeignKey(
-        to=Paper, on_delete=models.CASCADE, related_name="feedback"
+    paper = models.ForeignKey(
+        to=Paper, on_delete=models.CASCADE, related_name="report"
     )
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     class Meta:
         ordering = ["error_type", "-created_at"]
-        verbose_name = "paper feedback"
+        verbose_name = "paper report"
 
     def __str__(self):
         return str(self.error_type)

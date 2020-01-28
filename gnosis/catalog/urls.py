@@ -76,7 +76,13 @@ urlpatterns += [
     path('comment/<int:id>/update/', views.comment_update, name='comment_update'),
     path('comment/<int:id>/delete/', views.comment_delete, name='comment_delete'),
     path('comment/<int:id>/restore/', views.comment_restore, name='comment_restore'),
-    path('flaggedcomments/', views.flagged_comments, name='flagged_comments_index'),
+]
+
+# for moderate reported comments or papers
+urlpatterns += [
+    path('moderation/comments/', views.flagged_comments, name='flagged_comments_index'),
+    path('moderation/papers/', views.reported_papers, name='reported_papers_index'),
+    path('moderation/papers/<int:id>/delete/', views.paper_report_del, name='paper_report_del'),
 ]
 
 # for updating/creating a new Code node

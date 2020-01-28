@@ -47,7 +47,7 @@
     z-index: 3000;
 }
 
-#id_violation, #id_error_field {
+#id_violation, #id_error_type {
     list-style-type: none;
     padding: 0;
 }

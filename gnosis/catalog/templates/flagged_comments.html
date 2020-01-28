@@ -17,7 +17,7 @@
                             <p><strong>Paper:</strong> <a
                                     href="{{ comment.comment.paper.get_absolute_url }}">{{ comment.comment.paper }}</a>
                             </p>
-                            <p id="actions_{{ comment.id }}" class="actions" data-commentid="{{ comment.comment.id }}"><strong>Actions: </strong>
+                            <p id="actions_{{ comment.id }}" class="actions"><strong>Actions: </strong>
                                 <a href="{% url 'comment_delete' comment.comment.id %}" class="btn btn-danger btn-sm mod_del"
                                    data-id="{{ comment.id }}" role="button">Delete Comment</a>
                                 <a href="{% url 'comment_restore' comment.comment.id %}" class="btn btn-primary btn-sm mod_res"

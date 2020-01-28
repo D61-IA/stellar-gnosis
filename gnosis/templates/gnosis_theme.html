@@ -66,7 +66,7 @@
     </div>
 </nav>
 
-<div class="container-fluid  max-width float_container" style="margin-top:30px">    
+<div class="container-fluid  max-width float_container" style="margin-top:30px">
     <!-- <div class="row float-right" style="margin-right:30px"> -->
     <div class="btn-group d-none d-md-flex justify-content-center">
         {% if user.is_authenticated %}
@@ -151,194 +151,201 @@
         {% endif %}
     </div>
 
-<div class="container-fluid  max-width float_container">    
-    <div class="dropdown d-md-none">
-        <button class="btn btn-secondary" type="button" data-toggle="dropdown">
-            <i class="material-icons" style="font-size:24px">menu</i>
-        </button>
-        <div class="dropdown-menu text-center">   
-            <div class="btn-group-vertical">
-                {% if user.is_authenticated %}    
-                <div class="btn-group">
-                    <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button" title="View all groups">Clubs&nbsp&nbsp</a>
-                    <div class="btn-group">
-                        <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
-                            title="Create a new group">+</a>
-                    </div>
-                </div>
-                <div class="btn-group">
-                    <a href="{% url 'papers_index' %}" class="btn btn-primary  flex-item" role="button"
-                    title="View all papers">Papers&nbsp&nbsp</a>
-                    <div class="btn-group">
-                        <a href="{% url 'paper_create_from_url' %}" class="btn btn-primary flex-item" role="button"
-                        title="Add new paper">+</a>
-                    </div>
-                </div>
+    <div class="container-fluid  max-width float_container">
+        <div class="dropdown d-md-none">
+            <button class="btn btn-secondary" type="button" data-toggle="dropdown">
+                <i class="material-icons" style="font-size:24px">menu</i>
+            </button>
+            <div class="dropdown-menu text-center">
+                <div class="btn-group-vertical">
+                    {% if user.is_authenticated %}
+                        <div class="btn-group">
+                            <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all groups">Clubs&nbsp&nbsp</a>
+                            <div class="btn-group">
+                                <a href="{% url 'group_create' %}" class="btn btn-primary flex-item" role="button"
+                                   title="Create a new group">+</a>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <a href="{% url 'papers_index' %}" class="btn btn-primary  flex-item" role="button"
+                               title="View all papers">Papers&nbsp&nbsp</a>
+                            <div class="btn-group">
+                                <a href="{% url 'paper_create_from_url' %}" class="btn btn-primary flex-item"
+                                   role="button"
+                                   title="Add new paper">+</a>
+                            </div>
+                        </div>
 
-                <div class="btn-group">
-                    <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
-                    title="View all people">People&nbsp&nbsp</a>
-                </div>
+                        <div class="btn-group">
+                            <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all people">People&nbsp&nbsp</a>
+                        </div>
 
-                <div class="btn-group">
-                    <a href="{% url 'venues_index' %}" class="btn btn-primary flex-item" role="button"
-                    title="View all venues">Venues&nbsp&nbsp</a>
-                    <div class="btn-group">
-                        <a href="{% url 'venue_create' %}" class="btn btn-primary flex-item" role="button"
-                        title="Add new venue">+</a>
-                    </div>
-                </div>
+                        <div class="btn-group">
+                            <a href="{% url 'venues_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all venues">Venues&nbsp&nbsp</a>
+                            <div class="btn-group">
+                                <a href="{% url 'venue_create' %}" class="btn btn-primary flex-item" role="button"
+                                   title="Add new venue">+</a>
+                            </div>
+                        </div>
 
-                <div class="btn-group">
-                    <a href="{% url 'datasets_index' %}" class="btn btn-primary flex-item" role="button"
-                    title="View all datasets">Datasets</a>
-                    <div class="btn-group">
-                        <a href="{% url 'dataset_create' %}" class="btn btn-primary flex-item" role="button"
-                        title="Add new dataset">+</a>
-                    </div>
-                </div>
+                        <div class="btn-group">
+                            <a href="{% url 'datasets_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all datasets">Datasets</a>
+                            <div class="btn-group">
+                                <a href="{% url 'dataset_create' %}" class="btn btn-primary flex-item" role="button"
+                                   title="Add new dataset">+</a>
+                            </div>
+                        </div>
 
-                <div class="btn-group">
-                    <a href="{% url 'codes_index' %}" class="btn btn-primary flex-item" role="button"
-                    title="View all codes">Codes&nbsp&nbsp&nbsp</a>
-                    <div class="btn-group">
-                        <a href="{% url 'code_create' %}" class="btn btn-primary flex-item" role="button"
-                        title="Add new code">+</a>
-                    </div>
+                        <div class="btn-group">
+                            <a href="{% url 'codes_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all codes">Codes&nbsp&nbsp&nbsp</a>
+                            <div class="btn-group">
+                                <a href="{% url 'code_create' %}" class="btn btn-primary flex-item" role="button"
+                                   title="Add new code">+</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="btn-group">
+                            <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all papers">Clubs&nbsp&nbsp</a>
+                        </div>
+                        <div class="btn-group">
+                            <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all papers">Papers&nbsp&nbsp</a>
+                        </div>
+
+                        <div class="btn-group">
+                            <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all people">People&nbsp&nbsp</a>
+                        </div>
+
+                        <div class="btn-group">
+                            <a href="{% url 'venues_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all venues">Venues&nbsp&nbsp</a>
+                        </div>
+
+                        <div class="btn-group">
+                            <a href="{% url 'datasets_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all datasets">Datasets</a>
+                        </div>
+
+                        <div class="btn-group">
+                            <a href="{% url 'codes_index' %}" class="btn btn-primary flex-item" role="button"
+                               title="View all codes">Codes</a>
+                        </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="btn-group">
-                    <a href="{% url 'groups_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all papers">Clubs&nbsp&nbsp</a>
-                </div>
-                <div class="btn-group">
-                    <a href="{% url 'papers_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all papers">Papers&nbsp&nbsp</a>
-                </div>
-            
-                <div class="btn-group">
-                    <a href="{% url 'persons_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all people">People&nbsp&nbsp</a>
-                </div>
-            
-                <div class="btn-group">
-                    <a href="{% url 'venues_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all venues">Venues&nbsp&nbsp</a>
-                </div>
-            
-                <div class="btn-group">
-                    <a href="{% url 'datasets_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all datasets">Datasets</a>
-                </div>
-            
-                <div class="btn-group">
-                    <a href="{% url 'codes_index' %}" class="btn btn-primary flex-item" role="button"
-                       title="View all codes">Codes</a>
-                </div>
-                {% endif %}            
             </div>
         </div>
-    </div>
 
-    <div class="row mb-3">
-        <div class="col-sm-12">
-            {% include "messages.html" %}
-            {% block content %}
-            {% endblock %}
+        <div class="row mb-3">
+            <div class="col-sm-12">
+                {% include "messages.html" %}
+                {% block content %}
+                {% endblock %}
+            </div>
         </div>
+
+        <script>setButton();</script>
     </div>
 
-    <script>setButton();</script>
-</div>
+    <!-- Footer -->
+    <footer class="text-center  pt-3 mt-5">
+        {% block footer %}
+        {% endblock %}
+        {% load static %}
+        {% get_flatpages as flatpages %}
+        <!-- Footer Links -->
+        <!-- Footer Links -->
+        <div class="text-center">
+            <ul class="list-unstyled">
+                {% for page in flatpages %}
+                    <li class="list-inline-item"><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
+                {% endfor %}
+                {% if user.is_authenticated and user.is_superuser %}
+                    <li class="list-inline-item">
+                        <a id="comment_moderation" href="{% url 'flagged_comments_index' %}">Comment Moderation</a>
+                    </li>
+                    <li class="list-inline-item"><strong>|</strong></li>
+                    <li class="list-inline-item">
+                        <a id="paper_moderation" href="{% url 'reported_papers_index' %}">Paper Moderation</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
 
-<!-- Footer -->
-<footer class="text-center  pt-3 mt-5">
-    {% block footer %}
-    {% endblock %}
-    {% load static %}
-    {% get_flatpages as flatpages %}
-    <!-- Footer Links -->
-    <!-- Footer Links -->
-    <div class="text-center">
-        <ul class="list-unstyled">
-            {% for page in flatpages %}
-                <li class="list-inline-item"><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
-            {% endfor %}
-            {% if user.is_authenticated and user.is_superuser %}
-            <li class="list-inline-item">
-                <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
-            </li>
-            {% endif %}
-        </ul>
-    </div>
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">© 2020 Copyright:
+            <a href="https://www.thejournal.club">The Journal Club</a>
+        </div>
+        <!-- Copyright -->
 
-    <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">© 2020 Copyright:
-        <a href="https://www.thejournal.club">The Journal Club</a>
-    </div>
-    <!-- Copyright -->
+    </footer>
+    <!-- Footer -->
 
-</footer>
-<!-- Footer -->
-
-<!-- response dialog for flag report -->
-<div id="response_msg" class="cover popup" hidden>
-    <div id="msg_dialog" class="card box_shadow">
-        <div class="card-body">
-            <div><span id="response_text">Thanks. We have received your report. If we find this content to be in violation of our guidelines,
+    <!-- response dialog for flag report -->
+    <div id="response_msg" class="cover popup" hidden>
+        <div id="msg_dialog" class="card box_shadow">
+            <div class="card-body">
+                <div><span id="response_text">Thanks. We have received your report. If we find this content to be in violation of our guidelines,
             we will remove it.</span>
-            </div>
+                </div>
 
-            <div class="ok_container">
-                <span class="response_ok">Ok</span>
-            </div>
+                <div class="ok_container">
+                    <span class="response_ok">Ok</span>
+                </div>
 
+            </div>
         </div>
     </div>
-</div>
 
-<!-- growing circles loader -->
-<div id="loader" class="cover" hidden>
-    <div class="loader_container">
-        <div class="spinner_grow paper" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner_grow person" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner_grow venue" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner_grow code" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner_grow dataset" role="status">
-            <span class="sr-only">Loading...</span>
+    <!-- growing circles loader -->
+    <div id="loader" class="cover" hidden>
+        <div class="loader_container">
+            <div class="spinner_grow paper" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner_grow person" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner_grow venue" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner_grow code" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner_grow dataset" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- START Bootstrap-Cookie-Alert -->
-<div class="alert text-center cookiealert" role="alert">
-    We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/" target="_blank">Learn more</a>
-    
-    <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
-        I agree
-    </button>
-</div>
-<!-- END Bootstrap-Cookie-Alert -->
-    
-<script>
-    var message_ele = document.getElementById("message_container");
+    <!-- START Bootstrap-Cookie-Alert -->
+    <div class="alert text-center cookiealert" role="alert">
+        We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/"
+                                                                                target="_blank">Learn more</a>
 
-    setTimeout(function () {
-        message_ele.style.display = "none";
-    }, 2000);
-</script>
+        <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
+            I agree
+        </button>
+    </div>
+    <!-- END Bootstrap-Cookie-Alert -->
 
-<!-- Include cookiealert script -->
-<script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script>
-<script src="{% static 'js/gnosis_theme.js' %}"></script>
+    <script>
+        var message_ele = document.getElementById("message_container");
+
+        setTimeout(function () {
+            message_ele.style.display = "none";
+        }, 2000);
+    </script>
+
+    <!-- Include cookiealert script -->
+    <script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script>
+    <script src="{% static 'js/gnosis_theme.js' %}"></script>
 
 </body>
 </html>

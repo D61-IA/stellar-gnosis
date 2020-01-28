@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm, Form
-from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag, Profile, PaperFeedback
+from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag, Profile, PaperReport
 from .models import ReadingGroup, ReadingGroupEntry
 from .models import Collection, CollectionEntry
 from django.utils.safestring import mark_safe
@@ -712,7 +712,7 @@ class FlaggedCommentForm(ModelForm):
         fields = ['violation', 'description']
 
 
-class PaperFeedbackForm(ModelForm):
+class PaperReportForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
 
@@ -720,8 +720,8 @@ class PaperFeedbackForm(ModelForm):
             ("title", "Title"),
             ("abstract", "Abstract"),
             ("authors", "Authors"),
-            ("venue", "Venue"),
             ("download", "Download link"),
+            ("venue", "Venue"),
         )
 
         self.fields["error_type"] = forms.ChoiceField(choices=options, widget=forms.RadioSelect())
@@ -738,5 +738,5 @@ class PaperFeedbackForm(ModelForm):
         return self.cleaned_data["description_fb"]
 
     class Meta:
-        model = PaperFeedback
+        model = PaperReport
         fields = ['error_type', 'description_fb']

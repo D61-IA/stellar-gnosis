@@ -15,7 +15,7 @@ from catalog.models import (
     Comment,
     CommentFlag,
     Code,
-    PaperFeedback)
+    PaperReport)
 from django.http import Http404, HttpResponseBadRequest
 from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from notes.forms import NoteForm
@@ -35,7 +35,7 @@ from catalog.forms import (
     CommentForm,
     PaperImportForm,
     FlaggedCommentForm,
-    PaperFeedbackForm)
+    PaperReportForm)
 
 from catalog.forms import (
     SearchAllForm,
@@ -227,7 +227,7 @@ def paper_detail(request, id):
 
     comments = paper.comment_set.all()
     flag_form = FlaggedCommentForm()
-    error_form = PaperFeedbackForm()
+    error_form = PaperReportForm()
 
     return render(
         request,
@@ -255,15 +255,15 @@ def paper_detail(request, id):
 def paper_error_report(request, id):
     """upload error information to DB"""
     paper = get_object_or_404(Paper, pk=id)
-    paper_feedback = PaperFeedback()
+    paper_feedback = PaperReport()
     print("error report received!")
     if request.method == "POST":
         print("POST")
-        form = PaperFeedbackForm(request.POST)
+        form = PaperReportForm(request.POST)
         if form.is_valid():
             paper_feedback.error_type = form.cleaned_data["error_type"]
             paper_feedback.description_fb = form.cleaned_data["description_fb"]
-            paper_feedback.made_for = paper
+            paper_feedback.paper = paper
             paper_feedback.proposed_by = request.user
             paper_feedback.save()
 

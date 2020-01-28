@@ -120,7 +120,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.find_element_by_class_name("response_ok").click()
 
         # go to moderation page
-        mod_link = self.browser.find_element_by_id('moderation_link')
+        mod_link = self.browser.find_element_by_id('comment_moderation')
         mod_link.click()
 
         wait = WebDriverWait(self.browser, 10)
