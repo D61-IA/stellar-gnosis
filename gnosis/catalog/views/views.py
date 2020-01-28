@@ -256,11 +256,12 @@ def paper_error_report(request, id):
     """upload error information to DB"""
     paper = get_object_or_404(Paper, pk=id)
     paper_feedback = PaperFeedback()
+    print("error report received!")
     if request.method == "POST":
         print("POST")
         form = PaperFeedbackForm(request.POST)
         if form.is_valid():
-            paper_feedback.error_field = form.cleaned_data["error_field"]
+            paper_feedback.error_type = form.cleaned_data["error_type"]
             paper_feedback.description_fb = form.cleaned_data["description_fb"]
             paper_feedback.made_for = paper
             paper_feedback.proposed_by = request.user
@@ -1284,10 +1285,8 @@ def paper_flag_comment(request, id, cid):
     if flagged == 0:
         # hasn't flagged this comment before
         # if this is POST request then process the Form data
-        print("Comment has not been flagged before.")
         comment_flag = CommentFlag()
         if request.method == "POST":
-            print("POST")
             form = FlaggedCommentForm(request.POST)
             if form.is_valid():
                 comment_flag.description = form.cleaned_data["description"]
@@ -1296,17 +1295,17 @@ def paper_flag_comment(request, id, cid):
                 comment_flag.proposed_by = request.user
                 comment_flag.save()
                 comment.is_flagged = True
+                comment.save()
 
                 data = {'is_valid': True}
-                print("responded!")
+
                 return JsonResponse(data)
             else:
                 data = {'is_valid': False}
-                print("responded!")
+
                 return JsonResponse(data)
         # GET request
         else:
-            print("GET: new FlaggedCommentForm")
             form = FlaggedCommentForm()
 
             return render(request, "paper_flag_comment.html", {"form": form})

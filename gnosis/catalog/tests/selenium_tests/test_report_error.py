@@ -108,7 +108,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         error_form = browser.find_element_by_id('error_form')
         parts = error_form.find_element_by_id('id_error_field')
         labels = parts.find_elements_by_tag_name('label')
-        true_labels = [c[0] for c in PaperFeedbackForm().fields['error_field'].choices]
+        true_labels = [c[0] for c in PaperFeedbackForm().fields['error_type'].choices]
 
         # test radio buttons have the right labels and they are in the right order.
         for i in range(len(labels)):

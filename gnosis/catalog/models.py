@@ -399,6 +399,7 @@ class PaperDatasetRelationshipData(models.Model):
 
 
 class CommentFlag(models.Model):
+
     violation_types = (
         ("spam", "spam"),
         ("offensive", "offensive"),
@@ -642,7 +643,7 @@ class PaperFeedback(models.Model):
         ("venue", "Venue"),
     )
     # user must select where the error occurs
-    error_field = models.CharField(max_length=20, choices=options, null=False, blank=False)
+    error_type = models.CharField(max_length=20, choices=options, null=False, blank=False)
     # The description is made optional
     description_fb = models.TextField(null=False, blank=True)
     # user who made the feedback
@@ -656,8 +657,8 @@ class PaperFeedback(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     class Meta:
-        ordering = ["error_field", "-created_at"]
+        ordering = ["error_type", "-created_at"]
         verbose_name = "paper feedback"
 
     def __str__(self):
-        return str(self.error_field)
+        return str(self.error_type)
