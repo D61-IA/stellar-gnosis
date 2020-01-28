@@ -40,8 +40,8 @@ $('#error_cancel_button').click(function () {
 
 
 /************** sending ajax post request with flag forms **************/
-var form = $('#flag_form');
-form.submit(function (e) {
+var flag_form = $('#flag_form');
+flag_form.submit(function (e) {
     e.preventDefault();
 
     $('.popup').attr('hidden', true);
@@ -52,7 +52,7 @@ form.submit(function (e) {
         $.ajax({
             type: 'POST',
             url: $this_url,
-            data: form.serialize(),
+            data: flag_form.serialize(),
             success: function (data) {
                 console.log("submit successful!");
                 if (data.is_valid) {
@@ -61,7 +61,7 @@ form.submit(function (e) {
                         $this_comment.find('.material-icons').text('flag');
                         $this_comment.find('.not_flagged').attr('class', 'flagged').attr('title', 'Flagged');
                     }
-                    form.trigger('reset');
+                    flag_form.trigger('reset');
                     // close loader
                     $('#loader').attr('hidden', true);
                     $('#response_text').text('Thanks. We have received your report. If we find this content to be in violation of our guidelines,\n' +
@@ -83,8 +83,8 @@ form.submit(function (e) {
     }
 });
 
-form = $('#error_form');
-form.submit(function (e) {
+var error_form = $('#error_form');
+error_form.submit(function (e) {
     e.preventDefault();
 
     $('.popup').attr('hidden', true);
@@ -95,11 +95,11 @@ form.submit(function (e) {
         $.ajax({
             type: 'POST',
             url: $this_url,
-            data: form.serialize(),
+            data: error_form.serialize(),
             success: function (data) {
                 console.log("submit successful!");
                 if (data.is_valid) {
-                    form.trigger('reset');
+                    error_form.trigger('reset');
                     // close loader
                     $('#loader').attr('hidden', true);
                     $('#response_text').text('Thanks. We have received your report.');
