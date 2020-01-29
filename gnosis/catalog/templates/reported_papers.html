@@ -29,14 +29,6 @@
                                 <a href="{{ report.paper.get_absolute_url }}">{{ report.paper }}</a>
                             </p>
 
-                            <p id="state_{{ report.id }}" class="state">
-                                <strong>Status: </strong>
-                                {% if report.is_resolved %}
-                                    <span class="res_msg">Resolved</span>
-                                {% else %}
-                                    <span class="del_msg">Unresolved</span>
-                                {% endif %}
-                            </p>
                             <p id="actions_{{ report.id }}" class="actions">
                                 <strong>Actions: </strong>
                                 <a href="{% url 'paper_report_del' report.id %}" class="btn btn-danger btn-sm mod_del"
@@ -50,6 +42,14 @@
                                     <a href="{% url 'paper_report_resl' report.id %}"
                                        class="btn btn-sm btn-warning mod_resl"
                                        data-id="{{ report.id }}" role="button">Mark Resolved</a>
+                                {% endif %}
+                            </p>
+                            <p id="state_{{ report.id }}" class="state">
+                                <strong>Status: </strong>
+                                {% if report.is_resolved %}
+                                    <span class="res_msg">Resolved</span>
+                                {% else %}
+                                    <span class="del_msg">Unresolved</span>
                                 {% endif %}
                             </p>
 

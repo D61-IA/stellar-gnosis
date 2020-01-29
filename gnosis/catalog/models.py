@@ -659,7 +659,7 @@ class PaperReport(models.Model):
     created_at = models.DateField(auto_now_add=True, auto_now=False)
 
     class Meta:
-        ordering = ["error_type", "-created_at"]
+        ordering = ["is_resolved", "error_type", "-created_at"]
         verbose_name = "paper report"
 
     def __str__(self):

@@ -1,10 +1,13 @@
 var $this_action;
 var $msg;
+var $state;
 
 $('.mod_del').click(function (e) {
     e.preventDefault();
     $this_action = $('#actions_' + $(this).attr('data-id'));
     $msg = $('<div class="del_msg"><span>Deleted</span></div>');
+    $state = $('#state_' + $(this).attr('data-id'));
+
     $.ajax({
         type: 'POST',
         url: $(this).attr('href'),
@@ -12,6 +15,7 @@ $('.mod_del').click(function (e) {
             if (data.is_valid) {
                 console.log("delete action success");
                 $this_action.attr('hidden', true);
+                $state.attr('hidden', true);
                 $msg.insertAfter(
                     $this_action
                 )
@@ -48,7 +52,7 @@ $('.mod_rest').click(function (e) {
 $('.mod_resl').click(function (e) {
     e.preventDefault();
     var $this = $(this);
-    var $msg = $('#state_' + $this.attr('data-id') + ' span');
+    $msg = $('#state_' + $this.attr('data-id') + ' span');
 
     $.ajax({
         type: 'POST',
