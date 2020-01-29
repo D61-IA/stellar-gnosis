@@ -7,9 +7,8 @@ from catalog.forms import FlaggedCommentForm
 from catalog.models import CommentFlag, Comment, PaperReport, Paper
 
 
-# creates a comment flag
-# handles ajax POST requests
 def cflag_create(request, comment_id):
+    """Creates a comment flag"""
     print("flag create ajax received!")
     user = request.user
     # if a flagging form is submitted
@@ -37,9 +36,8 @@ def cflag_create(request, comment_id):
         return HttpResponseBadRequest(reverse("paper_detail", kwargs={'id': id}))
 
 
-# deletes the comment flag
-# handles ajax GET requests
 def cflag_remove(request, comment_id):
+    """Delets a comment flag"""
     print("flag remove ajax request received!")
     user = request.user
     data = {'is_successful': False}
@@ -83,12 +81,12 @@ def comment_restore(request, id):
 
             data['is_valid'] = True
 
-            # Shall we return to the paper detail or the flagged comments index page?
         return JsonResponse(data)
 
 
 @staff_member_required
 def comment_delete(request, id):
+    """Deletes a comment"""
     comment = Comment.objects.get(pk=id)
     # paper_id = comment.paper.id
 
@@ -116,6 +114,7 @@ def flagged_comments(request):
 
 @staff_member_required
 def reported_papers(request):
+    """:return all reports"""
     reports = PaperReport.objects.all()
 
     return render(
@@ -125,9 +124,8 @@ def reported_papers(request):
     )
 
 @staff_member_required
-def paper_report_del(request, id):
-    """It restores a paper report making it visible to users again."""
-
+def paper_report_delete(request, id):
+    """Deletes a paper report."""
     if request.method == 'POST':
         report = PaperReport.objects.filter(id=id)
         data = {'is_valid': False}
@@ -137,5 +135,22 @@ def paper_report_del(request, id):
             report.delete()
             data['is_valid'] = True
 
-            # Shall we return to the paper detail or the flagged comments index page?
+        return JsonResponse(data)
+
+
+@staff_member_required
+def paper_report_resolve(request, id):
+    """Marks a report as resolved"""
+    if request.method == 'POST':
+        report = PaperReport.objects.get(id=id)
+        data = {'is_resolved': ""}
+        if report.is_resolved:
+            report.is_resolved = False
+            data['is_resolved'] = False
+        else:
+            report.is_resolved = True
+            data['is_resolved'] = True
+
+        report.save()
+
         return JsonResponse(data)

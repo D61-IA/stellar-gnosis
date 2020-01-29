@@ -646,6 +646,8 @@ class PaperReport(models.Model):
     error_type = models.CharField(max_length=20, choices=options, null=False, blank=False)
     # The description is made optional
     description_fb = models.TextField(null=False, blank=True)
+    # the state of a report
+    is_resolved = models.BooleanField(default=False)
     # user who made the feedback
     proposed_by = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name="paper_report"

@@ -20,7 +20,7 @@
                             <p id="actions_{{ comment.id }}" class="actions"><strong>Actions: </strong>
                                 <a href="{% url 'comment_delete' comment.comment.id %}" class="btn btn-danger btn-sm mod_del"
                                    data-id="{{ comment.id }}" role="button">Delete Comment</a>
-                                <a href="{% url 'comment_restore' comment.comment.id %}" class="btn btn-primary btn-sm mod_res"
+                                <a href="{% url 'comment_restore' comment.comment.id %}" class="btn btn-primary btn-sm mod_rest"
                                    data-id="{{ comment.id }}" role="button">Restore Comment</a></p>
                         </li>
                     </ul>

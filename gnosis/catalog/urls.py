@@ -82,7 +82,8 @@ urlpatterns += [
 urlpatterns += [
     path('moderation/comments/', views.flagged_comments, name='flagged_comments_index'),
     path('moderation/papers/', views.reported_papers, name='reported_papers_index'),
-    path('moderation/papers/<int:id>/delete/', views.paper_report_del, name='paper_report_del'),
+    path('moderation/papers/<int:id>/delete/', views.paper_report_delete, name='paper_report_del'),
+    path('moderation/papers/<int:id>/resolve/', views.paper_report_resolve, name='paper_report_resl'),
 ]
 
 # for updating/creating a new Code node
