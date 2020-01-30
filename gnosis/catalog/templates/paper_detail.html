@@ -116,7 +116,8 @@
                     Report Error
                 </button>
             {% else %}
-                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report Error</a>
+                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report
+                    Error</a>
             {% endif %}
         </div>
     </div>
@@ -470,6 +471,12 @@
         </div>
     </div>
 
+    <script>
+        // remove venue choice field if paper is not attached to a venue
+        if ("{{ paper.was_published_at }}" === 'None'){
+            $('input[value="venue"]').parent('label').attr('hidden', true)
+        }
+    </script>
 
     <!-- if form is valid show the form in the popup window -->
     {% if flag_form.has_changed %}

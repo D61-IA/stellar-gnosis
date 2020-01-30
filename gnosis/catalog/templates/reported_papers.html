@@ -8,13 +8,13 @@
             {% paginate reports %}
             <div class="card-header"><h3>Reported papers waiting for moderation</h3></div>
             <div class="card-body">
-                {% for report in reports %}
-                    <ul class="list-group">
+                <ul class="list-group">
+                    {% for report in reports %}
                         <li class="list-group-item">
                             <p><strong>Where: </strong>
                                 {% if report.error_type == 'authors' %}
                                     <a href="{% url 'paper_authors' report.paper.id %}">{{ report.error_type | title }}</a>
-                                {% elif report.error_type == 'venue' %}
+                                {% elif report.error_type == 'venue' and report.paper.was_published_at != None %}
                                     <a href="{% url 'venue_update' report.paper.was_published_at.id %}">{{ report.error_type | title }}</a>
                                 {% else %}
                                     <a href="{% url 'paper_update' report.paper.id %}">{{ report.error_type | title }}</a>
@@ -56,28 +56,13 @@
                             </p>
 
                         </li>
-                    </ul>
-                {% endfor %}
+                    {% endfor %}
+                </ul>
             </div>
 
             {% get_pages %}
             <!-- Center-aligned -->
-            <ul class="pagination justify-content-center" style="margin:20px 0">
-                {% if not pages.current.is_first %}
-                    <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-                {% endif %}
-                {% for page in pages %}
-                    {% if page.is_current %}
-                        <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                    {% endif %}
-                {% endfor %}
-                {% if not pages.current.is_last %}
-                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                {% endif %}
-            </ul>
+            {% include "pagination.html" %}
         {% else %}
             <div class="card-header">
                 <h3>Reported papers waiting for moderation</h3>
