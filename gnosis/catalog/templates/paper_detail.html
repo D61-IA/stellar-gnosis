@@ -356,26 +356,7 @@
 
                                 {% get_pages %}
                                 <!-- Center-aligned -->
-                                <ul class="pagination justify-content-center" style="margin:20px 0">
-                                    {% if not pages.current.is_first %}
-                                        <li class="page-item"><a class="page-link"
-                                                                 href="{{ pages.previous.path }}">Previous</a></li>
-                                    {% endif %}
-                                    {% for page in pages %}
-                                        {% if page.is_current %}
-                                            <li class="page-item active"><a class="page-link"
-                                                                            href="{{ page.path }}">{{ page.number }}</a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item"><a class="page-link"
-                                                                     href="{{ page.path }}">{{ page.number }}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if not pages.current.is_last %}
-                                        <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
+                                {% include "pagination.html" %}
                             </ul>
                         {% endif %}
                     </div>
@@ -473,7 +454,7 @@
 
     <script>
         // remove venue choice field if paper is not attached to a venue
-        if ("{{ paper.was_published_at }}" === 'None'){
+        if ("{{ paper.was_published_at }}" === 'None') {
             $('input[value="venue"]').parent('label').attr('hidden', true)
         }
     </script>
