@@ -107,7 +107,7 @@ def flagged_comments(request):
 
     return render(
         request,
-        "flagged_comments.html",
+        "moderation_comment.html",
         {"comments": comments},
     )
 
@@ -119,7 +119,7 @@ def reported_papers(request):
 
     return render(
         request,
-        "reported_papers.html",
+        "moderation_paper.html",
         {"reports": reports},
     )
 

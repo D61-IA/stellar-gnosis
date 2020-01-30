@@ -1,3 +1,5 @@
+import time
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from catalog.models import Paper
@@ -74,8 +76,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         pwd.send_keys(user2password)
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
 
         # using get allows webdriver to wait for html to be fully ready
         self.paper_url = self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/'
@@ -112,8 +113,11 @@ class ChromeTestCase(StaticLiveServerTestCase):
         true_labels = [c[1] for c in PaperReportForm().fields['error_type'].choices]
 
         # test radio buttons have the right labels and they are in the right order.
-        for i in range(len(labels)):
+        for i in range(len(labels)-1):
             self.assertEqual(true_labels[i], labels[i].text)
+
+        # assert the venue has not a label because it is hidden in this case (paper not connected to venue)
+        self.assertEqual(labels[-1].text, '')
 
         # test the form has one description field
         description = error_form.find_elements_by_tag_name('textarea')
@@ -138,8 +142,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         error_form.submit()
         # wait for Ajax response
-        wait = WebDriverWait(browser, 10)
-        wait.until(EC.visibility_of_element_located((By.ID, 'response_msg')))
+        WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg')))
 
         # after submit, test form is hidden
         a1 = browser.find_element_by_id('error_form_container').get_attribute('hidden')
