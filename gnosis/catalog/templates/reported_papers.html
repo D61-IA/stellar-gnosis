@@ -14,6 +14,8 @@
                             <p><strong>Where: </strong>
                                 {% if report.error_type == 'authors' %}
                                     <a href="{% url 'paper_authors' report.paper.id %}">{{ report.error_type | title }}</a>
+                                {% elif report.error_type == 'venue' %}
+                                    <a href="{% url 'venue_update' report.paper.was_published_at.id %}">{{ report.error_type | title }}</a>
                                 {% else %}
                                     <a href="{% url 'paper_update' report.paper.id %}">{{ report.error_type | title }}</a>
                                 {% endif %}
