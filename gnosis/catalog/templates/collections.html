@@ -1,46 +1,37 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
-{% load el_pagination_tags %}
+    {% load el_pagination_tags %}
 
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h4>Collections</h4>
-        {% if user.is_authenticated %}<a href="{% url 'collection_create' %}" class="btn btn-link float-right">Create Collection</a>
-        {% endif %}
-
-    </div>
-    <div class="card-body">
-        {% if collections %}
-        {% paginate collections %}
-        {% for collection in collections %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                <h4><a href="{{ collection.get_absolute_url }}">{{ collection.name }}</a></h4>
-                <p>{{ collection.description }}</p>
-            </li>
-        </ul>
-        {% endfor %}
-
-        {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h4>Collections</h4>
+            {% if user.is_authenticated %}
+                <a href="{% url 'collection_create' %}" class="btn btn-link float-right">Create Collection</a>
             {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+
+        </div>
+        <div class="card-body">
+            {% if collections %}
+                {% paginate collections %}
+                {% for collection in collections %}
+                    <ul class="list-group">
+                        <li class="list-group-item mt-1">
+                            <h4><a href="{{ collection.get_absolute_url }}">{{ collection.name }}</a></h4>
+                            <p>{{ collection.description }}</p>
+                        </li>
+                    </ul>
+                {% endfor %}
+
+                {% get_pages %}
+                <!-- Center-aligned -->
+                {% include "pagination.html" %}
+                <script>
+                    pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+                </script>
             {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
+                You have not created any collections. <a href="{% url 'collection_create' %}">Create a Collection</a> to
+                start organising your papers.
             {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
-        {% else %}
-        You have not created any collections. <a href="{% url 'collection_create' %}">Create a Collection</a> to start organising your papers.
-        {% endif %}
+        </div>
     </div>
-</div>
 {% endblock %}

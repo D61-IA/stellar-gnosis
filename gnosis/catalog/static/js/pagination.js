@@ -1,6 +1,4 @@
-function pagination(current, first, last, current_path) {
-
-    var $page_items = $('.num_item');
+function pagination($num_items, current, first, last, current_path) {
     var path = '?page=';
 
     if (current_path.indexOf('?keywords=') !== -1) {
@@ -16,7 +14,7 @@ function pagination(current, first, last, current_path) {
 
     if (last > 5) {
         if (current <= first + 2) {
-            $($page_items).each(function (index) {
+            $($num_items).each(function (index) {
                 if (index === 4) {
                     $(this).children('a').text(last).attr('href', path + last);
                 } else {
@@ -27,7 +25,7 @@ function pagination(current, first, last, current_path) {
                 }
             })
         } else if (current >= last - 2) {
-            $($page_items).each(function (index) {
+            $($num_items).each(function (index) {
                 if (index === 0) {
                     $(this).children('a').text(first).attr('href', path + first);
                 } else {
@@ -38,7 +36,7 @@ function pagination(current, first, last, current_path) {
                 }
             })
         } else {
-            $page_items.eq(2).addClass('active');
+            $num_items.eq(2).addClass('active');
         }
 
         if (current <= first + 2) {
@@ -50,7 +48,7 @@ function pagination(current, first, last, current_path) {
         }
 
     } else {
-        $($page_items).each(function (index) {
+        $($num_items).each(function (index) {
             if (index + 1 <= last) {
                 $(this).children('a').text(index + 1).attr('href', path + (index + 1));
                 if (current === index + 1) {
