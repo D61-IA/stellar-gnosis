@@ -1,10 +1,10 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
-    {% load el_pagination_tags %}
 
     <div class="card shadow-sm text-center mt-3">
         <div class="card-body">
-            <form action="{% url 'bookmark_search' %}" id="bm_form" method="get">
+            <form action="{% url 'bookmark_search' %}" method="post">
+                {% csrf_token %}
 
                 <input type="text" name="keywords" size="60" class="form-control" required="" id="id_bm_search">
 
@@ -14,15 +14,14 @@
         </div>
     </div>
 
-
     <div class="card shadow-sm mt-3">
         <div class="card-header">
             <h4>Bookmarks</h4>
         </div>
 
         <div class="card-body">
+            <h6>{{ results_message }} </h6>
             {% if bookmarks %}
-                {% paginate bookmarks %}
                 {% for bookmark in bookmarks %}
                     <ul class="list-group">
                         <li class="list-group-item mt-1">
@@ -38,9 +37,6 @@
                     </ul>
                 {% endfor %}
 
-                {% get_pages %}
-                <!-- Center-aligned -->
-                {% include "pagination.html" %}
             {% endif %}
         </div>
     </div>

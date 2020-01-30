@@ -57,9 +57,10 @@ class Venue(models.Model):
     # These are always required
     name = models.CharField(max_length=250, blank=False)
     # publication_date = models.DateField()
-
+    years = list(zip(range(2020,1974, -1), range(2020, 1974, -1)))
     publication_year = models.SmallIntegerField(
-        blank=False, validators=[MaxValueValidator(2020), MinValueValidator(1900)]
+        blank=False,
+        choices=years, 
     )
     publication_month = models.CharField(
         max_length=25, blank=False, choices=venue_months
@@ -125,10 +126,9 @@ def save_user_profile(sender, instance, **kwargs):
 
 class Paper(models.Model):
     # These are always required
-    title = models.CharField(max_length=500, blank=False)
+    title = models.CharField(max_length=8192, db_index=True, blank=False)
     abstract = models.TextField(blank=False)
-    keywords = models.CharField(max_length=125, blank=True)
-    # download_link = models.CharField(max_length=250, blank=False)
+    keywords = models.CharField(max_length=256, blank=True)
     download_link = models.CharField(
         max_length=2000, blank=False, null=False, validators=[URLValidator()]
     )
@@ -136,7 +136,7 @@ class Paper(models.Model):
     doi = models.TextField(null=False, blank=True, default='')
     is_public = models.BooleanField(default=True, null=False, blank=False)
     # added source link for a paper to record the source website which the information of paper is collected
-    source_link = models.CharField(max_length=250, blank=True)
+    source_link = models.CharField(max_length=2000, blank=True)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
     updated_at = models.DateField(null=True)
@@ -273,7 +273,7 @@ class Comment(models.Model):
 
 class Person(models.Model):
     # These are always required
-    name = models.TextField(max_length=1024, blank=False, null=False, default='')
+    name = models.TextField(max_length=1024, unique=True, blank=False, null=False, default='')
     affiliation = models.CharField(max_length=250, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
 
@@ -310,7 +310,7 @@ class PaperAuthorRelationshipData(models.Model):
         blank=False,
         default=1,
         validators=[
-            MaxValueValidator(40),  # allows up to 40 authors
+            MaxValueValidator(128),  # allows up to 128 authors
             MinValueValidator(1),
         ],  # minimum is at least a first author
     )
@@ -328,6 +328,8 @@ class Dataset(models.Model):
         for month in range(1, 13)
     ]
 
+    years = list(zip(range(2020,1974, -1), range(2020, 1974, -1)))
+
     # These are always required
     name = models.CharField(max_length=300, blank=False)
     # keywords that describe the dataset
@@ -336,7 +338,8 @@ class Dataset(models.Model):
     description = models.TextField(blank=False, null=False)
     # The date of publication.
     publication_year = models.SmallIntegerField(
-        blank=False, validators=[MaxValueValidator(2020), MinValueValidator(1900)]
+        blank=False,
+        choices=years,
     )
     publication_month = models.CharField(max_length=25, blank=True, choices=months)
 

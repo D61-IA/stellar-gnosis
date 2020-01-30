@@ -27,12 +27,8 @@ def bookmark_delete(request, id):
 @login_required
 def bookmark_search(request):
     """Search for a bookmark by its title"""
+    keywords = request.GET.get('keywords','')
 
-    bms = request.user.bookmarks.all()
-
-    if request.method == 'POST':
-        keywords = request.POST.get("keywords", "")
-
-        bms = bms.filter(paper__title__icontains=keywords)
+    bms = request.user.bookmarks.filter(paper__title__icontains=keywords)
 
     return render(request, "bookmarks.html", {"bookmarks": bms})
