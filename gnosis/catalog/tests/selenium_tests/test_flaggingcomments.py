@@ -126,7 +126,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         violations = flag_form.find_element_by_id('id_violation')
         labels = violations.find_elements_by_tag_name('label')
         true_violations = FlaggedCommentForm().fields['violation'].choices
-        true_labels = [v[0] for v in true_violations]
+        true_labels = [v[1] for v in true_violations]
 
         # test radio buttons have the right labels.
         for i in range(len(labels)):
@@ -158,13 +158,13 @@ class ChromeTestCase(StaticLiveServerTestCase):
         flag_form.submit()
         # wait for Ajax response
         wait = WebDriverWait(browser, 10)
-        wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
+        wait.until(EC.visibility_of_element_located((By.ID, 'response_msg')))
 
         # after submit, test flag form is hidden
         a1 = browser.find_element_by_id('flag_form_container').get_attribute('hidden')
         self.assertEqual(a1, 'true')
         # test flag_response is unhidden after successful submit
-        flag_response = browser.find_element_by_id('flag_response')
+        flag_response = browser.find_element_by_id('response_msg')
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
         self.browser.find_element_by_class_name("response_ok").click()

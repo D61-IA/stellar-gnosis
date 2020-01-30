@@ -15,7 +15,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         """fill the form"""
 
         # select the first violation
-        input_0 = form.find_element_by_id('id_error_field_0')
+        input_0 = form.find_element_by_id('id_error_type_0')
         input_0.click()
         # find description text area, empty the field and insert text
         description_elements = form.find_element_by_id('id_description_fb')
@@ -106,9 +106,10 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # test the form has the right fields
         error_form = browser.find_element_by_id('error_form')
-        parts = error_form.find_element_by_id('id_error_field')
+        parts = error_form.find_element_by_id('id_error_type')
         labels = parts.find_elements_by_tag_name('label')
-        true_labels = [c[0] for c in PaperReportForm().fields['error_type'].choices]
+
+        true_labels = [c[1] for c in PaperReportForm().fields['error_type'].choices]
 
         # test radio buttons have the right labels and they are in the right order.
         for i in range(len(labels)):
@@ -126,7 +127,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(error_form_container.get_attribute('hidden'), 'true')
 
         # test the choice and description are cleared after clicking cancel button
-        choice = error_form.find_element_by_id('id_error_field_0')
+        choice = error_form.find_element_by_id('id_error_type_0')
         self.assertFalse(choice.is_selected())
         text = error_form.find_element_by_id('id_description_fb')
         self.assertFalse(text.get_attribute('value'))

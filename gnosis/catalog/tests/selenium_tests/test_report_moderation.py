@@ -10,6 +10,17 @@ import time
 class ChromeTestCase(StaticLiveServerTestCase):
     """test with Chrome webdriver"""
 
+    def fillForm(self, form):
+        """fill the form"""
+
+        # select the first violation
+        input_0 = form.find_element_by_id('id_error_type_0')
+        input_0.click()
+        # find description text area, empty the field and insert text
+        description_elements = form.find_element_by_id('id_description_fb')
+        description_elements.clear()
+        description_elements.send_keys('Title error description')
+
     @classmethod
     def setupBrowser(cls):
         """set up testing browser"""
@@ -27,7 +38,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
     def setUp(self):
         """create testing assets, log in and set up global variables"""
 
-        # create two users, user2's info will be used for logging in
+        # create a regular user and an admin user
         user1name = 'user1'
         user1password = '12345'
         user1email = 'user1@gnosis.stellargraph.io'
@@ -39,10 +50,17 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.user1 = User.objects.create_user(username=user1name, password=user1password,
                                              email=user1email)
 
-        self.user2 = User.objects.create_user(username=user2name,
-                                                   password=user2password,
-                                                   email=user2email)
+        self.user2 = User.objects.create_superuser(username=user2name,
+                                                  password=user2password,
+                                                  email=user2email)
 
+        # create a paper
+        self.paper = Paper.objects.create(
+            title="Best paper in the world",
+            abstract="The nature of gravity.",
+            download_link="https://google.com",
+            created_by=self.user1,
+        )
         # create a paper
         self.paper = Paper.objects.create(
             title="Best paper in the world",
@@ -63,17 +81,31 @@ class ChromeTestCase(StaticLiveServerTestCase):
         pwd.send_keys(user2password)
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
 
         # using get allows webdriver to wait for html to be fully ready
         self.paper_url = self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/'
         self.browser.get(self.paper_url)
 
-        self.report = self.browser.find_element_by_class_name('list-group-item')
-
         # remove cookies popup
         self.browser.execute_script("return document.getElementsByClassName('cookiealert')[0].remove()")
+
+        # report the paper
+        report_btn = self.browser.find_element_by_id('report_error')
+        report_btn.click()
+        error_form = self.browser.find_element_by_id('error_form')
+        self.fillForm(error_form)
+        error_form.submit()
+
+        # wait for Ajax response
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg')))
+
+        # remove response overlay
+        self.browser.find_element_by_class_name("response_ok").click()
+
+        # go to the moderation page
+        self.browser.get(self.live_server_url + '/catalog/moderation/papers')
+        self.report = self.browser.find_element_by_class_name('list-group-item')
 
 
     @classmethod
@@ -130,7 +162,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # test the right response message appears
         msg = self.report.find_elements_by_class_name('del_msg')
-        self.assertEqual(len(msg), 1)
+        self.assertEqual(len(msg), 2)
 
 
 class FirefoxTestCase(ChromeTestCase):
