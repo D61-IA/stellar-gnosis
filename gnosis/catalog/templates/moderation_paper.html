@@ -31,6 +31,10 @@
                                 <a href="{{ report.paper.get_absolute_url }}">{{ report.paper }}</a>
                             </p>
 
+                            <p><strong>Reported by: </strong>
+                                {{ report.proposed_by }}
+                            </p>
+
                             <p id="actions_{{ report.id }}" class="actions">
                                 <strong>Actions: </strong>
                                 <a href="{% url 'paper_report_del' report.id %}" class="btn btn-danger btn-sm mod_del"
