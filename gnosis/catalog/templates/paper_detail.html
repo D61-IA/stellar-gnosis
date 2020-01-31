@@ -8,68 +8,66 @@
         <div class="card-header">
 
             <div style="display: flex">
-                <div class="header_icons">
-                    {% if user.is_authenticated %}
-                        <div id="endorsement">
-                            <a id="e_create" href="{% url 'endorsement_create' id=paper.id %}">
-                                {% if not endorsed %}
-                                    <i class="material-icons light_off" data-toggle="tooltip"
-                                       title="add endorsement">lightbulb_outline</i>
-                                {% else %}
-                                    <i class="material-icons light_on" data-toggle="tooltip"
-                                       title="remove endorsement">lightbulb</i>
-                                {% endif %}
-                            </a>
-                        </div>
-
-                        <div id="bookmark">
-                            <a id="b_create" href="{% url 'paper_bookmark' id=paper.id %}">
-                                {% if not bookmarked %}
-                                    <i class="material-icons bm_off" data-toggle="tooltip"
-                                       title="add bookmark">bookmark_border</i>
-                                {% else %}
-                                    <i class="material-icons bm_on" data-toggle="tooltip"
-                                       title="remove bookmark">bookmark</i>
-                                {% endif %}
-                            </a>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'account_login' %}?next={{ request.path }}">
-                            <i class="material-icons light_off">lightbulb_outline</i>
-                        </a>
-
-                        <a href="{% url 'account_login' %}?next={{ request.path }}">
-                            <i class="material-icons bm_off">
-                                bookmark_border
-                            </i>
-                        </a>
-                    {% endif %}
-                </div>
                 <h3 class="paper_title">{{ paper.title }}</h3>
             </div>
 
-            <h4>
-                <div style="display: flex; align-content: space-between; justify-content: space-between">
-                    <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
-                            target="_blank">Download</a>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
-                               role="button">
-                                Add to Journal Club</a>
-                            <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
-                               role="button">
-                                Add to Collection</a>
-                            {% if user.is_superuser %}
-                                <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
-                                   role="button">
-                                    Edit</a>
+            <div class="header_icons">
+                {% if user.is_authenticated %}
+                    <div id="endorsement">
+                        <a id="e_create" href="{% url 'endorsement_create' id=paper.id %}">
+                            {% if not endorsed %}
+                                <i class="material-icons light_off" data-toggle="tooltip"
+                                   title="add endorsement">lightbulb_outline</i>
+                            {% else %}
+                                <i class="material-icons light_on" data-toggle="tooltip"
+                                   title="remove endorsement">lightbulb</i>
                             {% endif %}
-                        {% endif %}
+                        </a>
                     </div>
 
+                    <div id="bookmark">
+                        <a id="b_create" href="{% url 'paper_bookmark' id=paper.id %}">
+                            {% if not bookmarked %}
+                                <i class="material-icons bm_off" data-toggle="tooltip"
+                                   title="add bookmark">bookmark_border</i>
+                            {% else %}
+                                <i class="material-icons bm_on" data-toggle="tooltip"
+                                   title="remove bookmark">bookmark</i>
+                            {% endif %}
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'account_login' %}?next={{ request.path }}">
+                        <i class="material-icons light_off">lightbulb_outline</i>
+                    </a>
 
+                    <a href="{% url 'account_login' %}?next={{ request.path }}">
+                        <i class="material-icons bm_off">
+                            bookmark_border
+                        </i>
+                    </a>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; justify-content: space-between">
+
+                <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
+                        target="_blank">Download</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
+                           role="button">
+                            Add to Journal Club</a>
+                        <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
+                           role="button">
+                            Add to Collection</a>
+                        {% if user.is_superuser %}
+                            <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
+                               role="button">
+                                Edit</a>
+                        {% endif %}
+                    {% endif %}
                 </div>
-            </h4>
+            </div>
         </div>
         <div class="card-body">
             <h5 class="text-left">
