@@ -262,7 +262,7 @@
                         {#                    show comments#}
                         {% if comments %}
                             <ul class="list-group list-group-flush comments_notes">
-                                {% paginate comments %}
+                                {% paginate comments using "first_page" %}
                                 {% for comment in comments %}
                                     <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
                                         {% if comment.created_by != user %}
@@ -300,9 +300,18 @@
                             </ul>
                             {% get_pages %}
                             <!-- Center-aligned -->
-                            {% include "pagination.html" %}
+                            <div class="first_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+
                             <script>
-                                pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+                                var page1 = {
+                                    class_name: "first_pagi",
+                                    page_name: "first_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
                             </script>
                         {% endif %}
                     </div>
@@ -323,7 +332,7 @@
                         <br/>
                         {% if notes %}
                             <ul class="list-group list-group-flush comments_notes">
-                                {% paginate notes %}
+                                {% paginate notes using "second_page" %}
                                 {% for note in notes %}
                                     <li class="list-group-item shadow-sm mt-1">
                                         <p>{{ note.note_content|safe|linebreaks }}</p>
@@ -339,11 +348,18 @@
                             </ul>
                             {% get_pages %}
                             <!-- Center-aligned -->
-                            <div class="second-pagi">
+                            <div class="second_pagi">
                                 {% include "pagination.html" %}
                             </div>
                             <script>
-                                pagination($('.second-pagi').find('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+                                page2 = {
+                                    class_name: "second_pagi",
+                                    page_name: "second_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                                multi_pagination([page1, page2]);
                             </script>
                         {% endif %}
                     </div>
