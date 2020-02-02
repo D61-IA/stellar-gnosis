@@ -2,24 +2,29 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="card shadow-sm mt-5">
-    <div class="card-header">
-        {% if group.name %}
-        <h3>Update <a href="{% url 'group_detail' group.id %}">{{ group.name }}</a> Club</h3>
-        {% else %}
-            <h3>New Journal Club</h3>
-        {% endif %}
+    <div class="card shadow-sm mt-5">
+        <div class="card-header">
+            {% if group.name %}
+                <h3>Update <a href="{% url 'group_detail' group.id %}">{{ group.name }}</a> Club</h3>
+            {% else %}
+                <h3>New Journal Club</h3>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                <table class="w-100">
+                    {{ form|crispy }}
+                </table>
+                <br/>
+                <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-        <form action="" method="post">
-            {% csrf_token %}
-            <table class="w-100">
-                {{ form|crispy }}
-            </table>
-            <br/>
-            <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
-        </form>
-    </div>
-</div>
+
+    <script>
+        $('#id_start_time').attr('type', 'time');
+        $('#id_end_time').attr('type', 'time');
+    </script>
 
 {% endblock %}
