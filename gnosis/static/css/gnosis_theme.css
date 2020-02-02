@@ -33,14 +33,11 @@
 
 .header_icons {
     display: flex;
+    margin-right: 20px;
 }
 
 .header_icons .material-icons {
     font-size: 48px;
-}
-
-.header_icons {
-    margin-right: 20px;
 }
 
 .nav_theme {

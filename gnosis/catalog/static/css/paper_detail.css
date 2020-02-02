@@ -1,5 +1,5 @@
 #cy {
-    max-height: 455px;
+    max-height: 450px;
 !important;
     display: block;
     grid-column: 2 / 17
@@ -55,6 +55,10 @@
     flex-direction: row;
     justify-content: space-between;
     background-color: ghostwhite;
+}
+
+.material-icons {
+    vertical-align: middle;
 }
 
 #hide_refresh {
@@ -168,6 +172,10 @@
 
 }
 
+.top_container {
+    display: flex;
+}
+
 /* Extra small devices (phones, 600px and down) */
 @media screen and (max-width: 678px) {
     #side_menu {
@@ -189,6 +197,10 @@
 
     .filter_btn {
         font-size: 13px;
+    }
+
+    .top_container {
+        flex-direction: column-reverse;
     }
 }
 

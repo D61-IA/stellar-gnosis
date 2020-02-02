@@ -6,47 +6,46 @@
 
     <div class="card shadow-sm mt-5">
         <div class="card-header">
+            <div class="top_container">
+                <div class="header_icons">
+                    {% if user.is_authenticated %}
+                        <div id="endorsement">
+                            <a id="e_create" href="{% url 'endorsement_create' id=paper.id %}">
+                                {% if not endorsed %}
+                                    <i class="material-icons light_off" data-toggle="tooltip"
+                                       title="add endorsement">lightbulb_outline</i>
+                                {% else %}
+                                    <i class="material-icons light_on" data-toggle="tooltip"
+                                       title="remove endorsement">lightbulb</i>
+                                {% endif %}
+                            </a>
+                        </div>
 
-            <div style="display: flex">
+                        <div id="bookmark">
+                            <a id="b_create" href="{% url 'paper_bookmark' id=paper.id %}">
+                                {% if not bookmarked %}
+                                    <i class="material-icons bm_off" data-toggle="tooltip"
+                                       title="add bookmark">bookmark_border</i>
+                                {% else %}
+                                    <i class="material-icons bm_on" data-toggle="tooltip"
+                                       title="remove bookmark">bookmark</i>
+                                {% endif %}
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'account_login' %}?next={{ request.path }}">
+                            <i class="material-icons light_off">lightbulb_outline</i>
+                        </a>
+
+                        <a href="{% url 'account_login' %}?next={{ request.path }}">
+                            <i class="material-icons bm_off">
+                                bookmark_border
+                            </i>
+                        </a>
+                    {% endif %}
+                </div>
+
                 <h3 class="paper_title">{{ paper.title }}</h3>
-            </div>
-
-            <div class="header_icons">
-                {% if user.is_authenticated %}
-                    <div id="endorsement">
-                        <a id="e_create" href="{% url 'endorsement_create' id=paper.id %}">
-                            {% if not endorsed %}
-                                <i class="material-icons light_off" data-toggle="tooltip"
-                                   title="add endorsement">lightbulb_outline</i>
-                            {% else %}
-                                <i class="material-icons light_on" data-toggle="tooltip"
-                                   title="remove endorsement">lightbulb</i>
-                            {% endif %}
-                        </a>
-                    </div>
-
-                    <div id="bookmark">
-                        <a id="b_create" href="{% url 'paper_bookmark' id=paper.id %}">
-                            {% if not bookmarked %}
-                                <i class="material-icons bm_off" data-toggle="tooltip"
-                                   title="add bookmark">bookmark_border</i>
-                            {% else %}
-                                <i class="material-icons bm_on" data-toggle="tooltip"
-                                   title="remove bookmark">bookmark</i>
-                            {% endif %}
-                        </a>
-                    </div>
-                {% else %}
-                    <a href="{% url 'account_login' %}?next={{ request.path }}">
-                        <i class="material-icons light_off">lightbulb_outline</i>
-                    </a>
-
-                    <a href="{% url 'account_login' %}?next={{ request.path }}">
-                        <i class="material-icons bm_off">
-                            bookmark_border
-                        </i>
-                    </a>
-                {% endif %}
             </div>
 
             <div style="display: flex; justify-content: space-between">
