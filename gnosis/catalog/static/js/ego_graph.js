@@ -1,7 +1,6 @@
 /************** resizable graph **************/
 // simulate stop resizing using timer
 var resizeTimer;
-
 var $cy = $('#cy');
 
 // centering only happens after 250ms each time resize stops
@@ -44,9 +43,7 @@ function center() {
 }
 
 /************** reset and re-render layout **************/
-
 var $graphfilter = $('.graphfilter');
-
 var $buttons = $('.filter_btn');
 
 function reset_nodes() {
@@ -54,10 +51,8 @@ function reset_nodes() {
     cy.style().selector('node').style('visibility', 'visible').update();
     cy.style().selector('edge').style('visibility', 'visible').update();
     collection.layout(cy_layout).run();
-
     center();
-
-    $buttons.attr('data-pressed', 'true').css('background-color', '#e7e7e7');
+    button_down($buttons);
     // sync select menu option to 'all'
     $graphfilter.val('all');
 }
@@ -70,6 +65,24 @@ $('.ego_button_toggle').click(function () {
     toggle_relas();
 });
 
+/************** utility functions for filtering************/
+// update the button when it is pressed down
+function button_down($buttons) {
+    $buttons.attr('data-pressed', true).css('background-color', '#e7e7e7').hover(function () {
+        $(this).css('background-color', 'lightgrey')
+    }, function () {
+        $(this).css('background-color', '#e7e7e7')
+    });
+}
+
+// update the button when it is not pressed
+function button_up($buttons) {
+    $buttons.attr('data-pressed', false).css('background-color', 'ghostwhite').hover(function () {
+        $(this).css('background-color', '')
+    }, function () {
+        $(this).css('background-color', 'ghostwhite')
+    });
+}
 
 /************** graph filtering function **************/
 // filter for single node type or relationship type
@@ -95,7 +108,7 @@ function show_relas(relas) {
     center();
 }
 
-// when a node buttons is clicked
+// when a node button is clicked
 $buttons.click(function () {
     var type = $(this).attr('data-type');
     var data_name = $(this).attr('data-name');
@@ -108,22 +121,19 @@ $buttons.click(function () {
         cy.style().selector('[type="' + type + '"]').style('visibility', 'visible').update();
 
         // set the state of the buttons to 'pressed'
-        $these.attr('data-pressed', 'true').css('background-color', '#e7e7e7');
-
+        button_down($these);
     } else {
         //update the graph
         cy.style().selector('[type="' + type + '"]').style('visibility', 'hidden').update();
         cy.style().selector('[label="origin"]').style('visibility', 'visible').update();
 
         // set the state of the buttons to 'not pressed'
-        $these.attr('data-pressed', 'false').css('background-color', 'ghostwhite');
+        button_up($these)
     }
-
     collection = cy.filter((element) => {
         return element.visible();
     });
     collection.layout(cy_layout).run();
-
     center();
 });
 
@@ -133,22 +143,18 @@ $graphfilter.change(function () {
     var data_type = $('option:selected', this).attr('data-type');
 
     $buttons.each(function (index, element) {
-        if (data_type === 'all') {
-            $(element).attr('data-pressed', 'true').css('background-color', '#e7e7e7')
-        } else if (data_type !== $(element).attr('data-type')) {
+        if (data_type !== $(element).attr('data-type')) {
             // if the element is not the filter element, set pressed to false, its color to ghostwhite
-            $(element).attr('data-pressed', 'false').css('background-color', 'ghostwhite')
+            button_up($(element))
         } else {
-            $(element).attr('data-pressed', 'true').css('background-color', '#e7e7e7')
+            button_down($(element))
         }
     })
 });
 
-
 /************** collapse ego-graph **************/
 // stores state of the collapse target
 var hidden = false;
-
 var ego_header = $('#ego_header');
 
 $(ego_header).click(function () {
