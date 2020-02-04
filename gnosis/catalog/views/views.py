@@ -346,9 +346,9 @@ def _get_paper_author_network(main_paper, ego_json, offset=101):
 
 
 def _get_paper_venue_network(main_paper, ego_json, offset=50):
-    node_temp = (
-        ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
-    )
+
+    node_temp = ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
 
     venue = main_paper.was_published_at
@@ -372,9 +372,9 @@ def _get_paper_venue_network(main_paper, ego_json, offset=50):
 
 
 def _get_paper_dataset_network(main_paper, ego_json, offset=150):
-    node_temp = (
-        ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
-    )
+
+    node_temp = ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
 
     datasets = main_paper.dataset_set.all()
@@ -398,9 +398,9 @@ def _get_paper_dataset_network(main_paper, ego_json, offset=150):
 
 
 def _get_paper_code_network(main_paper, ego_json, offset=200):
-    node_temp = (
-        ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
-    )
+
+    node_temp = ", {{data : {{id: '{}', title: '{}', href: '{}', type: '{}', label: '{}' }}}}"
+
     rela_temp = ",{{data: {{ id: '{}{}{}', type: '{}', label: '{}', source: '{}', target: '{}', line: '{}' }}}}"
 
     codes = main_paper.code_set.all()
