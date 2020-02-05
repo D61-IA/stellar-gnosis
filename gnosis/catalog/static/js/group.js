@@ -10,7 +10,8 @@ $('#id_date_discussed').attr('autocomplete', 'off').datepicker({
         if (meetDay !== dayName) {
             $('.date_alert').attr('hidden', false);
         }
-    }
+    },
+    duration: 0
 });
 
 $date_alert.find('.response_reset').click(function () {
