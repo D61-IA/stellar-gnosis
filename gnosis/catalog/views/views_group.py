@@ -177,6 +177,8 @@ def group_detail(request, id):
     is_member = False
     has_requested_access = False
 
+    group_entry_form = GroupEntryForm()
+
     if not request.user.is_anonymous:
         member = group.members.filter(member=request.user).all()
         if member.count() == 1 :
@@ -196,6 +198,7 @@ def group_detail(request, id):
             "is_member": is_member,
             "has_requested_access": has_requested_access,
             "today": today,
+            "form": group_entry_form,
         },
     )
 

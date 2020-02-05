@@ -11,10 +11,15 @@ $('#id_date_discussed').attr('autocomplete', 'off').datepicker({
             $('.date_alert').attr('hidden', false);
         }
     },
-    duration: 0
+    duration: 100
 });
 
 $date_alert.find('.response_reset').click(function () {
     $('.cover').attr('hidden', true);
     $('#id_date_discussed').val('').datepicker("show");
+});
+
+$('.discuss_btn').click(function (e) {
+    // e.preventDefault();
+    $('#discuss_form_container').attr('hidden', false)
 });
