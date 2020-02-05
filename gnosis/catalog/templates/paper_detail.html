@@ -674,10 +674,9 @@
         });
     </script>
 
+    <script src={% static 'js/ego_util.js' %}></script>
     <script src="{% static "js/ego_graph.js" %}"></script>
     <script src="{% static "js/flagging.js" %}"></script>
-
-    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
     <script src="{% static "js/endorsement-bookmark.js" %}"></script>
 
 {% endblock %}

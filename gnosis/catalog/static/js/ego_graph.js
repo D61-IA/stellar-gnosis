@@ -1,8 +1,9 @@
+// get the graph canvas
+var $cy = $('#cy');
+
 /************** resizable graph **************/
 // simulate stop resizing using timer
 var resizeTimer;
-var $cy = $('#cy');
-
 // centering only happens after 250ms each time resize stops
 $(window).on('resize', function (e) {
     clearTimeout(resizeTimer);
@@ -16,7 +17,6 @@ $(window).on('resize', function (e) {
 /************** show/hide relationships **************/
 // initial toggle state
 var hide_rela = false;
-
 // function for toggle relationships button
 function toggle_relas() {
     hide_rela = !hide_rela;
@@ -41,7 +41,6 @@ function center() {
         duration: 0,
     });
 }
-
 /************** reset and re-render layout **************/
 var $graphfilter = $('.graphfilter');
 var $buttons = $('.filter_btn');
@@ -103,7 +102,6 @@ function show_relas(relas) {
         cy.style().selector('[label="' + relas + '"]').style('visibility', 'visible').update();
         cy.style().selector('node[label="origin"]').style('visibility', 'visible').update();
     }
-
     collection.layout(cy_layout).run();
     center();
 }
@@ -116,17 +114,14 @@ $buttons.click(function () {
     var $these = $('[data-name="' + data_name + '"]');
 
     if ($(this).attr('data-pressed') === 'false') {
-
         // update the graph
         cy.style().selector('[type="' + type + '"]').style('visibility', 'visible').update();
-
         // set the state of the buttons to 'pressed'
         button_down($these);
     } else {
         //update the graph
         cy.style().selector('[type="' + type + '"]').style('visibility', 'hidden').update();
         cy.style().selector('[label="origin"]').style('visibility', 'visible').update();
-
         // set the state of the buttons to 'not pressed'
         button_up($these)
     }
@@ -141,7 +136,6 @@ $graphfilter.change(function () {
     show_relas(this.value, 'all');
     $graphfilter.val(this.value);
     var data_type = $('option:selected', this).attr('data-type');
-
     $buttons.each(function (index, element) {
         if (data_type !== $(element).attr('data-type')) {
             // if the element is not the filter element, set pressed to false, its color to ghostwhite
@@ -162,7 +156,6 @@ $(ego_header).click(function () {
     if (hidden) {
         $(this).children('.drop_indicator').text('arrow_drop_down');
         $('#ego_graph_content').hide(200);
-
     } else {
         $(this).children('.drop_indicator').text('arrow_drop_up');
         $('#ego_graph_content').show(200);
@@ -175,11 +168,11 @@ if ($(window).width() < 600) {
     $(ego_header).click()
 }
 
+/************** Node interaction **************/
+// interaction with nodes on the graph
 var time_out = 300;
 var hoverTimeout;
 
-
-/************** Node clicking **************/
 cy.on('vclick', 'node', function (evt) {
     var node = evt.target;
     console.log('tapped ' + node.data('href'));
@@ -197,13 +190,10 @@ cy.on('vclick', 'node', function (evt) {
     .on('mouseover', 'node', function (evt) {
         var node = evt.target;
         node.style('opacity', 0.8);
-
         hoverTimeout = setTimeout(function () {
             var px = node.renderedPosition('x');
             var py = node.renderedPosition('y');
-
             var tip_item = "";
-
             // what is shown on the tooltip
             if (node.data('type') === 'Person') {
                 // combine individual names to one
@@ -213,7 +203,6 @@ cy.on('vclick', 'node', function (evt) {
             if (node.data('type') === 'Paper' || node.data('type') === 'Venue' || node.data('type') === 'Dataset') {
                 tip_item = node.data('title')
             }
-
             if (tip_item.length > 0) {
                 // css for tooltip
                 $('#tooltip').attr('hidden', false);
@@ -223,7 +212,6 @@ cy.on('vclick', 'node', function (evt) {
                     "top": py + 15,
                 });
             }
-
         }, time_out);
 
     })
@@ -233,25 +221,20 @@ cy.on('vclick', 'node', function (evt) {
         node.style('opacity', 1);
         $('#tooltip').attr('hidden', true);
     })
-
     // remove tooltip on mouseout
     .on('mouseout', 'node', function (evt) {
         clearTimeout(hoverTimeout);
         var node = evt.target;
         node.style('opacity', 1);
         $('#tooltip').attr('hidden', true);
-
     })
-
     // graph components changes color to reflect hovering
     .on('mouseover', 'edge', function (evt) {
         var edge = evt.target;
         edge.style('opacity', 0.8);
-
     })
     .on('mouseout', 'edge', function (evt) {
         var edge = evt.target;
         edge.style('opacity', 1);
-
     });
 

@@ -22,7 +22,6 @@
             crossorigin="anonymous"></script>
     {% load static %}
     <script src={% static 'js/antispam.js' %}></script>
-    <script src={% static 'js/ego_util.js' %}></script>
     <script src="{% static 'js/pagination.js' %}"></script>
 
     <link rel="stylesheet" href="{% static 'css/gnosis_theme.css' %}">
@@ -297,7 +296,7 @@
                 </div>
 
                 <div class="ok_container">
-                    <span class="response_ok">Ok</span>
+                    <span class="response_ok response_opt">Ok</span>
                 </div>
 
             </div>
@@ -346,6 +345,7 @@
 
     <!-- Include cookiealert script -->
     <script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script>
+    <script src="{% static 'js/group.js' %}"></script>
     <script src="{% static 'js/gnosis_theme.js' %}"></script>
 
 </body>

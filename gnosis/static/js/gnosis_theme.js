@@ -54,11 +54,6 @@ $.ajaxSetup({
     }
 );
 
-/************** JS functions that apply to elements in gnosis_theme.html **************/
-$('.cus_toggle').click(function (e) {
-    e.stopPropagation();
-    $('#cus-dropdown').slideToggle(100);
-});
 
 /************** click anywhere on page to cancel popups **************/
 $(document).click(function (e) {
@@ -72,5 +67,5 @@ $(document).click(function (e) {
 });
 
 $('.response_ok').click(function () {
-    $('#flag_response').attr('hidden', true)
+    $('.popup').attr('hidden', true)
 });

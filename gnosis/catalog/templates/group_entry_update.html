@@ -14,10 +14,25 @@
                 <br/>
                 <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
             </form>
+            <p>
+                *Club meeting day: <strong>Monday</strong>
+            </p>
         </div>
     </div>
-    <script>
-        $('#id_date_discussed').attr('autocomplete', 'off').datepicker();
-    </script>
+
+    <div class="cover popup date_alert" data-clubday="{{ group.day }}" hidden>
+        <div class="card box_shadow response_dialog">
+            <div class="card-body">
+                <div><span>You chose a different day from the regular meeting day (<strong>{{ group.day }}</strong>) of the club.</span>
+                </div>
+
+                <div class="ok_container">
+                    <span class="response_ok response_opt">Continue</span>
+
+                    <button class="btn btn-danger response_reset response_opt">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

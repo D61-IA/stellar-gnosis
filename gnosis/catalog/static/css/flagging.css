@@ -79,14 +79,14 @@
     user-select: none;
 }
 
-.response_ok {
-    color: darkseagreen;
-    cursor: pointer;
-}
+/*.response_ok {*/
+/*    color: darkseagreen;*/
+/*    cursor: pointer;*/
+/*}*/
 
-.response_ok:hover {
-    color: olivedrab;
-}
+/*.response_ok:hover {*/
+/*    color: olivedrab;*/
+/*}*/
 
 .res_msg {
     width: 80px;

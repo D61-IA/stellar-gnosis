@@ -63,7 +63,6 @@ form.submit(function (e) {
                 $('#loader').attr('hidden', true);
                 alert("Request failed.");
             },
-
         })
     } else {
         alert("Undefined comment id.");
