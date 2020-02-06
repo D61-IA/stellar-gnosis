@@ -20,6 +20,6 @@ $date_alert.find('.response_reset').click(function () {
 });
 
 $('.discuss_btn').click(function (e) {
-    // e.preventDefault();
+    e.preventDefault();
     $('#discuss_form_container').attr('hidden', false)
 });
