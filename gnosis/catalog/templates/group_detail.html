@@ -221,7 +221,7 @@
                                                 {% if user.id == group.owner.id %}
                                                     <div class="p-2">
                                                         <a class="btn btn-sm btn-primary discuss_btn popup_opener"
-                                                           href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a>
+                                                             href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a>
                                                     </div>
                                                     <div class="p-2">
                                                         <a class="btn btn-sm btn-outline-danger"
@@ -291,45 +291,48 @@
         {% endif %}
     {% endif %}
 
-    <div id="discuss_form_container" class="cover popup" hidden>
+    <div id="discuss_form_container" class="cover popup" data-clubday="{{ group.day }}" hidden>
         <div id="discuss_form_dialog" class="card box_shadow form_dialog">
             <div class="card-body">
-                <form action="" method="post">
+                <form action="" method="post" id="discuss_form">
                     {% csrf_token %}
-                    <table class="w-100">
-                        {{ form }}
-                    </table>
+                    <div style="display: flex; align-items: center">
+                        <table>
+                            {{ form }}
+                        </table>
+                        <button id="pick_date">
+                            <i class="material-icons">
+                                date_range
+                            </i>
+                        </button>
+                    </div>
                     <br/>
-                    <input type="submit" class="btn btn-primary btn-lg float-right" value="Submit"/>
+                    <div class="reaction">
+                        <input type="submit" class="btn btn-primary float-right" value="Confirm"/>
+                        <p>
+                            *Club meeting day: <strong>Monday</strong>
+                        </p>
+                    </div>
                 </form>
-                <p>
-                    *Club meeting day: <strong>Monday</strong>
-                </p>
             </div>
+
+            {#            <div class="cover popup date_alert" data-clubday="{{ group.day }}" hidden>#}
+            {#                <div class="card box_shadow response_dialog">#}
+            {#                    <div class="card-body">#}
+            {#                        <div>#}
+            {#                            <span>The selected day does not match the regular meeting day (<strong>{{ group.day }}</strong>) of the club.</span>#}
+            {#                        </div>#}
+            {##}
+            {#                        <div class="ok_container">#}
+            {#                            <span class="response_ok response_opt">Continue</span>#}
+            {##}
+            {#                            <button class="btn btn-danger response_reset response_opt">Reset</button>#}
+            {#                        </div>#}
+            {#                    </div>#}
+            {#                </div>#}
+            {#            </div>#}
         </div>
     </div>
-
-    <style>
-        #discuss_form_dialog {
-            margin-left: -320px;
-            margin-top: -97px;
-        }
-    </style>
-
-{#    <div class="cover popup date_alert" data-clubday="{{ group.day }}" hidden>#}
-{#        <div class="card box_shadow response_dialog">#}
-{#            <div class="card-body">#}
-{#                <div><span>You chose a different day from the regular meeting day (<strong>{{ group.day }}</strong>) of the club.</span>#}
-{#                </div>#}
-{##}
-{#                <div class="ok_container">#}
-{#                    <span class="response_ok response_opt">Continue</span>#}
-{##}
-{#                    <button class="btn btn-danger response_reset response_opt">Reset</button>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
 
     <script type="text/javascript">
         // wire up shown event

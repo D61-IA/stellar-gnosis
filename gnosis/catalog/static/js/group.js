@@ -1,25 +1,57 @@
-var dateToday = new Date();
-var $date_alert = $('.date_alert');
+var $date_input = $('#id_date_discussed');
+var $container = $('#discuss_form_container');
+var meet_day = $container.attr('data-clubday');
+var this_url;
 
-var meetDay = $date_alert.attr('data-clubday');
-$('#id_date_discussed').attr('autocomplete', 'off').datepicker({
-    minDate: dateToday,
+$date_input.attr('autocomplete', 'off').datepicker({
     onSelect: function (date) {
         var curDate = $(this).datepicker('getDate');
         var dayName = $.datepicker.formatDate('DD', curDate);
-        if (meetDay !== dayName) {
+        if (meet_day !== dayName) {
             $('.date_alert').attr('hidden', false);
         }
     },
     duration: 100
 });
-
-$date_alert.find('.response_reset').click(function () {
-    $('.cover').attr('hidden', true);
-    $('#id_date_discussed').val('').datepicker("show");
+$date_input.css({
+    'border-radius': 0,
+});
+$('#pick_date').css({
+    'height': $date_input.css('height'),
+});
+$(function () {
+    $('#pick_date').click(function (e) {
+        $date_input.datepicker('show');
+        e.preventDefault();
+    });
 });
 
 $('.discuss_btn').click(function (e) {
     e.preventDefault();
-    $('#discuss_form_container').attr('hidden', false)
+    $container.attr('hidden', false);
+    this_url = $(this).attr('href');
+    $('#discuss_form').attr('action', this_url);
 });
+
+
+// $('#discuss_form').submit(function(e){
+//     e.preventDefault();
+//
+//     $.ajax({
+//         type: 'POST',
+//         url: this_url,
+//         data: form.serialize(),
+//         success: function(data){
+//             console.log("submit successful");
+//             if (data.is_valid){
+//
+//             }else {
+//
+//             }
+//         },
+//         error: function (data) {
+//
+//         }
+//     })
+//
+// });

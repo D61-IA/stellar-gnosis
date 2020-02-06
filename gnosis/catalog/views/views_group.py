@@ -3,7 +3,7 @@ from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.shortcuts import render, get_object_or_404
 from catalog.models import ReadingGroup, ReadingGroupEntry, ReadingGroupMember
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from catalog.forms import GroupForm, GroupEntryForm, SearchGroupsForm
 from django.contrib.auth.models import User
 from datetime import date
@@ -312,12 +312,16 @@ def group_entry_update(request, id, eid):
         # if this is POST request then process the Form data
         if request.method == "POST":
             form = GroupEntryForm(request.POST)
+            # data = {'is_valid': False}
             if form.is_valid():
                 group_entry.date_discussed = form.cleaned_data["date_discussed"]
                 # print("Date to be discussed {}".format(group_entry.date_discussed))
                 group_entry.save()
-
+                # data['is_valid'] = True
                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
+
+            # print("responded!")
+            # return JsonResponse(data)
         # GET request
         else:
             form = GroupEntryForm(

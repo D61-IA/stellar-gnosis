@@ -17,7 +17,7 @@
     user-select: none;
 }
 
-.not_flagged{
+.not_flagged {
     cursor: pointer;
 }
 
@@ -267,6 +267,17 @@
 
 .top_container {
     display: flex;
+}
+
+#discuss_form_dialog {
+    width: 450px;
+    margin-left: -225px;
+    margin-top: -93px;
+}
+
+#id_date_discussed {
+    max-width: 150px;
+!important;
 }
 
 /* Extra small devices (phones, 600px and down) */
