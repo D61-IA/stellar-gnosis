@@ -49,7 +49,6 @@
             </div>
 
             <div style="display: flex; justify-content: space-between">
-
                 <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
                         target="_blank">Download</a>
                     {% if user.is_authenticated %}
@@ -104,10 +103,18 @@
                             <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
                             <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>
                         </div>
-
-
                     </div>
                 {% endif %}</h4>
+
+            {% if user.is_authenticated %}
+                <button id="report_error" class="btn btn-danger btn-sm popup_opener"
+                        data-url="{% url 'paper_error_report' paper.id %}">
+                    Report Error
+                </button>
+            {% else %}
+                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report
+                    Error</a>
+            {% endif %}
         </div>
     </div>
     {% if user.is_authenticated and user.is_superuser %}
@@ -428,26 +435,7 @@
 
                                 {% get_pages %}
                                 <!-- Center-aligned -->
-                                <ul class="pagination justify-content-center" style="margin:20px 0">
-                                    {% if not pages.current.is_first %}
-                                        <li class="page-item"><a class="page-link"
-                                                                 href="{{ pages.previous.path }}">Previous</a></li>
-                                    {% endif %}
-                                    {% for page in pages %}
-                                        {% if page.is_current %}
-                                            <li class="page-item active"><a class="page-link"
-                                                                            href="{{ page.path }}">{{ page.number }}</a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item"><a class="page-link"
-                                                                     href="{{ page.path }}">{{ page.number }}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if not pages.current.is_last %}
-                                        <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
+                                {% include "pagination.html" %}
                             </ul>
                         {% endif %}
                     </div>
@@ -502,7 +490,7 @@
                 </table>
                 <br/>
                 <div class="form_button_container">
-                    <button id="cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                    <button id="flag_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
                         Cancel
                     </button>
                     <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
@@ -511,6 +499,44 @@
         </div>
     </div>
 
+
+    <div id="error_form_container" class="cover popup" hidden>
+        <div id="error_form_dialog" class="box_shadow">
+            <form id="error_form" action="" method="post">
+                {% csrf_token %}
+                <table class="w-75">
+                    {% for field in error_form %}
+                        <div style="font-weight: bold">
+                            {{ field.label_tag }}
+                        </div>
+                        <div style="padding: 0 10px">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                            {{ field.help_text }}
+                        {% endif %}
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+                <br/>
+                <div class="form_button_container">
+                    <button id="error_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                        Cancel
+                    </button>
+                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // remove venue choice field if paper is not attached to a venue
+        if ("{{ paper.was_published_at }}" === 'None') {
+            $('input[value="venue"]').parent('label').attr('hidden', true)
+        }
+    </script>
 
     <!-- if form is valid show the form in the popup window -->
     {% if flag_form.has_changed %}

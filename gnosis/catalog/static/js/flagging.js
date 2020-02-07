@@ -17,20 +17,31 @@ $('.open_flag_dialog').click(function () {
     }
 });
 
+$('#report_error').click(function () {
+    $this_url = $(this).attr('data-url');
+    // hide all current popups
+    $('.popup').attr('hidden', true);
+    $('#error_form_container').attr('hidden', false);
+});
+
 /************** hide popup form and reset its text. **************/
-function cancel_form() {
-    $('#flag_form').trigger('reset');
+function cancel_form(form) {
+    $('#' + form).trigger('reset');
     $('.popup').attr('hidden', true);
 }
 
-$('#cancel_button').click(function () {
-    cancel_form();
+$('#flag_cancel_button').click(function () {
+    cancel_form("flag_form");
+});
+
+$('#error_cancel_button').click(function () {
+    cancel_form("error_form");
 });
 
 
 /************** sending ajax post request with flag forms **************/
-var form = $('#flag_form');
-form.submit(function (e) {
+var flag_form = $('#flag_form');
+flag_form.submit(function (e) {
     e.preventDefault();
 
     $('.popup').attr('hidden', true);
@@ -41,7 +52,7 @@ form.submit(function (e) {
         $.ajax({
             type: 'POST',
             url: $this_url,
-            data: form.serialize(),
+            data: flag_form.serialize(),
             success: function (data) {
                 console.log("submit successful!");
                 if (data.is_valid) {
@@ -50,10 +61,12 @@ form.submit(function (e) {
                         $this_comment.find('.material-icons').text('flag');
                         $this_comment.find('.not_flagged').attr('class', 'flagged').attr('title', 'Flagged');
                     }
-                    form.trigger('reset');
+                    flag_form.trigger('reset');
                     // close loader
                     $('#loader').attr('hidden', true);
-                    $('#flag_response').attr('hidden', false);
+                    $('#response_text').text('Thanks. We have received your report. If we find this content to be in violation of our guidelines,\n' +
+                        ' we will remove it.');
+                    $('#response_msg').attr('hidden', false);
                 } else {
                     alert("Invalid form.");
                     $('#loader').attr('hidden', true);
@@ -66,7 +79,44 @@ form.submit(function (e) {
 
         })
     } else {
-        alert("Undefined comment id.");
+        alert("Undefined comment id. Please refresh.");
+    }
+});
+
+var error_form = $('#error_form');
+error_form.submit(function (e) {
+    e.preventDefault();
+
+    $('.popup').attr('hidden', true);
+    // open loader
+    $('#loader').attr('hidden', false);
+
+    if ($this_url != null) {
+        $.ajax({
+            type: 'POST',
+            url: $this_url,
+            data: error_form.serialize(),
+            success: function (data) {
+                console.log("submit successful!");
+                if (data.is_valid) {
+                    error_form.trigger('reset');
+                    // close loader
+                    $('#loader').attr('hidden', true);
+                    $('#response_text').text('Thanks. We have received your report.');
+                    $('#response_msg').attr('hidden', false);
+                } else {
+                    alert("Invalid form.");
+                    $('#loader').attr('hidden', true);
+                }
+            },
+            error: function (data) {
+                $('#loader').attr('hidden', true);
+                alert("Request failed.");
+            },
+
+        })
+    } else {
+        alert('unidentified paper. Please refresh')
     }
 });
 

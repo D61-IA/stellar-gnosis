@@ -59,8 +59,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         pwd.send_keys(user2password)
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
 
         # using get allows webdriver to wait for html to be fully ready
         self.paper_url = self.live_server_url + '/catalog/paper/' + str(self.paper.id) + '/'
@@ -133,15 +132,13 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # test it is a lighting lightbulb
         self.endorsement_create.click()
 
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'light_on')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'light_on')))
         self.assert_light_on()
 
         # after second click
         # test it goes back to an outlined lightbulb
         self.endorsement_create.click()
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'light_off')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'light_off')))
         self.assert_light_off()
 
     def test_bookmark(self):
@@ -154,15 +151,13 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # after first click
         # test it is a filled bookmark
         self.bookmark_create.click()
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'bm_on')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'bm_on')))
         self.assert_bookmark_on()
 
         # after second click
         # test it goes back to an outlined bookmark
         self.bookmark_create.click()
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'bm_off')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'bm_off')))
         self.assert_bookmark_off()
 
 
