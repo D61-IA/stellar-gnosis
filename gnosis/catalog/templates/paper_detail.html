@@ -431,16 +431,24 @@
                                 {% include "pagination.html" %}
                             </div>
                             <script>
-                                page2 = {
+                                var page2 = {
                                     class_name: "second_pagi",
                                     page_name: "second_page",
                                     current: parseInt('{{ pages.current.number }}'),
                                     first: parseInt('{{ pages.first.number }}'),
                                     last: parseInt('{{ pages.last.number }}'),
                                 };
-                                multi_pagination([page1, page2]);
                             </script>
                         {% endif %}
+                        <script>
+                            if (typeof page1 !== "undefined" && typeof page2 !== "undefined") {
+                                multi_pagination([page1, page2]);
+                            }else if (typeof page1 !== "undefined") {
+                                multi_pagination([page1])
+                            } else {
+                                multi_pagination([page2])
+                            }
+                        </script>
                     </div>
                 </div>
                 {#        if the user is not login#}

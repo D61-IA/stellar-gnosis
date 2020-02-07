@@ -44,7 +44,7 @@
                 <div class="container tab-pane active" id="navallgroups">
                     {#                    show the groups#}
                     {% if groups %}
-                        {% paginate groups %}
+                        {% paginate groups using "first_page" %}
                         <ul class="list-group mt-3">
                             {% for group in groups %}
                                 <li class="list-group-item mt-1">
@@ -55,9 +55,18 @@
                         </ul>
                         {% get_pages %}
                         <!-- Center-aligned -->
-                        {% include "pagination.html" %}
+                        <div class="first_pagi">
+                            {% include "pagination.html" %}
+                        </div>
+
                         <script>
-                            pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+                            var page1 = {
+                                class_name: "first_pagi",
+                                page_name: "first_page",
+                                current: parseInt('{{ pages.current.number }}'),
+                                first: parseInt('{{ pages.first.number }}'),
+                                last: parseInt('{{ pages.last.number }}'),
+                            };
                         </script>
                     {% else %}
                         <div class="p-5">
@@ -69,7 +78,7 @@
                 {% if user.is_authenticated %}
                     <div class="container tab-pane fade" id="navmygroups">
                         {% if mygroups %}
-                            {% paginate mygroups %}
+                            {% paginate mygroups using "second_page" %}
                             <ul class="list-group mt-3">
                                 {% for group in mygroups %}
                                     <li class="list-group-item mt-1">
@@ -81,12 +90,32 @@
 
                             {% get_pages %}
                             <!-- Center-aligned -->
-                            {% include "pagination.html" %}
+                            <div class="second_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+                            <script>
+                                var page2 = {
+                                    class_name: "second_pagi",
+                                    page_name: "second_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
                         {% else %}
                             <dv class="p-5">
                                 <p><i>You have not joined any journal clubs.</i></p>
                             </dv>
                         {% endif %}
+                        <script>
+                            if (typeof page1 !== "undefined" && typeof page2 !== "undefined") {
+                                multi_pagination([page1, page2]);
+                            } else if (typeof page1 !== "undefined") {
+                                multi_pagination([page1])
+                            } else {
+                                multi_pagination([page2])
+                            }
+                        </script>
                     </div>
                 {% endif %}
             </div>
