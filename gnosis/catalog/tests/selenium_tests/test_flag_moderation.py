@@ -117,7 +117,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # remove response overlay
         self.browser.find_element_by_class_name("response_ok").click()
 
-        self.browser.get(self.live_server_url + '/catalog/moderation/comments')
+        self.browser.get(self.live_server_url + '/catalog/moderation/comments/')
 
         flags = self.browser.find_element_by_css_selector('ul.list-group')
         self.first_flag = flags.find_element_by_class_name('list-group-item')
