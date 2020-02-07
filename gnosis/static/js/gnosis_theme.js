@@ -74,3 +74,8 @@ $(document).click(function (e) {
 $('.response_ok').click(function () {
     $('#flag_response').attr('hidden', true)
 });
+
+$('#universal_select').change(function () {
+    var url = $('option:selected', this).attr('data-url');
+    $('#universal_search').attr('action', url);
+});
