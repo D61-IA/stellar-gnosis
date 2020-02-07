@@ -96,7 +96,7 @@ def papers(request):
         form = SearchPapersForm()
 
     return render(
-        request, "papers.html", {"papers": all_papers, "form": form}
+        request, "papers.html", {"papers": all_papers, "form": form, "type": 'paper'}
     )
 
 
@@ -453,7 +453,7 @@ def paper_find(request):
     keywords = request.GET.get("keywords", "")
     papers = Paper.objects.filter(title__icontains=keywords)
 
-    return render(request, "papers.html", {"papers": papers})
+    return render(request, "papers.html", {"papers": papers, "type": 'paper'})
 
 
 @login_required
@@ -1180,7 +1180,7 @@ def venues(request):
         message = None
 
     return render(
-        request, "venues.html", {"venues": all_venues, "form": form, "message": message}
+        request, "venues.html", {"venues": all_venues, "form": form, "message": message, "type": 'venue'}
     )
 
 
@@ -1210,7 +1210,7 @@ def venue_find(request):
     return render(
         request,
         "venues.html",
-        {"venues": venues},
+        {"venues": venues, "type": 'venue'},
     )
 
 

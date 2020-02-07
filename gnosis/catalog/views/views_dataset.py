@@ -50,7 +50,7 @@ def datasets(request):
     return render(
         request,
         "datasets.html",
-        {"datasets": all_datasets, "form": form, "message": message},
+        {"datasets": all_datasets, "form": form, "message": message, "type": 'dataset'},
     )
 
 
@@ -79,7 +79,7 @@ def dataset_find(request):
     return render(
         request,
         "datasets.html",
-        {"datasets": datasets},
+        {"datasets": datasets, "type": 'dataset'},
     )
 
 

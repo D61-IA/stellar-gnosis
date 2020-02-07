@@ -22,7 +22,6 @@
 
     <link rel="stylesheet" href="{% static 'css/gnosis_theme.css' %}">
     <link rel="stylesheet" href="{% static 'css/paper_detail.css' %}">
-    <link rel="stylesheet" href="{% static 'css/flagging.css' %}">
 </head>
 <style>
     .max-width {
@@ -36,23 +35,33 @@
         <a class="navbar-brand"
            href="{% url 'home' %}">The Journal Club</a>
 
-        <form action="{% url 'paper_find' %}" id="universal_search" class="nav-searchbar" method="get" style="display: flex;">
+        <form action="{% url 'paper_find' %}" id="universal_search" class="nav-searchbar" method="get"
+              style="display: flex;">
             <div style="display: flex;">
-                <select id="universal_select">
-                    <option value="papers" data-url="{% url 'paper_find' %}">Papers</option>
-                    <option value="authors" data-url="{% url 'person_find' %}">Authors</option>
-                    <option value="venues" data-url="{% url 'venue_find' %}">Venues</option>
-                    <option value="datasets" data-url="{% url 'dataset_find' %}">Datasets</option>
-                    <option value="codes" data-url="{% url 'code_find' %}">Codes</option>
+                <select id="universal_select" data-type="{{ type }}">
+                    <option value="paper" data-url="{% url 'paper_find' %}">Papers</option>
+                    <option value="person" data-url="{% url 'person_find' %}">Authors</option>
+                    <option value="venue" data-url="{% url 'venue_find' %}">Venues</option>
+                    <option value="dataset" data-url="{% url 'dataset_find' %}">Datasets</option>
+                    <option value="code" data-url="{% url 'code_find' %}">Codes</option>
                 </select>
                 <input type="text" name="keywords" style="padding-left: 5px; padding-right: 32px"/>
-                <button type="submit" style="display:flex; justify-content: center; width: 30px; height: 30px; margin-left: -30px">
+                <button type="submit"
+                        style="display:flex; justify-content: center; width: 30px; height: 30px; margin-left: -30px">
                     <i class="material-icons" style="vertical-align: inherit">
                         search
                     </i>
                 </button>
             </div>
         </form>
+
+        <script>
+            var $universal_select = $('#universal_select');
+            var option_name = 'option[value="' + $universal_select.attr('data-type') + '"]';
+            var $option = $(option_name);
+            $option.attr('selected', 'selected');
+            $('#universal_search').attr('action', $option.attr('data-url'));
+        </script>
 
         {% if user.is_authenticated %}
             <div class="dropdown">

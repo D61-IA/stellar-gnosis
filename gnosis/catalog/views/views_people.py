@@ -53,7 +53,7 @@ def persons(request):
         form = SearchPeopleForm()
 
     return render(
-        request, "people.html", {"people": people, "form": form}
+        request, "people.html", {"people": people, "form": form, "type": 'person'}
     )
 
 
@@ -136,5 +136,5 @@ def person_find(request):
     return render(
         request,
         "people.html",
-        {"people": people},
+        {"people": people, "type": 'person'},
     )

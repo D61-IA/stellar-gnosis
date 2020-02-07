@@ -55,7 +55,7 @@ def codes(request):
         form = SearchCodesForm()
 
     return render(
-        request, "codes.html", {"codes": all_codes, "form": form, "message": message}
+        request, "codes.html", {"codes": all_codes, "form": form, "message": message, "type": 'code'}
     )
 
 
@@ -88,7 +88,7 @@ def code_find(request):
     return render(
         request,
         "codes.html",
-        {"codes": codes},
+        {"codes": codes, "type": 'code'},
     )
 
 
