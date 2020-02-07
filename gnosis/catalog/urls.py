@@ -80,9 +80,12 @@ urlpatterns += [
 # for moderate reported comments or papers
 urlpatterns += [
     path('moderation/comments/', views.flagged_comments, name='flagged_comments_index'),
-    path('moderation/papers/', views.reported_papers, name='reported_papers_index'),
-    path('moderation/papers/<int:id>/delete/', views.paper_report_delete, name='paper_report_del'),
-    path('moderation/papers/<int:id>/resolve/', views.paper_report_resolve, name='paper_report_resl'),
+    path('moderation/comments/flags/<int:id>/create', views.cflag_create, name='comment_flag_create'),
+    path('moderation/comments/flags/<int:id>/remove', views.cflag_remove, name='comment_flag_remove'),
+    path('moderation/papers/reports/', views.paper_reports, name='reported_papers_index'),
+    path('moderation/papers/reports/<int:id>/resolve/', views.paper_report_resolve, name='paper_report_resl'),
+    path('moderation/papers/reports/<int:id>/delete/', views.paper_report_delete, name='paper_report_del'),
+    path('moderation/papers/reports/<int:id>/create/', views.paper_error_report, name='paper_error_report'),
 ]
 
 # for updating/creating a new Code node
@@ -134,9 +137,4 @@ urlpatterns += [
 urlpatterns += [
     path('profile/<int:id>/', views.profile_detail, name='profile'),
     path('profile/update/', views.profile_update, name='profile_update'),
-]
-
-urlpatterns += [
-    path('flags/comment/<int:comment_id>/create/', views.cflag_create, name='comment_flag_create'),
-    path('flags/comment/<int:comment_id>/remove/', views.cflag_remove, name='comment_flag_remove'),
 ]

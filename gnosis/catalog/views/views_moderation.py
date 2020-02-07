@@ -7,6 +7,7 @@ from catalog.forms import FlaggedCommentForm
 from catalog.models import CommentFlag, Comment, PaperReport, Paper
 
 
+@staff_member_required
 def cflag_create(request, comment_id):
     """Creates a comment flag"""
     print("flag create ajax received!")
@@ -36,6 +37,7 @@ def cflag_create(request, comment_id):
         return HttpResponseBadRequest(reverse("paper_detail", kwargs={'id': id}))
 
 
+@staff_member_required
 def cflag_remove(request, comment_id):
     """Delets a comment flag"""
     print("flag remove ajax request received!")
@@ -113,7 +115,8 @@ def flagged_comments(request):
 
 
 @staff_member_required
-def reported_papers(request):
+
+def paper_reports(request):
     """:return all reports"""
     reports = PaperReport.objects.all()
 

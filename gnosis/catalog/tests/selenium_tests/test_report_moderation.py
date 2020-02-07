@@ -103,9 +103,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.find_element_by_class_name("response_ok").click()
 
         # go to the moderation page
-        self.browser.get(self.live_server_url + '/catalog/moderation/papers')
+        self.browser.get(self.live_server_url + '/catalog/moderation/papers/reports/')
         self.report = self.browser.find_element_by_class_name('list-group-item')
-
 
     @classmethod
     def tearDownClass(cls):
