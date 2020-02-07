@@ -3,12 +3,15 @@ var $container = $('#discuss_form_container');
 var meet_day = $container.attr('data-clubday');
 var this_url;
 
+$('label[for="id_date_discussed"]').css('margin-right', '18px');
+
 $date_input.attr('autocomplete', 'off').datepicker({
     onSelect: function (date) {
         var curDate = $(this).datepicker('getDate');
         var dayName = $.datepicker.formatDate('DD', curDate);
         if (meet_day !== dayName) {
-            $('.date_alert').attr('hidden', false);
+            alert('Reminder: selected date does not match club meeting day.');
+            // $('.date_alert').attr('hidden', false);
         }
     },
     duration: 100
