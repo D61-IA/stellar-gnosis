@@ -312,16 +312,11 @@ def group_entry_update(request, id, eid):
         # if this is POST request then process the Form data
         if request.method == "POST":
             form = GroupEntryForm(request.POST)
-            # data = {'is_valid': False}
             if form.is_valid():
                 group_entry.date_discussed = form.cleaned_data["date_discussed"]
                 # print("Date to be discussed {}".format(group_entry.date_discussed))
                 group_entry.save()
-                # data['is_valid'] = True
                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
-
-            # print("responded!")
-            # return JsonResponse(data)
         # GET request
         else:
             form = GroupEntryForm(

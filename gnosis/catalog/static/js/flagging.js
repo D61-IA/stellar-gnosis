@@ -17,16 +17,6 @@ $('.open_flag_dialog').click(function () {
     }
 });
 
-/************** hide popup form and reset its text. **************/
-function cancel_form() {
-    $('#flag_form').trigger('reset');
-    $('.popup').attr('hidden', true);
-}
-
-$('#cancel_button').click(function () {
-    cancel_form();
-});
-
 
 /************** sending ajax post request with flag forms **************/
 var form = $('#flag_form');

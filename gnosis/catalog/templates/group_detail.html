@@ -221,7 +221,7 @@
                                                 {% if user.id == group.owner.id %}
                                                     <div class="p-2">
                                                         <a class="btn btn-sm btn-primary discuss_btn popup_opener"
-                                                             href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a>
+                                                           href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a>
                                                     </div>
                                                     <div class="p-2">
                                                         <a class="btn btn-sm btn-outline-danger"
@@ -294,7 +294,7 @@
     <div id="discuss_form_container" class="cover popup" data-clubday="{{ group.day }}" hidden>
         <div id="discuss_form_dialog" class="card box_shadow form_dialog">
             <div class="card-body">
-                <form action="" method="post" id="discuss_form">
+                <form action="" method="post" id="discuss_form" class="modal_form">
                     {% csrf_token %}
                     <div style="display: flex; align-items: center">
                         <table>
@@ -308,29 +308,18 @@
                     </div>
                     <br/>
                     <div class="reaction">
-                        <input type="submit" class="btn btn-primary float-right" value="Confirm"/>
-                        <p>
-                            *Club meeting day: <strong>Monday</strong>
+                        <p class="reaction_message" hidden>
+                            Reminder: Club Meeting Day is <strong>Monday</strong>
                         </p>
+                        <div class="form_buttons" hidden>
+                            <button id="cancel_button" type="button" class="btn btn-primary">
+                                Cancel
+                            </button>
+                            <input type="submit" class="btn btn-primary" value="Confirm"/>
+                        </div>
                     </div>
                 </form>
             </div>
-
-            {#            <div class="cover popup date_alert" data-clubday="{{ group.day }}" hidden>#}
-            {#                <div class="card box_shadow response_dialog">#}
-            {#                    <div class="card-body">#}
-            {#                        <div>#}
-            {#                            <span>The selected day does not match the regular meeting day (<strong>{{ group.day }}</strong>) of the club.</span>#}
-            {#                        </div>#}
-            {##}
-            {#                        <div class="ok_container">#}
-            {#                            <span class="response_ok response_opt">Continue</span>#}
-            {##}
-            {#                            <button class="btn btn-danger response_reset response_opt">Reset</button>#}
-            {#                        </div>#}
-            {#                    </div>#}
-            {#                </div>#}
-            {#            </div>#}
         </div>
     </div>
 

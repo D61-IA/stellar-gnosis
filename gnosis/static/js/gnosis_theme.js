@@ -69,3 +69,9 @@ $(document).click(function (e) {
 $('.response_ok').click(function () {
     $('.popup').attr('hidden', true)
 });
+
+$('#cancel_button').click(function () {
+    $('.modal_form').trigger('reset');
+    $('.popup').attr('hidden', true);
+    $('.reaction').children().attr('hidden', true);
+});
