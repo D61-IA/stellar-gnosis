@@ -6,8 +6,7 @@
 
     <div class="card shadow-sm mt-5">
         <div class="card-header">
-
-            <div style="display: flex">
+            <div class="top_container">
                 <div class="header_icons">
                     {% if user.is_authenticated %}
                         <div id="endorsement">
@@ -45,31 +44,28 @@
                         </a>
                     {% endif %}
                 </div>
+
                 <h3 class="paper_title">{{ paper.title }}</h3>
             </div>
 
-            <h4>
-                <div style="display: flex; align-content: space-between; justify-content: space-between">
-                    <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
+            <div style="display: flex; justify-content: space-between">
+                <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
                         target="_blank">Download</a>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'paper_add_to_group' paper.id %}" class="btn btn-primary"
+                           role="button">
+                            Add to Journal Club</a>
+                        <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
+                           role="button">
+                            Add to Collection</a>
+                        {% if user.is_superuser %}
+                            <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
                                role="button">
-                                Add to Journal Club</a>
-                            <a href="{% url 'paper_add_to_collection' paper.id %}" class="btn btn-primary"
-                               role="button">
-                                Add to Collection</a>
-                            {% if user.is_superuser %}
-                                <a href="{% url 'paper_update' paper.id %}" class="btn btn-danger btn-sm"
-                                   role="button">
-                                    Edit</a>
-                            {% endif %}
+                                Edit</a>
                         {% endif %}
-                    </div>
-
-
+                    {% endif %}
                 </div>
-            </h4>
+            </div>
         </div>
         <div class="card-body">
             <h5 class="text-left">
@@ -107,10 +103,18 @@
                             <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
                             <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>
                         </div>
-
-
                     </div>
                 {% endif %}</h4>
+
+            {% if user.is_authenticated %}
+                <button id="report_error" class="btn btn-danger btn-sm popup_opener"
+                        data-url="{% url 'paper_error_report' paper.id %}">
+                    Report Error
+                </button>
+            {% else %}
+                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report
+                    Error</a>
+            {% endif %}
         </div>
     </div>
     {% if user.is_authenticated and user.is_superuser %}
@@ -144,64 +148,117 @@
         </div>
 
         <div id="ego_graph_content">
-
             <div class="ego_button_container">
-                <div class="flex_layout_row legend_container">
-                    <div id="paper_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend paper"></span> Paper
-                    </div>
-                    <div id="person_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend person"></span> Person
-                    </div>
-                    <div id="venue_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend venue"></span> Venue
-                    </div>
-                    <div id="code_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend code"></span> Code
-                    </div>
-                    <div id="dataset_filter" class="flex_layout_col legend_ele"><span
-                            class="color_legend dataset"></span>
-                        Dataset
-                    </div>
-                </div>
+                <button class="flex_col legend_ele filter_btn default" data-name="paper_filter"
+                        data-pressed="true"
+                        data-type="Paper">
+                    <span class="color_legend paper"></span>Paper
+                </button>
+                <button class="flex_col legend_ele filter_btn default"
+                        data-name="person_filter" data-pressed="true"
+                        data-type="Person">
+                    <span class="color_legend person"></span>Person
+                </button>
+                <button class="flex_col legend_ele filter_btn default" data-name="venue_filter"
+                        data-pressed="true"
+                        data-type="Venue">
+                    <span class="color_legend venue"></span>Venue
+                </button>
+                <button class="flex_col legend_ele filter_btn default" data-name="code_filter"
+                        data-pressed="true"
+                        data-type="Code">
+                    <span class="color_legend code"></span>Code
+                </button>
+                <button class="flex_col legend_ele filter_btn default"
+                        data-name="dataset_filter" data-pressed="true"
+                        data-type="Dataset">
+                    <span class="color_legend dataset"></span>Dataset
+                </button>
+            </div>
 
-                <div class="flex_layout_row widget_container">
-                    <div id="hide_refresh" class="flex_layout_row" style="padding: 5px">
-                        <button id="ego_button_reset" type="button"
-                                class="btn btn-primary ego_button" title="Reset">
+            <div class="card-body" style="padding: 0; display: grid; grid-template-columns: repeat(16, 1fr)">
+                <div id="side_menu">
+                    <div class="dropdown-toggle" style="padding: 10px">
+                        <strong>Relationships</strong>
+                    </div>
+                    <div style="padding: 10px">
+                        <select class="graphfilter">
+                            <option value="all" data-type="all"> all</option>
+                            <option value="cites" data-type="Paper"> cites</option>
+                            <option value="uses" data-type="Paper"> uses</option>
+                            <option value="extends" data-type="Paper"> extends</option>
+                            <option value="authors" data-type="Person"> authors</option>
+                            <option value="was published at" data-type="Venue"> was published at</option>
+                            <option value="evaluates on" data-type="Dataset"> evaluates on</option>
+                            <option value="implements" data-type="Code"> implements</option>
+                        </select>
+                    </div>
+                    <div class="dropdown-divider"></div>
+
+                    <div class="dropdown-toggle" style="padding: 10px">
+                        <strong>Nodes</strong>
+                    </div>
+                    <div id="node_container">
+                        <div class="node_item">
+                            <button class="filter_btn default" data-name="paper_filter"
+                                    data-pressed="true"
+                                    data-type="Paper">
+                                <span class="color_legend paper"></span>Paper
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="filter_btn default" data-name="person_filter"
+                                    data-pressed="true" data-type="Person">
+                                <span class="color_legend person"></span>Person
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="filter_btn default" data-name="venue_filter"
+                                    data-pressed="true"
+                                    data-type="Venue">
+                                <span class="color_legend venue"></span>Venue
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="filter_btn default" data-name="code_filter"
+                                    data-pressed="true"
+                                    data-type="Code">
+                                <span class="color_legend code"></span>Code
+                            </button>
+                        </div>
+
+                        <div class="node_item">
+                            <button class="filter_btn default" data-name="dataset_filter"
+                                    data-pressed="true"
+                                    data-type="Dataset">
+                                <span class="color_legend dataset"></span>Dataset
+                            </button>
+                        </div>
+
+                    </div>
+                    <div class="dropdown-divider"></div>
+
+                    <div style="text-align: center">
+                        <button type="button"
+                                class="btn btn-primary ego_button ego_button_reset" title="Reset">
                             <i class="material-icons">
                                 refresh
                             </i>
                         </button>
-                        <button id="ego_button_toggle" type="button"
-                                class="btn btn-primary ego_button" title="Hide relationships"
+                        <button type="button"
+                                class="btn btn-primary ego_button ego_button_toggle" title="Hide relationships"
                                 data-toggle="button"
                                 aria-pressed="false">
-                            <i class="material-icons" id="rela_toggle">
-                                visibility
+                            <i class="material-icons">
+                                title
                             </i>
                         </button>
-
                     </div>
 
-                    <div class="flex_layout_row" style="padding-right: 5px">
-                        <select id="graphfilter"
-                                style="height: 35px; margin-top: auto; margin-bottom: auto">
-                            <option value="all"> all</option>
-                            <option value="cites"> cites</option>
-                            <option value="uses"> uses</option>
-                            <option value="extends"> extends</option>
-                            <option value="authors"> authors</option>
-                            <option value="was published at"> was published at</option>
-                            <option value="evaluates on"> evaluates on</option>
-                            <option value="published"> published</option>
-                            <option value="implements"> implements</option>
-                        </select>
-                    </div>
                 </div>
-            </div>
-
-            <div class="card-body" style="padding-top: 0">
 
                 <div id="cy">
                     <div id="tooltip" hidden>
@@ -209,6 +266,36 @@
                     </div>
                 </div>
             </div>
+
+            <div class="ego_button_container" style="justify-content: center;">
+                <div class="flex_row">
+                    <button type="button"
+                            class="btn btn-primary ego_button ego_button_reset" title="Reset">
+                        <i class="material-icons">
+                            refresh
+                        </i>
+                    </button>
+                    <select class="graphfilter">
+                        <option value="all" data-type="all"> all</option>
+                        <option value="cites" data-type="Paper"> cites</option>
+                        <option value="uses" data-type="Paper"> uses</option>
+                        <option value="extends" data-type="Paper"> extends</option>
+                        <option value="authors" data-type="Person"> authors</option>
+                        <option value="was published at" data-type="Venue"> was published at</option>
+                        <option value="evaluates on" data-type="Dataset"> evaluates on</option>
+                        <option value="implements" data-type="Code"> implements</option>
+                    </select>
+                    <button type="button"
+                            class="btn btn-primary ego_button ego_button_toggle" title="Hide relationships"
+                            data-toggle="button"
+                            aria-pressed="false">
+                        <i class="material-icons">
+                            title
+                        </i>
+                    </button>
+                </div>
+            </div>
+
 
         </div>
     </div>
@@ -348,26 +435,7 @@
 
                                 {% get_pages %}
                                 <!-- Center-aligned -->
-                                <ul class="pagination justify-content-center" style="margin:20px 0">
-                                    {% if not pages.current.is_first %}
-                                        <li class="page-item"><a class="page-link"
-                                                                 href="{{ pages.previous.path }}">Previous</a></li>
-                                    {% endif %}
-                                    {% for page in pages %}
-                                        {% if page.is_current %}
-                                            <li class="page-item active"><a class="page-link"
-                                                                            href="{{ page.path }}">{{ page.number }}</a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item"><a class="page-link"
-                                                                     href="{{ page.path }}">{{ page.number }}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if not pages.current.is_last %}
-                                        <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
+                                {% include "pagination.html" %}
                             </ul>
                         {% endif %}
                     </div>
@@ -422,7 +490,7 @@
                 </table>
                 <br/>
                 <div class="form_button_container">
-                    <button id="cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                    <button id="flag_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
                         Cancel
                     </button>
                     <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
@@ -431,6 +499,44 @@
         </div>
     </div>
 
+
+    <div id="error_form_container" class="cover popup" hidden>
+        <div id="error_form_dialog" class="box_shadow">
+            <form id="error_form" action="" method="post">
+                {% csrf_token %}
+                <table class="w-75">
+                    {% for field in error_form %}
+                        <div style="font-weight: bold">
+                            {{ field.label_tag }}
+                        </div>
+                        <div style="padding: 0 10px">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                            {{ field.help_text }}
+                        {% endif %}
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+                <br/>
+                <div class="form_button_container">
+                    <button id="error_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                        Cancel
+                    </button>
+                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // remove venue choice field if paper is not attached to a venue
+        if ("{{ paper.was_published_at }}" === 'None') {
+            $('input[value="venue"]').parent('label').attr('hidden', true)
+        }
+    </script>
 
     <!-- if form is valid show the form in the popup window -->
     {% if flag_form.has_changed %}
@@ -451,7 +557,7 @@
         var paper_count = 50;
 
         // define layout options
-        var layout = {
+        var cy_layout = {
             name: 'concentric',
             concentric: (node) => {
                 if (node.data('label') === "origin") return paper_count + 50;
@@ -471,7 +577,7 @@
             // mouse wheel sensitivity, used for zooming
             wheelSensitivity: 0.1,
 
-            layout: layout,
+            layout: cy_layout,
 
             // max zoom factor
             maxZoom: 2.0,
@@ -592,9 +698,6 @@
             ],
 
         });
-
-        // setting the minimum zoom factor to 50% of its initial zoom
-        cy.minZoom(cy.zoom() * 0.5);
     </script>
 
     <script src="{% static "js/ego_graph.js" %}"></script>

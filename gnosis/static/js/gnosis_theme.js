@@ -61,6 +61,7 @@ $('.cus_toggle').click(function (e) {
 });
 
 /************** click anywhere on page to cancel popups **************/
+// the popup object must contain the class popup, the object the triggers the popup must have class popup_opener
 $(document).click(function (e) {
     var $container = $(".popup");
     // element that triggers popup
@@ -72,5 +73,5 @@ $(document).click(function (e) {
 });
 
 $('.response_ok').click(function () {
-    $('#flag_response').attr('hidden', true)
+    $('#response_msg').attr('hidden', true)
 });
