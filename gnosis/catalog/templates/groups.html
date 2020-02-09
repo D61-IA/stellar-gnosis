@@ -22,40 +22,23 @@
 
         <div class="card-body">
             {% if groups %}
-            {% paginate groups %}
-            <ul class="list-group mt-3">
-                {% for group in groups %}
-                    <li class="list-group-item mt-1">
-                        <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
-                        <p>{{ group.description }}</p>
-                    </li>
-                {% endfor %}
-            </ul>
-            {% get_pages %}
-            <!-- Center-aligned -->
-            <ul class="pagination justify-content-center" style="margin:20px 0">
-                {% if not pages.current.is_first %}
-                    <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a>
-                    </li>
-                {% endif %}
-                {% for page in pages %}
-                    {% if page.is_current %}
-                        <li class="page-item active"><a class="page-link"
-                                                        href="{{ page.path }}">{{ page.number }}</a></li>
-                    {% else %}
-                        <li class="page-item"><a class="page-link"
-                                                 href="{{ page.path }}">{{ page.number }}</a></li>
-                    {% endif %}
-                {% endfor %}
-                {% if not pages.current.is_last %}
-                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                {% endif %}
-            </ul>
-        {% else %}
-            <div class="p-5">
-                <p><i>No matching journal clubs found.</i></p>
-            </div>
-        {% endif %}
+                {% paginate groups %}
+                <ul class="list-group mt-3">
+                    {% for group in groups %}
+                        <li class="list-group-item mt-1">
+                            <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
+                            <p>{{ group.description }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% get_pages %}
+                <!-- Center-aligned -->
+                {% include "pagination.html" %}
+            {% else %}
+                <div class="p-5">
+                    <p><i>No matching journal clubs found.</i></p>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
