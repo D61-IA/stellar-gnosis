@@ -1,0 +1,42 @@
+{% extends "gnosis_theme.html" %}
+{% block content %}
+    {% load el_pagination_tags %}
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-body text-center">
+            <form action="{% url 'group_find' %}" method="get">
+                <input type="text" name="keywords" size="60" class="form-control" required="">
+                <br>
+                <input type="submit" class="btn btn-primary btn-lg" value="Search Journal Clubs"/>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h4>My Journal Clubs</h4>
+            <a href="{% url 'group_create' %}" class="btn btn-primary float-right">Create a Journal Club</a>
+        </div>
+
+        <div class="card-body">
+            {% if mygroups %}
+                {% paginate mygroups %}
+                <ul class="list-group mt-3">
+                    {% for group in mygroups %}
+                        <li class="list-group-item mt-1">
+                            <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
+                            <p>{{ group.description }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% get_pages %}
+                <!-- Center-aligned -->
+                {% include "pagination.html" %}
+            {% else %}
+                <dv class="p-5">
+                    <p><i>You have not joined any journal clubs.</i></p>
+                </dv>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
