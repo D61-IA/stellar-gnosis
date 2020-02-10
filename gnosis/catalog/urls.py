@@ -101,6 +101,7 @@ urlpatterns += [
 # for updating/creating a ReadingGroup object
 urlpatterns += [
     path('clubs/', views.groups, name='groups_index'),
+    path('clubs/joined/', views.groups_user, name='groups_user'),
     path('club/create/', views.group_create, name='group_create'),
     path('club/<int:id>/', views.group_detail, name='group_detail'),
     path('club/<int:id>/update/', views.group_update, name='group_update'),
@@ -113,6 +114,7 @@ urlpatterns += [
     path('club/<int:id>/entry/<int:eid>/unschedule/', views.group_entry_unschedule, name='group_entry_unschedule'),
     path('club/<int:id>/user/<int:aid>/grant/', views.group_grant_access, name='group_grant_access'),
     path('club/<int:id>/user/<int:aid>/deny/', views.group_deny_access, name='group_deny_access'),
+    path('club/search/', views.group_find, name='group_find'),
 ]
 
 # for updating/creating a Collection
