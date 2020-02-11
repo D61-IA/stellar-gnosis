@@ -54,24 +54,36 @@ $.ajaxSetup({
     }
 );
 
-
 /************** click anywhere on page to cancel popups **************/
-$(document).click(function (e) {
+$('.cover').click(function (e) {
     var $container = $(".popup");
-    // element that triggers popup
-    var $target = $(".popup_opener");
+
     // if the target of the click isn't the container nor a descendant of the container.
-    if (!$target.is(e.target) && $target.has(e.target).length === 0 && $container.has(e.target).length === 0) {
-        $container.attr('hidden', true);
+    $container.attr('hidden', true);
+    $('.cover').attr('hidden', true);
+});
+
+$('.popup_opener').click(function () {
+    var targetid = $(this).attr('data-targetid');
+    var formid = $(this).attr('data-formid');
+
+    if (formid !== null){
+        $('#' + formid).attr('action', $(this).attr('data-url'));
     }
+    $('#' + targetid).attr('hidden', false);
+    $('.cover').attr('hidden', false);
 });
 
 $('.response_ok').click(function () {
-    $('.popup').attr('hidden', true)
+    $('.popup').attr('hidden', true);
+    $('.cover').attr('hidden', true);
 });
 
-$('#cancel_button').click(function () {
-    $('.modal_form').trigger('reset');
-    $('.popup').attr('hidden', true);
+$('.cancel_button').click(function () {
+    var targetid = $(this).attr('data-targetid');
+    $('#' + targetid).trigger('reset');
     $('.reaction').children().attr('hidden', true);
+
+    $('.popup').attr('hidden', true);
+    $('.cover').attr('hidden', true);
 });

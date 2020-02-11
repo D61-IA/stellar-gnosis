@@ -1,7 +1,6 @@
 var $date_input = $('#id_date_discussed');
 var $container = $('#discuss_form_container');
 var meet_day = $container.attr('data-clubday');
-var this_url;
 
 $date_input.attr('autocomplete', 'off').datepicker({
     onSelect: function (date) {
@@ -17,16 +16,15 @@ $date_input.css({
     'border-radius': 0,
 });
 
-$('#pick_date').css({
+$('#date_opener').css({
     'height': $date_input.css('height'),
 }).click(function (e) {
-    $date_input.datepicker('show');
     e.preventDefault();
+    $date_input.datepicker('show');
 });
 
 $('.discuss_btn').click(function (e) {
     e.preventDefault();
     $container.attr('hidden', false);
-    this_url = $(this).attr('href');
-    $('#discuss_form').attr('action', this_url);
+    $('#discuss_form').attr('action', $(this).attr('href'));
 });

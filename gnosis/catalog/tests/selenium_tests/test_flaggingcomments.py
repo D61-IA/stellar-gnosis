@@ -170,10 +170,9 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.find_element_by_class_name("response_ok").click()
 
         # test the flagged comment has a filled flag icon attached
-        arr = first_comment.find_elements_by_class_name("flagged")
-        self.assertEqual(len(arr), 1)
-        arr = first_comment.find_elements_by_class_name("material-icons")
-        self.assertEqual(arr[0].text, "flag")
+        flag_icon = self.browser.find_element_by_css_selector('.right_side_icon[title="Flagged"] .material_icons')
+        self.assertEqual(flag_icon.text, 'flag')
+
 
 class FirfoxTestCase(ChromeTestCase):
     """test with Firefox webdriver"""

@@ -328,10 +328,9 @@ def group_entry_update(request, id, eid):
 
     return render(
         request,
-        "group_entry_update.html",
-        {"form": form, "group": group, "group_entry": group_entry},
+        "group_detail.html",
+        {"id": id, "form": form},
     )
-
 
 #
 @login_required

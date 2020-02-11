@@ -337,29 +337,30 @@
                             {% paginate comments %}
                             {% for comment in comments %}
 
-                                <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
+                                <li id="comment_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
                                     {% if comment.created_by != user %}
-                                        <div style="float: right; text-align: right;">
-                                            <div class="open_flag_dialog popup_opener"
-                                                 data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
-                                                 data-commentid={{ comment.id }} data-flagged={{ comment.is_flagged }}>
-                                                {% if comment.is_flagged %}
-                                                    <div class="flagged" data-toggle="tooltip" title="Flagged">
-                                                        <i class="material-icons menu_item">flag</i>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="not_flagged" data-toggle="tooltip" title="Report">
-                                                        <i class="material-icons menu_item">outlined_flag</i>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
+                                        {% if comment.is_flagged %}
+                                            <a class="right_side_icon" data-toggle="tooltip"
+                                               title="Flagged">
+                                                <i class="material-icons menu_item">flag</i>
+                                            </a>
+                                        {% else %}
+                                            <a class="right_side_icon popup_opener flag_button" data-toggle="tooltip"
+                                               title="Report"
+                                               data-commentid="{{ comment.id }}"
+                                               data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
+                                               data-targetid="flag_form_container"
+                                               data-formid="flag_form"
+                                               style="cursor: pointer;">
+                                                <i class="material-icons menu_item">outlined_flag</i>
+                                            </a>
+                                        {% endif %}
                                     {% endif %}
 
                                     <p><strong>{{ comment.created_by }}</strong> said on
                                         {{ comment.created_at|date:"F    d, Y" }}</p>
                                     {% if comment.is_flagged %}
-                                        <p class="flagged">Comment is being held for moderation</p>
+                                        <p>Comment is being held for moderation</p>
                                     {% else %}
                                         <div class="comment_text">
                                             <p>{{ comment.text|safe|linebreaks }}</p>
@@ -480,35 +481,33 @@
     </div>
 
     <!-- start-flagging -->
-    <div id="flag_form_container" class="cover popup" hidden>
-        <div id="flag_form_dialog" class="form_dialog box_shadow">
-            <form id="flag_form" class="modal_form" action="" method="post">
-                {% csrf_token %}
-                <table class="w-75">
-                    {% for field in flag_form %}
-                        <div style="font-weight: bold">
-                            {{ field.label_tag }}
-                        </div>
-                        <div style="padding: 0 10px">
-                            {{ field }}
-                        </div>
-                        {% if field.help_text %}
-                            {{ field.help_text }}
-                        {% endif %}
-                        {% for error in field.errors %}
-                            {{ error }}
-                        {% endfor %}
+    <div id="flag_form_container" class="popup" hidden>
+        <form id="flag_form" action="" method="post">
+            {% csrf_token %}
+            <table class="w-75">
+                {% for field in flag_form %}
+                    <div style="font-weight: bold">
+                        {{ field.label_tag }}
+                    </div>
+                    <div style="padding: 0 10px">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                        {{ field.help_text }}
+                    {% endif %}
+                    {% for error in field.errors %}
+                        {{ error }}
                     {% endfor %}
-                </table>
-                <br/>
-                <div class="form_button_container">
-                    <button id="cancel_button" type="button" class="btn btn-primary btn-lg form_button">
-                        Cancel
-                    </button>
-                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
-                </div>
-            </form>
-        </div>
+                {% endfor %}
+            </table>
+            <br/>
+            <div class="form_button_container">
+                <button type="button" class="btn btn-primary btn-sm form_btn cancel_button" data-targetid="flag_form">
+                    Cancel
+                </button>
+                <input type="submit" class="btn btn-primary btn-sm form_btn" value="Submit"/>
+            </div>
+        </form>
     </div>
 
 

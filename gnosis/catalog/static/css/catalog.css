@@ -1,11 +1,8 @@
+/* styles for flagging */
 .even-vert-center {
     display: flex;
     justify-content: space-between;
     align-items: center
-}
-
-.more_menu {
-    border-width: 1px;
 }
 
 .menu_item {
@@ -13,48 +10,16 @@
     user-select: none;
 }
 
-.not_flagged {
-    cursor: pointer;
+.right_side_icon {
+    float: right;
+    text-align: right;
 }
 
-.flagged {
-    cursor: auto !important;
-}
-
-.cover {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(248, 248, 255, 0.5);
-    z-index: 3000;
-
-}
-
-#flag_form_dialog {
-    position: fixed;
-    background-color: white;
+#flag_form_container {
+    width: 362px;
     padding: 20px;
-    top: 50%;
-    left: 50%;
-    margin-left: -181.5px;
+    margin-left: -181px;
     margin-top: -240px;
-    z-index: 3000;
-}
-
-#flag_response_dialog {
-    width: 400px;
-    top: 50%;
-    left: 50%;
-    margin-left: -200px;
-    margin-top: -69px;
-    z-index: 3000;
-}
-
-.form_button {
-    font-size: 1.0rem;
-    margin: 1px;
 }
 
 .form_button_container {
@@ -89,7 +54,7 @@
     background-color: orangered;
 }
 
-
+/* styles for ego graph */
 #cy {
     max-height: 450px;
 !important;
@@ -253,7 +218,6 @@
     background-color: lightgrey;
 }
 
-/* Gray */
 .default {
     border: none;
     color: black;
@@ -261,14 +225,16 @@
 
 }
 
+/* styles for Club */
 .top_container {
     display: flex;
 }
 
-#discuss_form_dialog {
-    width: 420px;
-    margin-left: -210px;
+#discuss_form_container {
+    width: 370px;
+    margin-left: -185px;
     margin-top: -93px;
+    padding: 20px;
 }
 
 #id_date_discussed {
@@ -277,8 +243,9 @@
     margin-left: 18px;
 }
 
-#pick_date {
-    width: 40px; !important;
+#date_opener {
+    width: 40px;
+!important;
     margin-left: -40px;
 }
 
@@ -288,7 +255,7 @@
 }
 
 .form_buttons {
-    text-align: right ;
+    text-align: right;
 }
 
 /* Extra small devices (phones, 600px and down) */
@@ -317,11 +284,20 @@
     .top_container {
         flex-direction: column-reverse;
     }
+
 }
 
 @media screen and (max-width: 400px) {
     .filter_btn {
         font-size: 10px;
+    }
+
+    #flag_form_container {
+        width: 300px;
+        font-size: 80%;
+        padding: 20px;
+        margin-left: -150px;
+        margin-top: -202.5px;
     }
 }
 

@@ -221,7 +221,8 @@
                                                 {% if user.id == group.owner.id %}
                                                     <div class="p-2">
                                                         <a class="btn btn-sm btn-primary discuss_btn popup_opener"
-                                                           href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a>
+                                                           href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}"
+                                                           data-targetid="discuss_form_container">Discuss</a>
                                                     </div>
                                                     <div class="p-2">
                                                         <a class="btn btn-sm btn-outline-danger"
@@ -291,36 +292,32 @@
         {% endif %}
     {% endif %}
 
-    <div id="discuss_form_container" class="cover popup" data-clubday="{{ group.day }}" hidden>
-        <div id="discuss_form_dialog" class="card box_shadow form_dialog">
-            <div class="card-body">
-                <form action="" method="post" id="discuss_form" class="modal_form">
-                    {% csrf_token %}
-                    <div style="display: flex; align-items: center">
-                        <table>
-                            {{ form }}
-                        </table>
-                        <button id="pick_date">
-                            <i class="material-icons">
-                                date_range
-                            </i>
-                        </button>
-                    </div>
-                    <br/>
-                    <div class="reaction">
-                        <p class="reaction_message" hidden>
-                            Reminder: Club Meeting Day is <strong>Monday</strong>
-                        </p>
-                        <div class="form_buttons" hidden>
-                            <button id="cancel_button" type="button" class="btn btn-primary">
-                                Cancel
-                            </button>
-                            <input type="submit" class="btn btn-primary" value="Confirm"/>
-                        </div>
-                    </div>
-                </form>
+    <div id="discuss_form_container" class="popup" data-clubday="{{ group.day }}" hidden>
+        <form id="discuss_form" action="" method="post">
+            {% csrf_token %}
+            <div style="display: flex; align-items: center">
+                <table>
+                    {{ form }}
+                </table>
+                <button id="date_opener">
+                    <i class="material-icons">
+                        date_range
+                    </i>
+                </button>
             </div>
-        </div>
+            <br/>
+            <div class="reaction">
+                <p class="reaction_message" hidden>
+                    Reminder: Club Meeting Day is <strong>Monday</strong>
+                </p>
+                <div class="form_buttons" hidden>
+                    <button type="button" class="btn btn-sm btn-primary cancel_button" data-targetid="discuss_form">
+                        Cancel
+                    </button>
+                    <input type="submit" class="btn btn-sm btn-primary" value="Confirm"/>
+                </div>
+            </div>
+        </form>
     </div>
 
     <script type="text/javascript">
