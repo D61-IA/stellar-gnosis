@@ -115,6 +115,7 @@ def flagged_comments(request):
 
 
 @staff_member_required
+
 def paper_reports(request):
     """:return all reports"""
     reports = PaperReport.objects.all()
@@ -124,7 +125,6 @@ def paper_reports(request):
         "moderation_paper.html",
         {"reports": reports},
     )
-
 
 @staff_member_required
 def paper_report_delete(request, id):

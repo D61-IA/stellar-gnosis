@@ -116,9 +116,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg')))
         # remove response overlay
         self.browser.find_element_by_class_name("response_ok").click()
-
         self.browser.get(self.live_server_url + '/catalog/moderation/comments/')
-
+        
         flags = self.browser.find_element_by_css_selector('ul.list-group')
         self.first_flag = flags.find_element_by_class_name('list-group-item')
 

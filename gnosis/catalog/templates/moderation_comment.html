@@ -32,6 +32,9 @@
             {% get_pages %}
             <!-- Center-aligned -->
             {% include "pagination.html" %}
+            <script>
+                pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+            </script>
         {% else %}
             <div class="card-header">
                 <h3>Flagged comments waiting for moderation</h3>

@@ -106,7 +106,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.get(self.live_server_url + '/catalog/moderation/papers/reports/')
         self.report = self.browser.find_element_by_class_name('list-group-item')
 
-
     @classmethod
     def tearDownClass(cls):
         """delete testing assets and quit webdriver and browser"""

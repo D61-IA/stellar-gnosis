@@ -1,152 +1,170 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
-{% load el_pagination_tags %}
+    {% load el_pagination_tags %}
 
-<div class="card shadow-sm mt-3">
-    <div class="card-header">
-        <h4><a href="{% url 'group_detail' group.id %}">{{ group.name }}</a> Club Members</h4>
-    </div>
+    <div class="card shadow-sm mt-3">
+        <div class="card-header">
+            <h4><a href="{% url 'group_detail' group.id %}">{{ group.name }}</a> Club Members</h4>
+        </div>
 
-    <div class="card-body">
-        {#        Navigation bar in tag view, show members who have joined and members who are asking to join the group #}
-        <ul class="nav nav-tabs" role="tablist">
+        <div class="card-body">
+            {#        Navigation bar in tag view, show members who have joined and members who are asking to join the group #}
+            <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active" data-toggle="tab" href="#navmembers">Members</a>
+                    <a class="nav-link active" data-toggle="tab" href="#navmembers">Members</a>
                 </li>
                 {% if not group.is_public %}
-                <li class="nav-item">
-                  <a class="nav-link" data-toggle="tab" href="#navapplicants">Applicants</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#navapplicants">Applicants</a>
+                    </li>
                 {% endif %}
-              </ul>
+            </ul>
             <div class="tab-content">
                 {#            tab content of members tab #}
-                <div class="container tab-pane active" id="navmembers" >
+                <div class="container tab-pane active" id="navmembers">
                     {#                    show the members#}
                     {% if members %}
-                        {% paginate members %}
+                        {% paginate members using "first_page"%}
                         <ul class="list-group mt-3">
-                        {% for member in members %}
-                            <li class="list-group-item mt-1">
-                                <div class="d-flex flex-row">
-                                <div class="mr-auto p-2">
-                                    <h4><a href="{% url 'profile' member.member.id %}">{{ member }}</a></h4><i>(member since {{ member.created_at }})</i>
-                                </div>
-                                {% if member.member.profile.website %}
-                                    <div class="p-2">
-                                        <a href="{{ member.member.profile.website }}" target="_blank"><i class='fas fa-link' style='font-size:24px'></i></a>
+                            {% for member in members %}
+                                <li class="list-group-item mt-1">
+                                    <div class="d-flex flex-row">
+                                        <div class="mr-auto p-2">
+                                            <h4><a href="{% url 'profile' member.member.id %}">{{ member }}</a></h4><i>(member
+                                            since {{ member.created_at }})</i>
+                                        </div>
+                                        {% if member.member.profile.website %}
+                                            <div class="p-2">
+                                                <a href="{{ member.member.profile.website }}" target="_blank"><i
+                                                        class='fas fa-link' style='font-size:24px'></i></a>
+                                            </div>
+                                        {% endif %}
+                                        {% if member.member.profile.github %}
+                                            <div class="p-2">
+                                                <a href="{{ member.member.profile.github }}" target="_blank"><i
+                                                        class='fab fa-github'
+                                                        style='font-size:24px;color:black'></i></a>
+                                            </div>
+                                        {% endif %}
+                                        {% if member.member.profile.linkedin %}
+                                            <div class="p-2">
+                                                <a href="{{ member.member.profile.linkedin }}" target="_blank"><i
+                                                        class='fab fa-linkedin' style='font-size:24px'></i></a>
+                                            </div>
+                                        {% endif %}
+                                        {% if member.member.profile.twitter %}
+                                            <div class="p-2">
+                                                <a href="{{ profile.twitter }}" target="_blank"><i
+                                                        class='fab fa-twitter' style='font-size:36px'></i></a>
+                                            </div>
+                                        {% endif %}
                                     </div>
-                                {% endif %}
-                                {% if member.member.profile.github %}
-                                    <div class="p-2">
-                                        <a href="{{ member.member.profile.github }}" target="_blank"><i class='fab fa-github' style='font-size:24px;color:black'></i></a>
-                                    </div>
-                                {% endif %}
-                                {% if member.member.profile.linkedin %}
-                                    <div class="p-2">
-                                        <a href="{{ member.member.profile.linkedin }}" target="_blank"><i class='fab fa-linkedin' style='font-size:24px'></i></a>
-                                    </div>
-                                {% endif %}
-                                {% if member.member.profile.twitter %}
-                                    <div class="p-2">
-                                        <a href="{{ profile.twitter }}" target="_blank"><i class='fab fa-twitter' style='font-size:36px'></i></a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            </li>
-                        {% endfor %}
+                                </li>
+                            {% endfor %}
                         </ul>
                         {% get_pages %}
                         <!-- Center-aligned -->
-                        <ul class="pagination justify-content-center" style="margin:20px 0">
-                            {% if not pages.current.is_first %}
-                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-                            {% endif %}
-                            {% for page in pages %}
-                            {% if page.is_current %}
-                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% else %}
-                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% endif %}
-                            {% endfor %}
-                            {% if not pages.current.is_last %}
-                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                            {% endif %}
-                        </ul>
+                        <div class="first_pagi">
+                            {% include "pagination.html" %}
+                        </div>
+                        <script>
+                            var page1 = {
+                                class_name: "first_pagi",
+                                page_name: "first_page",
+                                current: parseInt('{{ pages.current.number }}'),
+                                first: parseInt('{{ pages.first.number }}'),
+                                last: parseInt('{{ pages.last.number }}'),
+                            };
+                        </script>
                     {% else %}
-                    <dv class="p-2 mt-3">
-                        <p><i>No members.</i></p>
-                    </dv>
+                        <dv class="p-2 mt-3">
+                            <p><i>No members.</i></p>
+                        </dv>
                     {% endif %}
                 </div>
                 {#              tab content of applicants tab#}
                 {% if not group.is_public %}
-                <div class="container tab-pane fade" id="navapplicants">
-                    {% if applicants %}
-                        {% paginate applicants %}
-                        <ul class="list-group  mt-3">
-                            {% for applicant in applicants %}
-                            <li class="list-group-item mt-1">
-                                <div class="d-flex flex-row">
-                                    <div class="mr-auto p-2">
-                                        <h4><a href="{% url 'profile' applicant.member.id %}">{{ applicant }}</a></h4><i>(applied on {{ applicant.created_at }})</i>
-                                    </div>
-                                    {% if applicant.member.profile.website %}
-                                    <div class="p-2">
-                                        <a href="{{ member.member.profile.website }}" target="_blank"><i class='fas fa-link' style='font-size:24px'></i></a>
-                                    </div>
-                                    {% endif %}
-                                    {% if applicant.member.profile.github %}
-                                    <div class="p-2">
-                                        <a href="{{ member.member.profile.github }}" target="_blank"><i class='fab fa-github' style='font-size:24px;color:black'></i></a>
-                                    </div>
-                                    {% endif %}
-                                    {% if applicant.member.profile.linkedin %}
-                                    <div class="p-2">
-                                        <a href="{{ member.member.profile.linkedin }}" target="_blank"><i class='fab fa-linkedin' style='font-size:24px'></i></a>
-                                    </div>
-                                    {% endif %}
-                                    {% if applicant.member.profile.twitter %}
-                                    <div class="p-2">
-                                        <a href="{{ profile.twitter }}" target="_blank"><i class='fab fa-twitter' style='font-size:36px'></i></a>
-                                    </div>
-                                {% endif %}
+                    <div class="container tab-pane fade" id="navapplicants">
+                        {% if applicants %}
+                            {% paginate applicants using "second_page" %}
+                            <ul class="list-group  mt-3">
+                                {% for applicant in applicants %}
+                                    <li class="list-group-item mt-1">
+                                        <div class="d-flex flex-row">
+                                            <div class="mr-auto p-2">
+                                                <h4>
+                                                    <a href="{% url 'profile' applicant.member.id %}">{{ applicant }}</a>
+                                                </h4><i>(applied on {{ applicant.created_at }})</i>
+                                            </div>
+                                            {% if applicant.member.profile.website %}
+                                                <div class="p-2">
+                                                    <a href="{{ member.member.profile.website }}" target="_blank"><i
+                                                            class='fas fa-link' style='font-size:24px'></i></a>
+                                                </div>
+                                            {% endif %}
+                                            {% if applicant.member.profile.github %}
+                                                <div class="p-2">
+                                                    <a href="{{ member.member.profile.github }}" target="_blank"><i
+                                                            class='fab fa-github'
+                                                            style='font-size:24px;color:black'></i></a>
+                                                </div>
+                                            {% endif %}
+                                            {% if applicant.member.profile.linkedin %}
+                                                <div class="p-2">
+                                                    <a href="{{ member.member.profile.linkedin }}" target="_blank"><i
+                                                            class='fab fa-linkedin' style='font-size:24px'></i></a>
+                                                </div>
+                                            {% endif %}
+                                            {% if applicant.member.profile.twitter %}
+                                                <div class="p-2">
+                                                    <a href="{{ profile.twitter }}" target="_blank"><i
+                                                            class='fab fa-twitter' style='font-size:36px'></i></a>
+                                                </div>
+                                            {% endif %}
 
-                                </div>
-                                <div class="p-2">
-                                    <a href="{% url 'group_grant_access' id=group.id aid=applicant.member.id %}" class="btn btn-primary btn-sm" role="button">Grant</a>
-                                    <a href="{% url 'group_deny_access' id=group.id aid=applicant.member.id %}" class="btn btn-danger btn-sm" role="button">Deny</a>
-                                </div>
+                                        </div>
+                                        <div class="p-2">
+                                            <a href="{% url 'group_grant_access' id=group.id aid=applicant.member.id %}"
+                                               class="btn btn-primary btn-sm" role="button">Grant</a>
+                                            <a href="{% url 'group_deny_access' id=group.id aid=applicant.member.id %}"
+                                               class="btn btn-danger btn-sm" role="button">Deny</a>
+                                        </div>
 
-                            </li>
-                        </ul>
-                        {% endfor %}
-                
-                        {% get_pages %}
-                        <!-- Center-aligned -->
-                        <ul class="pagination justify-content-center" style="margin:20px 0">
-                            {% if not pages.current.is_first %}
-                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-                            {% endif %}
-                            {% for page in pages %}
-                            {% if page.is_current %}
-                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% else %}
-                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% endif %}
-                            {% endfor %}
-                            {% if not pages.current.is_last %}
-                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                            {% endif %}
-                        </ul>
-                    {% else %}
-                    <dv class="p-2 mt-3">
-                        <p><i>No applicants</i></p>
-                    </dv>
-                    {% endif %}
-                </div>
+                                    </li>
+                                    </ul>
+                                {% endfor %}
+
+                            {% get_pages %}
+                            <!-- Center-aligned -->
+                            <div class="second_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+                            <script>
+                                var page2 = {
+                                    class_name: "second_pagi",
+                                    page_name: "second_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
+                        {% else %}
+                            <dv class="p-2 mt-3">
+                                <p><i>No applicants</i></p>
+                            </dv>
+                        {% endif %}
+                        <script>
+                            if (typeof page1 !== "undefined" && typeof page2 !== "undefined") {
+                                multi_pagination([page1, page2]);
+                            } else if (typeof page1 !== "undefined") {
+                                multi_pagination([page1])
+                            } else {
+                                multi_pagination([page2])
+                            }
+                        </script>
+                    </div>
                 {% endif %}
             </div>
+        </div>
     </div>
-</div>
 {% endblock %}

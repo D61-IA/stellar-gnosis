@@ -35,6 +35,7 @@ urlpatterns += [
     path('paper/<int:id>/bookmark/', views.paper_bookmark, name='paper_bookmark'),
     path('paper/<int:id>/add/note/', views.paper_add_note, name='paper_add_note'),
     path('paper/<int:id>/comment/<int:cid>/flag/', views.paper_flag_comment, name='paper_flag_comment'),
+    path('paper/<int:id>/report/', views.paper_error_report, name='paper_error_report'),
 ]
 
 # for updating/creating a new Person node

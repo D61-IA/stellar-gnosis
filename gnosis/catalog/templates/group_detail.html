@@ -1,306 +1,333 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-{% load el_pagination_tags %}
+    {% load el_pagination_tags %}
 
-<div class="card shadow-sm mt-5">
-    <div class="card-header">
-        <h3>
-            {{ group.name }}
+    <div class="card shadow-sm mt-5">
+        <div class="card-header">
+            <h3>
+                {{ group.name }}
+                {% if user.is_authenticated %}
+                    {% if user.id == group.owner.id %}
+                        <p>
+                            <a href="{% url 'group_update' group.id %}">
+                                <i class="material-icons">edit</i>
+                            </a>
+                            <a href="{% url 'group_manage_members' group.id %}">
+                                <i class="material-icons">group</i>
+                            </a>
+                        </p>
+                    {% elif is_member %}
+                        <p>
+                            <a href="{% url 'group_leave' group.id %}" class="btn btn-danger btn-sm" role="button">
+                                Leave
+                            </a>
+                        </p>
+                    {% endif %}
+                {% endif %}
+            </h3>
+            <h5>Meets on {{ group.day }}s from {{ group.start_time }} to {{ group.end_time }}
+                ({{ group.timezone }})</h5>
+            <p class="text-right"> created by {{ group.owner }} on {{ group.created_at }}</p>
+        </div>
+        <div class="card-body">
+            <p>{{ group.description }}</p>
+            <p><strong>Location:</strong> {{ group.city }}, {{ group.country.name }}</p>
+            <p class="text-right">
+                <small>Keywords: {{ group.keywords|truncatechars:75 }}</small>
+            </p>
             {% if user.is_authenticated %}
-                {% if user.id == group.owner.id %}
-                <p>
-                    <a href="{% url 'group_update' group.id %}">
-                        <i class="material-icons">edit</i>
-                    </a>                    
-                    <a href="{% url 'group_manage_members' group.id %}">
-                        <i class="material-icons">group</i>
-                    </a>        
-                </p>
-                {% elif is_member %}
-                    <p>
-                        <a href="{% url 'group_leave' group.id %}" class="btn btn-danger btn-sm" role="button">
-                            Leave
-                        </a>
+                {% if user.id == group.owner.id or is_member %}
+                    <p class="text-center">
+                        {% if group.slack %}
+                            <a href="{{ group.slack }}" target="_blank"><i class='fab fa-slack'
+                                                                           style='font-size:36px;color:black'></i></a>
+                        {% endif %}
+                        {% if group.telegram %}
+                            <a href="{{ group.telegram }}" target="_blank"><i class='fab fa-telegram'
+                                                                              style='font-size:36px;color:light-blue'></i></a>
+                        {% endif %}
                     </p>
                 {% endif %}
             {% endif %}
-        </h3>
-        <h5>Meets on {{ group.day }}s from {{ group.start_time }} to {{ group.end_time }} ({{ group.timezone }})</h5>
-        <p class="text-right"> created by {{ group.owner }} on {{ group.created_at }}</p>
+        </div>
     </div>
-    <div class="card-body">
-        <p>{{ group.description }}</p>
-        <p><strong>Location:</strong> {{ group.city }}, {{ group.country.name }}</p>
-        <p class="text-right">
-            <small>Keywords: {{ group.keywords|truncatechars:75 }}</small>
-        </p>
-        {% if user.is_authenticated %}
-            {% if user.id == group.owner.id or is_member %}
-                <p class="text-center">
-                    {% if group.slack %}
-                        <a href="{{ group.slack }}" target="_blank"><i class='fab fa-slack' style='font-size:36px;color:black'></i></a>
-                    {% endif %}
-                    {% if group.telegram %}
-                        <a href="{{ group.telegram }}" target="_blank"><i class='fab fa-telegram' style='font-size:36px;color:light-blue'></i></a>
-                    {% endif %}                        
-                </p>
-            {% endif %}
-        {% endif %}
-    </div>
-</div>
 
-{% if user.id != group.owner.id %}
-    {% if group.is_public and not is_member %}
-    <div class="card text-left shadow-sm mb-5 mt-3">
-            <div class="card-header"><strong>Public Journal Club</strong></div>
-            <div class="card-body">
-                Join this journal club and be part of the conversation. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
-            </div>
-        </div>    
-    {% endif %}
-{% endif %}
-
-{% if group.is_public or user.id == group.owner.id  or is_member%} 
-<div class="card shadow-sm mt-5">
-    <div class="card-header">
-        <h3>Schedule</h3>
-    </div>
-    <div class="card-body">
-        {% if papers_discussed %}
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#upcoming">Upcoming Paper(s)</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#location">Location</a>
-            </li>
-        </ul>
-                  
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <div class="tab-pane container active" id="upcoming">
-                <ul class="list-group mt-3">
-                    {% for paper_entry in papers_discussed %}
-                        {% if paper_entry.date_discussed %}
-                            {% if paper_entry.date_discussed >= today %}
-                                <li class="list-group-item">
-                                    <div class="d-flex flex-row">
-                                        <div class="mr-auto p-2"><strong>{{ paper_entry.date_discussed }}</strong> <a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                                            proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
-                                        </div>
-                                        {% if user.id == group.owner.id %}
-                                            <div class="p-2">
-                                                <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_unschedule' paper_entry.reading_group.id paper_entry.id %}">Unschedule</a>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="tab-pane container fade" id="location">
-                <div class="p-2 mt-3">
-                {% if group.room|length > 0 %}
-                    <strong>Room:</strong><br/>{{ group.room }} <br/><br/>
-                {% endif %}
-                {% if group.address|length > 0 %}
-                    <strong>Address:</strong> {{ group.address|safe|linebreaks }} {{ group.city }}, {{ group.country.name }}
-                {% else %}
-                    <strong>Address:</strong> {{ group.city }}, {{ group.country.name }}
-                {% endif %}
+    {% if user.id != group.owner.id %}
+        {% if group.is_public and not is_member %}
+            <div class="card text-left shadow-sm mb-5 mt-3">
+                <div class="card-header"><strong>Public Journal Club</strong></div>
+                <div class="card-body">
+                    Join this journal club and be part of the conversation. <a href="{% url 'group_join' group.id %}"
+                                                                               class="btn btn-primary btn-sm"
+                                                                               role="button">Join</a>
                 </div>
             </div>
-        </div>
-        {% else %}
-            <p><i>No paper(s) scheduled.</i></p>
         {% endif %}
-    </div>
-</div>
+    {% endif %}
 
-{% if user.id == group.owner.id  or is_member%} 
-    {% if group.videoconferencing  %}
+    {% if group.is_public or user.id == group.owner.id  or is_member %}
         <div class="card shadow-sm mt-5">
             <div class="card-header">
-                <h3>Video/Web Conference Details (<a data-toggle="collapse" href="#card-body" aria-expanded="true" aria-controls="card-body">view/hide</a>)</h3>
+                <h3>Schedule</h3>
             </div>
-            <div id="card-body" class="collapse">
-                <div class="card-body">
-                    {{ group.videoconferencing|safe|linebreaks }}
-                </div>
-            </div>
-        </div>
-    {% endif %}
-{% endif %}
-
-<div class="card shadow-sm mt-5">
-    <div class="card-header">
-        <h3>Papers</h3>
-    </div>
-    <div class="card-body">
-        <nav>
-            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a class="nav-item nav-link active" id="nav-discussed-tab" data-toggle="tab" href="#navdiscussed"
-                   role="tab" aria-controls="navdiscussed" aria-selected="true">Discussed</a>
-                <a class="nav-item nav-link" id="nav-proposed-tab" data-toggle="tab" href="#navproposed" role="tab"
-                   aria-controls="navproposed" aria-selected="false">Proposed</a>
-            </div>
-        </nav>
-        <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="navdiscussed" role="tabpanel"
-                 aria-labelledby="nav-discussed-tab">
+            <div class="card-body">
                 {% if papers_discussed %}
-                    {% paginate papers_discussed %}
-                    <ul class="list-group list-group-flush">
-                        {% for paper_entry in papers_discussed %}
-                            {% if paper_entry.date_discussed %}
-                                {% if paper_entry.date_discussed < today %}
-                                    <li class="list-group-item"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                                        discussed on {{ paper_entry.date_discussed }} and proposed on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
-                                    </li>
-                            {% endif %}
-                            {% endif %}
-                        {% endfor %}
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#upcoming">Upcoming Paper(s)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#location">Location</a>
+                        </li>
                     </ul>
-                    {% get_pages %}
-                    <!-- Center-aligned -->
-                    <ul class="pagination justify-content-center" style="margin:20px 0">
-                        {% if not pages.current.is_first %}
-                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-                        {% endif %}
-                        {% for page in pages %}
-                            {% if page.is_current %}
-                                <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% endif %}
-                            {% endfor %}
-                        {% if not pages.current.is_last %}
-                        <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                        {% endif %}
-                    </ul>
-                {% endif %}
-            </div>
-            <div class="tab-pane fade" id="navproposed" role="tabpanel" aria-labelledby="nav-proposed-tab">
-                {% if papers_proposed %}
-                    {% paginate papers_proposed %}
-                    <ul class="list-group list-group-flush">
-                        {% for paper_entry in papers_proposed %}
-                            {% if not paper.date_discussed %}
-                            <li class="list-group-item">
-                                <div class="d-flex flex-row">
-                                    <div class="mr-auto p-2"><a href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
-                                proposed on {{ paper_entry.date_proposed}} by {{ paper_entry.proposed_by }}.</div>
-                                {% if user.id == group.owner.id %}
-                                    <div class="p-2">
-                                        <a class="btn btn-sm btn-primary"  href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a></div>
-                                    <div class="p-2">
-                                        <a class="btn btn-sm btn-outline-danger" href="{% url 'group_entry_remove' paper_entry.reading_group.id paper_entry.id %}">Remove</a>
-                                    </div>
-                                {% endif %}
-                                </div>
-                            </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                    {% get_pages %}
-                    <!-- Center-aligned -->
-                    <ul class="pagination justify-content-center" style="margin:20px 0">
-                        {% if not pages.current.is_first %}
-                            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-                        {% endif %}
-                        {% for page in pages %}
-                            {% if page.is_current %}
-                            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% else %}
-                            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if not pages.current.is_last %}
-                            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-                        {% endif %}
-                    </ul>
-                {% endif %}
-            </div>
 
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane container active" id="upcoming">
+                            <ul class="list-group mt-3">
+                                {% for paper_entry in papers_discussed %}
+                                    {% if paper_entry.date_discussed %}
+                                        {% if paper_entry.date_discussed >= today %}
+                                            <li class="list-group-item">
+                                                <div class="d-flex flex-row">
+                                                    <div class="mr-auto p-2">
+                                                        <strong>{{ paper_entry.date_discussed }}</strong> <a
+                                                            href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                                        proposed on {{ paper_entry.date_proposed }}
+                                                        by {{ paper_entry.proposed_by }}
+                                                    </div>
+                                                    {% if user.id == group.owner.id %}
+                                                        <div class="p-2">
+                                                            <a class="btn btn-sm btn-outline-danger"
+                                                               href="{% url 'group_entry_unschedule' paper_entry.reading_group.id paper_entry.id %}">Unschedule</a>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="tab-pane container fade" id="location">
+                            <div class="p-2 mt-3">
+                                {% if group.room|length > 0 %}
+                                    <strong>Room:</strong><br/>{{ group.room }} <br/><br/>
+                                {% endif %}
+                                {% if group.address|length > 0 %}
+                                    <strong>Address:</strong> {{ group.address|safe|linebreaks }} {{ group.city }},
+                                    {{ group.country.name }}
+                                {% else %}
+                                    <strong>Address:</strong> {{ group.city }}, {{ group.country.name }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p><i>No paper(s) scheduled.</i></p>
+                {% endif %}
+            </div>
         </div>
-        <p></p>
-    </div>
-</div>
-{% elif has_requested_access %}
-    <div class="card text-left shadow-sm mb-5 mt-3">
+
+        {% if user.id == group.owner.id  or is_member %}
+            {% if group.videoconferencing %}
+                <div class="card shadow-sm mt-5">
+                    <div class="card-header">
+                        <h3>Video/Web Conference Details (<a data-toggle="collapse" href="#card-body"
+                                                             aria-expanded="true"
+                                                             aria-controls="card-body">view/hide</a>)</h3>
+                    </div>
+                    <div id="card-body" class="collapse">
+                        <div class="card-body">
+                            {{ group.videoconferencing|safe|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="card shadow-sm mt-5">
+            <div class="card-header">
+                <h3>Papers</h3>
+            </div>
+            <div class="card-body">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-discussed-tab" data-toggle="tab"
+                           href="#navdiscussed"
+                           role="tab" aria-controls="navdiscussed" aria-selected="true">Discussed</a>
+                        <a class="nav-item nav-link" id="nav-proposed-tab" data-toggle="tab" href="#navproposed"
+                           role="tab"
+                           aria-controls="navproposed" aria-selected="false">Proposed</a>
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="navdiscussed" role="tabpanel"
+                         aria-labelledby="nav-discussed-tab">
+                        {% if papers_discussed %}
+                            {% paginate papers_discussed using "first_page" %}
+                            <ul class="list-group list-group-flush">
+                                {% for paper_entry in papers_discussed %}
+                                    {% if paper_entry.date_discussed %}
+                                        {% if paper_entry.date_discussed < today %}
+                                            <li class="list-group-item"><a
+                                                    href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                                discussed on {{ paper_entry.date_discussed }} and proposed
+                                                on {{ paper_entry.date_proposed }} by {{ paper_entry.proposed_by }}
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% get_pages %}
+                            <!-- Center-aligned -->
+                            <div class="first_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+
+                            <script>
+                                var page1 = {
+                                    class_name: "first_pagi",
+                                    page_name: "first_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="navproposed" role="tabpanel" aria-labelledby="nav-proposed-tab">
+                        {% if papers_proposed %}
+                            {% paginate papers_proposed using "second_page" %}
+                            <ul class="list-group list-group-flush">
+                                {% for paper_entry in papers_proposed %}
+                                    {% if not paper.date_discussed %}
+                                        <li class="list-group-item">
+                                            <div class="d-flex flex-row">
+                                                <div class="mr-auto p-2"><a
+                                                        href="{% url 'paper_detail' paper_entry.paper.id %}">{{ paper_entry.paper.title }}</a>
+                                                    proposed on {{ paper_entry.date_proposed }}
+                                                    by {{ paper_entry.proposed_by }}.
+                                                </div>
+                                                {% if user.id == group.owner.id %}
+                                                    <div class="p-2">
+                                                        <a class="btn btn-sm btn-primary"
+                                                           href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a>
+                                                    </div>
+                                                    <div class="p-2">
+                                                        <a class="btn btn-sm btn-outline-danger"
+                                                           href="{% url 'group_entry_remove' paper_entry.reading_group.id paper_entry.id %}">Remove</a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% get_pages %}
+                            <!-- Center-aligned -->
+                            <div class="second_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+                            <script>
+                                var page2 = {
+                                    class_name: "second_pagi",
+                                    page_name: "second_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
+                        {% endif %}
+                        <script>
+                            if (typeof page1 !== "undefined" && typeof page2 !== "undefined") {
+                                multi_pagination([page1, page2]);
+                            } else if (typeof page1 !== "undefined") {
+                                multi_pagination([page1])
+                            } else {
+                                multi_pagination([page2])
+                            }
+                        </script>
+                    </div>
+                </div>
+                <p></p>
+            </div>
+        </div>
+    {% elif has_requested_access %}
+        <div class="card text-left shadow-sm mb-5 mt-3">
             <div class="card-header"><strong>Private Group</strong></div>
             <div class="card-body">
                 You have requested to join this club.
             </div>
         </div>
-{% else %}
-    <div class="card text-left shadow-sm mb-5 mt-3">
-        <div class="card-header"><strong>Private Group</strong></div>
-        <div class="card-body">
-            This is a private journal club. You need to request and be granted access to view. <a href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
+    {% else %}
+        <div class="card text-left shadow-sm mb-5 mt-3">
+            <div class="card-header"><strong>Private Group</strong></div>
+            <div class="card-body">
+                This is a private journal club. You need to request and be granted access to view. <a
+                    href="{% url 'group_join' group.id %}" class="btn btn-primary btn-sm" role="button">Join</a>
+            </div>
         </div>
-    </div>
-{% endif %}
+    {% endif %}
 
-{% if user.is_authenticated %}
-{% if user == group.owner %}
-<div class="card text-left shadow-sm mb-5 mt-3">
-    <div class="card-header"><strong>Admin functions</strong></div>
-    <div class="card-body">
-        <a href="{% url 'group_delete' group.id %}" class="btn btn-danger btn-sm" role="button">Delete Journal Club</a>
-    </div>
-</div>
-{% endif %}
-{% endif %}
+    {% if user.is_authenticated %}
+        {% if user == group.owner %}
+            <div class="card text-left shadow-sm mb-5 mt-3">
+                <div class="card-header"><strong>Admin functions</strong></div>
+                <div class="card-body">
+                    <a href="{% url 'group_delete' group.id %}" class="btn btn-danger btn-sm" role="button">Delete
+                        Journal Club</a>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 
-<script type="text/javascript">
-// wire up shown event
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    // console.log("tab shown is "+$(e.target).attr('href'));
-    localStorage.setItem('activeTab', $(e.target).attr('href'));
-});
+    <script type="text/javascript">
+        // wire up shown event
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            // console.log("tab shown is "+$(e.target).attr('href'));
+            localStorage.setItem('activeTab', $(e.target).attr('href'));
+        });
 
-// read hash from page load and change tab
-var activeTab = localStorage.getItem('activeTab');
+        // read hash from page load and change tab
+        var activeTab = localStorage.getItem('activeTab');
 
-if(activeTab){
-    // console.log("Active tab is "+activeTab)
-    $('.nav-tabs a[href="' + activeTab + '"]').tab('show');
-}
-/*
-else {
-    console.log("No active tab")
-}
-*/
+        if (activeTab) {
+            // console.log("Active tab is "+activeTab)
+            $('.nav-tabs a[href="' + activeTab + '"]').tab('show');
+        }
+        /*
+        else {
+            console.log("No active tab")
+        }
+        */
 
-/*
-$(document).ready(function() {
-    console.log("ready()")
-    if (location.hash) {
-        $("a[href='" + location.hash + "']").tab("show");
-        console.log("location.hash "+ location.hash)
-    }
-    else {
-        console.log("No location.hash")
-    }
-    $(document.body).on("click", "a[data-toggle='tab']", function(event) {
-        location.hash = this.getAttribute("href");
-        console.log("Clicked and has location.hash="+location.hash)
-    });
-});
+        /*
+        $(document).ready(function() {
+            console.log("ready()")
+            if (location.hash) {
+                $("a[href='" + location.hash + "']").tab("show");
+                console.log("location.hash "+ location.hash)
+            }
+            else {
+                console.log("No location.hash")
+            }
+            $(document.body).on("click", "a[data-toggle='tab']", function(event) {
+                location.hash = this.getAttribute("href");
+                console.log("Clicked and has location.hash="+location.hash)
+            });
+        });
 
-$(window).on("popstate", function() {
-    console.log("On popstate")
-    var anchor = location.hash || $("a[data-toggle='tab']").first().attr("href");
-    console.log("anchor = "+anchor)
-    $(".nav-tabs a[href='" + anchor + "']").tab("show");
-});
-*/
-</script>
+        $(window).on("popstate", function() {
+            console.log("On popstate")
+            var anchor = location.hash || $("a[data-toggle='tab']").first().attr("href");
+            console.log("anchor = "+anchor)
+            $(".nav-tabs a[href='" + anchor + "']").tab("show");
+        });
+        */
+    </script>
 
 
 {% endblock %}
