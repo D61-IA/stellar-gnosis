@@ -76,15 +76,6 @@
     width: 100%;
 }
 
-.response_dialog {
-    width: 400px;
-    top: 50%;
-    left: 50%;
-    margin-left: -200px;
-    margin-top: -69px;
-    z-index: 3000;
-}
-
 .response_ok {
     color: darkseagreen;
     cursor: pointer;
@@ -92,15 +83,6 @@
 
 .response_ok:hover {
     color: olivedrab;
-}
-
-.response_cancel {
-    color: indianred;
-    cursor: pointer;
-}
-
-.response_cancel:hover {
-    color: darkred;
 }
 
 .ok_container {
@@ -140,6 +122,10 @@
 .form_btn {
     font-size: 1.0rem;
     margin: 1px;
+}
+
+.material-icons {
+    user-select: none;
 }
 
 @keyframes spin {

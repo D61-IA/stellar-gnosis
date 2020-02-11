@@ -12,10 +12,6 @@ $date_input.attr('autocomplete', 'off').datepicker({
     duration: 100
 });
 
-$date_input.css({
-    'border-radius': 0,
-});
-
 $('#date_opener').css({
     'height': $date_input.css('height'),
 }).click(function (e) {

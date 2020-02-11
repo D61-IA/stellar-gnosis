@@ -33,13 +33,6 @@
     padding: 0;
 }
 
-.ok_container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    user-select: none;
-}
-
 .res_msg {
     width: 80px;
     padding: 5px 0;
@@ -132,7 +125,6 @@
     z-index: 1000;
     height: 30px;
     font-size: 80%;
-
     margin-top: auto;
     margin-bottom: auto
 }
@@ -212,17 +204,13 @@
     font-size: 16px;
     cursor: pointer;
     padding: 5px;
+    border: none;
+    color: black;
+    background: #e7e7e7;
 }
 
 .filter_btn:hover {
     background-color: lightgrey;
-}
-
-.default {
-    border: none;
-    color: black;
-    background: #e7e7e7;
-
 }
 
 /* styles for Club */
@@ -241,6 +229,7 @@
     max-width: 150px;
 !important;
     margin-left: 18px;
+    border-radius: 0
 }
 
 #date_opener {
