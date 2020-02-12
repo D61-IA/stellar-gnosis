@@ -68,7 +68,21 @@ class ChromeTestCase(StaticLiveServerTestCase):
             proposed_by=self.admin,
         )
 
-        url = self.live_server_url + '/catalog/club/' + self.ml_group_public.id
+        # login as user by first typing the login info on the login form, then submit
+        self.browser.get(self.live_server_url + '/accounts/login/')
+
+        username = self.browser.find_element_by_id('id_login')
+        username.clear()
+        username.send_keys('admin')
+
+        pwd = self.browser.find_element_by_id('id_password')
+        pwd.clear()
+        pwd.send_keys('abcdefg')
+        self.browser.find_element_by_tag_name('form').submit()
+
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
+
+        url = self.live_server_url + '/catalog/club/' + str(self.ml_group_public.id) + '/'
         self.browser.get(url)
 
     @classmethod
@@ -78,10 +92,12 @@ class ChromeTestCase(StaticLiveServerTestCase):
         super().tearDownClass()
         cls.browser.quit()
 
-
     def test_datepicker(self):
+        '''test the UI of date picker with different date inputs'''
         proposed_tab = self.browser.find_element_by_id('nav-proposed-tab')
         proposed_tab.click()
+
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.discuss_btn')))
 
         discuss_btn = self.browser.find_element_by_class_name('discuss_btn')
         discuss_btn.click()
@@ -97,12 +113,27 @@ class ChromeTestCase(StaticLiveServerTestCase):
         datepicker = self.browser.find_element_by_id('ui-datepicker-div')
         self.assertTrue(datepicker.is_displayed())
 
+        # get the second row of the calendar
+        row = datepicker.find_element_by_tag_name('tbody').find_elements_by_tag_name('tr')[1]
+
         # find a weekend option from the datepicker
-        ele = datepicker.find_element_by_class_name('ui-datepicker-week-end').find_element_by_tag_name('a')
+        ele = row.find_elements_by_tag_name('td')[0].find_element_by_tag_name('a')
         ele.click()
 
         message = self.browser.find_element_by_class_name('reaction_message')
-        self.assertTrue(message.is_displayed(), True)
+        self.assertTrue(message.is_displayed())
+
+        # click input field again
+        date_input.click()
+
+        # get the second row of the calendar
+        row = datepicker.find_element_by_tag_name('tbody').find_elements_by_tag_name('tr')[1]
+
+        # find a Tuesday option from the datepicker
+        ele = row.find_elements_by_tag_name('td')[2].find_element_by_tag_name('a')
+        ele.click()
+
+        self.assertFalse(message.is_displayed())
 
 
 class FirfoxTestCase(ChromeTestCase):

@@ -33,6 +33,10 @@
     padding: 0;
 }
 
+#id_description {
+    width: 300px
+}
+
 .res_msg {
     width: 80px;
     padding: 5px 0;
@@ -245,6 +249,10 @@
 
 .form_buttons {
     text-align: right;
+}
+
+.icon_button {
+    cursor: pointer;
 }
 
 /* Extra small devices (phones, 600px and down) */

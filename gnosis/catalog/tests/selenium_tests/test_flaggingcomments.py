@@ -116,7 +116,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(text, 'outlined_flag')
 
         # test pop up flag form is shown when flag icon is clicked
-        flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
+        flag_clickable = first_comment.find_element_by_class_name('popup_opener')
         flag_clickable.click()
         a1 = flag_form_container.get_attribute('hidden')
         self.assertEqual(a1, None)
@@ -170,7 +170,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.browser.find_element_by_class_name("response_ok").click()
 
         # test the flagged comment has a filled flag icon attached
-        flag_icon = self.browser.find_element_by_css_selector('.right_side_icon[title="Flagged"] .material_icons')
+        first_comment = self.browser.find_element_by_css_selector('ul.list-group').find_element_by_css_selector('li.list-group-item')
+        flag_icon = first_comment.find_element_by_css_selector('.material-icons')
         self.assertEqual(flag_icon.text, 'flag')
 
 

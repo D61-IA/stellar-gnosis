@@ -23,8 +23,13 @@
     </div>
 
     <script>
-        $('#id_start_time').attr('type', 'time');
-        $('#id_end_time').attr('type', 'time');
+        $('#id_start_time').timepicker({
+            timeFormat: 'H:i'
+        });
+
+        $('#id_end_time').timepicker({
+            timeFormat: 'H:i'
+        });
     </script>
 
 {% endblock %}

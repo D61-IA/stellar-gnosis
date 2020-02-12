@@ -96,7 +96,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # click on its flag
         # test pop up flag form is shown when flag icon is clicked
-        flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
+        flag_clickable = first_comment.find_element_by_class_name('popup_opener')
         flag_clickable.click()
 
         flag_form = self.browser.find_element_by_id('flag_form')
@@ -162,7 +162,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
         a = self.first_flag.find_element_by_tag_name('a')
         a.click()
 
-        time.sleep(1)
         # wait for page to load
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
@@ -171,8 +170,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         first_comment = comments.find_element_by_css_selector('li.list-group-item')
 
         # test the first comment is now not flagged
-        flagged_arr = first_comment.find_elements_by_class_name('flagged')
-        self.assertEqual(len(flagged_arr), 0)
+        flagged_arr = first_comment.find_elements_by_class_name('popup_opener')
+        self.assertEqual(len(flagged_arr), 1)
 
     def testDeleteComment(self):
         """test the comment is deleted after clicking on delete button"""
@@ -181,7 +180,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
         del_button = self.first_flag.find_element_by_class_name('mod_del')
         del_button.click()
 
-        time.sleep(1)
         # wait for Ajax response
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))

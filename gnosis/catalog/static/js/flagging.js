@@ -1,6 +1,6 @@
 var $this_comment;
 
-$('.flag_button').click(function (e) {
+$('.icon_button').click(function (e) {
     $this_comment = $('#comment_' + $(this).attr('data-commentid'));
 });
 
@@ -22,7 +22,7 @@ form.submit(function (e) {
             if (data.is_valid) {
                 if ($this_comment != null) {
                     $this_comment.find('.comment_text').replaceWith('<p>Comment is being held for moderation</p>');
-                    $this_comment.find('.flag_button').replaceWith('' +
+                    $this_comment.find('.icon_button').replaceWith('' +
                         '<a class="right_side_icon" data-toggle="tooltip"\n' +
                         'title="Flagged">\n' +
                         '<i class="material-icons menu_item">flag</i>\n' +

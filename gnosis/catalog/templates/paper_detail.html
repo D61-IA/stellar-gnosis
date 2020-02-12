@@ -345,13 +345,12 @@
                                                 <i class="material-icons menu_item">flag</i>
                                             </a>
                                         {% else %}
-                                            <a class="right_side_icon popup_opener flag_button" data-toggle="tooltip"
+                                            <a class="right_side_icon popup_opener icon_button" data-toggle="tooltip"
                                                title="Report"
                                                data-commentid="{{ comment.id }}"
                                                data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
                                                data-targetid="flag_form_container"
-                                               data-formid="flag_form"
-                                               style="cursor: pointer;">
+                                               data-formid="flag_form">
                                                 <i class="material-icons menu_item">outlined_flag</i>
                                             </a>
                                         {% endif %}
