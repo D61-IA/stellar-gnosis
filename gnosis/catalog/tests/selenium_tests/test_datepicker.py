@@ -109,6 +109,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         date_input = self.browser.find_element_by_id('id_date_discussed')
         date_input.click()
 
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'ui-datepicker-div')))
+
         # assert the datepicker widget appears when the input is focused on
         datepicker = self.browser.find_element_by_id('ui-datepicker-div')
         self.assertTrue(datepicker.is_displayed())
@@ -125,6 +127,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # click input field again
         date_input.click()
+
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'ui-datepicker-div')))
 
         # get the second row of the calendar
         row = datepicker.find_element_by_tag_name('tbody').find_elements_by_tag_name('tr')[1]

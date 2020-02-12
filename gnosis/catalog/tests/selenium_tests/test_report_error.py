@@ -127,8 +127,11 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.fillForm(error_form)
 
         # test the cancel button works
-        error_form.find_element_by_tag_name('button').click()
+        error_form.find_element_by_css_selector('button.form_btn').click()
         self.assertEqual(error_form_container.get_attribute('hidden'), 'true')
+
+        # reopen the form
+        report_btn.click()
 
         # test the choice and description are cleared after clicking cancel button
         choice = error_form.find_element_by_id('id_error_type_0')
@@ -136,19 +139,17 @@ class ChromeTestCase(StaticLiveServerTestCase):
         text = error_form.find_element_by_id('id_description_fb')
         self.assertFalse(text.get_attribute('value'))
 
-        # reopen the form
-        report_btn.click()
         self.fillForm(error_form)
 
         error_form.submit()
         # wait for Ajax response
-        WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg')))
+        WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg_container')))
 
         # after submit, test form is hidden
         a1 = browser.find_element_by_id('error_form_container').get_attribute('hidden')
         self.assertEqual(a1, 'true')
         # test response message is unhidden after successful submit
-        response = browser.find_element_by_id('response_msg')
+        response = browser.find_element_by_id('response_msg_container')
         self.assertEqual(response.get_attribute('hidden'), None)
 
         self.browser.find_element_by_class_name("response_ok").click()

@@ -107,8 +107,7 @@
                 {% endif %}</h4>
 
             {% if user.is_authenticated %}
-                <button id="report_error" class="btn btn-danger btn-sm popup_opener"
-                        data-url="{% url 'paper_error_report' paper.id %}">
+                <button id="report_error" class="btn btn-danger btn-sm popup_opener" data-targetid="error_form_container">
                     Report Error
                 </button>
             {% else %}
@@ -509,7 +508,7 @@
 
 
     <div id="error_form_container" class="popup" hidden>
-        <form id="error_form" action="" method="post">
+        <form id="error_form" action="{% url 'paper_error_report' paper.id %}" method="post">
             {% csrf_token %}
             <table class="w-75">
                 {% for field in error_form %}
@@ -529,10 +528,10 @@
             </table>
             <br/>
             <div class="form_button_container">
-                <button type="button" class="btn btn-light btn-sm form_button" data-targetid="error_form">
+                <button type="button" class="btn btn-light btn-sm form_btn cancel_button" data-targetid="error_form">
                     Cancel
                 </button>
-                <input type="submit" class="btn btn-primary btn-sm form_button" value="Submit"/>
+                <input type="submit" class="btn btn-primary btn-sm form_btn" value="Submit"/>
             </div>
         </form>
     </div>

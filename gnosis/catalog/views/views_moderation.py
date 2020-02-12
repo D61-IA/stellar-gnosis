@@ -115,7 +115,6 @@ def flagged_comments(request):
 
 
 @staff_member_required
-
 def paper_reports(request):
     """:return all reports"""
     reports = PaperReport.objects.all()

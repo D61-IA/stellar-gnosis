@@ -17,6 +17,7 @@ $(window).on('resize', function (e) {
 /************** show/hide relationships **************/
 // initial toggle state
 var hide_rela = false;
+
 // function for toggle relationships button
 function toggle_relas() {
     hide_rela = !hide_rela;
@@ -41,6 +42,7 @@ function center() {
         duration: 0,
     });
 }
+
 /************** reset and re-render layout **************/
 var $graphfilter = $('.graphfilter');
 var $buttons = $('.filter_btn');
@@ -136,14 +138,18 @@ $graphfilter.change(function () {
     show_relas(this.value, 'all');
     $graphfilter.val(this.value);
     var data_type = $('option:selected', this).attr('data-type');
-    $buttons.each(function (index, element) {
-        if (data_type !== $(element).attr('data-type')) {
-            // if the element is not the filter element, set pressed to false, its color to ghostwhite
-            button_up($(element))
-        } else {
-            button_down($(element))
-        }
-    })
+    if (this.value === 'all') {
+        button_down($buttons)
+    }else {
+        $buttons.each(function (index, element) {
+            if (data_type !== $(element).attr('data-type')) {
+                // if the element is not the filter element, set pressed to false, its color to ghostwhite
+                button_up($(element))
+            } else {
+                button_down($(element))
+            }
+        })
+    }
 });
 
 /************** collapse ego-graph **************/

@@ -14,7 +14,7 @@ flag_form.submit(function (e) {
     $.ajax({
         type: 'POST',
         url: $(this).attr('action'),
-        data: form.serialize(),
+        data: flag_form.serialize(),
         success: function (data) {
             console.log("submit successful!");
             if (data.is_valid) {
@@ -30,6 +30,7 @@ flag_form.submit(function (e) {
                 // close loader
                 $('#loader').attr('hidden', true);
                 $('#flag_response').attr('hidden', false);
+                $('#response_msg_container').attr('hidden', false).css('margin-top: -69');
             } else {
                 alert("Invalid form.");
                 $('#loader').attr('hidden', true);
@@ -42,6 +43,36 @@ flag_form.submit(function (e) {
     })
 });
 
-// var error_form = $('#error_form');
-// error_form.submit()
+var error_form = $('#error_form');
+error_form.submit(function (e) {
+    e.preventDefault();
+
+    $('.popup').attr('hidden', true);
+    // open loader
+    $('#loader').attr('hidden', false);
+
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: error_form.serialize(),
+        success: function (data) {
+            console.log("submit successful!");
+            if (data.is_valid) {
+                error_form.trigger('reset');
+                // close loader
+                $('#loader').attr('hidden', true);
+                $('#response_text').text('Thanks. We have received your report.');
+                $('#response_msg_container').attr('hidden', false).css('margin-top: -45');
+            } else {
+                alert("Invalid form.");
+                $('#loader').attr('hidden', true);
+            }
+        },
+        error: function (data) {
+            $('#loader').attr('hidden', true);
+            alert("Request failed.");
+        },
+
+    })
+});
 

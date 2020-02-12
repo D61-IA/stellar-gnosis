@@ -158,13 +158,13 @@ class ChromeTestCase(StaticLiveServerTestCase):
         flag_form.submit()
         # wait for Ajax response
         wait = WebDriverWait(browser, 10)
-        wait.until(EC.visibility_of_element_located((By.ID, 'response_msg')))
+        wait.until(EC.visibility_of_element_located((By.ID, 'response_msg_container')))
 
         # after submit, test flag form is hidden
         a1 = browser.find_element_by_id('flag_form_container').get_attribute('hidden')
         self.assertEqual(a1, 'true')
         # test flag_response is unhidden after successful submit
-        flag_response = browser.find_element_by_id('response_msg')
+        flag_response = browser.find_element_by_id('response_msg_container')
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
         self.browser.find_element_by_class_name("response_ok").click()

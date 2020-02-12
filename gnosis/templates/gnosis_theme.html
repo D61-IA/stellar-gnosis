@@ -275,7 +275,11 @@
                 {% endfor %}
                 {% if user.is_authenticated and user.is_superuser %}
                     <li class="list-inline-item">
-                        <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+                        <a id="comment_moderation" href="{% url 'flagged_comments_index' %}">Comment Moderation</a>
+                    </li>
+                    <li class="list-inline-item"><strong>|</strong></li>
+                    <li class="list-inline-item">
+                        <a id="paper_moderation" href="{% url 'reported_papers_index' %}">Paper Moderation</a>
                     </li>
                 {% endif %}
             </ul>
@@ -291,48 +295,17 @@
     <!-- Footer -->
 
     <!-- response dialog for flag report -->
-    <div id="flag_response" class="popup" hidden>
-        <div id="flag_response_dialog" class="card box_shadow">
-            <div class="card-body">
-                <span>
-                    Thanks. We have received your report. If we find this content to be in violation of our guidelines,
-                    we will remove it.
-                </span>
-                <div class="form_buttons">
-                    <span class="response_ok">Ok</span>
-                </div>
+    <div id="response_msg_container" class="card popup" hidden>
+        <div class="card-body">
+            <div><span id="response_text">Thanks. We have received your report. If we find this content to be in violation of our guidelines,
+            we will remove it.</span>
+            </div>
+
+            <div class="ok_container">
+                <span class="response_ok">Ok</span>
             </div>
         </div>
-
-        <script>setButton();</script>
     </div>
-
-    <!-- Footer -->
-    <footer class="text-center  pt-3 mt-5">
-        {% block footer %}
-        {% endblock %}
-        {% load static %}
-        {% get_flatpages as flatpages %}
-        <!-- Footer Links -->
-        <!-- Footer Links -->
-        <div class="text-center">
-            <ul class="list-unstyled">
-                {% for page in flatpages %}
-                    <li class="list-inline-item"><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
-                {% endfor %}
-                {% if user.is_authenticated and user.is_superuser %}
-                    <li class="list-inline-item">
-                        <a id="comment_moderation" href="{% url 'flagged_comments_index' %}">Comment
-                            Moderation</a>
-                    </li>
-                    <li class="list-inline-item"><strong>|</strong></li>
-                    <li class="list-inline-item">
-                        <a id="paper_moderation" href="{% url 'reported_papers_index' %}">Paper Moderation</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-    </footer>
 
     <div class="cover" hidden></div>
 
