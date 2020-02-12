@@ -107,7 +107,8 @@
                 {% endif %}</h4>
 
             {% if user.is_authenticated %}
-                <button id="report_error" class="btn btn-danger btn-sm popup_opener" data-targetid="error_form_container">
+                <button id="report_error" class="btn btn-danger btn-sm popup_opener"
+                        data-targetid="error_form_container">
                     Report Error
                 </button>
             {% else %}
@@ -175,7 +176,7 @@
                 </button>
             </div>
 
-            <div class="card-body" style="padding: 0; display: grid; grid-template-columns: repeat(16, 1fr)">
+            <div id="canvas" class="card-body">
                 <div id="side_menu">
                     <div class="dropdown-toggle" style="padding: 10px">
                         <strong>Relationships</strong>
@@ -256,7 +257,6 @@
                             </i>
                         </button>
                     </div>
-
                 </div>
 
                 <div id="cy">
@@ -340,7 +340,7 @@
                         {#                    show comments#}
                         {% if comments %}
                             <ul class="list-group list-group-flush comments_notes">
-                                {% paginate comments using "first_page"%}
+                                {% paginate comments using "first_page" %}
                                 {% for comment in comments %}
                                     <li id="comment_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
                                         {% if comment.created_by != user %}

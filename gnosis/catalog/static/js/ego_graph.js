@@ -1,12 +1,19 @@
 // get the graph canvas
 var $cy = $('#cy');
 
+var side_menu_width = $('#side_menu').width();
+
 /************** resizable graph **************/
 // simulate stop resizing using timer
 var resizeTimer;
 // centering only happens after 250ms each time resize stops
 $(window).on('resize', function (e) {
     clearTimeout(resizeTimer);
+    if ($(window).width() > 678) {
+        $cy.css('width', $('#ego_graph_content').width() - side_menu_width);
+    } else {
+        $cy.css('width', $('#ego_graph_content').width());
+    }
     $cy.css('height', $cy.css('width'));
     resizeTimer = setTimeout(function () {
         center();
@@ -140,7 +147,7 @@ $graphfilter.change(function () {
     var data_type = $('option:selected', this).attr('data-type');
     if (this.value === 'all') {
         button_down($buttons)
-    }else {
+    } else {
         $buttons.each(function (index, element) {
             if (data_type !== $(element).attr('data-type')) {
                 // if the element is not the filter element, set pressed to false, its color to ghostwhite
