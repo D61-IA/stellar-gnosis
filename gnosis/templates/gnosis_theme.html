@@ -48,6 +48,7 @@
                     {{ user }}
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'groups_user' %}">My Journal Clubs</a>
                     <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
                     <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
                     <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
@@ -302,35 +303,44 @@
                 </div>
             </div>
         </div>
+
+        <script>setButton();</script>
     </div>
 
-    <!-- growing circles loader -->
-    <div id="loader" class="cover" hidden>
-        <div class="loader_container">
-            <div class="spinner_grow paper" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow person" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow venue" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow code" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow dataset" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
+    <!-- Footer -->
+    <footer class="text-center  pt-3 mt-5">
+        {% block footer %}
+        {% endblock %}
+        {% load static %}
+        {% get_flatpages as flatpages %}
+        <!-- Footer Links -->
+        <!-- Footer Links -->
+        <div class="text-center">
+            <ul class="list-unstyled">
+                {% for page in flatpages %}
+                    <li class="list-inline-item"><a href="/pages{{ page.url }}">{{ page.title }}</a></li>
+                {% endfor %}
+                {% if user.is_authenticated and user.is_superuser %}
+                    <li class="list-inline-item">
+                        <a id="comment_moderation" href="{% url 'flagged_comments_index' %}">Comment
+                            Moderation</a>
+                    </li>
+                    <li class="list-inline-item"><strong>|</strong></li>
+                    <li class="list-inline-item">
+                        <a id="paper_moderation" href="{% url 'reported_papers_index' %}">Paper Moderation</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
-    </div>
+    </footer>
 
     <div class="cover" hidden></div>
 
     <!-- START Bootstrap-Cookie-Alert -->
     <div class="alert text-center cookiealert" role="alert">
         We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/"
-                                                                                target="_blank">Learn more</a>
+                                                                                target="_blank">Learn
+        more</a>
 
         <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
             I agree

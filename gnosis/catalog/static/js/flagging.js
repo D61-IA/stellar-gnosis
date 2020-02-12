@@ -3,16 +3,14 @@ var $this_comment;
 $('.icon_button').click(function (e) {
     $this_comment = $('#comment_' + $(this).attr('data-commentid'));
 });
-
 /************** sending ajax post request with flag forms **************/
-var form = $('#flag_form');
-form.submit(function (e) {
+var flag_form = $('#flag_form');
+flag_form.submit(function (e) {
     e.preventDefault();
 
     $('.popup').attr('hidden', true);
     // open loader
     $('#loader').attr('hidden', false);
-
     $.ajax({
         type: 'POST',
         url: $(this).attr('action'),
@@ -28,7 +26,7 @@ form.submit(function (e) {
                         '<i class="material-icons menu_item">flag</i>\n' +
                         '</a>');
                 }
-                form.trigger('reset');
+                flag_form.trigger('reset');
                 // close loader
                 $('#loader').attr('hidden', true);
                 $('#flag_response').attr('hidden', false);
@@ -43,4 +41,7 @@ form.submit(function (e) {
         },
     })
 });
+
+// var error_form = $('#error_form');
+// error_form.submit()
 

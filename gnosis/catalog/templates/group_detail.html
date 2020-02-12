@@ -167,7 +167,7 @@
                     <div class="tab-pane fade show active" id="navdiscussed" role="tabpanel"
                          aria-labelledby="nav-discussed-tab">
                         {% if papers_discussed %}
-                            {% paginate papers_discussed %}
+                            {% paginate papers_discussed using "first_page" %}
                             <ul class="list-group list-group-flush">
                                 {% for paper_entry in papers_discussed %}
                                     {% if paper_entry.date_discussed %}
@@ -183,31 +183,24 @@
                             </ul>
                             {% get_pages %}
                             <!-- Center-aligned -->
-                            <ul class="pagination justify-content-center" style="margin:20px 0">
-                                {% if not pages.current.is_first %}
-                                    <li class="page-item"><a class="page-link"
-                                                             href="{{ pages.previous.path }}">Previous</a></li>
-                                {% endif %}
-                                {% for page in pages %}
-                                    {% if page.is_current %}
-                                        <li class="page-item active"><a class="page-link"
-                                                                        href="{{ page.path }}">{{ page.number }}</a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item"><a class="page-link"
-                                                                 href="{{ page.path }}">{{ page.number }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                                {% if not pages.current.is_last %}
-                                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
+                            <div class="first_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+
+                            <script>
+                                var page1 = {
+                                    class_name: "first_pagi",
+                                    page_name: "first_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
                         {% endif %}
                     </div>
                     <div class="tab-pane fade" id="navproposed" role="tabpanel" aria-labelledby="nav-proposed-tab">
                         {% if papers_proposed %}
-                            {% paginate papers_proposed %}
+                            {% paginate papers_proposed using "second_page" %}
                             <ul class="list-group list-group-flush">
                                 {% for paper_entry in papers_proposed %}
                                     {% if not paper.date_discussed %}
@@ -236,29 +229,29 @@
                             </ul>
                             {% get_pages %}
                             <!-- Center-aligned -->
-                            <ul class="pagination justify-content-center" style="margin:20px 0">
-                                {% if not pages.current.is_first %}
-                                    <li class="page-item"><a class="page-link"
-                                                             href="{{ pages.previous.path }}">Previous</a></li>
-                                {% endif %}
-                                {% for page in pages %}
-                                    {% if page.is_current %}
-                                        <li class="page-item active"><a class="page-link"
-                                                                        href="{{ page.path }}">{{ page.number }}</a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item"><a class="page-link"
-                                                                 href="{{ page.path }}">{{ page.number }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                                {% if not pages.current.is_last %}
-                                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
+                            <div class="second_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+                            <script>
+                                var page2 = {
+                                    class_name: "second_pagi",
+                                    page_name: "second_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
                         {% endif %}
+                        <script>
+                            if (typeof page1 !== "undefined" && typeof page2 !== "undefined") {
+                                multi_pagination([page1, page2]);
+                            } else if (typeof page1 !== "undefined") {
+                                multi_pagination([page1])
+                            } else {
+                                multi_pagination([page2])
+                            }
+                        </script>
                     </div>
-
                 </div>
                 <p></p>
             </div>
@@ -291,7 +284,6 @@
             </div>
         {% endif %}
     {% endif %}
-
     <div id="discuss_form_container" class="popup" data-clubday="{{ group.day }}" hidden>
         <form id="discuss_form" action="" method="post">
             {% csrf_token %}
@@ -308,7 +300,7 @@
             <br/>
             <div class="reaction">
                 <p class="reaction_message" hidden>
-                    Reminder: Club Meeting Day is <strong>Monday</strong>
+                    Reminder: Club Meeting Day is <strong>{{ group.day }}</strong>
                 </p>
                 <div class="form_buttons" hidden>
                     <button type="button" class="btn btn-sm btn-light cancel_button" data-targetid="discuss_form">
@@ -319,7 +311,6 @@
             </div>
         </form>
     </div>
-
     <script type="text/javascript">
         // wire up shown event
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

@@ -35,6 +35,7 @@ urlpatterns += [
     path('paper/<int:id>/bookmark/', views.paper_bookmark, name='paper_bookmark'),
     path('paper/<int:id>/add/note/', views.paper_add_note, name='paper_add_note'),
     path('paper/<int:id>/comment/<int:cid>/flag/', views.paper_flag_comment, name='paper_flag_comment'),
+    path('paper/<int:id>/report/', views.paper_error_report, name='paper_error_report'),
 ]
 
 # for updating/creating a new Person node
@@ -74,7 +75,17 @@ urlpatterns += [
     path('comment/<int:id>/update/', views.comment_update, name='comment_update'),
     path('comment/<int:id>/delete/', views.comment_delete, name='comment_delete'),
     path('comment/<int:id>/restore/', views.comment_restore, name='comment_restore'),
-    path('flaggedcomments/', views.flagged_comments, name='flagged_comments_index'),
+]
+
+# for moderate reported comments or papers
+urlpatterns += [
+    path('moderation/comments/', views.flagged_comments, name='flagged_comments_index'),
+    path('moderation/comments/flags/<int:id>/create', views.cflag_create, name='comment_flag_create'),
+    path('moderation/comments/flags/<int:id>/remove', views.cflag_remove, name='comment_flag_remove'),
+    path('moderation/papers/reports/', views.paper_reports, name='reported_papers_index'),
+    path('moderation/papers/reports/<int:id>/resolve/', views.paper_report_resolve, name='paper_report_resl'),
+    path('moderation/papers/reports/<int:id>/delete/', views.paper_report_delete, name='paper_report_del'),
+    path('moderation/papers/reports/<int:id>/create/', views.paper_error_report, name='paper_error_report'),
 ]
 
 # for updating/creating a new Code node
@@ -90,6 +101,7 @@ urlpatterns += [
 # for updating/creating a ReadingGroup object
 urlpatterns += [
     path('clubs/', views.groups, name='groups_index'),
+    path('clubs/joined/', views.groups_user, name='groups_user'),
     path('club/create/', views.group_create, name='group_create'),
     path('club/<int:id>/', views.group_detail, name='group_detail'),
     path('club/<int:id>/update/', views.group_update, name='group_update'),
@@ -102,6 +114,7 @@ urlpatterns += [
     path('club/<int:id>/entry/<int:eid>/unschedule/', views.group_entry_unschedule, name='group_entry_unschedule'),
     path('club/<int:id>/user/<int:aid>/grant/', views.group_grant_access, name='group_grant_access'),
     path('club/<int:id>/user/<int:aid>/deny/', views.group_deny_access, name='group_deny_access'),
+    path('club/search/', views.group_find, name='group_find'),
 ]
 
 # for updating/creating a Collection
@@ -126,9 +139,4 @@ urlpatterns += [
 urlpatterns += [
     path('profile/<int:id>/', views.profile_detail, name='profile'),
     path('profile/update/', views.profile_update, name='profile_update'),
-]
-
-urlpatterns += [
-    path('flags/comment/<int:comment_id>/create/', views.cflag_create, name='comment_flag_create'),
-    path('flags/comment/<int:comment_id>/remove/', views.cflag_remove, name='comment_flag_remove'),
 ]

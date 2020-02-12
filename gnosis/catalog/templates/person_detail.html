@@ -1,74 +1,64 @@
 {% extends "gnosis_theme.html" %}
 
 {% block content %}
-{% load el_pagination_tags %}
+    {% load el_pagination_tags %}
 
 
-<div class="card shadow-sm mt-5 mb-5">
-    <div class="card-header">
-        <h3>
-            {% if person.website %}
-                <p><a href={{ person.website }}>{{ person.name}}</a></p>
+    <div class="card shadow-sm mt-5 mb-5">
+        <div class="card-header">
+            <h3>
+                {% if person.website %}
+                    <p><a href={{ person.website }}>{{ person.name }}</a></p>
+                {% else %}
+                    <p>{{ person.name }}</p>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <p><a href="{% url 'person_update' person.id %}" class="btn btn-sm btn-danger" role="button">Edit
+                    </a></p>
+                {% endif %}
+            </h3>
+        </div>
+        <div class="card-body">
+            {% if person.affiliation %}
+                <p>Affiliation: {{ person.affiliation }}</p>
             {% else %}
-                <p>{{ person.name}}</p>
+                <p>Affiliation: Unknown</p>
             {% endif %}
-            {% if user.is_authenticated %}
-            <p><a href="{% url 'person_update' person.id %}" class="btn btn-sm btn-danger" role="button">Edit
-            </a></p>
-            {% endif %}
-        </h3>
+        </div>
     </div>
-    <div class="card-body">
-        {% if person.affiliation %}
-        <p>Affiliation: {{ person.affiliation }}</p>
-        {% else %}
-        <p>Affiliation: Unknown</p>
-        {% endif %}
-    </div>
-</div>
 
-{% if papers %}
-<div class="card shadow-sm mt-3">
-    <div class="card-header"><h4>Papers</h4></div>
-    <div class="card-body">
-        {% paginate papers %}
-        {% for paper in papers %}
-        <ul class="list-group">
-            <li class="list-group-item mt-1">
-                <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>
-            </li>
-        </ul>
-        {% endfor %}
+    {% if papers %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header"><h4>Papers</h4></div>
+            <div class="card-body">
+                {% paginate papers %}
+                {% for paper in papers %}
+                    <ul class="list-group">
+                        <li class="list-group-item mt-1">
+                            <a href="{{ paper.get_absolute_url }}">{{ paper.title }}</a>
+                        </li>
+                    </ul>
+                {% endfor %}
 
-        {% get_pages %}
-        <!-- Center-aligned -->
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            {% if not pages.current.is_first %}
-            <li class="page-item"><a class="page-link" href="{{ pages.previous.path }}">Previous</a></li>
-            {% endif %}
-            {% for page in pages %}
-            {% if page.is_current %}
-            <li class="page-item active"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% else %}
-            <li class="page-item"><a class="page-link" href="{{ page.path }}">{{ page.number }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if not pages.current.is_last %}
-            <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a></li>
-            {% endif %}
-        </ul>
-    </div>
-</div>
-{% endif %}
+                {% get_pages %}
+                <!-- Center-aligned -->
+                {% include "pagination.html" %}
+                <script>
+                    pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+                </script>
+            </div>
+        </div>
+    {% endif %}
 
-{% if user.is_authenticated and user.is_superuser %}
-<div class="card text-left shadow-sm mb-5 mt-3">
-    <div class="card-header"><strong>Admin functions</strong></div>
-    <div class="card-body">
-        <a href="{% url 'person_delete' person.id %}" class="btn btn-danger btn-sm" role="button">Delete Person</a>
-    </div>
-</div>
-{% endif %}
+    {% if user.is_authenticated and user.is_superuser %}
+        <div class="card text-left shadow-sm mb-5 mt-3">
+            <div class="card-header"><strong>Admin functions</strong></div>
+            <div class="card-body">
+                <a href="{% url 'person_delete' person.id %}" class="btn btn-danger btn-sm" role="button">Delete
+                    Person</a>
+            </div>
+        </div>
+    {% endif %}
 
 
 {% endblock %}

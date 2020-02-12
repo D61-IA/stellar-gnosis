@@ -11,16 +11,18 @@ from timezone_field import TimeZoneField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 #
 def valid_code_website(value):
     """Basic website validation for Code entries. Only links to github.com are allowed for now."""
     if (not value.startswith("https://github.com")) and (
-        not value.startswith("http://github.com")
+            not value.startswith("http://github.com")
     ):
         raise ValidationError(
             _("Invalid website %(value)s. Only links to github.com are allowed."),
             params={"value": value},
         )
+
 
 def telegram_validator(value):
     """Validates a telegram community URL"""
@@ -30,13 +32,13 @@ def telegram_validator(value):
             params={"value": value},
         )
 
+
 ###########################################
 #                                         #
 # These are models for the SQL database   #
 #                                         #
 ###########################################
 class Venue(models.Model):
-
     venue_types = (
         ("Journal", "Journal"),
         ("Conference", "Conference"),
@@ -93,6 +95,7 @@ class Venue(models.Model):
     def get_absolute_url(self):
         return reverse("venue_detail", args=[self.id])
 
+
 class Profile(models.Model):
     '''User profile as described at,
     https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#onetoone'''
@@ -109,17 +112,19 @@ class Profile(models.Model):
     linkedin = models.URLField(blank=True)
     twitter = models.URLField(blank=True)
 
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
 
+
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
-class Paper(models.Model):
 
+class Paper(models.Model):
     # These are always required
     title = models.CharField(max_length=8192, db_index=True, blank=False)
     abstract = models.TextField(blank=False)
@@ -180,7 +185,6 @@ class Paper(models.Model):
 
 
 class PaperRelationshipType(models.Model):
-
     edge_types = (("cites", "cites"), ("uses", "uses"), ("extends", "extends"))
 
     # The type of relationship
@@ -201,7 +205,6 @@ class PaperRelationshipType(models.Model):
 
 
 class Code(models.Model):
-
     name = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField(blank=False)
     website = models.CharField(
@@ -237,7 +240,6 @@ class Code(models.Model):
 
 
 class Comment(models.Model):
-
     text = models.TextField(blank=False)
 
     created_at = models.DateField(auto_now_add=True, auto_now=False)
@@ -258,7 +260,6 @@ class Comment(models.Model):
         on_delete=models.CASCADE,  # deleting a paper deletes all associated comments
     )
 
-
     class Meta:
         app_label = "catalog"
         ordering = ["created_at"]
@@ -271,7 +272,6 @@ class Comment(models.Model):
 
 
 class Person(models.Model):
-
     # These are always required
     name = models.TextField(max_length=1024, unique=True, blank=False, null=False, default='')
     affiliation = models.CharField(max_length=250, blank=True, null=True)
@@ -323,7 +323,6 @@ class PaperAuthorRelationshipData(models.Model):
 
 
 class Dataset(models.Model):
-
     months = [
         (calendar.month_name[month], calendar.month_name[month])
         for month in range(1, 13)
@@ -372,12 +371,11 @@ class Dataset(models.Model):
     # dataset.papers.add(paper)
     # I can retrieve all papers evaluating on a dataset using
     # dataset.papers.all()
-    #papers = models.ManyToManyField(Paper)
+    # papers = models.ManyToManyField(Paper)
 
     papers = models.ManyToManyField(
         Paper, through="PaperDatasetRelationshipData", symmetrical=False, blank=True
     )
-
 
     class Meta:
         app_label = "catalog"
@@ -388,6 +386,7 @@ class Dataset(models.Model):
 
     def get_absolute_url(self):
         return reverse("dataset_detail", args=[self.id])
+
 
 class PaperDatasetRelationshipData(models.Model):
     # Future proofing for when we want to store evaluation data published in a paper
@@ -442,7 +441,6 @@ class CommentFlag(models.Model):
 
 # A ReadingGroup member for private groups
 class ReadingGroupMember(models.Model):
-
     permissions = (
         ("granted", "granted"),
         ("requested", "requested"),
@@ -474,8 +472,9 @@ class ReadingGroup(models.Model):
     )
 
     city_validator = RegexValidator(regex=r'^[a-zA-Z\s]*$', message='Only alphabetic characters are allowed.')
-    slack_validator = RegexValidator(regex=r'\Ahttps?://[a-zA-Z0-9-]+(.slack.com([/?].*)?\Z)', message='Invalid slack community URL.')
-    
+    slack_validator = RegexValidator(regex=r'\Ahttps?://[a-zA-Z0-9-]+(.slack.com([/?].*)?\Z)',
+                                     message='Invalid slack community URL.')
+
     # Fields
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=False)
@@ -636,3 +635,35 @@ class Endorsement(models.Model):
 
     def __str__(self):
         return str(self.user) + " endorse " + str(self.paper.title)
+
+
+class PaperReport(models.Model):
+    options = (
+        ("title", "Title"),
+        ("abstract", "Abstract"),
+        ("authors", "Authors"),
+        ("download", "Download link"),
+        ("venue", "Venue"),
+    )
+    # user must select where the error occurs
+    error_type = models.CharField(max_length=20, choices=options, null=False, blank=False)
+    # The description is made optional
+    description_fb = models.TextField(null=False, blank=True)
+    # the state of a report
+    is_resolved = models.BooleanField(default=False)
+    # user who made the feedback
+    proposed_by = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, related_name="paper_report"
+    )
+    paper = models.ForeignKey(
+        to=Paper, on_delete=models.CASCADE, related_name="report"
+    )
+
+    created_at = models.DateField(auto_now_add=True, auto_now=False)
+
+    class Meta:
+        ordering = ["is_resolved", "error_type", "-created_at"]
+        verbose_name = "paper report"
+
+    def __str__(self):
+        return str(self.error_type)

@@ -14,17 +14,15 @@
 
     <div class="card shadow-sm mt-3">
         <div class="card-header">
-            <h4>Journal Clubs</h4>
-            {% if user.is_authenticated %}
-                <a href="{% url 'group_create' %}" class="btn btn-primary float-right">Create a Journal Club</a>
-            {% endif %}
+            <h4>My Journal Clubs</h4>
+            <a href="{% url 'group_create' %}" class="btn btn-primary float-right">Create a Journal Club</a>
         </div>
 
         <div class="card-body">
-            {% if groups %}
-                {% paginate groups %}
+            {% if mygroups %}
+                {% paginate mygroups %}
                 <ul class="list-group mt-3">
-                    {% for group in groups %}
+                    {% for group in mygroups %}
                         <li class="list-group-item mt-1">
                             <h4><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h4>
                             <p>{{ group.description }}</p>
@@ -34,13 +32,10 @@
                 {% get_pages %}
                 <!-- Center-aligned -->
                 {% include "pagination.html" %}
-                <script>
-                    pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
-                </script>
             {% else %}
-                <div class="p-5">
-                    <p><i>No matching journal clubs found.</i></p>
-                </div>
+                <dv class="p-5">
+                    <p><i>You have not joined any journal clubs.</i></p>
+                </dv>
             {% endif %}
         </div>
     </div>
