@@ -71,8 +71,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         pwd.send_keys(user2password)
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
 
         # Check for cookie alert and hit agree if present.
         # has_cookie_banner = self.browser.findElements(self.browser.find_element_by_xpath('//button[text()="I agree"]')).size() > 0
@@ -114,18 +113,11 @@ class ChromeTestCase(StaticLiveServerTestCase):
         flag_form.submit()
 
         # wait for Ajax response
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.ID, 'flag_response')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg')))
         # remove response overlay
         self.browser.find_element_by_class_name("response_ok").click()
-
-        # go to moderation page
-        mod_link = self.browser.find_element_by_id('moderation_link')
-        mod_link.click()
-
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
-
+        self.browser.get(self.live_server_url + '/catalog/moderation/comments/')
+        
         flags = self.browser.find_element_by_css_selector('ul.list-group')
         self.first_flag = flags.find_element_by_class_name('list-group-item')
 
@@ -142,12 +134,11 @@ class ChromeTestCase(StaticLiveServerTestCase):
         """test the comment restores after clicking on restore button"""
 
         # click on the restore button
-        res_button = self.first_flag.find_element_by_class_name('mod_res')
+        res_button = self.first_flag.find_element_by_class_name('mod_rest')
         res_button.click()
 
         # wait for Ajax response
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
+        WebDriverWait(self.browser, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
         actions = self.first_flag.find_element_by_class_name('actions')
 
@@ -162,10 +153,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         a = self.first_flag.find_element_by_tag_name('a')
         a.click()
 
-        time.sleep(1)
         # wait for page to load
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'ul.list-group')))
 
         comments = self.browser.find_element_by_css_selector('ul.list-group')
         first_comment = comments.find_element_by_css_selector('li.list-group-item')
@@ -181,10 +170,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         del_button = self.first_flag.find_element_by_class_name('mod_del')
         del_button.click()
 
-        time.sleep(1)
         # wait for Ajax response
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
+        WebDriverWait(self.browser, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
         # find action buttons
         actions = self.first_flag.find_element_by_class_name('actions')
@@ -201,8 +188,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         a.click()
 
         # wait for page to load
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
+        WebDriverWait(self.browser, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'actions')))
 
         comments = self.browser.find_elements_by_css_selector('ul.list-group')
 

@@ -86,3 +86,24 @@ $.ajaxSetup({
         }
     }
 );
+/************** JS functions that apply to elements in gnosis_theme.html **************/
+$('.cus_toggle').click(function (e) {
+    e.stopPropagation();
+    $('#cus-dropdown').slideToggle(100);
+});
+
+/************** click anywhere on page to cancel popups **************/
+// the popup object must contain the class popup, the object the triggers the popup must have class popup_opener
+$(document).click(function (e) {
+    var $container = $(".popup");
+    // element that triggers popup
+    var $target = $(".popup_opener");
+    // if the target of the click isn't the container nor a descendant of the container.
+    if (!$target.is(e.target) && $target.has(e.target).length === 0 && $container.has(e.target).length === 0) {
+        $container.attr('hidden', true);
+    }
+});
+
+$('.response_ok').click(function () {
+    $('#response_msg').attr('hidden', true)
+});

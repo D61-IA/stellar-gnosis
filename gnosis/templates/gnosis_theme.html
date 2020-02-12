@@ -70,6 +70,7 @@
                     {{ user }}
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'groups_user' %}">My Journal Clubs</a>
                     <a class="dropdown-item" href="{% url 'collections' %}">My Collections</a>
                     <a class="dropdown-item" href="{% url 'bookmarks' %}">My Bookmarks</a>
                     <a class="dropdown-item" href="{% url 'endorsements' %}">My Endorsements</a>
@@ -296,7 +297,11 @@
                 {% endfor %}
                 {% if user.is_authenticated and user.is_superuser %}
                     <li class="list-inline-item">
-                        <a id="moderation_link" href="{% url 'flagged_comments_index' %}">Moderation</a>
+                        <a id="comment_moderation" href="{% url 'flagged_comments_index' %}">Comment Moderation</a>
+                    </li>
+                    <li class="list-inline-item"><strong>|</strong></li>
+                    <li class="list-inline-item">
+                        <a id="paper_moderation" href="{% url 'reported_papers_index' %}">Paper Moderation</a>
                     </li>
                 {% endif %}
             </ul>
@@ -312,10 +317,10 @@
     <!-- Footer -->
 
     <!-- response dialog for flag report -->
-    <div id="flag_response" class="cover popup" hidden>
-        <div id="flag_response_dialog" class="card box_shadow">
+    <div id="response_msg" class="cover popup" hidden>
+        <div id="msg_dialog" class="card box_shadow">
             <div class="card-body">
-                <div><span>Thanks. We have received your report. If we find this content to be in violation of our guidelines,
+                <div><span id="response_text">Thanks. We have received your report. If we find this content to be in violation of our guidelines,
             we will remove it.</span>
                 </div>
 

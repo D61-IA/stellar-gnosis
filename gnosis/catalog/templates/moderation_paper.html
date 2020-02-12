@@ -1,0 +1,87 @@
+{% extends "gnosis_theme.html" %}
+
+{% block content %}
+    {% load el_pagination_tags %}
+
+    <div class="card shadow-sm mt-3">
+        {% if reports %}
+            {% paginate reports %}
+            <div class="card-header"><h3>Reported papers waiting for moderation</h3></div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for report in reports %}
+                        <li class="list-group-item">
+                            <p><strong>Where: </strong>
+                                {% if report.error_type == 'authors' %}
+                                    <a href="{% url 'paper_authors' report.paper.id %}">{{ report.error_type | title }}</a>
+                                {% elif report.error_type == 'venue' and report.paper.was_published_at != None %}
+                                    <a href="{% url 'venue_update' report.paper.was_published_at.id %}">{{ report.error_type | title }}</a>
+                                {% else %}
+                                    <a href="{% url 'paper_update' report.paper.id %}">{{ report.error_type | title }}</a>
+                                {% endif %}
+                            </p>
+                            <p><strong>Description: </strong>
+                                {% if report.description_fb %}
+                                    {{ report.description_fb }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </p>
+                            <p><strong>Paper: </strong>
+                                <a href="{{ report.paper.get_absolute_url }}">{{ report.paper }}</a>
+                            </p>
+
+                            <p><strong>Reported by: </strong>
+                                {{ report.proposed_by }}
+                            </p>
+
+                            <p id="actions_{{ report.id }}" class="actions">
+                                <strong>Actions: </strong>
+                                <a href="{% url 'paper_report_del' report.id %}" class="btn btn-danger btn-sm mod_del"
+                                   data-id="{{ report.id }}" role="button">Delete Report</a>
+
+                                {% if report.is_resolved %}
+                                    <a href="{% url 'paper_report_resl' report.id %}"
+                                       class="btn btn-sm btn-warning mod_resl"
+                                       data-id="{{ report.id }}" role="button">Mark Unresolved</a>
+                                {% else %}
+                                    <a href="{% url 'paper_report_resl' report.id %}"
+                                       class="btn btn-sm btn-warning mod_resl"
+                                       data-id="{{ report.id }}" role="button">Mark Resolved</a>
+                                {% endif %}
+                            </p>
+                            <p id="state_{{ report.id }}" class="state">
+                                <strong>Status: </strong>
+                                {% if report.is_resolved %}
+                                    <span class="res_msg">Resolved</span>
+                                {% else %}
+                                    <span class="del_msg">Unresolved</span>
+                                {% endif %}
+                            </p>
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% get_pages %}
+            <!-- Center-aligned -->
+            {% include "pagination.html" %}
+            <script>
+                pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+            </script>
+        {% else %}
+            <div class="card-header">
+                <h3>Reported papers waiting for moderation</h3>
+            </div>
+            <div class="card-body">
+                No papers awaiting moderation.
+            </div>
+        {% endif %}
+    </div>
+
+    {% load static %}
+    <script src="{% static "js/moderation.js" %}"></script>
+
+
+{% endblock %}

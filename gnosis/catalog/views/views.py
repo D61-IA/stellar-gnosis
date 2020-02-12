@@ -15,7 +15,7 @@ from catalog.models import (
     Comment,
     CommentFlag,
     Code,
-)
+    PaperReport)
 from django.http import Http404, HttpResponseBadRequest
 from catalog.models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag
 from notes.forms import NoteForm
@@ -35,7 +35,7 @@ from catalog.forms import (
     CommentForm,
     PaperImportForm,
     FlaggedCommentForm,
-)
+    PaperReportForm)
 
 from catalog.forms import (
     SearchAllForm,
@@ -89,7 +89,6 @@ def papers(request):
                     "paper_results.html",
                     {"papers": papers, "form": form, "results_message": results_message},
                 )
-
 
     elif request.method == "GET":
         print("papers: Received GET request")
@@ -222,6 +221,7 @@ def paper_detail(request, id):
 
     comments = paper.comment_set.all()
     flag_form = FlaggedCommentForm()
+    error_form = PaperReportForm()
 
     return render(
         request,
@@ -237,12 +237,37 @@ def paper_detail(request, id):
             "notes": notes,
             "commentform": comment_form,
             "flag_form": flag_form,
+            "error_form": error_form,
             "num_comments": comments.count(),
             "endorsed": endorsed,
             "bookmarked": bookmarked,
             "ego_network": ego_network_json,
         },
     )
+
+
+def paper_error_report(request, id):
+    """upload error information to DB"""
+    paper = get_object_or_404(Paper, pk=id)
+    paper_feedback = PaperReport()
+    print("error report received!")
+    if request.method == "POST":
+        print("POST")
+        form = PaperReportForm(request.POST)
+        if form.is_valid():
+            paper_feedback.error_type = form.cleaned_data["error_type"]
+            paper_feedback.description_fb = form.cleaned_data["description_fb"]
+            paper_feedback.paper = paper
+            paper_feedback.proposed_by = request.user
+            paper_feedback.save()
+
+            data = {'is_valid': True}
+            print("responded!")
+            return JsonResponse(data)
+        else:
+            data = {'is_valid': False}
+            print("responded!")
+            return JsonResponse(data)
 
 
 def _get_paper_paper_network(main_paper, ego_json):

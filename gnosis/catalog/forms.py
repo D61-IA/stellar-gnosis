@@ -1,13 +1,14 @@
 from django import forms
 from django.forms import ModelForm, Form
-from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag, Profile
+from .models import Paper, Person, Dataset, Venue, Comment, Code, CommentFlag, Profile, PaperReport
 from .models import ReadingGroup, ReadingGroupEntry
 from .models import Collection, CollectionEntry
 from django.utils.safestring import mark_safe
 from captcha.fields import ReCaptchaField
 from captcha.widgets import ReCaptchaV2Checkbox, ReCaptchaV2Invisible, ReCaptchaV3
 
-from gnosis.settings import RECAPTCHA_PRIVATE_KEY_INV, RECAPTCHA_PUBLIC_KEY_INV, RECAPTCHA_PUBLIC_KEY_V3, RECAPTCHA_PRIVATE_KEY_V3
+from gnosis.settings import RECAPTCHA_PRIVATE_KEY_INV, RECAPTCHA_PUBLIC_KEY_INV, RECAPTCHA_PUBLIC_KEY_V3, \
+    RECAPTCHA_PRIVATE_KEY_V3
 
 
 #
@@ -41,7 +42,7 @@ class SearchAllForm(Form):
         super(Form, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-        #self.fields['search_type'].initial = 'all'
+        # self.fields['search_type'].initial = 'all'
 
     def clean_search_type(self):
         return self.cleaned_data["search_type"]
@@ -58,10 +59,10 @@ class SearchAllForm(Form):
         ('codes', 'Codes'),
     )
 
-
     search_type = forms.ChoiceField(widget=forms.Select(), choices=SELECT_CHOICES, initial='all', required=True)
     search_keywords = forms.CharField(required=True)
-    #search_type.initial = 'papers'
+
+    # search_type.initial = 'papers'
     def get_search_type(self):
         return self.search_type
 
@@ -87,7 +88,7 @@ class SearchDatasetsForm(Form):
     def clean_keywords(self):
         return self.cleaned_data["keywords"]
 
-    keywords = forms.CharField(required=True,)
+    keywords = forms.CharField(required=True, )
 
 
 class SearchGroupsForm(Form):
@@ -99,7 +100,7 @@ class SearchGroupsForm(Form):
     def clean_query(self):
         return self.cleaned_data["query"]
 
-    query = forms.CharField(required=True,)
+    query = forms.CharField(required=True, )
 
 
 class SearchPapersForm(Form):
@@ -146,6 +147,7 @@ class SearchPeopleForm(Form):
         return self.cleaned_data["person_name"]
 
     person_name = forms.CharField(required=True)
+
 
 class SearchCodesForm(Form):
     def __init__(self, *args, **kwargs):
@@ -241,6 +243,7 @@ class PaperImportForm(Form):
         widget=forms.TextInput(attrs={"size": 60}),
     )
 
+
 class ProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
@@ -256,17 +259,17 @@ class ProfileForm(ModelForm):
         self.fields["linkedin"].label = "LinkedIn (requires http:// or https://)"
         self.fields["twitter"].label = "Twitter (requires http:// or https://)"
 
-        self.fields["about"].widget = forms.Textarea()    
+        self.fields["about"].widget = forms.Textarea()
         self.fields["about"].widget.attrs.update({"rows": "5"})
-        self.fields["interests"].widget = forms.Textarea()    
+        self.fields["interests"].widget = forms.Textarea()
         self.fields["interests"].widget.attrs.update({"rows": "1"})
-        self.fields["affiliation"].widget = forms.Textarea()    
+        self.fields["affiliation"].widget = forms.Textarea()
         self.fields["affiliation"].widget.attrs.update({"rows": "1"})
 
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-            #visible.field.widget.attrs.update({"style": "width:25em"})
-            #print(visible.field.widget.attrs.items())
+            # visible.field.widget.attrs.update({"style": "width:25em"})
+            # print(visible.field.widget.attrs.items())
 
     def clean_about(self):
         return self.cleaned_data["about"]
@@ -300,7 +303,8 @@ class ProfileForm(ModelForm):
 
     class Meta:
         model = Profile
-        fields = ["about", "affiliation", "interests", "job", "city", "country", "website", "github", "linkedin", "twitter"]
+        fields = ["about", "affiliation", "interests", "job", "city", "country", "website", "github", "linkedin",
+                  "twitter"]
 
 
 class PersonForm(ModelForm):
@@ -553,7 +557,7 @@ class GroupForm(ModelForm):
         self.fields["slack"].label = "Slack (requires https://)"
         self.fields["telegram"].label = "Telegram (requires https://)"
         self.fields["videoconferencing"].label = "WebEx, Skype, etc."
-        self.fields["room"].lable="Room"
+        self.fields["room"].lable = "Room"
         self.fields["description"].label = "Description"
         self.fields["name"].label = "Name"
         self.fields["is_public"].label = "Public"
@@ -607,10 +611,10 @@ class GroupForm(ModelForm):
 
     def clean_name(self):
         return self.cleaned_data["name"]
-    
+
     def clean_slack(self):
         return self.cleaned_data["slack"]
-    
+
     def clean_telegram(self):
         return self.cleaned_data["telegram"]
 
@@ -706,3 +710,33 @@ class FlaggedCommentForm(ModelForm):
     class Meta:
         model = CommentFlag
         fields = ['violation', 'description']
+
+
+class PaperReportForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+
+        options = (
+            ("title", "Title"),
+            ("abstract", "Abstract"),
+            ("authors", "Authors"),
+            ("download", "Download link"),
+            ("venue", "Venue"),
+        )
+
+        self.fields["error_type"] = forms.ChoiceField(choices=options, widget=forms.RadioSelect())
+        self.fields["description_fb"].widget = forms.Textarea()
+        self.fields["description_fb"].widget.attrs.update({"rows": "5"})
+
+        self.fields["description_fb"].label = "Description"
+        self.fields["error_type"].label = "Where"
+
+    def clean_error_field(self):
+        return self.cleaned_data["error_type"]
+
+    def clean_description(self):
+        return self.cleaned_data["description_fb"]
+
+    class Meta:
+        model = PaperReport
+        fields = ['error_type', 'description_fb']

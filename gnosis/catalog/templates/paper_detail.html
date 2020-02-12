@@ -49,7 +49,6 @@
             </div>
 
             <div style="display: flex; justify-content: space-between">
-
                 <div><a href="{{ paper.download_link }}" class="btn btn-primary" role="button"
                         target="_blank">Download</a>
                     {% if user.is_authenticated %}
@@ -104,10 +103,18 @@
                             <a href="{% url 'paper_connect_dataset' paper.id %}">Dataset</a> ||
                             <a href="{% url 'paper_connect_code' paper.id %}">Code Repo</a>
                         </div>
-
-
                     </div>
                 {% endif %}</h4>
+
+            {% if user.is_authenticated %}
+                <button id="report_error" class="btn btn-danger btn-sm popup_opener"
+                        data-url="{% url 'paper_error_report' paper.id %}">
+                    Report Error
+                </button>
+            {% else %}
+                <a class="btn btn-danger btn-sm" href="{% url 'account_login' %}?next={{ request.path }}">Report
+                    Error</a>
+            {% endif %}
         </div>
     </div>
     {% if user.is_authenticated and user.is_superuser %}
@@ -334,65 +341,57 @@
                         {#                    show comments#}
                         {% if comments %}
                             <ul class="list-group list-group-flush comments_notes">
-                            {% paginate comments %}
-                            {% for comment in comments %}
-
-                                <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
-                                    {% if comment.created_by != user %}
-                                        <div style="float: right; text-align: right;">
-                                            <div class="open_flag_dialog popup_opener"
-                                                 data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
-                                                 data-commentid={{ comment.id }} data-flagged={{ comment.is_flagged }}>
-                                                {% if comment.is_flagged %}
-                                                    <div class="flagged" data-toggle="tooltip" title="Flagged">
-                                                        <i class="material-icons menu_item">flag</i>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="not_flagged" data-toggle="tooltip" title="Report">
-                                                        <i class="material-icons menu_item">outlined_flag</i>
-                                                    </div>
-                                                {% endif %}
+                                {% paginate comments using "first_page" %}
+                                {% for comment in comments %}
+                                    <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
+                                        {% if comment.created_by != user %}
+                                            <div style="float: right; text-align: right;">
+                                                <div class="open_flag_dialog popup_opener"
+                                                     data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
+                                                     data-commentid={{ comment.id }} data-flagged={{ comment.is_flagged }}>
+                                                    {% if comment.is_flagged %}
+                                                        <div class="flagged" data-toggle="tooltip" title="Flagged">
+                                                            <i class="material-icons menu_item">flag</i>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="not_flagged" data-toggle="tooltip" title="Report">
+                                                            <i class="material-icons menu_item">outlined_flag</i>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
                                             </div>
-                                        </div>
-                                    {% endif %}
+                                        {% endif %}
 
-                                    <p><strong>{{ comment.created_by }}</strong> said on
-                                        {{ comment.created_at|date:"F    d, Y" }}</p>
-                                    {% if comment.is_flagged %}
-                                        <p class="flagged">Comment is being held for moderation</p>
-                                    {% else %}
-                                        <div class="comment_text">
-                                            <p>{{ comment.text|safe|linebreaks }}</p>
-                                        </div>
-                                    {% endif %}
-                                    {% if comment.created_by == user %}
-                                        <a href="{% url 'comment_update' comment.id %}">Edit</a>
-                                    {% endif %}
-                                </li>
-
-                            {% endfor %}
-                            {% get_pages %}
-                            <ul class="pagination justify-content-center" style="margin:20px 0">
-                                {% if not pages.current.is_first %}
-                                    <li class="page-item"><a class="page-link"
-                                                             href="{{ pages.previous.path }}">Previous</a>
+                                        <p><strong>{{ comment.created_by }}</strong> said on
+                                            {{ comment.created_at|date:"F    d, Y" }}</p>
+                                        {% if comment.is_flagged %}
+                                            <p class="flagged">Comment is being held for moderation</p>
+                                        {% else %}
+                                            <div class="comment_text">
+                                                <p>{{ comment.text|safe|linebreaks }}</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if comment.created_by == user %}
+                                            <a href="{% url 'comment_update' comment.id %}">Edit</a>
+                                        {% endif %}
                                     </li>
-                                {% endif %}
-                                {% for page in pages %}
-                                    {% if page.is_current %}
-                                        <li class="page-item active"><a class="page-link"
-                                                                        href="{{ page.path }}">{{ page.number }}</a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item"><a class="page-link"
-                                                                 href="{{ page.path }}">{{ page.number }}</a></li>
-                                    {% endif %}
                                 {% endfor %}
-                                {% if not pages.current.is_last %}
-                                    <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
-                                    </li>
-                                {% endif %}
                             </ul>
+                            {% get_pages %}
+                            <!-- Center-aligned -->
+                            <div class="first_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+
+                            <script>
+                                var page1 = {
+                                    class_name: "first_pagi",
+                                    page_name: "first_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
                         {% endif %}
                     </div>
 
@@ -412,7 +411,7 @@
                         <br/>
                         {% if notes %}
                             <ul class="list-group list-group-flush comments_notes">
-                                {% paginate notes %}
+                                {% paginate notes using "second_page" %}
                                 {% for note in notes %}
                                     <li class="list-group-item shadow-sm mt-1">
                                         <p>{{ note.note_content|safe|linebreaks }}</p>
@@ -425,31 +424,31 @@
                                         </p>
                                     </li>
                                 {% endfor %}
-
-                                {% get_pages %}
-                                <!-- Center-aligned -->
-                                <ul class="pagination justify-content-center" style="margin:20px 0">
-                                    {% if not pages.current.is_first %}
-                                        <li class="page-item"><a class="page-link"
-                                                                 href="{{ pages.previous.path }}">Previous</a></li>
-                                    {% endif %}
-                                    {% for page in pages %}
-                                        {% if page.is_current %}
-                                            <li class="page-item active"><a class="page-link"
-                                                                            href="{{ page.path }}">{{ page.number }}</a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item"><a class="page-link"
-                                                                     href="{{ page.path }}">{{ page.number }}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if not pages.current.is_last %}
-                                        <li class="page-item"><a class="page-link" href="{{ pages.next.path }}">Next</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
                             </ul>
+                            {% get_pages %}
+                            <!-- Center-aligned -->
+                            <div class="second_pagi">
+                                {% include "pagination.html" %}
+                            </div>
+                            <script>
+                                var page2 = {
+                                    class_name: "second_pagi",
+                                    page_name: "second_page",
+                                    current: parseInt('{{ pages.current.number }}'),
+                                    first: parseInt('{{ pages.first.number }}'),
+                                    last: parseInt('{{ pages.last.number }}'),
+                                };
+                            </script>
                         {% endif %}
+                        <script>
+                            if (typeof page1 !== "undefined" && typeof page2 !== "undefined") {
+                                multi_pagination([page1, page2]);
+                            }else if (typeof page1 !== "undefined") {
+                                multi_pagination([page1])
+                            } else {
+                                multi_pagination([page2])
+                            }
+                        </script>
                     </div>
                 </div>
                 {#        if the user is not login#}
@@ -502,7 +501,7 @@
                 </table>
                 <br/>
                 <div class="form_button_container">
-                    <button id="cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                    <button id="flag_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
                         Cancel
                     </button>
                     <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
@@ -511,6 +510,44 @@
         </div>
     </div>
 
+
+    <div id="error_form_container" class="cover popup" hidden>
+        <div id="error_form_dialog" class="box_shadow">
+            <form id="error_form" action="" method="post">
+                {% csrf_token %}
+                <table class="w-75">
+                    {% for field in error_form %}
+                        <div style="font-weight: bold">
+                            {{ field.label_tag }}
+                        </div>
+                        <div style="padding: 0 10px">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                            {{ field.help_text }}
+                        {% endif %}
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+                <br/>
+                <div class="form_button_container">
+                    <button id="error_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
+                        Cancel
+                    </button>
+                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // remove venue choice field if paper is not attached to a venue
+        if ("{{ paper.was_published_at }}" === 'None') {
+            $('input[value="venue"]').parent('label').attr('hidden', true)
+        }
+    </script>
 
     <!-- if form is valid show the form in the popup window -->
     {% if flag_form.has_changed %}
