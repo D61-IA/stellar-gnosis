@@ -1,30 +1,3 @@
-/************** JS functions that apply to elements in gnosis_theme.html **************/
-$('.cus_toggle').click(function (e) {
-    e.stopPropagation();
-    $('#cus-dropdown').slideToggle(100);
-});
-
-/************** click anywhere on page to cancel popups **************/
-$(document).click(function (e) {
-    var $container = $(".popup");
-    // element that triggers popup
-    var $target = $(".popup_opener");
-    // if the target of the click isn't the container nor a descendant of the container.
-    if (!$target.is(e.target) && $target.has(e.target).length === 0 && $container.has(e.target).length === 0) {
-        $container.attr('hidden', true);
-    }
-});
-
-$('.response_ok').click(function () {
-    $('#flag_response').attr('hidden', true)
-});
-
-$universal_select.change(function () {
-    var $option = $('option:selected', this);
-    var url = $option.attr('data-url');
-    $('#universal_search').attr('action', url);
-});
-
 // jQuery plugin to prevent double submission of forms
 // src: https://stackoverflow.com/questions/2830542/prevent-double-submission-of-forms-in-jquery
 jQuery.fn.preventDoubleSubmission = function () {
@@ -80,24 +53,37 @@ $.ajaxSetup({
         }
     }
 );
-/************** JS functions that apply to elements in gnosis_theme.html **************/
-$('.cus_toggle').click(function (e) {
-    e.stopPropagation();
-    $('#cus-dropdown').slideToggle(100);
-});
 
 /************** click anywhere on page to cancel popups **************/
-// the popup object must contain the class popup, the object the triggers the popup must have class popup_opener
-$(document).click(function (e) {
+$('.cover').click(function (e) {
     var $container = $(".popup");
-    // element that triggers popup
-    var $target = $(".popup_opener");
+
     // if the target of the click isn't the container nor a descendant of the container.
-    if (!$target.is(e.target) && $target.has(e.target).length === 0 && $container.has(e.target).length === 0) {
-        $container.attr('hidden', true);
+    $container.attr('hidden', true);
+    $('.cover').attr('hidden', true);
+});
+
+$('.popup_opener').click(function () {
+    var targetid = $(this).attr('data-targetid');
+    var formid = $(this).attr('data-formid');
+
+    if (formid !== null){
+        $('#' + formid).attr('action', $(this).attr('data-url'));
     }
+    $('#' + targetid).attr('hidden', false);
+    $('.cover').attr('hidden', false);
 });
 
 $('.response_ok').click(function () {
-    $('#response_msg').attr('hidden', true)
+    $('.popup').attr('hidden', true);
+    $('.cover').attr('hidden', true);
+});
+
+$('.cancel_button').click(function () {
+    var targetid = $(this).attr('data-targetid');
+    $('#' + targetid).trigger('reset');
+    $('.reaction').children().attr('hidden', true);
+
+    $('.popup').attr('hidden', true);
+    $('.cover').attr('hidden', true);
 });

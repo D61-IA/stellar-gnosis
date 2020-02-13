@@ -97,7 +97,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         error_form.submit()
 
         # wait for Ajax response
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg_container')))
 
         # remove response overlay
         self.browser.find_element_by_class_name("response_ok").click()

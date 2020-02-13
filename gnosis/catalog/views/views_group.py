@@ -3,7 +3,7 @@ from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.shortcuts import render, get_object_or_404
 from catalog.models import ReadingGroup, ReadingGroupEntry, ReadingGroupMember
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from catalog.forms import GroupForm, GroupEntryForm, SearchGroupsForm
 from django.contrib.auth.models import User
 from datetime import date
@@ -177,6 +177,8 @@ def group_detail(request, id):
     is_member = False
     has_requested_access = False
 
+    group_entry_form = GroupEntryForm()
+
     if not request.user.is_anonymous:
         member = group.members.filter(member=request.user).all()
         if member.count() == 1:
@@ -196,6 +198,7 @@ def group_detail(request, id):
             "is_member": is_member,
             "has_requested_access": has_requested_access,
             "today": today,
+            "form": group_entry_form,
         },
     )
 
@@ -313,7 +316,6 @@ def group_entry_update(request, id, eid):
                 group_entry.date_discussed = form.cleaned_data["date_discussed"]
                 # print("Date to be discussed {}".format(group_entry.date_discussed))
                 group_entry.save()
-
                 return HttpResponseRedirect(reverse("group_detail", kwargs={"id": id}))
         # GET request
         else:
@@ -326,10 +328,9 @@ def group_entry_update(request, id, eid):
 
     return render(
         request,
-        "group_entry_update.html",
-        {"form": form, "group": group, "group_entry": group_entry},
+        "group_detail.html",
+        {"id": id, "form": form},
     )
-
 
 #
 @login_required

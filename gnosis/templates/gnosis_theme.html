@@ -15,13 +15,20 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://kit.fontawesome.com/8b8bc6986f.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.css">
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/timepicker@1.13.0/jquery.timepicker.min.css">
+
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+            integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+            crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/timepicker@1.13.0/jquery.timepicker.min.js"></script>
     {% load static %}
     <script src={% static 'js/antispam.js' %}></script>
-    <script src={% static 'js/ego_util.js' %}></script>
     <script src="{% static 'js/pagination.js' %}"></script>
 
     <link rel="stylesheet" href="{% static 'css/gnosis_theme.css' %}">
-    <link rel="stylesheet" href="{% static 'css/paper_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}">
 </head>
 <style>
     .max-width {
@@ -290,46 +297,25 @@
     <!-- Footer -->
 
     <!-- response dialog for flag report -->
-    <div id="response_msg" class="cover popup" hidden>
-        <div id="msg_dialog" class="card box_shadow">
-            <div class="card-body">
-                <div><span id="response_text">Thanks. We have received your report. If we find this content to be in violation of our guidelines,
+    <div id="response_msg_container" class="card popup" hidden>
+        <div class="card-body">
+            <div><span id="response_text">Thanks. We have received your report. If we find this content to be in violation of our guidelines,
             we will remove it.</span>
-                </div>
+            </div>
 
-                <div class="ok_container">
-                    <span class="response_ok">Ok</span>
-                </div>
-
+            <div class="ok_container">
+                <span class="response_ok">Ok</span>
             </div>
         </div>
     </div>
 
-    <!-- growing circles loader -->
-    <div id="loader" class="cover" hidden>
-        <div class="loader_container">
-            <div class="spinner_grow paper" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow person" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow venue" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow code" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner_grow dataset" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-    </div>
+    <div class="cover" hidden></div>
 
     <!-- START Bootstrap-Cookie-Alert -->
     <div class="alert text-center cookiealert" role="alert">
         We use cookies to ensure you get the best experience on our website. <a href="/pages/privacypolicy/"
-                                                                                target="_blank">Learn more</a>
+                                                                                target="_blank">Learn
+        more</a>
 
         <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
             I agree
@@ -347,6 +333,7 @@
 
     <!-- Include cookiealert script -->
     <script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script>
+    <script src="{% static 'js/group.js' %}"></script>
     <script src="{% static 'js/gnosis_theme.js' %}"></script>
 
 </body>

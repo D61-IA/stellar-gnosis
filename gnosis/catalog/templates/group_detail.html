@@ -213,8 +213,9 @@
                                                 </div>
                                                 {% if user.id == group.owner.id %}
                                                     <div class="p-2">
-                                                        <a class="btn btn-sm btn-primary"
-                                                           href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}">Discuss</a>
+                                                        <a class="btn btn-sm btn-primary discuss_btn popup_opener"
+                                                           href="{% url 'group_entry_update' paper_entry.reading_group.id paper_entry.id %}"
+                                                           data-targetid="discuss_form_container">Discuss</a>
                                                     </div>
                                                     <div class="p-2">
                                                         <a class="btn btn-sm btn-outline-danger"
@@ -283,7 +284,33 @@
             </div>
         {% endif %}
     {% endif %}
-
+    <div id="discuss_form_container" class="popup" data-clubday="{{ group.day }}" hidden>
+        <form id="discuss_form" action="" method="post">
+            {% csrf_token %}
+            <div style="display: flex; align-items: center">
+                <table>
+                    {{ form }}
+                </table>
+                <button id="date_opener">
+                    <i class="material-icons">
+                        date_range
+                    </i>
+                </button>
+            </div>
+            <br/>
+            <div class="reaction">
+                <p class="reaction_message" hidden>
+                    Reminder: Club Meeting Day is <strong>{{ group.day }}</strong>
+                </p>
+                <div class="form_buttons" hidden>
+                    <button type="button" class="btn btn-sm btn-light cancel_button" data-targetid="discuss_form">
+                        Cancel
+                    </button>
+                    <input type="submit" class="btn btn-sm btn-primary" value="Confirm"/>
+                </div>
+            </div>
+        </form>
+    </div>
     <script type="text/javascript">
         // wire up shown event
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

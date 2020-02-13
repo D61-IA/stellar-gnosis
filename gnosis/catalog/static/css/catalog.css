@@ -1,10 +1,49 @@
+/* styles for flagging */
+.even-vert-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.menu_item {
+    vertical-align: bottom;
+    user-select: none;
+}
+
+.right_side_icon {
+    float: right;
+    text-align: right;
+}
+
+#flag_form_container {
+    width: 362px;
+    padding: 20px;
+    margin-left: -181px;
+    margin-top: -236px;
+}
+
+.form_button_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+#id_violation {
+    list-style-type: none;
+    padding: 0;
+}
+
+#id_description, #id_description_fb {
+    width: 300px
+}
+
+/* styles for ego graph */
 #cy {
     max-height: 450px;
 !important;
     display: block;
     grid-column: 2 / 17
 }
-
 
 .color_legend {
     display: inline-block;
@@ -75,7 +114,6 @@
     z-index: 1000;
     height: 30px;
     font-size: 80%;
-
     margin-top: auto;
     margin-bottom: auto
 }
@@ -84,7 +122,6 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
 }
 
 .flex_col {
@@ -132,9 +169,13 @@
 }
 
 #side_menu {
-    flex-direction: column;
-    grid-column: 1 / 2;
     background-color: ghostwhite
+}
+
+#canvas {
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(16, 1fr)
 }
 
 .node_item {
@@ -152,28 +193,86 @@
 }
 
 .filter_btn {
-    border: 2px solid black;
-    background-color: white;
-    color: black;
     font-size: 16px;
     cursor: pointer;
     padding: 5px;
+    border: none;
+    color: black;
+    background: #e7e7e7;
 }
 
 .filter_btn:hover {
     background-color: lightgrey;
 }
 
-/* Gray */
-.default {
-    border: none;
-    color: black;
-    background: #e7e7e7;
-
-}
-
+/* styles for Club */
 .top_container {
     display: flex;
+}
+
+#discuss_form_container {
+    width: 370px;
+    margin-left: -185px;
+    margin-top: -93px;
+    padding: 20px;
+}
+
+#id_date_discussed {
+    max-width: 150px;
+!important;
+    margin-left: 18px;
+    border-radius: 0
+}
+
+#date_opener {
+    width: 40px;
+!important;
+    margin-left: -40px;
+}
+
+.reaction {
+    display: flex;
+    flex-direction: column;
+}
+
+.form_buttons {
+    text-align: right;
+}
+
+.icon_button {
+    cursor: pointer;
+}
+
+#error_form_container {
+    width: 362px;
+    padding: 20px;
+    margin-left: -181px;
+    margin-top: -240px;
+}
+
+#error_form_container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#response_msg_container {
+    width: 400px;
+    margin-left: -200px;
+    margin-top: -69px;
+}
+
+.res_msg {
+    width: 80px;
+    padding: 5px;
+    text-align: center;
+    background-color: #59d143;
+}
+
+.del_msg {
+    width: 80px;
+    padding: 5px;
+    text-align: center;
+    background-color: orangered;
 }
 
 .box_shadow {
@@ -201,17 +300,6 @@
 
 .flagged {
     cursor: auto !important;
-}
-
-.cover {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(248, 248, 255, 0.5);
-    z-index: 3000;
-
 }
 
 #flag_form_dialog {
@@ -306,13 +394,41 @@
     .top_container {
         flex-direction: column-reverse;
     }
+
 }
 
 @media screen and (max-width: 400px) {
     .filter_btn {
         font-size: 10px;
     }
+
+    #flag_form_container {
+        width: 300px;
+        font-size: 80%;
+        padding: 20px;
+        margin-left: -150px;
+        margin-top: -202.5px;
+    }
+
+    #error_form_container {
+        width: 300px;
+        font-size: 80%;
+        padding: 20px;
+        margin-left: -150px;
+        margin-top: -202.5px;
+    }
+
+    #response_msg_container {
+        width: 300px;
+        margin-left: -150px;
+    }
+
+    #id_description, #id_description_fb {
+        width: 240px
+    }
 }
+
+
 
 
 

@@ -108,7 +108,7 @@
 
             {% if user.is_authenticated %}
                 <button id="report_error" class="btn btn-danger btn-sm popup_opener"
-                        data-url="{% url 'paper_error_report' paper.id %}">
+                        data-targetid="error_form_container">
                     Report Error
                 </button>
             {% else %}
@@ -149,34 +149,34 @@
 
         <div id="ego_graph_content">
             <div class="ego_button_container">
-                <button class="flex_col legend_ele filter_btn default" data-name="paper_filter"
+                <button class="flex_col legend_ele filter_btn" data-name="paper_filter"
                         data-pressed="true"
                         data-type="Paper">
                     <span class="color_legend paper"></span>Paper
                 </button>
-                <button class="flex_col legend_ele filter_btn default"
+                <button class="flex_col legend_ele filter_btn"
                         data-name="person_filter" data-pressed="true"
                         data-type="Person">
                     <span class="color_legend person"></span>Person
                 </button>
-                <button class="flex_col legend_ele filter_btn default" data-name="venue_filter"
+                <button class="flex_col legend_ele filter_btn" data-name="venue_filter"
                         data-pressed="true"
                         data-type="Venue">
                     <span class="color_legend venue"></span>Venue
                 </button>
-                <button class="flex_col legend_ele filter_btn default" data-name="code_filter"
+                <button class="flex_col legend_ele filter_btn" data-name="code_filter"
                         data-pressed="true"
                         data-type="Code">
                     <span class="color_legend code"></span>Code
                 </button>
-                <button class="flex_col legend_ele filter_btn default"
+                <button class="flex_col legend_ele filter_btn"
                         data-name="dataset_filter" data-pressed="true"
                         data-type="Dataset">
                     <span class="color_legend dataset"></span>Dataset
                 </button>
             </div>
 
-            <div class="card-body" style="padding: 0; display: grid; grid-template-columns: repeat(16, 1fr)">
+            <div id="canvas" class="card-body">
                 <div id="side_menu">
                     <div class="dropdown-toggle" style="padding: 10px">
                         <strong>Relationships</strong>
@@ -200,7 +200,7 @@
                     </div>
                     <div id="node_container">
                         <div class="node_item">
-                            <button class="filter_btn default" data-name="paper_filter"
+                            <button class="filter_btn" data-name="paper_filter"
                                     data-pressed="true"
                                     data-type="Paper">
                                 <span class="color_legend paper"></span>Paper
@@ -208,14 +208,14 @@
                         </div>
 
                         <div class="node_item">
-                            <button class="filter_btn default" data-name="person_filter"
+                            <button class="filter_btn" data-name="person_filter"
                                     data-pressed="true" data-type="Person">
                                 <span class="color_legend person"></span>Person
                             </button>
                         </div>
 
                         <div class="node_item">
-                            <button class="filter_btn default" data-name="venue_filter"
+                            <button class="filter_btn" data-name="venue_filter"
                                     data-pressed="true"
                                     data-type="Venue">
                                 <span class="color_legend venue"></span>Venue
@@ -223,7 +223,7 @@
                         </div>
 
                         <div class="node_item">
-                            <button class="filter_btn default" data-name="code_filter"
+                            <button class="filter_btn" data-name="code_filter"
                                     data-pressed="true"
                                     data-type="Code">
                                 <span class="color_legend code"></span>Code
@@ -231,7 +231,7 @@
                         </div>
 
                         <div class="node_item">
-                            <button class="filter_btn default" data-name="dataset_filter"
+                            <button class="filter_btn" data-name="dataset_filter"
                                     data-pressed="true"
                                     data-type="Dataset">
                                 <span class="color_legend dataset"></span>Dataset
@@ -257,7 +257,6 @@
                             </i>
                         </button>
                     </div>
-
                 </div>
 
                 <div id="cy">
@@ -343,29 +342,30 @@
                             <ul class="list-group list-group-flush comments_notes">
                                 {% paginate comments using "first_page" %}
                                 {% for comment in comments %}
-                                    <li id="cmt_thread_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
+                                    <li id="comment_{{ comment.id }}" class="list-group-item shadow-sm mt-1">
                                         {% if comment.created_by != user %}
-                                            <div style="float: right; text-align: right;">
-                                                <div class="open_flag_dialog popup_opener"
-                                                     data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
-                                                     data-commentid={{ comment.id }} data-flagged={{ comment.is_flagged }}>
-                                                    {% if comment.is_flagged %}
-                                                        <div class="flagged" data-toggle="tooltip" title="Flagged">
-                                                            <i class="material-icons menu_item">flag</i>
-                                                        </div>
-                                                    {% else %}
-                                                        <div class="not_flagged" data-toggle="tooltip" title="Report">
-                                                            <i class="material-icons menu_item">outlined_flag</i>
-                                                        </div>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
+                                            {% if comment.is_flagged %}
+                                                <a class="right_side_icon" data-toggle="tooltip"
+                                                   title="Flagged">
+                                                    <i class="material-icons menu_item">flag</i>
+                                                </a>
+                                            {% else %}
+                                                <a class="right_side_icon popup_opener icon_button"
+                                                   data-toggle="tooltip"
+                                                   title="Report"
+                                                   data-commentid="{{ comment.id }}"
+                                                   data-url="{% url 'paper_flag_comment' paper.id comment.id %}"
+                                                   data-targetid="flag_form_container"
+                                                   data-formid="flag_form">
+                                                    <i class="material-icons menu_item">outlined_flag</i>
+                                                </a>
+                                            {% endif %}
                                         {% endif %}
 
                                         <p><strong>{{ comment.created_by }}</strong> said on
                                             {{ comment.created_at|date:"F    d, Y" }}</p>
                                         {% if comment.is_flagged %}
-                                            <p class="flagged">Comment is being held for moderation</p>
+                                            <p>Comment is being held for moderation</p>
                                         {% else %}
                                             <div class="comment_text">
                                                 <p>{{ comment.text|safe|linebreaks }}</p>
@@ -382,7 +382,6 @@
                             <div class="first_pagi">
                                 {% include "pagination.html" %}
                             </div>
-
                             <script>
                                 var page1 = {
                                     class_name: "first_pagi",
@@ -394,7 +393,6 @@
                             </script>
                         {% endif %}
                     </div>
-
                     {#              tab content of note tab#}
                     <div class="tab-pane fade" id="navnote" role="tabpanel" aria-labelledby="nav-note-tab">
                         <div class="mt-2">
@@ -443,7 +441,7 @@
                         <script>
                             if (typeof page1 !== "undefined" && typeof page2 !== "undefined") {
                                 multi_pagination([page1, page2]);
-                            }else if (typeof page1 !== "undefined") {
+                            } else if (typeof page1 !== "undefined") {
                                 multi_pagination([page1])
                             } else {
                                 multi_pagination([page2])
@@ -479,67 +477,63 @@
     </div>
 
     <!-- start-flagging -->
-    <div id="flag_form_container" class="cover popup" hidden>
-        <div id="flag_form_dialog" class="box_shadow">
-            <form id="flag_form" action="" method="post">
-                {% csrf_token %}
-                <table class="w-75">
-                    {% for field in flag_form %}
-                        <div style="font-weight: bold">
-                            {{ field.label_tag }}
-                        </div>
-                        <div style="padding: 0 10px">
-                            {{ field }}
-                        </div>
-                        {% if field.help_text %}
-                            {{ field.help_text }}
-                        {% endif %}
-                        {% for error in field.errors %}
-                            {{ error }}
-                        {% endfor %}
+    <div id="flag_form_container" class="popup" hidden>
+        <form id="flag_form" action="" method="post">
+            {% csrf_token %}
+            <table class="w-75">
+                {% for field in flag_form %}
+                    <div style="font-weight: bold">
+                        {{ field.label_tag }}
+                    </div>
+                    <div style="padding: 0 10px">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                        {{ field.help_text }}
+                    {% endif %}
+                    {% for error in field.errors %}
+                        {{ error }}
                     {% endfor %}
-                </table>
-                <br/>
-                <div class="form_button_container">
-                    <button id="flag_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
-                        Cancel
-                    </button>
-                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
-                </div>
-            </form>
-        </div>
+                {% endfor %}
+            </table>
+            <br/>
+            <div class="form_button_container">
+                <button type="button" class="btn btn-light btn-sm form_btn cancel_button" data-targetid="flag_form">
+                    Cancel
+                </button>
+                <input type="submit" class="btn btn-primary btn-sm form_btn" value="Submit"/>
+            </div>
+        </form>
     </div>
 
 
-    <div id="error_form_container" class="cover popup" hidden>
-        <div id="error_form_dialog" class="box_shadow">
-            <form id="error_form" action="" method="post">
-                {% csrf_token %}
-                <table class="w-75">
-                    {% for field in error_form %}
-                        <div style="font-weight: bold">
-                            {{ field.label_tag }}
-                        </div>
-                        <div style="padding: 0 10px">
-                            {{ field }}
-                        </div>
-                        {% if field.help_text %}
-                            {{ field.help_text }}
-                        {% endif %}
-                        {% for error in field.errors %}
-                            {{ error }}
-                        {% endfor %}
+    <div id="error_form_container" class="popup" hidden>
+        <form id="error_form" action="{% url 'paper_error_report' paper.id %}" method="post">
+            {% csrf_token %}
+            <table class="w-75">
+                {% for field in error_form %}
+                    <div style="font-weight: bold">
+                        {{ field.label_tag }}
+                    </div>
+                    <div style="padding: 0 10px">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                        {{ field.help_text }}
+                    {% endif %}
+                    {% for error in field.errors %}
+                        {{ error }}
                     {% endfor %}
-                </table>
-                <br/>
-                <div class="form_button_container">
-                    <button id="error_cancel_button" type="button" class="btn btn-primary btn-lg form_button">
-                        Cancel
-                    </button>
-                    <input type="submit" class="btn btn-primary btn-lg form_button" value="Submit"/>
-                </div>
-            </form>
-        </div>
+                {% endfor %}
+            </table>
+            <br/>
+            <div class="form_button_container">
+                <button type="button" class="btn btn-light btn-sm form_btn cancel_button" data-targetid="error_form">
+                    Cancel
+                </button>
+                <input type="submit" class="btn btn-primary btn-sm form_btn" value="Submit"/>
+            </div>
+        </form>
     </div>
 
     <script>
@@ -551,7 +545,7 @@
 
     <!-- if form is valid show the form in the popup window -->
     {% if flag_form.has_changed %}
-        <script>$('.cover').attr('hidden', false);</script>
+        <script>$('#flag_form_container').attr('hidden', false);</script>
     {% endif %}
 
     <!-- end-flagging -->
@@ -561,6 +555,8 @@
     <script>
         $('#cy').css('height', $('#cy').css('width'));
     </script>
+
+    <script src={% static 'js/ego_util.js' %}></script>
 
     <script type="text/javascript">
 
@@ -713,8 +709,6 @@
 
     <script src="{% static "js/ego_graph.js" %}"></script>
     <script src="{% static "js/flagging.js" %}"></script>
-
-    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
     <script src="{% static "js/endorsement-bookmark.js" %}"></script>
 
 {% endblock %}
