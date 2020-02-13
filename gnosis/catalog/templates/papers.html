@@ -2,16 +2,6 @@
 {% block content %}
     {% load el_pagination_tags %}
 
-    <div class="card shadow-sm text-center mt-3">
-        <div class="card-body">
-            <form action="{% url 'paper_find' %}" method="get">
-                <input type="text" name="keywords" size="60" class="form-control" required="">
-                <br>
-                <input type="submit" class="btn btn-primary btn-lg" value="Search Papers"/>
-            </form>
-        </div>
-    </div>
-
     {% if papers %}
         <div class="card shadow-sm mt-3">
             <div class="card-header"><h4>Papers</h4></div>

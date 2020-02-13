@@ -40,7 +40,7 @@ def groups(request):
     return render(
         request,
         "groups.html",
-        {"groups": all_groups,},
+        {"groups": all_groups, "type": 'club'},
     )
 
 
@@ -51,7 +51,7 @@ def group_find(request):
         search=SearchQuery(keywords, search_type="plain")
     )
 
-    return render(request, "groups.html", {"groups": all_groups, "message": "",},)
+    return render(request, "groups.html", {"groups": all_groups, "message": "", "type": 'club'},)
 
 
 @login_required

@@ -1,18 +1,6 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
     {% load el_pagination_tags %}
-
-    <div class="card shadow-sm mt-3">
-        <div class="card-body text-center">
-            <form action="{% url 'dataset_find' %}" method="get">
-                <input type="text" name="keywords" size="60" class="form-control" required="">
-                <br/>
-                <input type="submit" class="btn btn-primary btn-lg" value="Search Datasets"/>
-            </form>
-        </div>
-    </div>
-
-
     {% if datasets %}
         <div class="card shadow-sm mt-3">
             {% paginate datasets %}
