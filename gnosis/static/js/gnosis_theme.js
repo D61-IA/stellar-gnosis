@@ -54,6 +54,13 @@ $.ajaxSetup({
     }
 );
 
+$universal_select.change(function () {
+    var $option = $('option:selected', this);
+    var url = $option.attr('data-url');
+    $('#universal_search').attr('action', url);
+});
+
+
 /************** click anywhere on page to cancel popups **************/
 $('.cover').click(function (e) {
     var $container = $(".popup");

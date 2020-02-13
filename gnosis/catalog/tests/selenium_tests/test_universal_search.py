@@ -179,8 +179,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         pwd.send_keys(user1password)
         self.browser.find_element_by_tag_name('form').submit()
         # confirm ajax response is received by checking correct page redirect
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
 
     @classmethod
     def tearDownClass(cls):
@@ -226,7 +225,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         select = self.browser.find_element_by_id('universal_select')
         self.assertEqual(select.get_attribute('value'), 'person')
         self.search("Zhao", "Zhenghao")
-
+    #
     def test_search_venue(self):
         self.browser.get(self.live_server_url + '/catalog/venues/')
         select = self.browser.find_element_by_id('universal_select')
@@ -263,6 +262,36 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(select.get_attribute('value'), 'endorsement')
         self.search("best", "2nd")
 
+
+    def test_dropdown(self):
+        self.browser.get(self.live_server_url + '/catalog/papers/')
+        select = self.browser.find_element_by_id('universal_select')
+        select.find_element_by_css_selector('option[value="person"]').click()
+        self.search("Zhao", "Zhenghao")
+
+        select = self.browser.find_element_by_id('universal_select')
+        select.find_element_by_css_selector('option[value="venue"]').click()
+        self.search("ICCV", "copy")
+
+        select = self.browser.find_element_by_id('universal_select')
+        select.find_element_by_css_selector('option[value="dataset"]').click()
+        self.search("Cora", "copy")
+
+        select = self.browser.find_element_by_id('universal_select')
+        select.find_element_by_css_selector('option[value="code"]').click()
+        self.search("StellarGraph", "copy")
+
+        select = self.browser.find_element_by_id('universal_select')
+        select.find_element_by_css_selector('option[value="club"]').click()
+        self.search("learning", "algorithm")
+
+        select = self.browser.find_element_by_id('universal_select')
+        select.find_element_by_css_selector('option[value="bookmark"]').click()
+        self.search("best", "2nd")
+
+        select = self.browser.find_element_by_id('universal_select')
+        select.find_element_by_css_selector('option[value="endorsement"]').click()
+        self.search("best", "2nd")
 
 
 class FirefoxTestCase(ChromeTestCase):
