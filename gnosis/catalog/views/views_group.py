@@ -50,10 +50,7 @@ def group_find(request):
     if keywords == '':
         all_groups = ReadingGroup.objects.all().order_by("-created_at")[:200]
     else:
-        all_groups = ReadingGroup.objects.annotate(search=SearchVector("keywords")).filter(
-            search=SearchQuery(keywords, search_type="plain")
-        )
-
+        all_groups = ReadingGroup.objects.filter(keywords__icontains=keywords)
     return render(request, "groups.html", {"groups": all_groups, "message": "", "type": 'club'},)
 
 

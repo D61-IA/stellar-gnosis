@@ -134,7 +134,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.club2 = ReadingGroup.objects.create(
             name="test club",
             description="Machine Learning journal club",
-            keywords="machine learning",
+            keywords="algorithm learning",
             is_public=True,
             videoconferencing="Dial 10101010",
             room="R101",
@@ -181,7 +181,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # confirm ajax response is received by checking correct page redirect
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
-        self.browser.get(self.live_server_url + '/papers/')
 
     @classmethod
     def tearDownClass(cls):
@@ -194,7 +193,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         search_box = form.find_element_by_tag_name('input')
         search_box.clear()
         search_box.send_keys(text_both)
-        form.submit()
+        submit_btn = form.find_element_by_tag_name('button')
+        submit_btn.click()
         # wait for page to reload
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
         # verify the correct links are present
@@ -202,10 +202,12 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # should be only 2 search results in total
         self.assertEqual(len(items), 2)
 
+        form = self.browser.find_element_by_id('universal_search')
         search_box = form.find_element_by_tag_name('input')
         search_box.clear()
         search_box.send_keys(text_unique)
-        form.submit()
+        submit_btn = form.find_element_by_tag_name('button')
+        submit_btn.click()
         # wait for page to reload
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
         # verify the correct links are present
@@ -214,51 +216,51 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(len(items), 1)
 
     def test_search_paper(self):
-        self.browser.get(self.live_server_url + 'catalog/papers/')
+        self.browser.get(self.live_server_url + '/catalog/papers/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'Papers')
+        self.assertEqual(select.get_attribute('value'), 'paper')
         self.search("best", "2nd")
 
     def test_search_person(self):
-        self.browser.get(self.live_server_url + 'catalog/authors/')
+        self.browser.get(self.live_server_url + '/catalog/authors/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'Authors')
+        self.assertEqual(select.get_attribute('value'), 'person')
         self.search("Zhao", "Zhenghao")
 
     def test_search_venue(self):
-        self.browser.get(self.live_server_url + 'catalog/venues/')
+        self.browser.get(self.live_server_url + '/catalog/venues/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'Venues')
+        self.assertEqual(select.get_attribute('value'), 'venue')
         self.search("ICCV", "copy")
 
     def test_search_dataset(self):
-        self.browser.get(self.live_server_url + 'catalog/datasets/')
+        self.browser.get(self.live_server_url + '/catalog/datasets/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'Datasets')
+        self.assertEqual(select.get_attribute('value'), 'dataset')
         self.search("Cora", "copy")
 
     def test_search_code(self):
-        self.browser.get(self.live_server_url + 'catalog/codes/')
+        self.browser.get(self.live_server_url + '/catalog/codes/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'Codes')
+        self.assertEqual(select.get_attribute('value'), 'code')
         self.search("StellarGraph", "copy")
 
     def test_search_group(self):
-        self.browser.get(self.live_server_url + 'catalog/clubs/')
+        self.browser.get(self.live_server_url + '/catalog/clubs/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'Clubs')
-        self.search("test", "club")
+        self.assertEqual(select.get_attribute('value'), 'club')
+        self.search("learning", "algorithm")
 
     def test_search_bookmark(self):
         self.browser.get(self.live_server_url + '/bookmark/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'Bookmark')
+        self.assertEqual(select.get_attribute('value'), 'bookmark')
         self.search("best", "2nd")
 
     def test_search_endorsement(self):
-        self.browser.get(self.live_server_url + 'catalog/endorsements/')
+        self.browser.get(self.live_server_url + '/catalog/endorsements/')
         select = self.browser.find_element_by_id('universal_select')
-        self.assertEqual(select.text, 'endorsements')
+        self.assertEqual(select.get_attribute('value'), 'endorsement')
         self.search("best", "2nd")
 
 
