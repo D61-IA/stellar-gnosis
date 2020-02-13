@@ -116,7 +116,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         self.assertEqual(text, 'outlined_flag')
 
         # test pop up flag form is shown when flag icon is clicked
-        flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
+        flag_clickable = first_comment.find_element_by_class_name('popup_opener')
         flag_clickable.click()
         a1 = flag_form_container.get_attribute('hidden')
         self.assertEqual(a1, None)
@@ -158,22 +158,22 @@ class ChromeTestCase(StaticLiveServerTestCase):
         flag_form.submit()
         # wait for Ajax response
         wait = WebDriverWait(browser, 10)
-        wait.until(EC.visibility_of_element_located((By.ID, 'response_msg')))
+        wait.until(EC.visibility_of_element_located((By.ID, 'response_msg_container')))
 
         # after submit, test flag form is hidden
         a1 = browser.find_element_by_id('flag_form_container').get_attribute('hidden')
         self.assertEqual(a1, 'true')
         # test flag_response is unhidden after successful submit
-        flag_response = browser.find_element_by_id('response_msg')
+        flag_response = browser.find_element_by_id('response_msg_container')
         self.assertEqual(flag_response.get_attribute('hidden'), None)
 
         self.browser.find_element_by_class_name("response_ok").click()
 
         # test the flagged comment has a filled flag icon attached
-        arr = first_comment.find_elements_by_class_name("flagged")
-        self.assertEqual(len(arr), 1)
-        arr = first_comment.find_elements_by_class_name("material-icons")
-        self.assertEqual(arr[0].text, "flag")
+        first_comment = self.browser.find_element_by_css_selector('ul.list-group').find_element_by_css_selector('li.list-group-item')
+        flag_icon = first_comment.find_element_by_css_selector('.material-icons')
+        self.assertEqual(flag_icon.text, 'flag')
+
 
 class FirfoxTestCase(ChromeTestCase):
     """test with Firefox webdriver"""

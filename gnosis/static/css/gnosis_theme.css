@@ -1,3 +1,7 @@
+.box_shadow {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
 .loader_container {
     position: fixed;
     left: 50%;
@@ -5,7 +9,6 @@
     margin-top: -17px;
     margin-left: -88.78px;
     text-align: center;
-
 }
 
 .loader_icon {
@@ -14,7 +17,6 @@
     border-radius: 50%;
     width: 50px;
     height: 50px;
-
     animation: spin 2s linear infinite;
 }
 
@@ -72,6 +74,58 @@
 
 .comments_notes {
     width: 100%;
+}
+
+.response_ok {
+    color: darkseagreen;
+    cursor: pointer;
+}
+
+.response_ok:hover {
+    color: olivedrab;
+}
+
+.ok_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    user-select: none;
+}
+
+#flag_response {
+    width: 400px;
+    top: 50%;
+    left: 50%;
+    margin-left: -200px;
+    margin-top: -69px;
+}
+
+.cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(248, 248, 255, 0.5);
+    z-index: 2000;
+}
+
+.popup {
+    position: fixed;
+    background-color: white;
+    top: 50%;
+    left: 50%;
+    z-index: 3000;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
+.form_btn {
+    font-size: 1.0rem;
+    margin: 1px;
+}
+
+.material-icons {
+    user-select: none;
 }
 
 @keyframes spin {

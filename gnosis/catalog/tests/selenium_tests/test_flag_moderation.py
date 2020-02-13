@@ -95,7 +95,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
 
         # click on its flag
         # test pop up flag form is shown when flag icon is clicked
-        flag_clickable = first_comment.find_element_by_class_name('open_flag_dialog')
+        flag_clickable = first_comment.find_element_by_class_name('popup_opener')
         flag_clickable.click()
 
         flag_form = self.browser.find_element_by_id('flag_form')
@@ -113,7 +113,7 @@ class ChromeTestCase(StaticLiveServerTestCase):
         flag_form.submit()
 
         # wait for Ajax response
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg')))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, 'response_msg_container')))
         # remove response overlay
         self.browser.find_element_by_class_name("response_ok").click()
         self.browser.get(self.live_server_url + '/catalog/moderation/comments/')
@@ -160,8 +160,8 @@ class ChromeTestCase(StaticLiveServerTestCase):
         first_comment = comments.find_element_by_css_selector('li.list-group-item')
 
         # test the first comment is now not flagged
-        flagged_arr = first_comment.find_elements_by_class_name('flagged')
-        self.assertEqual(len(flagged_arr), 0)
+        flagged_arr = first_comment.find_elements_by_class_name('popup_opener')
+        self.assertEqual(len(flagged_arr), 1)
 
     def testDeleteComment(self):
         """test the comment is deleted after clicking on delete button"""
