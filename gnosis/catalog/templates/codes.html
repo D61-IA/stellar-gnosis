@@ -2,6 +2,7 @@
 
 {% block content %}
     {% load el_pagination_tags %}
+    {% include "universal_search.html" %}
     {% if codes %}
         <div class="card shadow-sm mt-3">
             <div class="card-header"><h4>Codes</h4></div>

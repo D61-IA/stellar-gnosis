@@ -1,7 +1,9 @@
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from catalog.models import Paper, Person, Code, Venue, Dataset, ReadingGroup
+
+from bookmark.models import Bookmark
+from catalog.models import Paper, Person, Code, Venue, Dataset, ReadingGroup, Endorsement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
@@ -145,6 +147,28 @@ class ChromeTestCase(StaticLiveServerTestCase):
             owner=self.user,
         )
 
+        self.bookmark1 = Bookmark.objects.create(
+            paper=self.paper1,
+            owner=self.user
+        )
+
+        self.bookmark2 = Bookmark.objects.create(
+            paper=self.paper2,
+            owner=self.user
+        )
+
+        # create a endorsement for paper1
+        self.endorsement1 = Endorsement.objects.create(
+            paper=self.paper1,
+            user=self.user
+        )
+
+        # create a endorsement for paper2
+        self.endorsement2 = Endorsement.objects.create(
+            paper=self.paper2,
+            user=self.user
+        )
+
         # login as user1
         self.browser.get(self.live_server_url + '/accounts/login/')
         username = self.browser.find_element_by_id('id_login')
@@ -157,8 +181,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # confirm ajax response is received by checking correct page redirect
         wait = WebDriverWait(self.browser, 10)
         wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.jumbotron')))
-
-        # go to bookmark view page
         self.browser.get(self.live_server_url + '/papers/')
 
     @classmethod
@@ -191,43 +213,55 @@ class ChromeTestCase(StaticLiveServerTestCase):
         # should be only 2 search results in total
         self.assertEqual(len(items), 1)
 
-
-
     def test_search_paper(self):
-        self.browser.get(self.live_server_url + '/papers/')
+        self.browser.get(self.live_server_url + 'catalog/papers/')
         select = self.browser.find_element_by_id('universal_select')
         self.assertEqual(select.text, 'Papers')
         self.search("best", "2nd")
 
     def test_search_person(self):
-        self.browser.get(self.live_server_url + '/authors/')
+        self.browser.get(self.live_server_url + 'catalog/authors/')
         select = self.browser.find_element_by_id('universal_select')
         self.assertEqual(select.text, 'Authors')
         self.search("Zhao", "Zhenghao")
 
     def test_search_venue(self):
-        self.browser.get(self.live_server_url + '/venues/')
+        self.browser.get(self.live_server_url + 'catalog/venues/')
         select = self.browser.find_element_by_id('universal_select')
         self.assertEqual(select.text, 'Venues')
         self.search("ICCV", "copy")
 
     def test_search_dataset(self):
-        self.browser.get(self.live_server_url + '/datasets/')
+        self.browser.get(self.live_server_url + 'catalog/datasets/')
         select = self.browser.find_element_by_id('universal_select')
         self.assertEqual(select.text, 'Datasets')
         self.search("Cora", "copy")
 
     def test_search_code(self):
-        self.browser.get(self.live_server_url + '/codes/')
+        self.browser.get(self.live_server_url + 'catalog/codes/')
         select = self.browser.find_element_by_id('universal_select')
         self.assertEqual(select.text, 'Codes')
         self.search("StellarGraph", "copy")
 
     def test_search_group(self):
-        self.browser.get(self.live_server_url + '/clubs/')
+        self.browser.get(self.live_server_url + 'catalog/clubs/')
         select = self.browser.find_element_by_id('universal_select')
         self.assertEqual(select.text, 'Clubs')
         self.search("test", "club")
+
+    def test_search_bookmark(self):
+        self.browser.get(self.live_server_url + '/bookmark/')
+        select = self.browser.find_element_by_id('universal_select')
+        self.assertEqual(select.text, 'Bookmark')
+        self.search("best", "2nd")
+
+    def test_search_endorsement(self):
+        self.browser.get(self.live_server_url + 'catalog/endorsements/')
+        select = self.browser.find_element_by_id('universal_select')
+        self.assertEqual(select.text, 'endorsements')
+        self.search("best", "2nd")
+
+
 
 class FirefoxTestCase(ChromeTestCase):
     """test with Firefox webdriver"""

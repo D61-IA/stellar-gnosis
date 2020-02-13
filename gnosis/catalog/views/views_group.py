@@ -45,11 +45,14 @@ def groups(request):
 
 
 def group_find(request):
-    keywords = request.GET.get("keywords", "")
+    keywords = request.GET.get("keywords", "").strip()
 
-    all_groups = ReadingGroup.objects.annotate(search=SearchVector("keywords")).filter(
-        search=SearchQuery(keywords, search_type="plain")
-    )
+    if keywords == '':
+        all_groups = ReadingGroup.objects.all().order_by("-created_at")[:200]
+    else:
+        all_groups = ReadingGroup.objects.annotate(search=SearchVector("keywords")).filter(
+            search=SearchQuery(keywords, search_type="plain")
+        )
 
     return render(request, "groups.html", {"groups": all_groups, "message": "", "type": 'club'},)
 

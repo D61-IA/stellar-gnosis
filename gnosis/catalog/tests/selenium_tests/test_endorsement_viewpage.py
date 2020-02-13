@@ -85,47 +85,6 @@ class ChromeTestCase(StaticLiveServerTestCase):
         super().tearDownClass()
         cls.browser.quit()
 
-    def test_search(self):
-        """test endorsement search function returns the correct links to papers"""
-
-        # test on key shared by both papers
-        search_bar = self.browser.find_element_by_id('id_en_search')
-        search_bar.send_keys('best')
-
-        submit = self.browser.find_element_by_id('en_submit')
-        submit.click()
-
-        # wait for page to reload
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
-
-        # verify the correct links are present
-        items = self.browser.find_elements_by_class_name('list-group-item')
-        # should be only 2 endorsements in total
-        self.assertEqual(len(items), 2)
-
-        text = items[0].find_element_by_class_name('paper_link').text
-        self.assertEqual(text, 'Best paper in the world')
-
-        text = items[1].find_element_by_class_name('paper_link').text
-        self.assertEqual(text, '2nd Best paper in the world')
-
-        # test on key unique to a paper
-        search_bar = self.browser.find_element_by_id('id_en_search')
-        search_bar.send_keys('2nd')
-
-        submit = self.browser.find_element_by_id('en_submit')
-        submit.click()
-
-        # wait for page to reload
-        wait = WebDriverWait(self.browser, 10)
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.card-header')))
-
-        # there should only be one item
-        items = self.browser.find_element_by_class_name('list-group-item')
-        text = items.find_element_by_class_name('paper_link').text
-        self.assertEqual(text, '2nd Best paper in the world')
-
     def test_click(self):
         """test click on a endorsement redirects to its paper page"""
         links = self.browser.find_elements_by_class_name('paper_link')

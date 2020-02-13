@@ -13,20 +13,22 @@ from django.http import HttpResponseRedirect
 
 @login_required
 def endorsements(request):
-
     all_endorsements = Endorsement.objects.filter(user=request.user).order_by('-created_at')[:100]
 
-    return render(request, "endorsement.html", {"endorsements": all_endorsements, })
+    return render(request, "endorsement.html", {"endorsements": all_endorsements, 'type': 'endorsement'})
 
 
 @login_required
 def endorsement_search(request):
     """Search for an endorsement"""
-    keywords = request.GET.get("keywords", "")
+    keywords = request.GET.get("keywords", "").strip()
 
-    endors = request.user.endorsements.filter(paper__title__icontains=keywords)
+    if keywords == '':
+        endors = Endorsement.objects.filter(user=request.user).order_by('-created_at')[:100]
+    else:
+        endors = request.user.endorsements.filter(paper__title__icontains=keywords)
 
-    return render(request, 'endorsement.html', {"endorsements": endors})
+    return render(request, 'endorsement.html', {"endorsements": endors, "type": 'endorsement'})
 
 
 @login_required

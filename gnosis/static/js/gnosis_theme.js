@@ -1,8 +1,3 @@
-var $universal_select = $('#universal_select');
-var $option = $('option[value="' + $universal_select.attr('data-type') + '"]');
-$option.attr('selected', 'selected');
-$universal_select.attr('action', $option.attr('data-url'));
-
 /************** JS functions that apply to elements in gnosis_theme.html **************/
 $('.cus_toggle').click(function (e) {
     e.stopPropagation();

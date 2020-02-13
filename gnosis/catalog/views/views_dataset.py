@@ -73,8 +73,11 @@ def dataset_find(request):
     :param request:
     :return:
     """
-    keywords = request.GET.get("keywords", "")
-    datasets = Dataset.objects.filter(name__icontains=keywords)
+    keywords = request.GET.get("keywords", "").strip()
+    if keywords == '':
+        datasets = Dataset.objects.all()[:100]
+    else:
+        datasets = Dataset.objects.filter(name__icontains=keywords)
 
     return render(
         request,

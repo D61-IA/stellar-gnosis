@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 def bookmarks(request):
     all_bookmarks = Bookmark.objects.filter(owner=request.user)
 
-    return render(request, "bookmarks.html", {"bookmarks": all_bookmarks})
+    return render(request, "bookmarks.html", {"bookmarks": all_bookmarks, 'type': 'bookmark'})
 
 
 @login_required
@@ -27,8 +27,11 @@ def bookmark_delete(request, id):
 @login_required
 def bookmark_search(request):
     """Search for a bookmark by its title"""
-    keywords = request.GET.get('keywords','')
+    keywords = request.GET.get('keywords','').strip()
 
-    bms = request.user.bookmarks.filter(paper__title__icontains=keywords)
+    if keywords == '':
+        bms = Bookmark.objects.filter(owner=request.user)
+    else:
+        bms = request.user.bookmarks.filter(paper__title__icontains=keywords)
 
-    return render(request, "bookmarks.html", {"bookmarks": bms})
+    return render(request, "bookmarks.html", {"bookmarks": bms, 'type': 'bookmark'})

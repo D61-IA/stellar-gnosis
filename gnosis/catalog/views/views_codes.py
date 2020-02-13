@@ -82,8 +82,12 @@ def code_find(request):
 
     :param request:
     """
-    keywords = request.GET.get("keywords", "")
-    codes = Code.objects.filter(name__icontains=keywords)
+    keywords = request.GET.get("keywords", "").strip()
+
+    if keywords == '':
+        codes = Code.objects.all()[:100]
+    else:
+        codes = Code.objects.filter(name__icontains=keywords)
 
     return render(
         request,

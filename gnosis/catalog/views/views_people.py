@@ -130,8 +130,11 @@ def person_delete(request, id):
 
 
 def person_find(request):
-    keywords = request.GET.get("keywords", "")
-    people = Person.objects.filter(name__icontains=keywords)
+    keywords = request.GET.get("keywords", "").strip()
+    if keywords == '':
+        people = Person.objects.order_by("-created_at")[:100]
+    else:
+        people = Person.objects.filter(name__icontains=keywords)
 
     return render(
         request,

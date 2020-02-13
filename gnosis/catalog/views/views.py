@@ -475,8 +475,12 @@ def _get_node_ego_network(id):
 
 
 def paper_find(request):
-    keywords = request.GET.get("keywords", "")
-    papers = Paper.objects.filter(title__icontains=keywords)
+    keywords = request.GET.get("keywords", "").strip()
+
+    if keywords == '':
+        papers = Paper.objects.filter(is_public=True).order_by("-created_at")[:100]
+    else:
+        papers = Paper.objects.filter(title__icontains=keywords)
 
     return render(request, "papers.html", {"papers": papers, "type": 'paper'})
 
@@ -1229,8 +1233,11 @@ def venue_find(request):
     :param request:
     :return:
     """
-    keywords = request.GET.get("keywords", "")
-    venues = Venue.objects.filter(name__icontains=keywords)
+    keywords = request.GET.get("keywords", "").strip()
+    if keywords == '':
+        venues = Venue.objects.all()[:100]
+    else:
+        venues = Venue.objects.filter(name__icontains=keywords)
 
     return render(
         request,
