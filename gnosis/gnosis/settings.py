@@ -212,6 +212,6 @@ SITE_ID = 1
 ACCOUNT_EMAIL_REQUIRED = True 
 ACCOUNT_UNIQUE_EMAIL = True 
 
-DEFAULT_FROM_EMAIL = 'support@thejournal.club'
+DEFAULT_FROM_EMAIL = 'support@gnosis.csiro.au'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
