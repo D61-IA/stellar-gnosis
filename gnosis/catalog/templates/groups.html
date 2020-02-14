@@ -33,10 +33,7 @@
                 </ul>
                 {% get_pages %}
                 <!-- Center-aligned -->
-                {% include "pagination.html" %}
-                <script>
-                    pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
-                </script>
+                {% include "single_pagination.html" %}
             {% else %}
                 <div class="p-5">
                     <p><i>No matching journal clubs found.</i></p>
