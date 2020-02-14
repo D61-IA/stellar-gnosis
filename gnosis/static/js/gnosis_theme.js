@@ -54,7 +54,7 @@ $.ajaxSetup({
     }
 );
 
-$universal_select.change(function () {
+$('#universal_select').change(function () {
     var $option = $('option:selected', this);
     var url = $option.attr('data-url');
     $('#universal_search').attr('action', url);
