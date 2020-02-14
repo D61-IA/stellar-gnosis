@@ -1,0 +1,52 @@
+<ul class="pagination justify-content-center" style="margin:20px 0">
+
+    {% if not pages.current.is_first %}
+        <li class="page-item page_prev desktop"><a class="page-link" href="{{ pages.previous.path }}"><i
+                class='fas fa-step-backward'></i>Previous</a>
+        </li>
+    {% endif %}
+
+    <li class="page-item num_item"><a class="page-link"
+                                      href="{{ pages.first.path }}">{{ pages.first.number }}</a></li>
+
+    <li><i class='fas fa-ellipsis-h first_ellipsis'></i></li>
+
+    <li class="page-item num_item"><a class="page-link"
+                                      href="{{ pages.previous.path }}">{{ pages.previous.number }}</a></li>
+
+    <li class="page-item num_item"><a class="page-link"
+                                      href="{{ pages.current.path }}">{{ pages.current.number }}</a></li>
+
+    <li class="page-item num_item"><a class="page-link"
+                                      href="{{ pages.next.path }}">{{ pages.next.number }}</a></li>
+
+    <li><i class='fas fa-ellipsis-h last_ellipsis'></i></li>
+
+    <li class="page-item num_item"><a class="page-link"
+                                      href="{{ pages.last.path }}">{{ pages.last.number }}</a></li>
+
+    {% if not pages.current.is_last %}
+        <li class="page-item page_next desktop"><a class="page-link" href="{{ pages.next.path }}">Next<i
+                class='fas fa-step-forward'></i></a>
+        </li>
+    {% endif %}
+</ul>
+
+<ul class="pagination justify-content-center mobile">
+
+    {% if not pages.current.is_first %}
+        <li class="page-item page_prev"><a class="page-link" href="{{ pages.previous.path }}"><i
+                class='fas fa-step-backward'></i>Previous</a>
+        </li>
+    {% endif %}
+
+    {% if not pages.current.is_last %}
+        <li class="page-item page_next"><a class="page-link" href="{{ pages.next.path }}">Next<i
+                class='fas fa-step-forward'></i></a>
+        </li>
+    {% endif %}
+</ul>
+
+<script>
+    pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
+</script>
