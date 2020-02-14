@@ -28,7 +28,13 @@
 
 <script>
     var $universal_select = $('#universal_select');
+    $universal_select.change(function () {
+        var $option = $('option:selected', this);
+        var url = $option.attr('data-url');
+        $('#universal_search').attr('action', url);
+    });
     var $option = $('option[value="' + $universal_select.attr('data-type') + '"]');
     $option.attr('selected', 'selected');
     $('#universal_search').attr('action', $option.attr('data-url'));
+
 </script>
