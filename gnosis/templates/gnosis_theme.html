@@ -49,9 +49,10 @@
 <body>
 
 <nav class="navbar navbar-expand-sm mb-2 shadow bg-white navbar-light sticky-top">
-    <div class="container-fluid" style="height: 44px;">
+    <div class="container-fluid">
         <a class="navbar-brand"
            href="{% url 'home' %}">The Journal Club</a>
+
         {% if user.is_authenticated %}
             <div class="dropdown">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle"
@@ -255,6 +256,7 @@
                             <a href="{% url 'codes_index' %}" class="btn btn-primary flex-item" role="button"
                                title="View all codes">Codes</a>
                         </div>
+
                     {% endif %}
                 </div>
             </div>

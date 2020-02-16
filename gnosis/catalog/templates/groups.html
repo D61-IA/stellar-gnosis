@@ -1,16 +1,7 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
     {% load el_pagination_tags %}
-
-    <div class="card shadow-sm mt-3">
-        <div class="card-body text-center">
-            <form action="{% url 'group_find' %}" method="get">
-                <input type="text" name="keywords" size="60" class="form-control" required="">
-                <br>
-                <input type="submit" class="btn btn-primary btn-lg" value="Search Journal Clubs"/>
-            </form>
-        </div>
-    </div>
+    {% include "universal_search.html" %}
 
     <div class="card shadow-sm mt-3">
         <div class="card-header">

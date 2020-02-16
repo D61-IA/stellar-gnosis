@@ -2,19 +2,7 @@
 
 {% block content %}
     {% load el_pagination_tags %}
-
-    <div class="card shadow-sm mt-3">
-        <div class="card-body text-center">
-            <form action="{% url 'venue_find' %}" method="get">
-                <input type="text" name="keywords" size="60" class="form-control" required="">
-                <br>
-                <div>
-                    <input type="submit" class="btn btn-primary btn-lg" value="Search Venues"/>
-                </div>
-            </form>
-        </div>
-    </div>
-
+    {% include "universal_search.html" %}
     {% if venues %}
         <div class="card shadow-sm mt-3">
             {% paginate venues %}

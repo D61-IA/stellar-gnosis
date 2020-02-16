@@ -55,7 +55,7 @@ def codes(request):
         form = SearchCodesForm()
 
     return render(
-        request, "codes.html", {"codes": all_codes, "form": form, "message": message}
+        request, "codes.html", {"codes": all_codes, "form": form, "message": message, "type": 'code'}
     )
 
 
@@ -82,13 +82,17 @@ def code_find(request):
 
     :param request:
     """
-    keywords = request.GET.get("keywords", "")
-    codes = Code.objects.filter(name__icontains=keywords)
+    keywords = request.GET.get("keywords", "").strip()
+
+    if keywords == '':
+        codes = Code.objects.all()[:100]
+    else:
+        codes = Code.objects.filter(name__icontains=keywords)
 
     return render(
         request,
         "codes.html",
-        {"codes": codes},
+        {"codes": codes, "type": 'code'},
     )
 
 

@@ -1,25 +1,11 @@
 {% extends "gnosis_theme.html" %}
 {% block content %}
     {% load el_pagination_tags %}
-
-    <div class="card shadow-sm text-center mt-3">
-        <div class="card-body">
-            <form action="{% url 'bookmark_search' %}" id="bm_form" method="get">
-
-                <input type="text" name="keywords" size="60" class="form-control" required="" id="id_bm_search">
-
-                <br>
-                <input type="submit" id="bm_submit" class="btn btn-primary btn-lg" value="Search Bookmarks">
-            </form>
-        </div>
-    </div>
-
-
+    {% include "universal_search.html" %}
     <div class="card shadow-sm mt-3">
         <div class="card-header">
             <h4>Bookmarks</h4>
         </div>
-
         <div class="card-body">
             {% if bookmarks %}
                 {% paginate bookmarks %}
