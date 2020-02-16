@@ -89,8 +89,6 @@
             {% endif %}
 
             <h4 class="text-right">
-                {% if not user.is_authenticated %}
-                    <a href="{% url 'account_login' %}?next={{ request.path }}">Endorse</a>{% endif %}
 
                 {% if user.is_superuser %}
                     <div>

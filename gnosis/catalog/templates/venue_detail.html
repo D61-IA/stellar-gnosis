@@ -3,7 +3,6 @@
 {% block content %}
     {% load el_pagination_tags %}
 
-
     <div class="card shadow-sm mt-5 mb-5">
         <div class="card-header">
             <h3>
@@ -56,14 +55,10 @@
 
                 {% get_pages %}
                 <!-- Center-aligned -->
-                {% include "pagination.html" %}
-                <script>
-                    pagination($('.num_item'), parseInt('{{ pages.current.number }}'), parseInt('{{ pages.first.number }}'), parseInt('{{ pages.last.number }}'), '{{ pages.current.path }}');
-                </script>
+                {% include "single_pagination.html" %}
             </div>
         </div>
     {% endif %}
-
 
     {% if user.is_authenticated and user.is_superuser %}
         <div class="card text-left shadow-sm mb-5 mt-3">
