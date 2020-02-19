@@ -22,6 +22,7 @@ read_dotenv(override=True)
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# For production, we need to generate a new secret key.
 SECRET_KEY = os.getenv("SECRET_KEY", '6pph^ipk8sow@%nw)s!l@klg4q8lnar2k6k$&e=26pqrm(zg^a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -34,14 +35,14 @@ ALLOWED_HOSTS = ['127.0.0.1']
 SESSION_SAVE_EVERY_REQUEST = True
 
 # keys for reCaptcha v2 checkbox
-RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", '6Ld6z7IUAAAAAC-qA5q5CC58YJx8Td_g6wPJs_Pk')
-RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY",'6Ld6z7IUAAAAAPgCXtYcOjFMKo4CSx_WY2YAxIaC')
+RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", '')
+RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", '')
 
-RECAPTCHA_PUBLIC_KEY_INV = os.getenv("RECAPTCHA_PUBLIC_KEY_INV", '6LdbXLQUAAAAAGynHciK-BML9CthUvtrUm_Aim24')
-RECAPTCHA_PRIVATE_KEY_INV = os.getenv("RECAPTCHA_PRIVATE_KEY_INV", '6LdbXLQUAAAAACLkjt-f0tZ0mY1aXR6jghMg2tBw')
+RECAPTCHA_PUBLIC_KEY_INV = os.getenv("RECAPTCHA_PUBLIC_KEY_INV", '')
+RECAPTCHA_PRIVATE_KEY_INV = os.getenv("RECAPTCHA_PRIVATE_KEY_INV", '')
 
-RECAPTCHA_PUBLIC_KEY_V3 = os.getenv("RECAPTCHA_PUBLIC_KEY_V3", '6LfdR7UUAAAAAC9WK09i_tRLtNQq4aIaIQjWQ-4i')
-RECAPTCHA_PRIVATE_KEY_V3 = os.getenv("RECAPTCHA_PRIVATE_KEY_V3", '6LfdR7UUAAAAACkwrd0ae-3kkNWnRFgFcuU0m3Rv')
+RECAPTCHA_PUBLIC_KEY_V3 = os.getenv("RECAPTCHA_PUBLIC_KEY_V3", '')
+RECAPTCHA_PRIVATE_KEY_V3 = os.getenv("RECAPTCHA_PRIVATE_KEY_V3", '')
 
 # Application definition
 
