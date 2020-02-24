@@ -35,6 +35,6 @@ To make sure your changes work as intended and don't break existing
 functionality, you'll want to install and run the existing Stellar-Gnosis
 tests with the following line:
  
-	python manage.py test
+	python manage.py test catalog.tests
  
 All tests should pass before submitting a pull request.
